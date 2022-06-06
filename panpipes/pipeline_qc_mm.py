@@ -173,7 +173,7 @@ def concat_filtered_mudatas(infiles, outfile):
 ## Creating h5mu from raw data files
 # -----------------------------------------------------------------------------------------------
 
-if PARAMS['assess_background'] or (PARAMS["modalities"]["prot"] and "dsb" in PARAMS['normalisation_methods']):
+if (PARAMS['assess_background']) or (PARAMS["modalities"]["prot"] and "dsb" in PARAMS['normalisation_methods']):
     PARAMS['raw_required'] = True
 else:
     PARAMS['raw_required'] = False

@@ -17,12 +17,14 @@ PARAMS['sample_prefix'] = "test"
 def test_gen_load_anndata_jobs():
     caf = pd.read_csv(PARAMS['submission_file'], sep='\t')
     assert isinstance(gen_load_anndata_jobs(caf=caf), types.GeneratorType)
-    assert  next(gen_load_anndata_jobs(caf=caf, mode_dictionary={"RNA":True, "ADT":True})) == ('../sample_1_rna/filtered_feature_bc_matrix',
+    assert  next(gen_load_anndata_jobs(caf=caf, mode_dictionary={"rna":True, "prot":True})) == ('../sample_1_rna/filtered_feature_bc_matrix',
                                                      './tmp/sample1.h5mu', 
                                                      'sample1', 
                                                      'cellranger', 
                                                      '../sample_1_prot/raw_feature_bc_matrix', 'cellranger', 
                                                      None,None, 
+                                                     None,None,
+                                                     None,
                                                      None,None,
                                                      None,None,
                                                      None) 

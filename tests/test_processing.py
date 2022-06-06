@@ -151,13 +151,13 @@ def test_remove_unused_categories():
     with pytest.raises(TypeError):
         scp.pp.remove_unused_categories("cheese")
 
-def test_add_var_mtd(anndata, anndata_with_var):
-    new_var = pd.DataFrame(index=[f"gene{i}" for i in range(10)],
-                         data={'feature_type': "Gene Expression",
-                                'new_index': [f"newgene{i}" for i in range(10)]}
-                        )
-    scp.pp.add_var_mtd(anndata, new_var, left_on="index", right_on="new_index")
-    assert_match_anndata(anndata, anndata_with_var)
+# def test_add_var_mtd(anndata, anndata_with_var):
+#     new_var = pd.DataFrame(index=[f"gene{i}" for i in range(10)],
+#                          data={'feature_type': "Gene Expression",
+#                                 'new_index': [f"newgene{i}" for i in range(10)]}
+#                         )
+#     scp.pp.add_var_mtd(anndata, new_var, left_on="index", right_on="new_index")
+#     assert_match_anndata(anndata, anndata_with_var)
 
 
 def test_add_var_mtd_types(anndata):
