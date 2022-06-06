@@ -1,4 +1,5 @@
 # Panpipes, pielines for multimodal single cell analyses
+(work in progress)
 
 Maintained by Charlotte Rich-Griffin and Fabiola Curion
 Contributors: Charlotte Rich-Griffin, Fabiola Curion, Tom Thomas
