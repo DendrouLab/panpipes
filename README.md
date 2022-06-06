@@ -77,6 +77,7 @@ Download and install this repo
 ```
 git clone https://github.com/DendrouLab/sc_pipelines
 cd sc_pipelines
+pip install -r requirements.txt
 pip install .
 ```
 The pipelines are now installed as a local python package.

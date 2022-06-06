@@ -1,0 +1,28 @@
+# cgat core dependencies
+drmaa
+gevent
+pytest
+pandas
+ruffus
+pep8
+pyyaml
+paramiko
+apsw
+cgatcore
+sqlalchemy
+
+# scanpy and associated
+anndata>=0.7.6
+scanpy
+bbknn
+scanorama
+harmonypy
+scvi-tools
+leidenalg
+louvain
+numpy
+scrublet
+scikit-misc
+
+mudata @ git+https://github.com/scverse/mudata
+muon @ git+https://github.com/scverse/muon
