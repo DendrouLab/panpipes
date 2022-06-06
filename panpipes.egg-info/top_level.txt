@@ -1,5 +1,0 @@
-R
-panpipes
-panpipes/funcs
-python
-resources
