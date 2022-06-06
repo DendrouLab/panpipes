@@ -1,0 +1,26 @@
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+BiocManager::install(c(
+    "tidyverse", 
+    "tidyselect",
+    "Seurat",
+    "ComplexHeatmap",
+    "xtable",
+    "forcats",
+    "purrr",
+    "tidyr",
+    "tibble",
+    "stringr",
+    "scales",
+    "reticulate",
+    "readr",
+    "optparse",
+    "magrittr",
+    "foreign",
+    "dplyr",
+    "clustree",
+    "ggraph",
+    "ggplot2",
+    "RColorBrewer",
+    "Matrix"))

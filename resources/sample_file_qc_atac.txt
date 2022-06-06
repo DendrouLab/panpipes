@@ -1,0 +1,2 @@
+sample_id	atac_path	atac_filetype	fragments_file	per_barcode_metrics_file	    peak_annotation_file    tissue	diagnosis
+Sample2	cellranger_count/Sample2_multiome/outs/sample2.h5 10X_h5	Sample2	cellranger_count/Sample2_multiome/outs/fragment_file	cellranger_count/Sample2_multiome/outs/fragment_file    cellranger_count/Sample2_multiome/outs/fragment_file	pbmc	diseased
