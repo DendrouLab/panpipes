@@ -1,4 +1,5 @@
-# Dendrou group single cell pipelines 
+# Panpipes, pielines for multimodal single cell analyses
+
 Maintained by Charlotte Rich-Griffin and Fabiola Curion
 Contributors: Charlotte Rich-Griffin, Fabiola Curion, Tom Thomas
 
