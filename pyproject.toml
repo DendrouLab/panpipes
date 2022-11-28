@@ -1,0 +1,74 @@
+[build-system]
+requires = ["setuptools ~= 58.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[metadata]
+name = panpipes
+version = 0.2.0
+authors =authors = [
+    {name = "Charlotte Rich-Griffin"},
+    {name= "Fabiola Curion"},
+]
+description = Panpipes - multimodal single cell pipelines
+long_description = file: README.md
+long_description_content_type = text/markdown
+classifiers = [
+    'License :: OSI Approved :: BSD License',
+    'Development Status :: 4 - Beta',
+    'Intended Audience :: Developers',
+    'Intended Audience :: Science/Research',
+    'Programming Language :: Python :: 3',
+    'Programming Language :: R'
+]
+
+
+[project.urls]
+Documentation = 'https://scverse.org/scirpy/'
+Home-page = 'https://scverse.org/scirpy/'
+Source = "https://github.com/scverse/scirpy"
+
+
+dependencies = ['anndata>=0.8.0', 
+'apsw', 
+'bbknn', 
+'cgatcore', 
+'drmaa', 
+'harmonypy', 
+'leidenalg', 
+'louvain', 
+'mofapy2', 
+"mudata @ git+https://github.com/scverse/mudata",
+"muon @ git+https://github.com/scverse/muon",
+'numpy>=1.17.0', 
+'numpy>=1.22.4', 
+'packaging', 
+'pandas>=1.0', 
+'paramiko', 
+'pep8',
+'pytest',
+'pyyaml',
+'ruffus', 
+'scanorama', 
+'scanpy>=1.9.1', 
+'seaborn',
+'scikit-misc', 
+"scirpy @ git+https://github.com/scverse/scirpy",
+'scrublet', 
+'scvi-tools==0.16.3', 
+'sqlalchemy']
+
+
+
+
+
+[options]
+packages = find:
+
+[options]
+install_requires =
+
+
+[options.extras_require]
+notebook = jupyter, jupyterlab
+
+
