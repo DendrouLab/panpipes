@@ -1,8 +1,8 @@
 [build-system]
-requires = ["setuptools ~= 58.0", "wheel"]
-build-backend = "setuptools.build_meta"
+build-backend = "flit_core.buildapi"
+requires = ["flit_core >=3.8.0,<4"]
 
-[metadata]
+[project]
 name = "panpipes"
 version = "0.2.0"
 authors = [
@@ -20,17 +20,7 @@ classifiers = [
     'Programming Language :: Python :: 3',
     'Programming Language :: R'
 ]
-
-
-[project.urls]
-Documentation = 'https://scverse.org/scirpy/'
-Home-page = 'https://scverse.org/scirpy/'
-Source = "https://github.com/scverse/scirpy"
-
-
-
-[options]
-install_requires =['anndata>=0.8.0', 
+dependencies = ['anndata>=0.8.0', 
 'apsw', 
 'bbknn', 
 'cgatcore', 
@@ -43,7 +33,6 @@ install_requires =['anndata>=0.8.0',
 "muon @ git+https://github.com/scverse/muon",
 'numpy>=1.17.0', 
 'numpy>=1.22.4', 
-'packaging', 
 'pandas>=1.0', 
 'paramiko', 
 'pep8',
@@ -60,8 +49,14 @@ install_requires =['anndata>=0.8.0',
 'sqlalchemy']
 
 
+[project.urls]
+Documentation = 'https://scverse.org/scirpy/'
+Home-page = 'https://scverse.org/scirpy/'
+Source = "https://github.com/scverse/scirpy"
 
-[options.extras_require]
+
+[project.optional-dependencies]
 notebook = ["jupyter", "jupyterlab"]
+
 
 
