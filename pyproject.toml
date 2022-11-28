@@ -10,7 +10,7 @@ authors = [
     {name= "Fabiola Curion"}
 ]
 description = "Panpipes - multimodal single cell pipelines"
-long_description = file: "README.md"
+long_description = "file: README.md"
 long_description_content_type = "text/markdown"
 classifiers = [
     'License :: OSI Approved :: BSD License',
