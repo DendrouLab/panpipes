@@ -3,15 +3,15 @@ requires = ["setuptools ~= 58.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [metadata]
-name = panpipes
-version = 0.2.0
-authors =authors = [
+name = "panpipes"
+version = "0.2.0"
+authors = [
     {name = "Charlotte Rich-Griffin"},
-    {name= "Fabiola Curion"},
+    {name= "Fabiola Curion"}
 ]
-description = Panpipes - multimodal single cell pipelines
-long_description = file: README.md
-long_description_content_type = text/markdown
+description = "Panpipes - multimodal single cell pipelines"
+long_description = file: "README.md"
+long_description_content_type = "text/markdown"
 classifiers = [
     'License :: OSI Approved :: BSD License',
     'Development Status :: 4 - Beta',
@@ -28,7 +28,9 @@ Home-page = 'https://scverse.org/scirpy/'
 Source = "https://github.com/scverse/scirpy"
 
 
-dependencies = ['anndata>=0.8.0', 
+
+[options]
+install_requires =['anndata>=0.8.0', 
 'apsw', 
 'bbknn', 
 'cgatcore', 
@@ -57,15 +59,6 @@ dependencies = ['anndata>=0.8.0',
 'scvi-tools==0.16.3', 
 'sqlalchemy']
 
-
-
-
-
-[options]
-packages = find:
-
-[options]
-install_requires =
 
 
 [options.extras_require]
