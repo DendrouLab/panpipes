@@ -1,8 +1,8 @@
 # Panpipes - multimodal single cell pipelines 
 
-Maintained by Charlotte Rich-Griffin and Fabiola Curion
+Created and Maintained by Charlotte Rich-Griffin and Fabiola Curion
 
-Contributors: Charlotte Rich-Griffin, Tom Thomas and Fabiola Curion
+Additional Contributors:  Tom Thomas
 
 ## Table of contents
 - [Introduction](#introduction)
