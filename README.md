@@ -1,8 +1,8 @@
-# Dendrou group single cell pipelines 
+# Panpipes - multimodal single cell pipelines 
 
 ## Table of contents
 
-- [Dendrou group single cell pipelines](#dendrou-group-single-cell-pipelines)
+- [Panpipes single cell pipelines](#Panpipes - multimodal single cell pipelines)
   - [Table of contents](#table-of-contents)
 - [Introduction](#introduction)
 - [Installation](#installation)
