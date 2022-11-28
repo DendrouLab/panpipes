@@ -62,6 +62,6 @@ install_requires =['anndata>=0.8.0',
 
 
 [options.extras_require]
-notebook = jupyter, jupyterlab
+notebook = ["jupyter", "jupyterlab"]
 
 
