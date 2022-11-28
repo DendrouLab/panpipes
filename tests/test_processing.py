@@ -1,6 +1,6 @@
 import pytest
 # from scpipelines.funcs.processing import extract_parameter_from_fname
-import panpipes.funcs as scp
+import panpipes.funcs as pnp
 from anndata import AnnData
 from muon import MuData
 import pandas as pd
@@ -46,42 +46,42 @@ def anndata_with_var():
 
 
 def test_extract_parameter_from_fname():
-    assert scp.pp.extract_parameter_from_fname("test_res0.6_cluster.txt.gz", "res", "test") == 0.6
-    assert scp.pp.extract_parameter_from_fname("test_res1.0_cluster.txt.gz", "res", "test") == 1
-    assert scp.pp.extract_parameter_from_fname("test_methodeuclidean_cluster.txt.gz", "method", "test") == "euclidean"
-    assert scp.pp.extract_parameter_from_fname("method_methodeuclidean_cluster.txt.gz", "method", "method") == "euclidean"
+    assert pnp.pp.extract_parameter_from_fname("test_res0.6_cluster.txt.gz", "res", "test") == 0.6
+    assert pnp.pp.extract_parameter_from_fname("test_res1.0_cluster.txt.gz", "res", "test") == 1
+    assert pnp.pp.extract_parameter_from_fname("test_methodeuclidean_cluster.txt.gz", "method", "test") == "euclidean"
+    assert pnp.pp.extract_parameter_from_fname("method_methodeuclidean_cluster.txt.gz", "method", "method") == "euclidean"
 
 def test_is_float_try():
-    assert scp.pp.is_float_try("1") is True
-    assert scp.pp.is_float_try("cheese") is False
+    assert pnp.pp.is_float_try("1") is True
+    assert pnp.pp.is_float_try("cheese") is False
 
 def test_splitall():
-    assert scp.pp.splitall("path") == ['path']
-    assert scp.pp.splitall("path/to/cheese") == ['path', 'to', 'cheese']
-    assert scp.pp.splitall("/path/to/cheese") == ['path', 'to', 'cheese']
+    assert pnp.pp.splitall("path") == ['path']
+    assert pnp.pp.splitall("path/to/cheese") == ['path', 'to', 'cheese']
+    assert pnp.pp.splitall("/path/to/cheese") == ['path', 'to', 'cheese']
 
 def test_test_file_or_value():
-    assert scp.pp.test_file_or_value(4) == "value"
-    assert scp.pp.test_file_or_value(__file__) == "file"
+    assert pnp.pp.test_file_or_value(4) == "value"
+    assert pnp.pp.test_file_or_value(__file__) == "file"
     with pytest.raises(ValueError):
-        scp.pp.test_file_or_value("cheese")
+        pnp.pp.test_file_or_value("cheese")
 
 def test_which_ind():
-    assert scp.pp.which_ind([True, True, False]) == [0,1]
-    assert scp.pp.which_val([True, True, False], [1,2,3]) == [1,2]
+    assert pnp.pp.which_ind([True, True, False]) == [0,1]
+    assert pnp.pp.which_val([True, True, False], [1,2,3]) == [1,2]
 
 def test_check_for_bool():
-    assert scp.pp.check_for_bool('True') is True
-    assert scp.pp.check_for_bool(True) is True
-    assert scp.pp.check_for_bool('False') is False
-    assert scp.pp.check_for_bool(False) is False
+    assert pnp.pp.check_for_bool('True') is True
+    assert pnp.pp.check_for_bool(True) is True
+    assert pnp.pp.check_for_bool('False') is False
+    assert pnp.pp.check_for_bool(False) is False
     with pytest.raises(TypeError):
-        scp.pp.check_for_bool('cheese')
+        pnp.pp.check_for_bool('cheese')
     with pytest.raises(TypeError):
-        scp.pp.check_for_bool(4)
+        pnp.pp.check_for_bool(4)
 
 def test_intersection():
-    assert scp.pp.intersection(['a', 'b', 'c'], ['c', 'd', 'e']) == ['c']
+    assert pnp.pp.intersection(['a', 'b', 'c'], ['c', 'd', 'e']) == ['c']
 
 
 def assert_match_anndata(ad1, ad2):
@@ -105,7 +105,7 @@ def test_concat_adatas(anndata):
                                                         'b', 'b', 'b', 'b', 'b']}, dtype="category"),
                 var=pd.DataFrame(index=[f"gene{i}" for i in range(10)])
     )
-    merg_data = scp.pp.concat_adatas([ad1, ad2],
+    merg_data = pnp.pp.concat_adatas([ad1, ad2],
         batch_key="sample_id", 
         batch_categories=['a', 'b'], 
         join_type="inner")
@@ -113,11 +113,11 @@ def test_concat_adatas(anndata):
     assert np.array_equal(merg_data.X, adata_full.X)
     assert_match_anndata(merg_data, adata_full)
     # testing the case where there is only 1 anndata sent to function
-    assert_match_anndata(scp.pp.concat_adatas([ad1], batch_key="sample_id", 
+    assert_match_anndata(pnp.pp.concat_adatas([ad1], batch_key="sample_id", 
         batch_categories=['a']), ad1)
     # test the corner case where an anddata is passed
     with pytest.raises(TypeError):
-        scp.pp.concat_adatas(ad1, batch_key="sample_id", 
+        pnp.pp.concat_adatas(ad1, batch_key="sample_id", 
         batch_categories=['a'])
 
 def test_merge_with_adata_obs(anndata, anndata_with_obs):
@@ -125,50 +125,50 @@ def test_merge_with_adata_obs(anndata, anndata_with_obs):
                              'batch': [1, 2, 3]})
     # test exceptions
     with pytest.raises(TypeError):
-        scp.pp.merge_with_adata_obs("cheese", new_obs, "sample_id")
+        pnp.pp.merge_with_adata_obs("cheese", new_obs, "sample_id")
     with pytest.raises(TypeError):
-        scp.pp.merge_with_adata_obs(anndata, "cheese", "sample_id")
+        pnp.pp.merge_with_adata_obs(anndata, "cheese", "sample_id")
     with pytest.raises(KeyError):
-        scp.pp.merge_with_adata_obs(anndata, new_obs, "cheese")
+        pnp.pp.merge_with_adata_obs(anndata, new_obs, "cheese")
     with pytest.raises(KeyError):
-        scp.pp.merge_with_adata_obs(anndata, new_obs, "batch")
-    anndata.obs = scp.pp.merge_with_adata_obs(anndata, new_obs, "sample_id")
+        pnp.pp.merge_with_adata_obs(anndata, new_obs, "batch")
+    anndata.obs = pnp.pp.merge_with_adata_obs(anndata, new_obs, "sample_id")
     assert_match_anndata(anndata, anndata_with_obs)
 
 
 def test_merge_with_adata_obs_inplace(anndata, anndata_with_obs):
     new_obs = pd.DataFrame(data={'sample_id': ['a', 'b', 'c'],
                              'batch': [1, 2, 3]})
-    scp.pp.merge_with_adata_obs(anndata, new_obs, "sample_id", inplace=True)
+    pnp.pp.merge_with_adata_obs(anndata, new_obs, "sample_id", inplace=True)
     assert_match_anndata(anndata, anndata_with_obs)
 
 def test_remove_unused_categories():
     df = pd.DataFrame(data={"a1":['a', 'b', 'c'], 'a2':['c', 'd', 'e']}, dtype='category')
     df = df.iloc[0:2,:]
-    scp.pp.remove_unused_categories(df)
+    pnp.pp.remove_unused_categories(df)
     assert df['a1'].cat.categories.tolist() == ['a', 'b']
     assert df['a2'].cat.categories.tolist() == ['c', 'd']
     with pytest.raises(TypeError):
-        scp.pp.remove_unused_categories("cheese")
+        pnp.pp.remove_unused_categories("cheese")
 
-# def test_add_var_mtd(anndata, anndata_with_var):
-#     new_var = pd.DataFrame(index=[f"gene{i}" for i in range(10)],
-#                          data={'feature_type': "Gene Expression",
-#                                 'new_index': [f"newgene{i}" for i in range(10)]}
-#                         )
-#     scp.pp.add_var_mtd(anndata, new_var, left_on="index", right_on="new_index")
-#     assert_match_anndata(anndata, anndata_with_var)
+def test_add_var_mtd(anndata, anndata_with_var):
+    new_var = pd.DataFrame(index=[f"gene{i}" for i in range(10)],
+                         data={'feature_type': "Gene Expression",
+                                'new_index': [f"newgene{i}" for i in range(10)]}
+                        )
+    pnp.pp.add_var_mtd(anndata, new_var, left_on="index", right_on="new_index")
+    assert_match_anndata(anndata, anndata_with_var)
 
 
 def test_add_var_mtd_types(anndata):
     with pytest.raises(TypeError):
-        scp.pp.add_var_mtd(anndata, 'cheese')
+        pnp.pp.add_var_mtd(anndata, 'cheese')
     new_var = pd.DataFrame(index=[f"gene{i}" for i in range(10)],
                          data={'feature_type': "Gene Expression",
                                 'new_index': [f"newgene{i}" for i in range(10)]}
                         )
     with pytest.raises(TypeError):
-        scp.pp.add_var_mtd('cheese', new_var)
+        pnp.pp.add_var_mtd('cheese', new_var)
     # check mismatch var df raises coorect errors
 
 
@@ -178,13 +178,13 @@ def test_add_var_mtd_types(anndata):
 #                          data={'feature_type': "Gene Expression",
 #                                 'new_index': [f"newgene{i}" for i in range(9)]})
 #     # with pytest.warns(UserWarning):
-#     #     scp.pp.add_var_mtd(ad, new_var)
+#     #     pnp.pp.add_var_mtd(ad, new_var)
 
 
 def test_update_var_index(anndata):
     new_index = [f"newgene{i}" for i in range(10)]
     anndata.var['new_index'] = new_index
-    scp.pp.update_var_index(anndata, "new_index")
+    pnp.pp.update_var_index(anndata, "new_index")
     assert all(anndata.var.index == new_index)
 
 

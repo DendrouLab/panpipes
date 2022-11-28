@@ -3,7 +3,6 @@
 # ----------------------- #
 # written by Charlotte Rich-Griffin, Thom Tomas, Fabiola Curion
 # maintained by Charlotte Rich-Griffin
-
 # needs a sample metadata file (see resources for an example)
 # will run :
 #   summary plots of 10x metrics
@@ -23,51 +22,41 @@
 # ------------------------
 resources:
   # Number of threads used for parallel jobs
-  # high = make anndata
-  threads_high: 2
-  # medium = running scrublet per sample
-  threads_medium: 2
-  # low = plotting
+  # this must be enough memory to create to load all you input files and once and create the mudatafile
+  threads_high: 1
+  # this must be enough memory to load your mudata and do computationally light tasks
+  threads_medium: 1
+  # this must be enough memory to load text files and do plotting, requires much less memory than the other two
   threads_low: 1
-  
+# path to conda env, leave blank if running native or your cluster automatically inherits the login node environment
+condaenv:
 
+# ------------------------------------------------------------------------------------------------
+# Loading and concatenating data options
+# ------------------------------------------------------------------------------------------------
 # ------------------------
 # Project name and data format
 # ------------------------
 project: "test"
 sample_prefix: "test"
-use_existing_h5ad: False
+# if you have an existing h5mu object that you want to run through the pipeline then
+# store it in the folder where you intend to run the folder, and call it
+# ${sample_prefix}_unfilt.h5mu where ${sample_prefix} = sample_prefix argument above
+use_existing_h5mu: False
 
 # submission_file format:
-# For qc_general the required columns are
-# sample_id       path        type
-# Example at resources/sample_file_general.txt
 # For qc_mm the required columns are
-# sample_id  gex_path  gex_filetype  (adt_path  adt_filetype tcr_path  tcr_filetype)
+# sample_id  rna_path  rna_filetype  (prot_path  prot_filetype tcr_path  tcr_filetype etc.)
 # Example at resources/sample_file_mm.txt
-submission_file: sample_caf.tsv
-# at the QC stage it can be useful to look at the normalised data on a per channel basis 
-# i.e. the 10X channel. This can help determine any inconsistencies in staining per channel and other QC concerns.
-# If you want to run clr normalsiation on a per channel basis, then you need to 
-# specify which column in your submission file corresponds to the channel
-# this is usually the sample_id column (otherwise leave the next parameter blank)
-channel_col: sample_id
+submission_file: 
 
 # which metadata cols from the submission file do you want to include in the anndata object
 metadatacols: 
 
+# which concat join to you want to perform on your mudata objects, recommended inner
+# see https://anndata.readthedocs.io/en/latest/concatenation.html#inner-and-outer-joins for details
 concat_join_type: inner
-# Recommended to set to True: this will import each modality as a muon object.
-# For more information see Mudata and muon on webpage...
-use_muon: True
 
-
-
-# ------------------------
-# 10X files processing
-# ------------------------
-plot_10X_metrics: True 
-kneeplot: False
 
 #---------------------------------------
 # Modalities in the project
@@ -83,27 +72,51 @@ modalities:
   atac: 
 
 #---------------------------------------
-# Demultiplexing with hashtags, chemical tags or lipid tagging
+# Integrating barcode level data e.g. 
+# demultiplexing with hashtags, chemical tags or lipid tagging
 #---------------------------------------
-demultiplex:
-  include: False # True or False
-  metadatacols: ""
-# if set to True then the submission file must have a "demultiplex_map_file" column
-# The demultiplex map file must have one column called barcode_id and one column called antibody
-# (other columns will not be integrated into the anndata object)
-# a second demultiplex metadata file path can also be included in submission file
-# (column names in samples file: demultiplex_map_file demultiplex_mtd_file)
-# the metadata file must contan and antibody column which matches the map file and any other relevent metadata to your samples
-# specify which columns you want to keep from the demultiplex mtd file in metadatacols
+# if you have cell level metadata such as results from a demultiplexing algorithm, 
+# you can incorporate it into the mudata object, 
+# this should be stored in one csv containing 2 columns, barcode_id, and sample_id,
+# which should match the sample_id column in the submission file.
+barcode_mtd:
+  include: true
+  path:
+  metadatacols:  
 
-# Note that if duplicate columns exists in metadatacols and demultiplex_metadata_cols, then 
-# for the demultiplexed samples only, the demultiplexing metadata will be included instead of the 
-# library level metadata. The advatnage of this is that when you analyse a mixture of multiplexed and 
-# not multiplexed libraries any matching metadata will get integrated as one column in the h5ad object.
-# But if you have sample level metadata for the multiplexed columns make sure this daata is indicated 
-# with a different column name to any in demultiplex_metadatacols.
+#---------------------------------------
+# Loading adt data - additional options
+#---------------------------------------
+# As default the qc_mm will choose the first column of the cellranger features.tsv.gz
+# To merge extra information about the antibodies e.g. whether they are hashing antibodies or isotypes,
+# Create a table with the first column equivalent to the first column of cellrangers features.tsv.gz
+# and specify it below (save as txt file)
+protein_metadata_table: 
+# Make sure there are unique entries in this column for each adt.
+# include a column called isotype (containing True or False) if you want to qc isotypes
+# include a column called hashing_ab (containing True or False) if your dataset contains hashing antibodies which you wish to split into a separate modality
+
+# If you want to update the mudata index with a column from protein_metadata_table, specify here
+# If there are overlaps with the rna gene symbols, then you might have trouble down the line
+# It is recommended to add something to make the labels unique e.g. "adt_CD4"
+index_col_choice: 
+
+# If providing separate prot and rna 10X outputs, then the pipeline will load the filtered rna 10X outputs and the raw prot 10X counts
+# we assume in most cases that we want to treat filtered rna barcodes as the "real" cells
+# and we want out prot assays barcodes to match rna. In which case set subset_prot_barcodes_to_rna: True (which is also the default setting)
+# if explicitly set to False, the full prot matrix will be loaded into the mudata obect
+load_prot_from_raw: False
+subset_prot_barcodes_to_rna: False
 
 
+# ------------------------------------------------------------------------------------------------
+# QC options
+# ------------------------------------------------------------------------------------------------
+# ------------------------
+# 10X qc files processing
+# ------------------------
+plot_10X_metrics: True 
+kneeplot: False
 # ------------
 ## Doublets on GEX - Scrublet
 # ------------
@@ -150,7 +163,6 @@ scr:
 # cell cycle action
 # ccgenes will plot the proportions of cell cycle genes (recommended to leave as default)
 ccgenes: default
-iggenesfile: default
 # It's often practical to rely on known gene lists, for a series of tasks, like evaluating % of mitochondrial genes or
 # ribosomal genes, or excluding IGG genes from HVG selection. We collect useful gene lists in a file, resources/custom_gene_lists_v1.tsv, 
 # and define "actions" on them as follows:
@@ -163,68 +175,37 @@ iggenesfile: default
 # 
 # custom genes actions
 
-custom_genes_file: resources/custom_gene_lists_v1.tsv
+custom_genes_file: resources/qc_genelist_1.0.csv
 calc_proportions: haemoglobin,mitochondrial,ribosomal
 score_genes: MarkersNeutro
 
-# ------------
-#GEX QC metrics
-# ------------
-plotqc:
-  # likely a combination of metadatacolumns and demultiplex_metadatacols
-  grouping_var: sample_id
-  gex_metrics: doublet_scores,pct_counts_mt,pct_counts_rp,pct_counts_hb,pct_counts_ig
 
-
-# ------------
-# Characterising Background 
-# ------------
-# This pipeline does not include removal of background contamination as you would with soupX or cellblender.
-# However it is useful to chararcterise the background of your gene expression assay and antibody binding assay
-# Setting `assess_background` to True will:
-# 1. create h5mu from raw data inputs (expected as cellranger h5 or mtx folder, if you do not have this then set to False)
-# 2. Plot comparitive QC plots to compare distribution of UMI and feature counts in background and foreground
-# 3. Create heatmaps of the top features in the background, so you can compare teh background contaimation per channel
-assess_background: False
-# if no adt data then exclude column and leave options below blank
-
-# ------------
-# ADT qc - requires adt_path to be included in the submission file
+# Plot RNA QC metrics
 # ------------
 
-# As default the qc_mm will choose the first column of the cellranger features.tsv.gz
-# To merge extra information about the antibodies e.g. whether they are hashing antibodies or isotypes,
-# Create a table with the first column equivalent to the first column of cellrangers features.tsv.gz
-# and specify it below (save as txt file)
-protein_metadata_table: 
-# Make sure there are unique entries in this column for each adt.
-# include a column called isotype (containing True or False) if you want to qc isotypes
-# include a column called hashing_ab (containing True or False) if your dataset contains hashing antibodies which you wish to split into a separate modality
+# likely a combination of metadatacolumns and demultiplex_metadatacols
+plotqc_grouping_var: sample_id
+plotqc_rna_metrics: doublet_scores,pct_counts_mitochondrial,pct_counts_ribosomal,pct_counts_haemoglobin,pct_counts_ig
 
-# If you want to update the mudata index with a column from protein_metadata_table, specify here
-# If there are overlaps with the gex gene symbols, then you might have trouble down the line
-# It is recommended to add something to make the labels unique e.g. "adt_CD4"
-index_col_choice: 
 
-# If providing 10X outputs, then the pipeline will load the filtered gex 10X outputs and the raw adt 10X counts
-# we assume in most cases that we want to treat filtered gex barcodes as the "real" cells
-# and we want out adt assays barcodes to match gex. In which case set subset_adt_barcodes_to_gex: True (which is also the default setting)
-# if explicitly set to False, the full raw adt matrix will be loaded into the mudata obect
-subset_adt_barcodes_to_gex: True
+
+# ------------
+# ADT qc - requires prot_path to be included in the submission file
+# ------------
 
 ###  ADT QC metrics:
-# as standard the following metrics are calculated for adt data
+# as standard the following metrics are calculated for prot data
 # per cell metrics:
 # total_counts,log1p_total_counts,n_adt_by_counts,log1p_n_adt_by_counts
 # if isotypes can be detected then the following are calculated also:
 # total_counts_isotype,pct_counts_isotype
 # choose which ones you want to plot here
-adt_metrics_per_cell: total_counts,log1p_total_counts,n_adt_by_counts,pct_counts_isotype
+plotqc_prot_metrics: total_counts,log1p_total_counts,n_adt_by_counts,pct_counts_isotype
 
 # per antibody metrics
 # n_cells_by_counts,mean_counts,log1p_mean_counts,pct_dropout_by_counts,total_counts,log1p_total_counts
 # choose which ones you want to plot here:
-adt_metrics_per_adt: total_counts,log1p_total_counts,n_cells_by_counts,mean_counts
+prot_metrics_per_adt: total_counts,log1p_total_counts,n_cells_by_counts,mean_counts
 
 # isotype outliers: one way to determine which cells are very sticky is to work out which cells have the most isotype UMIs
 # associated to them, to label a cell as an isotype outlier, it must meet or exceed the following crietria:
@@ -235,31 +216,51 @@ isotype_upper_quantile: 90
 isotype_n_pass: 2
 # TODO: work out how to plot this.
 
-### Normalisation of ADT
-# comma separated string of normalisation options
-# options: dsb,clr
-normalisation_methods: dsb
-
-
+### Investigate per channel antibody staining:
+# This can help determine any inconsistencies in staining per channel and other QC concerns.
+# If you want to run clr normalsiation on a per channel basis, then you need to 
+# specify which column in your submission file corresponds to the channel
+# at the QC stage it can be useful to look at the normalised data on a per channel basis 
+# i.e. the 10X channel. 
+# this is usually the sample_id column (otherwise leave the next parameter blank)
+channel_col: sample_id
+# It is important to note that in qc_mm the per channel normalised adt scores are not saved in the mudata object
+#  this is because if you perform feature normalisation (clr normalisation margin 0 or dsb normalisation), 
+#  on subsets of cells then the normalised values cannot be simply concatenated. 
+# The ADT normalisation is rerun pn the complete object in the preprocess pipeline 
+# (or you can run this pipeline with channel_col set as None)
 # it is important to note, if you choose to run the clr on a per channel basis, then it is not stored in the h5mu file.
 # if you want to save the per channel normalised values set the following to True:
 save_norm_prot_mtx: False
-# During the integration pipeline, the dsb/clr normalisation will be rerun,
-# across the whole dataset and saved in the h5mu object.
-# this can also be acheived by leave the channel_col parameter blank. 
+
+# comma separated string of normalisation options
+# options: dsb,clr 
+# more details in this vignette https://muon.readthedocs.io/en/latest/omics/citeseq.html
+# dsb https://muon.readthedocs.io/en/latest/api/generated/muon.prot.pp.dsb.html
+# clr https://muon.readthedocs.io/en/latest/api/generated/muon.prot.pp.clr.html
+normalisation_methods: clr
+
+# CLR parameters:
+# margin determines whether you normalise per cell (as you would RNA norm), 
+# or by feature (recommended, due to the variable nature of adts). 
+# CLR margin 0 is recommended for informative qc plots in this pipeline
+# 0 = normalise colwise (per feature)
+# 1 = normalise rowwise (per cell)
+clr_margin: 0
+
 
 # DSB parameters:
 # quantile clipping, even with normalisation, 
 # some cells get extreme outliers which can be clipped as discussed https://github.com/niaid/dsb
 # maximum value will be set at the value of the 99.5% quantile, applied per feature
+# note that this feature is in the default muon mu.pp.dsb code, but manually implemented in this code.
 quantile_clipping: True
+# in order to run DSB you must have access to the complete raw counts, including the empty droplets 
+# from both rna and protein assays, 
+# see details for how to make sure your files are compatible in the assess background section below
 
-# CLR parameters:
-# margin determines whether you normalise per cell (as you would RNA norm), 
-# or by feature (recommended, due to the variable nature of adts)
-# 0 = normalise colwise (per feature)
-# 1 = normalise rowwise (per cell)
-clr_margin: 0
+
+
 
 # ------------
 # ATAC qc 
@@ -278,15 +279,8 @@ partner_rna:
 #if this is a standalone atac (is_paired: False), please provide a feature file to run TSS enrichment.
 #supported annotations for protein coding genes provided
 features_tss: #resources/features_tss_hg19.tsv
-# binarize the peak count matrix?
-binarize: False 
-# normalize data and with which method? leave empty if no normalization needed, options are log1p and TFIDF
-# This section will move to qc pipeline
-normalize:
-# if normalize is set to TFIDF, which flavour to use 
-TFIDF_flavour: signac, logTF, logIDF 
 #these will be used to plot and saved in the metadata
-qc_metrics: n_genes_by_counts,total_counts,pct_fragments_in_peaks,atac_peak_region_fragments,atac_mitochondrial_reads,atac_TSS_fragments
+plotqc_atac_metrics: n_genes_by_counts,total_counts,pct_fragments_in_peaks,atac_peak_region_fragments,atac_mitochondrial_reads,atac_TSS_fragments
 
 
 # ------------
@@ -313,8 +307,48 @@ clonotype_definition:
   dual_ir:
   within_group:
 
-# ------------
-# Plot QC metrics
-# ------------
+# available metrics
+# rep:clone_id_size
+# rep:clonal_expansion
+# rep:receptor_type
+# rep:receptor_subtype
+# rep:chain_pairing
+# rep:multi_chain
+# rep:high_confidence
+# rep:is_cell
+# rep:extra_chains
+plotqc_rep_metrics:
+ - is_cell
+ - extra_chains
+ - clonal_expansion
+ - rep:receptor_type
+ - rep:receptor_subtype
+ - rep:chain_pairing
+ - rep:multi_chain
 
   
+# ------------
+# Profiling Ambient background
+# ------------
+# This pipeline does not include removal of background contamination as you would with soupX or cellblender.
+# However it is useful to chararcterise the background of your gene expression assay and antibody binding assay
+# Setting `assess_background` to True will:
+# 1. create h5mu from raw data inputs (expected as cellranger h5 or mtx folder, if you do not have this then set to False)
+# 2. Plot comparitive QC plots to compare distribution of UMI and feature counts in background and foreground
+# 3. Create heatmaps of the top features in the background, so you can compare teh background contaimation per channel
+assess_background: False
+# typically there is a lot of cells in the full raw cellranger outputs, 
+# since we just want to get a picture of the background then we can subsample the data 
+# to a more reasonable ize. If you want to keep all the raw data then set the following to False
+downsample_background: True
+
+# Files required for profiling ambient background or running dsb normalisation:
+# -----------------------------------------------------
+# the raw_feature_bc_matrix folder from cellranger or equivalent.
+# The pipeline will automatically look for this as a .h5 or matrix folder 
+# if the {mod}_filetype is set to "cellranger" or "cellranger_multi" or 10X_h5 
+# based on the path specified in the submission file.
+
+# If you are using a different format of file input e.g. csv matrix, 
+# make sure the two files are named using the convention:
+# {file_prefix}_filtered.csv" and {file_prefix}_raw.csv

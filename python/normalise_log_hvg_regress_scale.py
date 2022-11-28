@@ -60,6 +60,7 @@ parser.add_argument("--filter_by_hvg", default=False)
 # regress out options
 parser.add_argument('--regress_out', default=None)
 # scale options
+parser.add_argument('--scale_data', default=True)
 parser.add_argument('--scale_max_value', default=None)
 # pca options
 parser.add_argument("--n_pcs", default=50)
@@ -160,8 +161,9 @@ if args.regress_out is not None:
     regress_opts = args.regress_out.split(",")
     sc.pp.regress_out(adata, regress_opts)
 
-if args.scale_max_value is not None:
-    sc.pp.scale(adata)
+if args.scale_data is True:
+    if args.scale_max_value is not None:
+        sc.pp.scale(adata)
 else:
     sc.pp.scale(adata, max_value=args.scale_max_value)
 

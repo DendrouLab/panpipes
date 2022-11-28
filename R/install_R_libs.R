@@ -24,3 +24,7 @@ BiocManager::install(c(
     "ggplot2",
     "RColorBrewer",
     "Matrix"))
+
+remotes::install_github("grimbough/rhdf5")
+remotes::install_github("ilia-kats/MuData")
+remotes::install_github("pmbio/MuDataSeurat")

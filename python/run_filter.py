@@ -13,12 +13,12 @@ import yaml
 
 # import scpipelines.funcs as scp
 from panpipes.funcs.processing import intersect_obs_by_mod, remove_unused_categories
-from panpipes.funcs.io import write_obs
-
+from panpipes.funcs.io import write_obs, read_yaml, dictionary_stripper
+import collections.abc
 import sys
 import logging
 L = logging.getLogger()
-L.setLevel(logging.DEBUG)
+L.setLevel(logging.INFO)
 log_handler = logging.StreamHandler(sys.stdout)
 formatter = logging.Formatter('%(asctime)s: %(levelname)s - %(message)s')
 log_handler.setFormatter(formatter)
@@ -28,16 +28,8 @@ L.addHandler(log_handler)
 sc.settings.verbosity = 2  # verbosity: errors (0), warnings (1), info (2), hints (3)
 # comment this because of numba issues
 # sc.logging.L.info_versions()
-import collections.abc
 
 
-def map_nested_dicts_replace_none_string(ob):
-    if isinstance(ob, collections.abc.Mapping):
-        return {k: map_nested_dicts_replace_none_string(v) for k, v in ob.items()}
-    else:
-        if ob == "None":
-            ob = None
-        return ob
 
 def map_nested_dicts_remove_none(ob):
     if isinstance(ob, collections.abc.Mapping):
@@ -74,18 +66,19 @@ parser.add_argument('--intersect_mods', default=None,
 # load options
 parser.set_defaults(verbose=True)
 args, opt = parser.parse_known_args()
- 
+L.info('running with args:')
+L.info(args)
  
 # load the filtering dictionary 
 filter_dict = args.filter_dict
 if isinstance(args.filter_dict, dict):
     filter_dict = args.filter_dict
 else:
-    filter_dict = yaml.safe_load(args.filter_dict) 
+    filter_dict = read_yaml(args.filter_dict) 
 
 # remove Nones for each level of filter dict
-filter_dict = map_nested_dicts_replace_none_string(filter_dict)
 filter_dict = map_nested_dicts_remove_none(filter_dict)
+filter_dict = dictionary_stripper(filter_dict)
 L.info("filter dictionary:\n %s" %filter_dict)
 
 # load mudata
@@ -96,51 +89,67 @@ if isinstance(mdata, AnnData):
 
 orig_obs = mdata.obs.copy()
 
+L.info("Before filtering %d" % mdata.n_obs)
 # filter based on provided barcodes -----
 if args.keep_barcodes is not None:
     L.info("filtering all modalities by keep_barcodes file")
     keep_bc = pd.read_csv(args.keep_barcodes,header=None)
     mdata = mdata[mdata.obs_names.isin(keep_bc[0]),:].copy()
-    L.info("Remaining cells %d" % mdata.n_obs)
+    remove_unused_categories(mdata.obs)
     mdata.update()
+    L.info("Remaining cells %d" % mdata.n_obs)
 
+# L.debug(mdata.obs['sample_id'].value_counts())
 
 # filter more than
-# if filter_dict['run']:
-# this will go through the modalities one at a time,
-# then the categories max, min and bool
-for mod in mdata.mod.keys():
-    if mod in filter_dict.keys():
-        for marg in filter_dict[mod].keys():
-            if marg == "obs":
-                if "max" in filter_dict[mod][marg].keys():
-                    for col, n in filter_dict[mod][marg]['max'].items():
-                        L.info("filter %s %s to less than %s" % (mod, col, n))
-                        mu.pp.filter_obs(mdata.mod[mod], col, lambda x: x <= n)
-                if "min" in filter_dict[mod][marg].keys():
-                    for col, n in filter_dict[mod][marg]['min'].items():
-                        L.info("filter %s %s to more than %s" % (mod, col, n))
-                        mu.pp.filter_obs(mdata.mod[mod], col, lambda x: x >= n)
-                if "bool" in filter_dict[mod][marg].keys():
-                    for col, n in filter_dict[mod][marg]['bool'].items():
-                        L.info("filter %s %s marked %s" % (mod, col, n))
-                        mu.pp.filter_obs(mdata.mod[mod], col, lambda x: x == n)
-            if marg == "var":
-                if "max" in filter_dict[mod][marg].keys():
-                    for col, n in filter_dict[mod][marg]['max'].items():
-                        L.info("filter %s %s to less than %s" % (mod, col, n))
-                        mu.pp.filter_var(mdata.mod[mod], col, lambda x: x <= n)
-                if "min" in filter_dict[mod][marg].keys():
-                    for col, n in filter_dict[mod][marg]['min'].items():
-                        L.info("filter %s %s to more than %s" % (mod, col, n))
-                        mu.pp.filter_var(mdata.mod[mod], col, lambda x: x >= n)
-                if "bool" in filter_dict[mod][marg].keys():
-                    for col, n in filter_dict[mod][marg]['bool'].items():
-                        L.info("filter %s %s marked %s" % (mod, col, n))
-                        mu.pp.filter_var(mdata.mod[mod], col, lambda x: x == n)
+if filter_dict['run']:
+    # this will go through the modalities one at a time,
+    # then the categories max, min and bool
+    for mod in mdata.mod.keys():
+        L.info(mod)
+        if mod in filter_dict.keys():
+            for marg in filter_dict[mod].keys():
+                if marg == "obs":
+                    if "max" in filter_dict[mod][marg].keys():
+                        for col, n in filter_dict[mod][marg]['max'].items():
+                            L.info("filter %s %s to less than %s" % (mod, col, n))
+                            mu.pp.filter_obs(mdata.mod[mod], col, lambda x: x <= n)
+                            L.info("Remaining cells %d" % mdata[mod].n_obs)
+                            L.info("Remaining cells %d" % mdata[mod].shape[0])
+                    if "min" in filter_dict[mod][marg].keys():
+                        for col, n in filter_dict[mod][marg]['min'].items():
+                            L.info("filter %s %s to more than %s" % (mod, col, n))
+                            mu.pp.filter_obs(mdata.mod[mod], col, lambda x: x >= n)
+                            L.info("Remaining cells %d" % mdata[mod].n_obs)
+                    if "bool" in filter_dict[mod][marg].keys():
+                        for col, n in filter_dict[mod][marg]['bool'].items():
+                            L.info("filter %s %s marked %s" % (mod, col, n))
+                            mu.pp.filter_obs(mdata.mod[mod], col, lambda x: x == n)
+                            L.info("Remaining cells %d" % mdata[mod].n_obs)
+                if marg == "var":
+                    if "max" in filter_dict[mod][marg].keys():
+                        for col, n in filter_dict[mod][marg]['max'].items():
+                            L.info("filter %s %s to less than %s" % (mod, col, n))
+                            mu.pp.filter_var(mdata.mod[mod], col, lambda x: x <= n)
+                            L.info("Remaining cells %d" % mdata[mod].n_obs)
 
+                    if "min" in filter_dict[mod][marg].keys():
+                        for col, n in filter_dict[mod][marg]['min'].items():
+                            L.info("filter %s %s to more than %s" % (mod, col, n))
+                            mu.pp.filter_var(mdata.mod[mod], col, lambda x: x >= n)
+                            L.info("Remaining cells %d" % mdata[mod].n_obs)
+
+                    if "bool" in filter_dict[mod][marg].keys():
+                        for col, n in filter_dict[mod][marg]['bool'].items():
+                            L.info("filter %s %s marked %s" % (mod, col, n))
+                            mu.pp.filter_var(mdata.mod[mod], col, lambda x: x == n)
+                            L.info("Remaining cells %d" % mdata[mod].n_obs)
+                            
+L.debug(mdata.obs['sample_id'].value_counts())
+L.debug(mdata['rna'].obs['sample_id'].value_counts())
 mdata.update()
-
+L.debug(mdata.obs['sample_id'].value_counts())
+L.debug(mdata['rna'].obs['sample_id'].value_counts())
 # intersect specific modalities
 # we don't want to just use mu.pp.intersect_obs, 
 # because we don't want to necessarily filter by repertoire
@@ -148,6 +157,9 @@ if args.intersect_mods is not None:
     intersect_mods = args.intersect_mods.split(',')
     L.info("intersecting barcodes in %s" % args.intersect_mods)
     intersect_obs_by_mod(mdata, mods = intersect_mods)
+    L.info("Remaining cells %d" % mdata.n_obs)
+    L.info(mdata.shape)
+
 
 
 remove_unused_categories(mdata.obs)
@@ -174,4 +186,6 @@ cell_counts.to_csv(output_prefix + "_cell_counts.csv", index=None)
 mdata.update()
 L.info("writing mdata h5mu")
 L.info(args.output_mudata)
+L.debug(mdata.obs['sample_id'].value_counts())
+L.debug(mdata['rna'].obs['sample_id'].value_counts())
 mdata.write(args.output_mudata)

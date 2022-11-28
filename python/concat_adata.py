@@ -11,12 +11,14 @@ import warnings
 # warnings.filterwarnings("ignore", category=FutureWarning)
 
 from panpipes.funcs.processing import  concat_mdatas
+
+pd.set_option('display.max_rows', None)
 # import os
 # os.chdir("../../data/run_qc_general")
 import sys
 import logging
 L = logging.getLogger()
-L.setLevel(logging.INFO)
+L.setLevel(logging.DEBUG)
 log_handler = logging.StreamHandler(sys.stdout)
 formatter = logging.Formatter('%(asctime)s: %(levelname)s - %(message)s')
 log_handler.setFormatter(formatter)
@@ -45,13 +47,21 @@ parser.add_argument("--metadatacols",
 parser.add_argument("--join_type",
                     default="inner",
                     help="whether to concat anndata on the 'inner' (default) or 'outer'")
+parser.add_argument('--barcode_mtd_df',
+                    default=None,
+                    help='csv file contining barcode level metadata')
+parser.add_argument('--barcode_mtd_metadatacols',
+                    default=None,
+                    help='comma separated strings listing the column you want to keep in barcode_mtd_df')                    
 
 parser.set_defaults(verbose=True)
 args, opt = parser.parse_known_args()
-
+L.info("running with:")
+L.info(args)
 
 if len(args.input_files_str) == 0:
     sys.exit("no input files detected")
+    
 lf = re.split(',', args.input_files_str)
 
 sfile=args.submissionfile
@@ -79,11 +89,8 @@ else:
         del temp
     elif 'prot' in temp.mod.keys() or 'rna' in temp.mod.keys():
         ## IF GEX and ADT is ok to concatenate ----------
-        
-        batches = [x.obs.sample_id[0] for x in mdatas]
         mdata = concat_mdatas(mdatas,
             batch_key="sample_id", 
-            batch_categories=batches,
             join_type=args.join_type)
 
 # remove to avoid mem issues
@@ -106,10 +113,8 @@ else:
     metadatacols = metadatacols.split(',')
     if 'sample_id' not in metadatacols:
         metadatacols = ['sample_id'] + metadatacols
-
     # check all metadatacols are in the caf
     if all([x in caf.columns for x in metadatacols]):
-
         # if mdata is actually a mudata it will be helpful 
         # (although annoying to store this in rna and protein as 
         # well since the batch columns etc will be here)
@@ -125,7 +130,6 @@ else:
             # remove the index name introduced with the set index.
             assay.obs.index_name = None
             L.debug(assay.obs.head())
-        
         mdata.update_obs()
         # merge metadata
         # obs = mdata.obs
@@ -140,6 +144,32 @@ else:
         L.error("Required columns missing form samples file: %s" % missingcols)
         sys.exit("Exiting because required columns not in samples file, check the log file for details")
 
+
+# if 'rep' in mdata.mod.keys():
+#     col_update = mdata['rep'].obs.columns[mdata['rep'].obs.columns.str.contains("count")]
+#     mdata['rep'].obs[col_update] = mdata['rep'].obs[col_update].apply(pd.to_numeric)
+#     mdata.update()
+    
+# add in cell level metadata
+if args.barcode_mtd_df is not None :
+    L.info("Add barcode level metadata")
+    # check demult_metadatacols exists and contains antibody
+    barcode_metadatacols = args.barcode_mtd_metadatacols.split(',')
+    # load the demultiplexing data
+    barcode_mtd_df = pd.read_csv(args.barcode_mtd_df, index_col=None)
+    if len(barcode_mtd_df['sample_id'].unique().tolist()) > 1:
+        barcode_mtd_df.index = barcode_mtd_df[['barcode_id', 'sample_id']].apply(lambda row: "-".join(row.values.astype(str)), axis=1)
+    else:
+        barcode_mtd_df.index = barcode_mtd_df['barcode_id']
+    barcode_mtd_df= barcode_mtd_df.drop(columns=['sample_id'])
+    # add for each modality
+    for mod in mdata.mod.keys():
+        mdata[mod].obs = mdata[mod].obs.merge(barcode_mtd_df, left_index=True, right_index=True)
+        mdata.update()
+    # add at top level
+    mdata.obs = mdata.obs.merge(barcode_mtd_df, left_index=True, right_index=True)
+
+
 L.debug(mdata.obs.columns)
 L.debug(mdata.obs.head())
 
@@ -148,6 +178,8 @@ L.debug(mdata.obs.head())
 # cols = mdata.obs.columns.tolist()
 # cols.insert(0, cols.pop(cols.index('sample_id')))
 # mdata.obs = mdata.obs.reindex(columns=cols)
+L.debug(mdata.obs.dtypes)
+
 L.info("writing to file {}".format(str(args.output_file)))
 mdata.write(args.output_file)
 L.info("done")

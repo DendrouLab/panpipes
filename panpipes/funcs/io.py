@@ -1,3 +1,4 @@
+from random import sample
 import warnings
 import re
 import os
@@ -15,13 +16,23 @@ from anndata import AnnData
 import numpy as np
 from os import PathLike
 
-def update_cellranger_col(path, raw=False):
-    # this assumes that we get a cellranger base path and we want file path for sc.read_10x_h5 or similar
-    if raw:
-        append_str = "raw_feature_bc_matrix"
+def update_cellranger_col(path,  raw=False, method="count", sample_id=""):
+    if method =="count":
+        # this assumes that we get a cellranger count base path and we want file path for sc.read_10x_h5 or similar
+        if raw:
+            append_str = "raw_feature_bc_matrix"
+        else:
+            append_str = "filtered_feature_bc_matrix"
+    elif method == "multi":
+        if raw:
+            append_str = os.path.join("multi", "count", "raw_feature_bc_matrix")
+        else:
+            append_str = os.path.join("per_sample_outs", sample_id, "count", "sample_filtered_feature_bc_matrix")
     else:
-        append_str = "filtered_feature_bc_matrix"
+        sys.exit("specify cellranger filetype as cellranger_count or cellranger_multi")
     # is there a h5 file available
+    if os.path.exists(os.path.join(path, append_str)) == False:
+        sys.exit("cellranger path not found: %s" % os.path.join(path, append_str))
     if os.path.exists(os.path.join(path, append_str + '.h5')):
         append_str = append_str + ".h5"
         filetype = "10X_h5"
@@ -31,36 +42,55 @@ def update_cellranger_col(path, raw=False):
     return path, filetype
 
 
-def gen_load_anndata_jobs(caf, load_raw=False, mode_dictionary = {}, use_muon=True):
+
+def gen_load_anndata_jobs(caf, load_raw=False, mode_dictionary = {}, load_prot_from_raw=False):
     """
     Generate a load_adatas job for each line in submission.txt
     """
     for nn in range(0, caf.shape[0]):
-        if caf['gex_filetype'][nn]=="cellranger" and mode_dictionary["rna"]:
-            gex_path, gex_filetype = update_cellranger_col(caf['gex_path'][nn], raw=load_raw)
+        if pd.isna(caf['gex_path'][nn]):
+                gex_path= None
+                gex_filetype=None
+        elif caf['gex_filetype'][nn]=="cellranger" and mode_dictionary["rna"]:
+            gex_path, gex_filetype = update_cellranger_col(caf['gex_path'][nn], raw=load_raw, method="count")
+        elif caf['gex_filetype'][nn]=="cellranger_multi" and mode_dictionary["rna"]:
+            gex_path, gex_filetype = update_cellranger_col(caf['gex_path'][nn], raw=load_raw, method="multi", 
+                                                            sample_id=caf['sample_id'][nn])
         else:
             gex_path, gex_filetype = caf[['gex_path', "gex_filetype"]].iloc[nn]
+            if load_raw:
+                gex_path = re.sub("filtered", "raw", gex_path)
         # manage the adt paths
         if ('adt_path' in caf.columns and mode_dictionary["prot"]):
             # check if its the same as the gex path (data in the same file)
-            if caf['adt_path'][nn] == caf['gex_path'][nn]:
+            if pd.isna(caf['adt_path'][nn]):
+                adt_path= None
+                adt_filetype=None
+            elif caf['adt_path'][nn] == caf['gex_path'][nn]:
                 adt_path, adt_filetype = gex_path, gex_filetype
             elif caf['adt_filetype'][nn]=="cellranger":
-                # we choose to load the raw here because we want to then subset by good gex barcodes
-                adt_path, adt_filetype = update_cellranger_col(caf['adt_path'][nn], raw=True)
+                # we might want to load the raw here because we want to then subset by good gex barcodes, 
+                # this is why the load_prot_from_raw argument exists
+                adt_path, adt_filetype = update_cellranger_col(caf['adt_path'][nn], raw=load_prot_from_raw)
+            elif caf['adt_filetype'][nn]=="cellranger_multi":
+                # celranger multi has the same prot and gex barcodes
+                adt_path, adt_filetype = update_cellranger_col(caf['adt_path'][nn], raw=load_raw, method="multi", 
+                                                                sample_id=caf['sample_id'][nn])
             else:
                 adt_path, adt_filetype = caf[['adt_path', "adt_filetype"]].iloc[nn]
+                if load_prot_from_raw or load_raw:
+                    adt_path = re.sub("filtered", "raw", adt_path)
         else:
             adt_path= None
             adt_filetype=None
         # load tcr_path
-        if ('tcr_path' in caf.columns and mode_dictionary["tcr"]):
+        if 'tcr_path' in caf.columns and mode_dictionary["tcr"] and pd.notna(caf['tcr_path'][nn]):
             tcr_path = caf['tcr_path'][nn]
             tcr_filetype = caf['tcr_filetype'][nn]
         else:
             tcr_path= None
             tcr_filetype=None
-        if 'bcr_path' in caf.columns and mode_dictionary["bcr"]:
+        if 'bcr_path' in caf.columns and mode_dictionary["bcr"] and pd.notna(caf['bcr_path'][nn]):
             bcr_path = caf['bcr_path'][nn]
             bcr_filetype = caf['bcr_filetype'][nn]
         else:
@@ -71,15 +101,25 @@ def gen_load_anndata_jobs(caf, load_raw=False, mode_dictionary = {}, use_muon=Tr
                 sys.exit("You can only submit one atac/multiome file at a time. To aggregate, see cellranger aggr.")
             atac_path = caf['atac_path'][nn]
             atac_filetype = caf['atac_filetype'][nn]
-            fragments_file = caf['fragments_file'][nn]
-            per_barcode_metrics_file = caf['per_barcode_metrics_file'][nn]
-            peak_annotation_file = caf['peak_annotation_file'][nn]
+            if 'fragments_file' in caf.columns and pd.notna(caf['fragments_file'][nn]):
+                fragments_file = caf['fragments_file'][nn]
+            else:
+                fragments_file = None
+            if 'per_barcode_metrics_file' in caf.columns and pd.notna(caf['per_barcode_metrics_file'][nn]):
+                per_barcode_metrics_file = caf['per_barcode_metrics_file'][nn]
+            else:
+                per_barcode_metrics_file = None
+            if 'peak_annotation_file' in caf.columns and pd.notna(caf['peak_annotation_file'][nn]):    
+                peak_annotation_file = caf['peak_annotation_file'][nn]
+            else:
+                peak_annotation_file = None
         else:
             atac_path= None
             atac_filetype=None
             fragments_file = None
-            per_barcode_metrics_file = None
             peak_annotation_file = None
+            per_barcode_metrics_file = None
+            
         if 'barcode_mtd_path' in caf.columns:
             cell_mtd_path = caf['barcode_mtd_path'][nn]
         else:
@@ -100,8 +140,6 @@ def gen_load_anndata_jobs(caf, load_raw=False, mode_dictionary = {}, use_muon=Tr
               atac_path, atac_filetype, \
               fragments_file, per_barcode_metrics_file, peak_annotation_file, \
               cell_mtd_path
-
-
 
 def read_anndata(
     fname: Optional[str] = None,
@@ -192,7 +230,7 @@ def check_filetype(path, filetype):
             "cellranger_vdj": r".json|.csv"
         }
         if filetype not in ftype_checks.keys():
-            sys.exit("unknown filetype, please specify one of: %s" % ftype_checks.keys().join(", "))
+            sys.exit("unknown filetype %s, please specify one of: %s" % filetype, ftype_checks.keys().join(", "))
         elif re.search(ftype_checks[filetype], path) is None:
             sys.exit("filetype does not match file suffix, check it is specified correctly \
                     (with %s as suffix (gzipped files ok for csv and tsv))" % ftype_checks[filetype])
@@ -309,18 +347,18 @@ def load_adata_in(path, filetype, gex_only=True, var_names="gene_symbols", libra
     else:
         col_fill="index"
 
-    try:
-        logging.debug("loading %s " % filetype)
-        adata = load_functions_dict[filetype](path)
-        logging.debug("this is the anndata now: %s" % adata)
-        # in some cases you need to update the var index col.
-        if var_names in adata.var.columns:
-            logging.info("resetting var.index")
-            # we need to reset the index to be the expected one.
-            adata.var = adata.var.reset_index().rename(columns={"index":col_fill}).set_index(var_names)
-        return adata
-    except:
-        raise ValueError("unknown filetype, please specify one of: %s" %  ", ".join(list(load_functions_dict.keys()))) 
+    # try:
+    logging.debug("loading %s " % filetype)
+    adata = load_functions_dict[filetype](path)
+    logging.debug("this is the anndata now: %s" % adata)
+    # in some cases you need to update the var index col.
+    if var_names in adata.var.columns:
+        logging.info("resetting var.index")
+        # we need to reset the index to be the expected one.
+        adata.var = adata.var.reset_index().rename(columns={"index":col_fill}).set_index(var_names)
+    return adata
+    # except:
+    #     raise ValueError("unknown filetype %s, please specify one of: %s" % filetype, ", ".join(list(load_functions_dict.keys()))) 
     
 
 
@@ -471,4 +509,58 @@ def write_10x_counts(adata, path, layer=None):
     features = features[['gene_ids','gene_symbols', 'feature_types']] 
     features.to_csv(os.path.join(path, "features.tsv.gz"), sep='\t', index=None, header=None)
 
+# https://stackoverflow.com/questions/33529312/remove-empty-dicts-in-nested-dictionary-with-recursive-function
+def dictionary_stripper(data):
+    new_data = {}
+    # Only iterate if the given dict is not None
+    if data:
+        for k, v in data.items():
+            if isinstance(v, dict):
+                v = dictionary_stripper(v)
+            # ideally it should be not in, second you can also add a empty list if required
+            if v not in ("", None, {}, []):
+                new_data[k] = v
+        # Only if you want the root dict to be None if empty
+        if new_data == {}:
+            return None
+        return new_data
+    return None
 
+
+def replace_string_nones(d):
+    for k, v in d.copy().items():
+        if isinstance(v, dict):
+            replace_string_nones(v)
+        elif v == "None":
+            d[k] = None
+
+import yaml
+def read_yaml(fname):
+    if type(fname) is dict:
+        params=fname
+    elif os.path.exists(fname):
+        with open(fname, "r") as stream:
+            try:
+                params = yaml.safe_load(stream)
+            except yaml.YAMLError as exc:
+                print(exc)
+    else:
+        # if the yaml is being passed as a string
+        try:
+            params = yaml.safe_load(fname)
+            
+        except yaml.YAMLError as exc:
+            print(exc)
+    replace_string_nones(params)
+    return params
+
+
+# def model_load_choice( ):
+#     import scvi
+#     functions_dict={
+#     "totalvi": lambda x: scvi.model.TOTALVI.load_query_data,
+#     "scvi": lambda x: scvi.model.SCVI.load_query_data,
+#     "scanvi": lambda x: scvi.model.SCANVI.load_query_data,
+
+#     }
+    

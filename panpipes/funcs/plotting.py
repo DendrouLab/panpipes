@@ -4,9 +4,11 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from scanpy.get import obs_df
 from matplotlib.cm import get_cmap
-
+import itertools
 import logging
 from matplotlib import use
+import muon as mu
+
 use('Agg')
 plt.ioff()
 
@@ -34,12 +36,16 @@ def scatter_one(group_choice, col_choice, plot_df, axs=None, colour="#1f77b4", t
 
 def batch_scatter_two_var(plot_df, method, batch, palette_choice=None):
     plot_df = plot_df[['umap_1', 'umap_2', method, batch]]
+    plot_df = plot_df.dropna()
     # n_vars = len(df[var_choice].unique())
     nrows = len(plot_df[batch].unique())
     ncols = len(plot_df[method].unique())
     fig, axs = plt.subplots(nrows, ncols, figsize=(4*ncols, 3*nrows), facecolor='w', edgecolor='k')
     fig.subplots_adjust(hspace=.2, wspace=.2)
-    axs = axs.ravel(order="F")
+    if np.max([nrows, ncols]) > 1:
+        axs = axs.ravel(order="F")
+    else:
+        axs=[axs]
     if palette_choice is None:
         palette_choice = ['#1f77b4']*ncols
     # for j in range(ncols):
@@ -48,7 +54,8 @@ def batch_scatter_two_var(plot_df, method, batch, palette_choice=None):
         plot_df2 = plot_df[plot_df[method] == method_choice].copy()
         for i in range(nrows):
             group_choice = plot_df2[batch].unique()[i]
-            scatter_one(group_choice, batch, plot_df2, axs[idx], colour=palette_choice[j], title=method_choice + "|" + group_choice)
+            logging.debug(str(method_choice) + "|" + str(group_choice))
+            scatter_one(group_choice, batch, plot_df2, axs[idx], colour=palette_choice[j], title=str(method_choice) + "|" + str(group_choice))
             idx+=1
 
 def facet_scatter(x, y, c, **kwargs):
@@ -77,6 +84,7 @@ def _check_col_from_any_assay(mdata, var_col):
     # finally check that it is not all NAs
     if mdata.obs[var_col].isna().sum() == mdata.shape[0]:
         logging.error("%s is all NaN, cannot plot" % var_col)
+    return var_col
     
 
         
@@ -131,7 +139,7 @@ from sklearn.neighbors import KernelDensity
 def _kde_curve(xx, df, bandwidth=0.1):
     X=df.loc[:,xx].values[:, np.newaxis]
     kde = KernelDensity(kernel='gaussian', bandwidth=bandwidth).fit(X) 
-    x=np.linspace(0,X.max().max(),100)[:, np.newaxis]
+    x=np.linspace(X.min().min(),X.max().max(),100)[:, np.newaxis]
     log_density_values=kde.score_samples(x)
     density=np.exp(log_density_values).ravel()
     return x.ravel(), density
@@ -182,3 +190,64 @@ def ridgeplot(adata, features, layer=None, splitplot=3, bandwidth=0.1):
 
     fig.tight_layout()
     return fig, ax
+
+
+
+def get_layer(key, mdata, layers):
+    key_in_mod = {m: key in mdata.mod[m].var_names for m in mdata.mod}
+    try:
+        layer = [layers[k] for k,v in key_in_mod.items() if v is True][0]
+        if len(layer) == 1:
+            layer = layer[0]
+        return layer
+    except IndexError:
+        print("key not found")
+        return None
+
+# https://stackoverflow.com/questions/24516340/replace-all-occurrences-of-item-in-sublists-within-list
+def subst(lst, val, rep):
+    result = []
+    for item in lst:
+        if type(item) == list:
+            result.append(subst(item, val, rep))
+        elif item == val:
+            result.append(rep)
+        else:
+            result.append(item)
+    return result
+
+def plot_scatters(mdata, features_list, layers_list):
+    layers_listed = [x if type(x) is list else [x] for x in layers_list]
+    layers_listed =   subst(layers_listed, "X", None)
+#     print(layers_listed)
+    fig_dims = [len(x) for x in layers_listed]
+
+    fig, ax = plt.subplots(nrows=fig_dims[0], ncols=fig_dims[1], figsize=(6*fig_dims[1], 6*fig_dims[0]))
+
+    try:
+        ax=ax.ravel()
+    except AttributeError:
+        ax=[ax]
+    for ix, x in enumerate(list(itertools.product(*layers_listed))):
+        print(ix, x)
+        plt_title = "layers:" + " - ".join([x1 if x1 is not None else "X" for x1 in x ])
+        if len(x) == 3:
+            plt_title = plt_title + "\ncolor:" + features_list[2] 
+        mu.pl.scatter(mdata, 
+                      features_list[0],
+                      features_list[1],
+                      color = features_list[2], 
+                      layers=x, show=False,
+                      save=False, ax= ax[ix] 
+                     )
+        ax[ix].set_title(plt_title)
+    
+        # Shrink current axis by 20%
+#         box = ax[ix].get_position()
+#         ax[ix].set_position([box.x0, box.y0, box.width * 0.8, box.height])
+
+#         # Put a legend to the right of the current axis
+#         ax[ix].legend(loc='center left', bbox_to_anchor=(1, 0.5))
+    return fig, ax
+
+

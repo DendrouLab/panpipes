@@ -76,7 +76,7 @@ jupyterlab-pygments==0.2.2
 jupyterlab-widgets==1.1.0
 kiwisolver==1.4.2
 leidenalg==0.8.10
-llvmlite==0.38.1
+# llvmlite==0.38.1
 loompy==3.0.7
 louvain==0.7.1
 Markdown==3.3.7
@@ -85,10 +85,12 @@ matplotlib==3.5.2
 matplotlib-inline==0.1.3
 mistune==0.8.4
 msgpack==1.0.4
-mudata @ git+https://github.com/scverse/mudata@fbfc634e8f17bd70ed67bb8a37951564f16b61e6
+#mudata @ git+https://github.com/scverse/mudata@fbfc634e8f17bd70ed67bb8a37951564f16b61e6
+mudata @ git+https://github.com/scverse/mudata
 multidict==6.0.2
 multipledispatch==0.6.0
-muon @ git+https://github.com/scverse/muon@925fd904d20dd7b9c73c49591df8c032a60a5e09
+#muon @ git+https://github.com/scverse/muon@925fd904d20dd7b9c73c49591df8c032a60a5e09
+muon @ git+https://github.com/scverse/muon
 natsort==8.1.0
 nbclient==0.6.4
 nbconvert==6.5.0
@@ -107,7 +109,7 @@ optax==0.1.2
 packaging==21.3
 pandas==1.4.2
 pandocfilters==1.5.0
-panpipes @ file:///Users/crg/Documents/Projects/github_repos/panpipes
+#panpipes @ file:///Users/crg/Documents/Projects/github_repos/panpipes
 paramiko==2.11.0
 parasail==1.2.4
 parso==0.8.3

@@ -5,26 +5,26 @@
 
 # import numpy as np
 import pandas as pd
+import numpy as np
 import scanpy as sc
 # import scipy.io
-import matplotlib
-matplotlib.use("Agg")
-import matplotlib.pyplot as plt
-plt.ioff()
+# import matplotlib
+# matplotlib.use("Agg")
+# import matplotlib.pyplot as plt
+# plt.ioff()
 import os
 import argparse
-from muon import MuData
-from anndata import AnnData
 import re
 import muon as mu
 
 
 from panpipes.funcs.processing import check_for_bool
+from panpipes.funcs.scmethods import X_is_raw
 
 import sys
 import logging
 L = logging.getLogger()
-L.setLevel(logging.INFO)
+L.setLevel(logging.DEBUG)
 log_handler = logging.StreamHandler(sys.stdout)
 formatter = logging.Formatter('%(asctime)s: %(levelname)s - %(message)s')
 log_handler.setFormatter(formatter)
@@ -51,6 +51,8 @@ parser.add_argument('--fig_dir',
                     help="save plots here")
 parser.add_argument('--exclude_file', default=None,
                     help='')
+parser.add_argument('--exclude', default="exclude",
+                    help='how are genes that need to be excl. from HVG are labeled')
 
 # highly variable genes options
 parser.add_argument('--flavor', default='seurat')
@@ -62,6 +64,7 @@ parser.add_argument("--filter_by_hvg", default=False)
 # regress out options
 parser.add_argument('--regress_out', default=None)
 # scale options
+parser.add_argument('--scale', default=True)
 parser.add_argument('--scale_max_value', default=None)
 # pca options
 parser.add_argument("--n_pcs", default=50)
@@ -71,8 +74,7 @@ parser.set_defaults(verbose=True)
 args, opt = parser.parse_known_args()
 L.info(args)
 
-
-
+# args = argparse.Namespace(input_mudata='test.h5mu', output_logged_mudata=None, output_scaled_mudata='test.h5mu', use_muon=False, fig_dir='figures/', exclude_file='/Users/crg/Documents/Projects/github_repos/sc_pipelines_muon_dev/resources/exclude_genes_HLAIGTR_v1.txt', flavor='seurat_v3', n_top_genes='2000', min_mean=0.0125, max_mean=3, min_disp=0.5, filter_by_hvg='False', regress_out=None, scale_max_value=None, n_pcs='50', color_by='sample_id', verbose=True)
 # sc.settings.verbosity = 3
 # sc.logging.print_header()
 
@@ -86,13 +88,24 @@ sc.set_figure_params(scanpy=True, fontsize=14, dpi=300, facecolor='white', figsi
 mdata = mu.read(args.input_mudata)
 
 # if we have actually loaded an anndata object, make into a mudata
-if isinstance(mdata, AnnData):
-    mdata =  MuData({'rna': mdata})
+if isinstance(mdata, sc.AnnData):
+    mdata =  mu.MuData({'rna': mdata})
 
 adata = mdata['rna']
 
 
-adata.layers['raw_counts'] = adata.X.copy()
+# save raw counts
+if X_is_raw(adata):
+    adata.layers['raw_counts'] = adata.X.copy()
+elif "raw_counts" in adata.layers :
+    L.info("raw_counts layer already exists")
+    adata.X = adata.layers['raw_counts'].copy()
+else:
+    L.error("X is not raw data and raw_counts layer not found")
+    sys.exit("X is not raw data and raw_counts layer not found")
+
+
+
 # Normalise to depth 10k, store raw data, assess and drop highly variable genes, regress mitochondria and count
 
 # sc.pp.highly variabel genes Expects logarithmized data, except when flavor='seurat_v3' in which count data is expected.
@@ -103,47 +116,66 @@ if args.flavor == "seurat_v3":
         raise ValueError("if seurat_v3 is used you must give a n_top_genes value")
         # sc.pp.highly_variable_genes(adata, flavor="seurat_v3",)
     else:
-        sc.pp.highly_variable_genes(adata, flavor="seurat_v3",
-                                    n_top_genes=int(args.n_top_genes))
+        sc.pp.highly_variable_genes(adata, flavor="seurat_v3", n_top_genes=int(args.n_top_genes))
     sc.pp.normalize_total(adata, target_sum=1e4)
     sc.pp.log1p(adata)
 else:
     sc.pp.normalize_total(adata, target_sum=1e4)
     sc.pp.log1p(adata)
+    L.debug(adata.uns['log1p'])
     sc.pp.highly_variable_genes(adata, flavor=args.flavor,
                                 min_mean=float(args.min_mean), max_mean=float(args.max_mean),
                                 min_disp=float(args.min_disp))
+    L.debug(adata.uns['log1p'])
 
 sc.pl.highly_variable_genes(adata,show=False, save ="_genes_highlyvar.png")
 
 
+if isinstance(mdata, mu.MuData):
+    mdata.update()
+
 # exclude hvgs if there is an exclude file
 if args.exclude_file is not None:
-    L.info("exclude genes from hvg")
-    excl = pd.read_csv(args.exclude_file, delimiter='\t')
-    L.info(excl.status.value_counts())
-    L.info("number of hvgs prior to filtering")
-    L.info(adata.var.highly_variable.sum())
-    #adata.var['hvg_exclude'] = [True if gg in excl.gene_id.tolist() else False for gg in adata.var.index]
-    adata.var['hvg_exclude'] = [True if gg in excl.gene_name.tolist() else False for gg in adata.var.index]
-    adata.var.loc[adata.var.hvg_exclude, 'highly_variable']= False
-    L.info("number of hvgs after filtering")
-    L.info(adata.var.highly_variable.sum())
-    sc.pl.highly_variable_genes(adata,show=False, save ="_exclude_genes_highlyvar.png")
+    if os.path.exists(args.exclude_file):
+        L.info("exclude genes from hvg")
+        customgenes = pd.read_csv(args.exclude_file) 
+        custom_cat = list(set(customgenes['group'].tolist()))
+        cat_dic = {}
+        for cc in custom_cat:
+            cat_dic[cc] = customgenes.loc[customgenes["group"] == cc,"feature"].tolist()
+        exclude_action = str(args.exclude)
+        excl = cat_dic[exclude_action]
+        
+    
+        L.info(len(excl))
+        L.info("number of hvgs prior to filtering")
+        L.info(adata.var.highly_variable.sum())
+        adata.var['hvg_exclude'] = [True if gg in excl else False for gg in adata.var.index]
+        L.debug("num to exclude %s" %  (adata.var['hvg_exclude'] & adata.var['highly_variable']).sum() )
+        L.debug(adata)
+        if any(adata.var['hvg_exclude'] & adata.var['highly_variable']):
+            adata.var['highly_variable'].loc[adata.var.hvg_exclude] = False
+            adata.var.loc[adata.var.hvg_exclude, 'highly_variable_rank'] = np.nan
+            
+            L.info("number of hvgs after filtering")
+            L.info(adata.var.highly_variable.sum())
+            sc.pl.highly_variable_genes(adata,show=False, save ="_exclude_genes_highlyvar.png")
 
+if isinstance(mdata, mu.MuData):
+    mdata.update()
+
+L.debug(adata.uns['log1p'])
 # filter by hvgs
 filter_by_hvgs = check_for_bool(args.filter_by_hvg)
 
 if filter_by_hvgs is True:
     adata = adata[:, adata.var.highly_variable]
-    if isinstance(adata, MuData):
-        adata.update()
-
-
-genes = adata.var
-genes['gene_name'] = adata.var.index
-genes.to_csv("filtered_genes.tsv", sep="\t", index=True)
-# save object (has to occur before scaling) 
+    if isinstance(mdata, mu.MuData):
+        mdata.update()
+    genes = adata.var
+    genes['gene_name'] = adata.var.index
+    genes.to_csv("filtered_genes.tsv", sep="\t", index=True)
+ 
 if args.output_logged_mudata is None:
     args.output_logged_mudata = args.input_mudata
 
@@ -157,16 +189,22 @@ else:
 # OPINION: I don't like using raw very much. I'd kinda prefer to use a layer
 # adata.raw = adata # this means that log normalised counts are saved in raw
 adata.layers['logged_counts'] = adata.X.copy()
+L.debug(adata.uns['log1p'])
 # regress out
 if args.regress_out is not None:
     regress_opts = args.regress_out.split(",")
     sc.pp.regress_out(adata, regress_opts)
 
-if args.scale_max_value is not None:
-    sc.pp.scale(adata)
-else:
-    sc.pp.scale(adata, max_value=args.scale_max_value)
 
+if args.scale is True and args.scale_max_value is None:
+    sc.pp.scale(adata)
+elif args.scale is True:
+    sc.pp.scale(adata, max_value=int(args.scale_max_value))
+else:
+    L.info("not scaling data")
+    pass
+
+L.debug(adata.uns['log1p'])
 # run pca
 L.info("running pca")
 
@@ -180,8 +218,6 @@ pca_coords.index = adata.obs_names
 pca_fname = re.sub(".h5ad|.h5mu", "_pca.txt.gz", args.output_scaled_mudata)
 pca_coords.to_csv(pca_fname, sep='\t')
 
-
-
 # do some plots!
 sc.pl.pca_variance_ratio(adata, log=True, n_pcs=int(args.n_pcs), save=".png")
 
@@ -190,7 +226,6 @@ col_variables = args.color_by.split(",")
 #     sc.pl.pca(adata, color=cv, save="_" + cv + ".png")
 
 sc.pl.pca(adata, color=col_variables, save = "_vars.png")
-
 sc.pl.pca_loadings(adata, components="1,2,3,4,5,6", save = ".png")
 sc.pl.pca_overview(adata, save = ".png")
 
@@ -199,3 +234,4 @@ mdata.update()
 # save the scaled adata object
 
 mdata.write(args.output_scaled_mudata)
+L.debug(adata.uns['log1p'])

@@ -1,6 +1,6 @@
 from anndata import AnnData
 # from helpers import gen_adata
-import panpipes.funcs as scp
+import panpipes.funcs as pnp
 from scipy import sparse
 import pytest
 import pandas as pd

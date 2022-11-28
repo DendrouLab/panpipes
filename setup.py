@@ -5,11 +5,10 @@ import os
 import re
 import setuptools
 from setuptools import setup, find_packages, Extension
-# import packaging
 
-from distutils.version import LooseVersion
-if LooseVersion(setuptools.__version__) < LooseVersion('1.1'):
-    print("Version detected:", LooseVersion(setuptools.__version__))
+from packaging.version import Version
+if Version(setuptools.__version__) < Version('1.1'):
+    print("Version detected:", Version(setuptools.__version__))
     raise ImportError(
         "sc_pipelines requires setuptools 1.1 higher")
 

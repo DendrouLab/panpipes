@@ -4,7 +4,10 @@ import numpy as np
 from scipy.sparse import issparse
 from scanpy.get import obs_df as get_obs_df
 from scanpy.pp import normalize_total
+import warnings
+import logging
 from typing import Optional, Literal
+import sys
 import muon as mu
 from muon import MuData
 from anndata import AnnData
@@ -115,6 +118,9 @@ def pseudo_seurat(adata, arg_minpct=0.1, arg_mindiffpct=-float("inf"), arg_logfc
 
 
 def run_neighbors_method_choice(adata, method, n_neighbors, n_pcs, metric, use_rep, nthreads=1):
+    # This works with both Anndata and MuData inputs 
+    # useful if we are dealing with a MuData object but we want to use single rep, e.g.
+    # calculating neighbors on a totalVI latent rep
     if method == "scanpy":
         print("Computing neighbors using scanpy")
         from scanpy.pp import neighbors
@@ -130,18 +136,18 @@ def run_neighbors_method_choice(adata, method, n_neighbors, n_pcs, metric, use_r
         # with parameters from pegasus (for a more exact result).
         # code snippet from Steve Sansom, via COMBAT project
         neighbors(adata,
-                  n_neighbors=int(n_neighbors),
-                  n_pcs=n_pcs,
-                  use_rep=use_rep,
-                  knn=True,
-                  random_state=0,
-                  method='hnsw',
-                  metric=metric,
-                  metric_kwds={"M": 20,
-                               "ef": 200,
-                               "ef_construction": 200},
-                  num_threads=int(nthreads))
-        return adata
+                n_neighbors=int(n_neighbors),
+                n_pcs=n_pcs,
+                use_rep=use_rep,
+                knn=True,
+                random_state=0,
+                method='hnsw',
+                metric=metric,
+                metric_kwds={"M": 20,
+                            "ef": 200,
+                            "ef_construction": 200},
+                num_threads=int(nthreads))
+
 
 def merge_consensus_clust(adata, consensus_clust, ref_col="rough_ref"):
     if ref_col in adata.obs.columns:
@@ -261,11 +267,11 @@ def X_is_raw(adata):
     
 
 def run_adt_normalise(mdata, 
-                      mdata_raw, 
+                      mdata_bg, 
                       method: Literal['dsb', 'clr'] = 'clr',
                       clr_margin: Literal[0, 1] = '0',
                       isotypes=None):
-    # rplace raw counts back in X
+    # rplace bg counts back in X
     # check if integers in mdata['prot'].X
     if X_is_raw(mdata['prot']) is False:
         raise ValueError("mdata['prot'].X does not contain raw counts, cannot normalise")
@@ -273,9 +279,9 @@ def run_adt_normalise(mdata,
         mu.prot.pp.clr(mdata["prot"], inplace=True, axis=int(clr_margin))
         mdata["prot"].layers["clr"] = mdata["prot"].X.copy()
     elif method == "dsb":
-        # check mdata_raw actually contains raw counts
+        # check mdata_bg actually contains raw counts
         mu.prot.pp.dsb(mdata,
-                    mdata_raw, 
+                    mdata_bg, 
                     empty_counts_range=(1.0, 2.7), 
                     isotype_controls=isotypes, 
                     random_state=4)

@@ -80,7 +80,7 @@ def extract_parameter_from_fname(fname, parameter, prefix):
 
 def intersect_obs_by_mod(mdata: MuData, mods:list =None):
     """
-    Subset observations (samples or cells) in-place
+    Subset observations (samples or cells) in-place by intersect
     taking observations present only in modalities listed in mods, or all modalities if mods is None.
     Parameters
     ----------
@@ -101,6 +101,31 @@ def intersect_obs_by_mod(mdata: MuData, mods:list =None):
     common_obs = reduce(np.intersect1d, [mdata[x].obs_names for x in mods])
     for mod in mdata.mod:
         mu.pp.filter_obs(mdata.mod[mod], common_obs)
+    mdata.update_obs()
+    return
+
+
+def setdiff_obs_by_mod(mdata: MuData, x: str, y:str):
+    """
+    Subset observations (samples or cells) in-place by set difference
+    taking observations present only in the mdata[x] and filtering mdata[y] to only contain the obs in x
+    Use case example. You want to filter the rep modality to only include obsnames from rna, but you do not want
+    to filter rna to only contain obs in the rep
+    Parameters
+    ----------
+    mdata: MuData
+            MuData object
+    x:
+    """
+    if mdata.isbacked:
+        warnings.warn(
+            "MuData object is backed. It might be required to re-read the object with `backed=False` to make the intersection work."
+        )
+    
+    # get the intersect between the two mods
+    common_obs = reduce(np.intersect1d, [mdata[x].obs_names for x in [x,y]])
+    # only filter the y mod
+    mu.pp.filter_obs(mdata.mod[y], common_obs)
     mdata.update_obs()
     return
 
@@ -260,11 +285,11 @@ def update_var_index(adata, new_index_col):
     adata.var = adata.var.reset_index().set_index(new_index_col)
 
 
-def concat_adatas(adatas, batch_key, batch_categories, join_type="inner"):
+def concat_adatas(adatas, batch_key, join_type="inner"):
     if isinstance(adatas, list) and len(adatas)!=1:
         # L.info("concatenating ...")
         # pull out the sample names in the correct order for the adaatas list
-        batches = [x.obs.sample_id[0] for x in adatas]
+        batches = [x.obs[batch_key][0] for x in adatas]
         adata = adatas[0].concatenate(adatas[1:], 
                                         batch_key=batch_key, 
                                         batch_categories=batches, 
@@ -276,42 +301,36 @@ def concat_adatas(adatas, batch_key, batch_categories, join_type="inner"):
     return(adata)
 
 
-def concat_mdatas(mdata_list, batch_key, batch_categories, join_type="inner"):
+def concat_mdatas(mdata_list, batch_key, join_type="inner"):
     logging.debug(batch_key)
     if len(mdata_list)!=1:
-        slots_filled = mdata_list[0].mod.keys()
+        slots_filled = set(chain(*[list(m.mod.keys()) for m in mdata_list]))
         logging.debug(slots_filled)
         # need to concatenate each slot separately then recreate mdata
         concat_adatas={}
         for sf in slots_filled:
             logging.debug(sf)
-            adata_list = [x[sf]for x in mdata_list]
+            # extract if modality exists (it's possuible that not all samples have all modalities (thinking specifically of rep))
+            adata_list = [x[sf]for x in mdata_list if sf in x.mod.keys()]
             [x.var_names_make_unique() for x in adata_list]
+            batches = [x.obs[batch_key][0] for x in adata_list]
             concat_adatas[sf] = adata_list[0].concatenate(adata_list[1:],
                                     batch_key=batch_key,
-                                    batch_categories=batch_categories, 
+                                    batch_categories=batches, 
                                     join=join_type)
             
         mdata = MuData(concat_adatas)
         # for sf in slots_filled:
         #     mdata[sf].obs[batch_key] ==concat_adatas[sf].obs[batch_key]
-        # do we want to make sure the assays are the same size at this point? - NO!
-        if mdata.n_obs == mdata['rna'].n_obs:
-            logging.info("all assays have same obs")
-        else:
-            warnings.warn("not all assays have the same obs")
-
-        # get the obs not associatied to a specific assay
-        top_obs = [x.obs for x in mdata_list]
-        top_obs = pd.concat(top_obs)
-        top_obs.index = top_obs.index + '-' + top_obs[batch_key]
-        # for some reason mudata doesn't like this and you lose values when you run mudata.update_obs()
-        #mdata.obs = top_obs
-        # so instead we have to use a merge method
-        mdata.obs = mdata.obs.merge(top_obs, left_index=True, right_index=True, suffixes=[None, "_x"])
-        # drop duplicate columns
-        mdata.obs = mdata.obs.drop(mdata.obs.filter(regex=r'_x$').columns, axis=1)
-
+        
+        # make sure sample id is in the top obs (updated to not put extra rep columns in top obs)
+        # changed to deal with circumstances where a category is missing from one modality
+        all_sample_id_df = mdata.obs.iloc[:,mdata.obs.columns.str.endswith(":sample_id")]
+        # first it needs to not be a category for the merge.
+        all_sample_id_df = all_sample_id_df.apply(lambda x: x.astype('object'))
+        mdata.obs['sample_id']  = all_sample_id_df.fillna('').astype(str).apply(lambda x: ' '.join(set(' '.join(x).split())), axis=1)
+        # then turn it back into a category
+        mdata.obs['sample_id'] = mdata.obs['sample_id'].astype('category')
         return mdata
     else:
         return mdata_list[0]
@@ -322,6 +341,11 @@ def concat_adata_list(adata_list, use_muon, **kwargs):
     else:
         out = concat_adatas(adata_list, **kwargs)
     return out
+
+def dedup(value):
+    words = set(value.split(' '))
+    return ' '.join(words)
+
 
 def intersection(lst1, lst2): 
     lst3 = [value for value in lst1 if value in lst2] 

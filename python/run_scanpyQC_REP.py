@@ -19,6 +19,7 @@ import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
 import argparse
+import pandas as pd
 import muon as mu
 import scirpy as ir
 import matplotlib.pyplot as plt
@@ -50,11 +51,12 @@ parser.add_argument("--clonotype_metrics",
                     help="what metrics to calculate sequence distance metric? \
                     any arguments from scirpy.pp.define_clonotypes as a dict in format'{arg: value}' ")
 args, opt = parser.parse_known_args()
-
+L.info(args)
 mdata = mu.read(args.input_mudata)
-
+rep = mdata['rep']
 # chain qc
-ir.tl.chain_qc(mdata['rep'])
+ir.tl.chain_qc(rep)
+
 # remove nones, so defaults are used
 if args.distance_metrics is not None:
     # remove nones, so defaults are used
@@ -62,8 +64,11 @@ if args.distance_metrics is not None:
     dist_args = {k: v for k, v in dist_args.items() if v}
 else:
     dist_args = {}
+
+L.info("distance args:")
 L.info(dist_args)
-ir.pp.ir_dist(mdata['rep'], **dist_args)
+
+ir.pp.ir_dist(rep, **dist_args)
 
 # pull function arguments from args. 
 if args.clonotype_metrics is not None:
@@ -73,25 +78,32 @@ if args.clonotype_metrics is not None:
 else:
     clonotype_args={}
 # define clonotypes
+L.info("clonotypes args:")
 L.info(clonotype_args)
-ir.tl.define_clonotypes(mdata['rep'], **clonotype_args)
-ir.tl.clonal_expansion(mdata['rep'])
 
-if "BCR" in mdata['rep'].obs['receptor_type'].values:
-    bcr = mdata['rep'][mdata['rep'].obs.receptor_type =="BCR", :].copy()
+ir.tl.define_clonotypes(rep, **clonotype_args)
+ir.tl.clonal_expansion(rep)
+
+    
+category_cols = ['has_ir']
+for cc in category_cols:
+    if pd.api.types.infer_dtype(rep.obs[cc]) != "categorical":
+        rep.obs[cc] = rep.obs[cc].astype('string').astype('category')
+
+
+if "BCR" in rep.obs['receptor_type'].values:
+    bcr = rep[rep.obs.receptor_type =="BCR", :].copy()
 else:
     bcr=None
     
-if "TCR" in mdata['rep'].obs.receptor_type.values:
-    tcr = mdata['rep'][mdata['rep'].obs.receptor_type =="TCR", :].copy()
+if "TCR" in rep.obs.receptor_type.values:
+    tcr = rep[rep.obs.receptor_type =="TCR", :].copy()
 else:
     tcr=None
-    
-
 
 # plot group abundances
 fig, ax = plt.subplots()
-ax = ir.pl.group_abundance(mdata['rep'], groupby="receptor_type", ax=ax)
+ax = ir.pl.group_abundance(rep, groupby="receptor_type", ax=ax)
 fig.savefig(args.figdir +"/barplot_group_abundance_receptor_type.png", bbox_inches="tight")
 
 if bcr is not None:
@@ -102,23 +114,23 @@ if bcr is not None:
 
 if tcr is not None:
     fig, ax = plt.subplots()
-    ax = ir.pl.group_abundance(tcr, groupby="chain_pairing", ax=ax)
+    ax = ir.pl.group_abundance(tcr, groupby="chain_pairing",  ax=ax)
     fig.tight_layout()
     fig.savefig(args.figdir +"/barplot_group_abundance_tcr_receptor_subtype.png", bbox_inches="tight")
 
 # clonal expansion
 
-clone_counts = mdata['rep'].obs.groupby("receptor_type").clone_id.value_counts().to_frame("cell_counts").reset_index()
+clone_counts = rep.obs.groupby("receptor_type").clone_id.value_counts().to_frame("cell_counts").reset_index()
 
 if bcr is not None:
     ax = ir.pl.clonal_expansion(bcr, groupby="sample_id")
     ax.set_title("bcr clonal expansion")
-    plt.savefig(args.figdir +"/barplot_clonal_expansion_bcr.png")
+    plt.savefig(args.figdir +"/barplot_clonal_expansion_bcr.png", bbox_inches="tight" )
 
 if tcr is not None:
     ax = ir.pl.clonal_expansion(tcr, groupby="sample_id")
     ax.set_title("tcr clonal expansion")
-    plt.savefig(args.figdir +"/barplot_clonal_expansion_tcr.png")
+    plt.savefig(args.figdir +"/barplot_clonal_expansion_tcr.png", bbox_inches="tight")
 
 
 L.info("saving anndata and obs in a metadata tsv file")

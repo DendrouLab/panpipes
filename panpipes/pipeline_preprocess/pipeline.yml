@@ -1,0 +1,257 @@
+# Pipeline pipeline_integration.py configuration file
+# ==============================================
+
+# compute resource options
+# ------------------------
+resources:
+  # Number of threads used for parallel jobs
+  # this must be enough memory to load your mudata and do computationally intensive tasks
+  threads_high: 2
+  # this must be enough memory to load your mudata and do computationally light tasks
+  threads_medium: 2
+  # this must be enough memory to load text files and do plotting, requires much less memory than the other two
+  threads_low: 1
+# path to conda env, leave blank if running native or your cluster automatically inherits the login node environment
+condaenv:
+
+# allows for tweaking where the jobs get submitted, in case there is a special queue for long jobs or you have access to a gpu
+# leave as is if you do not want to use the alternative queues
+# also rescomp users need to request gpu access.
+
+# Start
+# --------------------------
+# either one that exists already with
+#tenx_dir:
+#create_anndata: False
+sample_prefix: 
+unfiltered_obj: 
+# if running this on prefiltered datat then
+#1. set unfiltered obj (above) to blank
+#2. rename your filtered file to match, the format PARAMS['sample_prefix'] + '_filt.h5ad'
+#3. put renamed file in the same folder as this yml.
+
+#TO DO this needs to go i think it doesn't make sense to save this file.
+
+# leave empty if you don't want to save an intermediate muData with normalized expression 
+# stored in X for the RNA object
+output_logged_mudata:
+
+modalities:
+  rna:  
+  prot: 
+  rep: 
+  atac: 
+
+# Filtering
+# --------------------------
+# the filtering process in panpipes is sequential as it goes through the filtering dictionary.
+# for each modality, starting with rna, it will first filter on obs and then vars.
+# each modality has a dictionary in the following format. This is fully customisable to any
+# columns in the mudata.obs or var object.
+# When specifying a column name, make sure it exactly matches the column name in the h5mu object.
+# rna:
+  # obs:
+    # min: <-- Any column for which you want to run a minimum filter, 
+     # n_genes_by_counts: 500 <--- i.e. each cell must have a minimum of 500 in the n_genes_by_counts column
+    # max: <-- Any column for which you want to run a maxiumum filter
+     # pct_counts_mt: 20 <-- i.e. each cell may have a maximum of 25 in the pct_counts_mt column
+                              # be careful with any columns named after gene sets. 
+                              # The column will be named based on the gene list input file, so if the mitochondrial genes are in group "mt" 
+                              # as in the example given in the resource file
+                              # then the column will be named "pct_counts_mt" .
+
+    # bool: 
+      # is_doublet: True  <--- if you have any boolean columns you want to filter on, then use this section of the modality dictionary
+                              # in this case any obs['is_doublet'] that are True will be retained in the dataset.
+# this format of
+# obs:
+  # min:
+  # max:
+  # bool
+# var:
+  # min:
+  # max:
+  # bool
+# can be applied to any modality by editing the filtering dictionary below. You are not restricted by the columns given as default.
+
+filtering:
+  run: True
+  # a file containing only barcodes you want to keep, leave blank if not applicable
+  keep_barcodes:
+  #------------------------------------------------------
+  rna:
+  #------------------------------------------------------
+    ## obs filtering: cell level filtering here
+    obs:
+      min:
+        n_genes_by_counts: 
+      max:
+        total_counts: 
+        n_genes_by_counts: 
+        # percent filtering: 
+        # this should be a value between 0 and 100%. 
+        # leave blank or set to 100 to avoid filtering for any of these param
+        pct_counts_mt: 
+        pct_counts_rt:
+        # either one score for all samples e.g. 0.25, 
+        # or a csv file with two columns sample_id, and cut off
+        # less than
+        doublet_scores:
+        #  if you wanted to be more precise i.e. apply a different srublet threshold per sample
+        # you could add a new column to the mudata['rna'].obs with True False values, and list
+        # that column under bool:, you can do this for any modality
+      bool:
+    ## var filtering: (feature) gene level filtering here
+    var:
+      min:
+        n_cells_by_counts: 
+      max:
+        total_counts:
+        n_cells_by_counts:
+  #------------------------------------------------------
+  prot:
+  #------------------------------------------------------
+    ## obs filtering: cell level filtering here
+    obs:  
+      max:
+        total_counts:
+    ##var filtering: (feature) protein level filtering here
+    var:
+      max:
+      min:
+  #------------------------------------------------------
+  atac:
+  #------------------------------------------------------
+    ## obs filtering: cell level filtering here
+    obs:  
+      max:
+    ## var filtering: (feature) fragment level filtering here
+    var:    
+      nucleosome_signal:
+
+# Intersecting barcodes
+# ----------------------
+# set a comma separated list where you want to keep only the intersection of barcodes. e.g. rna,prot 
+intersect_mods: 
+
+
+# ------------
+# downsampling
+# ------------
+# how many cells to downsample to, leave blank to keep all cells.
+downsample_n: 
+# if we want to equalise by dataset or sample_id then specifiy a column in obs
+# then the data will be subset to n cells **per** downsample_col value.
+downsample_col: 
+#  which modalities do we want to subsample
+# comma separated string e.g. rna,prot
+# if more than 1 modality is added then these will be intersected.
+downsample_mods: 
+
+# ------------
+## plotting vars
+# ------------
+plotqc:
+  # use these categorical variables to plot/split by and count the cells
+  grouping_var: sample_id
+  # use these continuous variables to plot gradients and distributions
+  rna_metrics: pct_counts_mt,pct_counts_rp,pct_counts_hb,pct_counts_ig,doublet_scores
+  prot_metrics: total_counts,log1p_total_counts,n_adt_by_counts,pct_counts_isotype
+  atac_metrics: 
+  rep_metrics: 
+
+
+# RNA Normalisation
+# --------------------------------------------------------------------------------------------------------
+# hvg_flavour options include "seurat", "cell_ranger", "seurat_v3", default; "seurat"
+# for dispersion based methods "seurat" and "cell_ranger", you can specify parameters: min_mean, max_mean, min_disp
+# for "seurat_v3" a different method is used, a you specify how many variavle genes to find.
+# If you specify n_top_genes, then the other paramteres are nulled.
+# details: https://scanpy.readthedocs.io/en/stable/api/scanpy.pp.highly_variable_genes.html
+hvg:
+  # there is a defaul exclusions file for immune cells in sc_pipelines/resources/exclude_genes_HLAIGTR_v1.txt
+  # examine this to see what format is expected, if you want to use this file set the parameter to "default
+  exclude: default
+  flavor: seurat_v3 # "seurat", "cell_ranger", "seurat_v3"
+  n_top_genes: 2000
+  min_mean:
+  max_mean:
+  min_disp:
+  # if you want to filter the scaled object by hvgs (essential for large datasets) then set filter to True
+  filter: False
+
+# Regression variables, what do you want to regress out, leave blank if nothing
+# I recommend not regressing out unless you have good reason to.
+regress_variables:
+
+# Scaling
+# This scaling has the effect that all genes are weighted equally for downstream analysis. 
+# discussion from Leucken et al Best Practices paper: https://doi.org/10.15252/msb.20188746
+# "There is currently no consensus on whether or not to perform normalization over genes. 
+# While the popular Seurat tutorials (Butler et al, 2018) generally apply gene scaling, 
+# the authors of the Slingshot method opt against scaling over genes in their tutorial (Street et al, 2018). 
+# The preference between the two choices revolves around whether all genes should be weighted equally for downstream analysis, 
+# or whether the magnitude of expression of a gene is an informative proxy for the importance of the gene."
+run_scale: True
+# scale, clip values as per: https://scanpy.readthedocs.io/en/stable/api/scanpy.pp.scale.html
+scale_max_value:
+
+
+# run pca upstream correction methods.  
+pca:
+  scree_n_pcs: 50
+  color_by: sample_id
+
+
+# Protein (ADT) normalisation
+# --------------------------------------------------------------------------------------------------------
+prot:
+  # comma separated string of normalisation options
+  # options: dsb,clr 
+  # more details in this vignette https://muon.readthedocs.io/en/latest/omics/citeseq.html
+  # dsb https://muon.readthedocs.io/en/latest/api/generated/muon.prot.pp.dsb.html
+  # clr https://muon.readthedocs.io/en/latest/api/generated/muon.prot.pp.clr.html
+  normalisation_methods: clr,dsb
+  # the normalised matrices are stored in layers called 'clr' and 'dsb', along with a layer called 'raw_counts' 
+  # if you choose to run both then 'dsb' is stored in X as default.
+  # In downstream visualisation, you can either specify the layer, or take the default.
+
+  # CLR parameters:
+  # margin determines whether you normalise per cell (as you would RNA norm), 
+  # or by feature (recommended, due to the variable nature of adts). 
+  # CLR margin 0 is recommended for informative qc plots in this pipeline
+  # 0 = normalise colwise (per feature)
+  # 1 = normalise rowwise (per cell)
+  clr_margin: 0
+
+  # DSB parameters:
+   # you must specify the path to the background h5mu created in pipeline qc_mm in order to run dsb.
+  background_obj:
+ # quantile clipping, even with normalisation, 
+  # some cells get extreme outliers which can be clipped as discussed https://github.com/niaid/dsb
+  # maximum value will be set at the value of the 99.5% quantile, applied per feature
+  # note that this feature is in the default muon mu.pp.dsb code, but manually implemented in this code.
+  quantile_clipping: True
+  
+  # which normalisation method to be store in the X slot. If you choose to run more than one normalisation method,
+  # which one to you want to store in the X slot, if not specified 'dsb' is the default when run.
+  store_as_X: 
+
+  # do you want to save the prot normalised assay additionally as a txt file:
+  save_norm_prot_mtx: False
+
+# ATAC preprocessing and normalisation
+# --------------------------
+atac:
+  binarize: False
+  normalize: TFIDF
+  TFIDF_flavour: signac
+  # leave the below blank to use defaults
+  min_mean:
+  max_mean:
+  min_disp:
+  # which dimred to use
+  dimred: PCA, LSI
+  # which dimension to exclude from further processing (sometimes useful to remove PC/LSI_1  if it's associated to tech factors)
+  # leave blank to retain all 
+  dim_remove: 1

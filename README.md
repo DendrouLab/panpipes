@@ -1,8 +1,4 @@
-# Panpipes, pielines for multimodal single cell analyses
-(work in progress)
-
-Maintained by Charlotte Rich-Griffin and Fabiola Curion
-Contributors: Charlotte Rich-Griffin, Fabiola Curion, Tom Thomas
+# Dendrou group single cell pipelines 
 
 ## Table of contents
 
@@ -14,15 +10,14 @@ Contributors: Charlotte Rich-Griffin, Fabiola Curion, Tom Thomas
     - [Conda environments](#conda-environments)
 - [Running the complete pipeline](#running-the-complete-pipeline)
     - [QC](#qc)
-    - [filtering](#filtering)
-    <!-- - [Integration](#integration) 
-    - [Clustering](#clustering) -->
+    - [Integration](#integration)
+    - [Clustering](#clustering)
 - [Inputs to QC pipelines](#inputs-to-qc-pipelines)
   - [Demultiplexing data](#demultiplexing-data)
-<!-- - [Running pipeline modules separately](#running-pipeline-modules-separately)
+- [Running pipeline modules separately](#running-pipeline-modules-separately)
   - [Integration](#integration-1)
   - [Clustering](#clustering-1)
-- [Future Plans](#future-plans) -->
+- [Future Plans](#future-plans)
 
 
 
@@ -30,16 +25,13 @@ Contributors: Charlotte Rich-Griffin, Fabiola Curion, Tom Thomas
 These pipelines use cgat-core pipeline software
 
 Available pipelines:
-- qc_mm 
-- filtering
-
-Coming very soon!
+- qc_mm (recommended qc pipeline)
 - integration
 - clustering
-- label transfer
 
 
-
+Maintained by Charlotte Rich-Griffin and Fabiola Curion
+Contributors: Charlotte Rich-Griffin, Tom Thomas and Fabiola Curion
 
 # Installation
 
@@ -78,8 +70,9 @@ Download and install this repo
 ```
 git clone https://github.com/DendrouLab/sc_pipelines
 cd sc_pipelines
-pip install -r requirements.txt
-pip install .
+pip install --upgrade pip
+pip install -r requirements.txt # installs required python packages
+python setup.py develop
 ```
 The pipelines are now installed as a local python package.
 
@@ -172,14 +165,9 @@ Run each of pipeline qc, integration and clustering in separate folders.
 2. Run complete qc pipeline with `sc_pipelines qc_mm make full `
 3. Use outputs to decide filtering thresholds. Note that the actual filtering occurs in the first step of integration pipeline
 
-### Filtering
-1. Generate config file (`sc_pipelines qc_mm config`) and inputs 
-2. Run complete qc pipeline with `sc_pipelines filtering make full `
-
-Coming soon Integration, clustering and label transfer!!
-<!--  
 ### Integration
 1. In a new folder, generate config file for integration, `sc_pipelines integration config` and edit the pipeline.yml file.
+2. Run `sc_pipelines integration make plot_pcas` and assess the post filtering qc plots, and pca outputs
 3. Run batch correction with `sc_pipelines integration make batch_correction` (or run steps 2 and 3 in one go with `sc_pipelines integration make full`)
 4. Use outputs to decide on the best batch correction method
 5. Edit the integration pipeline yml with your preferred batch correction 
@@ -195,7 +183,7 @@ TODO: update for multimodal
 (Again you could run all the clustering pipeline at once with `sc_pipelines clustering make full` but by making decisions along the way you'll reduce the computation and file size burden of the pipeline) 
 
 
--->
+
 # Inputs to QC pipelines
 
 For qc_mm the minimum required columns are
@@ -236,7 +224,7 @@ Note that if you are combining multiple datasets from different sources the fina
 from all the data sets. For example if the mitochondrial genes have been excluded from one of the inputs, they will be excluded from the final data set.
 In this case it might be wise to run qc separately on each dataset, and them merge them together to create on h5ad file to use as input for
 integration pipeline.
-<!--  
+
 # Running pipeline modules separately
 
 For circumstances where you arelady have a qc'd anndata object
@@ -283,8 +271,8 @@ If you want to use a specific batch correction then fit it into the above minima
 
 (It's probably easier to just run integration again with `filtering_run: False`)
 
--->
 
 
-CRG 2022-06-06
+
+CRG 2022-03-14
 

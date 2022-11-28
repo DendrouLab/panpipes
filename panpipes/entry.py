@@ -1,18 +1,18 @@
 # entry .py script adapted from COMBAT clusthub repo, originally by Adam Cribbs
 
 '''
-Scanpy pipelines - Single Cell analysis workflows for Dendrou group analyses
+Panpipes - Single Cell analysis workflows 
 ============================================================
 
 Please remember to acknowledge Charlotte Rich-Griffin and Fabiola Curion 
 if you use this pipeline in your research
 
 To use a specific workflow, type::
-    sc_pipelines <workflow> [workflow options] [workflow arguments]
+    panpipes <workflow> [workflow options] [workflow arguments]
 For this message and a list of available keywords type::
-    sc_pipelines --help
+    panpipes --help
 To get help for a specify workflow, type::
-    sc_pipelines <workflow> --help
+    panpipes <workflow> --help
 '''
 
 import os
@@ -72,10 +72,16 @@ def main(argv=None):
         for path in paths:
             pipelines.extend(glob.glob(os.path.join(path, "pipeline_*.py")))
         print((globals()["__doc__"]))
-        print("The list of available pipelines are:\n")
-        pipelines_list = sorted([os.path.basename(x)[len("pipeline_"):-len(".py")] for x in pipelines])
+        print("The list of available workflows are:\n")
+        # pipelines_list = sorted([os.path.basename(x)[len("pipeline_"):-len(".py")] for x in pipelines])
+        pipelines_list = ['1. "qc_mm" : for the ingestion of data and computation of QC metrics' , 
+                          '2. "preprocess" : for filtering and normalising of each modality',
+                          '3. "integration" : integrate and batch correction using  single and multimodal methods', 
+                          '4. "clustering" : cell clustering on single modalities', 
+                          '5. "refmap" : transfer scvi-tools models from published data to your data', 
+                          '6. "vis" : visualise metrics from other pipelines in context of experiment metadata']
         print("{}\n".format(
-            printListInColumns(pipelines_list, 2)))
+            printListInColumns(pipelines_list,1)))
         return
 
     command = argv[1]
