@@ -1,5 +1,9 @@
 # Panpipes - multimodal single cell pipelines 
 
+Maintained by Charlotte Rich-Griffin and Fabiola Curion
+
+Contributors: Charlotte Rich-Griffin, Tom Thomas and Fabiola Curion
+
 ## Table of contents
 - [Introduction](#introduction)
 - [Installation](#installation)
@@ -27,8 +31,7 @@ Available pipelines:
 - clustering
 
 
-Maintained by Charlotte Rich-Griffin and Fabiola Curion
-Contributors: Charlotte Rich-Griffin, Tom Thomas and Fabiola Curion
+
 
 # Installation
 
