@@ -1,9 +1,6 @@
 # Panpipes - multimodal single cell pipelines 
 
 ## Table of contents
-
-- [Panpipes single cell pipelines](#Panpipes - multimodal single cell pipelines)
-  - [Table of contents](#table-of-contents)
 - [Introduction](#introduction)
 - [Installation](#installation)
 - [General principles for running pipelines](#general-principles-for-running-pipelines)
