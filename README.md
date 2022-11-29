@@ -29,7 +29,7 @@ See [installation instrcutions here](https://github.com/DendrouLab/panpipes/blob
 
 Run the pipeline from the login node on your server, it will use in built the job submission system to submit jobs.
 
-Navigate to the directory where you want to run your analysis (this should not be within the dendrou_pipelines folder, or your virutal environment folder)
+Navigate to the directory where you want to run your analysis (this should not be within the panpipes folder, or your virutal environment folder)
 
 ```
 mkdir data_dir/
