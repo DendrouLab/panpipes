@@ -26,6 +26,11 @@ To include sample level metadata, you can add additional columns to the submissi
 e.g Tissue and Diagnoisis columns in `resources/sample_file_qc_mm.txt`
 You will also need to list which additional metadata columns you want to include in your data object in the pipeline.yml for qc_mm.
 
+## Additional file inputs for ATAC data
+Include additional files from the cellranger outputs under the following three columns:
+- fragments_file 
+- peak_annotation_file
+- per_barcode_metrics_file
 
 ## Supported input filetypes:
 
