@@ -38,7 +38,6 @@ we include an environment.yml for a conda environment tested on all the pipeline
 ```
 git clone https://github.com/DendrouLab/panpipes
 cd panpipes
-pip install -r requirements.txt # installs required python packages
 pip install .
 ```
 
