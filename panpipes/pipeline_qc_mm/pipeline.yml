@@ -65,11 +65,11 @@ concat_join_type: inner
 # Leave empty (None) or False to signal this modality is not in the experiment.
 
 modalities:
-  rna: 
-  prot: 
-  bcr:
-  tcr: 
-  atac: 
+  rna: False
+  prot: False
+  bcr: False
+  tcr: False
+  atac: False
 
 #---------------------------------------
 # Integrating barcode level data e.g. 
