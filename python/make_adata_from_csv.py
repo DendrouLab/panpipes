@@ -144,7 +144,7 @@ if 'prot' in mdata.mod.keys():
                 # create new modality for hashing
                 mdata.mod["hashing_ab"]=mdata["prot"][:, mdata["prot"].var["hashing_ab"]]
                 # subset old modality to remove hashing
-                mdata["prot"][:, ~mdata["prot"].var["hashing_ab"]]
+                mdata.mod['prot'] = mdata["prot"][:, ~mdata["prot"].var["hashing_ab"]]
         except FileNotFoundError:
             warnings.warn("protein metadata table not found")
     mdata.update()
