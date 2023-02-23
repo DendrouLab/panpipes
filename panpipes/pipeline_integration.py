@@ -170,8 +170,8 @@ def run_harmony(outfile):
         cmd += " --neighbors_method %s" % neighbor_params['method']
     if neighbor_params['metric'] is not None:
         cmd += " --neighbors_metric %s" % neighbor_params['metric']
-    if neighbor_params['ndims'] is not None:
-        cmd += " --neighbors_ndims %s"  % neighbor_params['ndims']
+    if neighbor_params['npcs'] is not None:
+        cmd += " --neighbors_n_pcs %s"  % neighbor_params['npcs']
     if neighbor_params['k'] is not None:
         cmd += " --neighbors_k %s" % neighbor_params['k']
     cmd += " > logs/rna_harmony.log " 
@@ -336,8 +336,8 @@ def run_harmony_prot( outfile):
         cmd += " --neighbors_method %s" % neighbor_params['method']
     if neighbor_params['metric'] is not None:
         cmd += " --neighbors_metric %s" % neighbor_params['metric']
-    if neighbor_params['ndims'] is not None:
-        cmd += " --neighbors_ndims %s"  % neighbor_params['ndims']
+    if neighbor_params['npcs'] is not None:
+        cmd += " --neighbors_n_pcs %s"  % neighbor_params['npcs']
     if neighbor_params['k'] is not None:
         cmd += " --neighbors_k %s" % neighbor_params['k']
     cmd += " > logs/prot_harmony.log " 
@@ -437,8 +437,8 @@ def run_harmony_atac( outfile):
         cmd += " --neighbors_method %s" % neighbor_params['method']
     if neighbor_params['metric'] is not None:
         cmd += " --neighbors_metric %s" % neighbor_params['metric']
-    if neighbor_params['ndims'] is not None:
-        cmd += " --neighbors_ndims %s"  % neighbor_params['ndims']
+    if neighbor_params['npcs'] is not None:
+        cmd += " --neighbors_n_pcs %s"  % neighbor_params['npcs']
     if neighbor_params['k'] is not None:
         cmd += " --neighbors_k %s" % neighbor_params['k']
     cmd += " > logs/atac_harmony.log " 

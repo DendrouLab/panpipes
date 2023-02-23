@@ -121,7 +121,7 @@ for kmod in dict_graph.keys():
         run_neighbors_method_choice(tmp.mod[kmod], 
                 method=pkmod['method'], 
                 n_neighbors=int(pkmod['k']), 
-                n_pcs=min(int(pkmod['ndims']), mdata.var.shape[0]-1), #this should be the # rows of var, not obs
+                n_pcs=min(int(pkmod['npcs']), mdata.var.shape[0]-1), #this should be the # rows of var, not obs
                 metric=pkmod['metric'], 
                 #does this throw an error if no PCA for any single mod is stored?
                 use_rep=repuse,

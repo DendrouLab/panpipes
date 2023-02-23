@@ -91,7 +91,7 @@ rna:
   #   -if Harmony is the method of choice, it will use these components to create a corrected dim red.)
   # the maximum number of dims for neighbors calculation can only only be lower or equal to the total number of dims for PCA or Harmony
   # note: scvelo default is 30
-    ndims: 30
+    npcs: 30
     # number of neighbours
     k: 30
     # metric: euclidean | cosine

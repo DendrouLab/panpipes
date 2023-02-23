@@ -39,8 +39,8 @@ parser.add_argument('--harmony_npcs', default=30,
                     help="npcs for running harmony")        
 parser.add_argument('--sigma_val', default=0.1,
                     help="sigma")
-parser.add_argument('--neighbors_ndims', default=30,
-                    help="number of dims for neighbors calculation")
+parser.add_argument('--neighbors_n_pcs', default=30,
+                    help="n_pcs")
 parser.add_argument('--neighbors_method',
                     help="neighbours method, scanpy or hnsw")
 parser.add_argument('--neighbors_k',
@@ -97,10 +97,10 @@ adjusted_pcs = pd.DataFrame(ho.Z_corr).T
 adata.obsm['X_harmony']=adjusted_pcs.values
 L.info("harmony co-ords derived")
 
-if int(args.neighbors_ndims) >adata.obsm['X_harmony'].shape[1]:
+if int(args.neighbors_n_pcs) >adata.obsm['X_harmony'].shape[1]:
     L.warn(f"N Dims is larger than X_harmony dimensions, reducing n Dims to  {adata.obsm['X_harmony'].shape[1] -1}")
 
-n_pcs= min(int(args.neighbors_ndims), adata.obsm['X_harmony'].shape[1]-1)
+n_pcs= min(int(args.neighbors_n_pcs), adata.obsm['X_harmony'].shape[1]-1)
 
 # run neighbours and umap 
 run_neighbors_method_choice(adata, 
