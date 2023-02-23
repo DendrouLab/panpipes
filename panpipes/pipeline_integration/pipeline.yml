@@ -127,7 +127,7 @@ prot:
     #   -if no correction is applied, PCA will be calculated and used to run UMAP and clustering on
     #   -if Harmony is the method of choice, it will use these components to create a corrected dim red.)
     # note: scvelo default is 30
-    ndims: 30
+    npcs: 30
     # number of neighbours
     k: 30
     # metric: euclidean | cosine
@@ -162,7 +162,7 @@ atac:
     #   -if no correction is applied, PCA will be calculated and used to run UMAP and clustering on
     #   -if Harmony is the method of choice, it will use these components to create a corrected dim red.)
     # note: scvelo default is 30
-    ndims: 30
+    npcs: 30
     # number of neighbours
     k: 30
     # metric: euclidean | cosine
