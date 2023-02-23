@@ -66,8 +66,8 @@ rna:
     exclude_mt_genes: True
     mt_column: mt
     model_args:
-        nlayers: 
-        nlatent:
+        n_layers: 
+        n_latent:
         gene_likelihood: zinb
     training_args:
         max_epochs: 400
