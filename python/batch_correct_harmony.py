@@ -98,7 +98,7 @@ adata.obsm['X_harmony']=adjusted_pcs.values
 L.info("harmony co-ords derived")
 
 if int(args.neighbors_n_pcs) >adata.obsm['X_harmony'].shape[1]:
-    L.warn(f"N Dims is larger than X_harmony dimensions, reducing n Dims to  {adata.obsm['X_harmony'].shape[1] -1}")
+    L.warn(f"N PCs is larger than X_harmony dimensions, reducing n PCs to  {adata.obsm['X_harmony'].shape[1] -1}")
 
 n_pcs= min(int(args.neighbors_n_pcs), adata.obsm['X_harmony'].shape[1]-1)
 
