@@ -35,10 +35,12 @@ parser.add_argument('--integration_col',
                     help='')
 parser.add_argument('--n_threads', default=1,
                     help="num threads to use for neighbor computations")
+parser.add_argument('--harmony_npcs', default=30,
+                    help="npcs for running harmony")        
 parser.add_argument('--sigma_val', default=0.1,
                     help="sigma")
-parser.add_argument('--neighbors_n_pcs',
-                    help="n_pcs")
+parser.add_argument('--neighbors_ndims', default=30,
+                    help="number of dims for neighbors calculation")
 parser.add_argument('--neighbors_method',
                     help="neighbours method, scanpy or hnsw")
 parser.add_argument('--neighbors_k',
@@ -73,7 +75,7 @@ if len(columns)>1:
     adata.obs["comb_columns"] = adata.obs["comb_columns"].astype("category")
     # run harmony
 
-    ho = hm.run_harmony(adata.obsm['X_pca'][:,0:int(args.neighbors_n_pcs)], adata.obs, ["comb_columns"], 
+    ho = hm.run_harmony(adata.obsm['X_pca'][:,0:int(args.harmony_npcs)], adata.obs, ["comb_columns"], 
                                        sigma = float(args.sigma_val), verbose=True,max_iter_kmeans=30, 
                                        max_iter_harmony=40)
 
@@ -81,7 +83,7 @@ else:
     # make sure that batch is a categorical
     adata.obs[args.integration_col] = adata.obs[args.integration_col].astype("category")
     # run harmony
-    ho = hm.run_harmony(adata.obsm['X_pca'][:,0:int(args.neighbors_n_pcs)],
+    ho = hm.run_harmony(adata.obsm['X_pca'][:,0:int(args.harmony_npcs)],
                         adata.obs,
                         [args.integration_col],
                         sigma=float(args.sigma_val),
@@ -95,10 +97,10 @@ adjusted_pcs = pd.DataFrame(ho.Z_corr).T
 adata.obsm['X_harmony']=adjusted_pcs.values
 L.info("harmony co-ords derived")
 
-if int(args.neighbors_n_pcs) >adata.obsm['X_harmony'].shape[1]:
-    L.warn(f"N PCs is larger than X_harmony dimensions, reducing n PCs to  {adata.obsm['X_harmony'].shape[1] -1}")
+if int(args.neighbors_ndims) >adata.obsm['X_harmony'].shape[1]:
+    L.warn(f"N Dims is larger than X_harmony dimensions, reducing n Dims to  {adata.obsm['X_harmony'].shape[1] -1}")
 
-n_pcs= min(int(args.neighbors_n_pcs), adata.obsm['X_harmony'].shape[1]-1)
+n_pcs= min(int(args.neighbors_ndims), adata.obsm['X_harmony'].shape[1]-1)
 
 # run neighbours and umap 
 run_neighbors_method_choice(adata, 

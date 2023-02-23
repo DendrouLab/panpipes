@@ -54,9 +54,11 @@ rna:
   #-----------------------------
   # Harmony args
   #-----------------------------
+  harmony:
   # sigma value, used by Harmony
-  sigma: 0.1 
-  harmony_npcs: 30
+    sigma: 0.1 
+  # number of pcs, used by Harmony
+    npcs: 30
   #-----------------------------
   # SCVI args
   #-----------------------------
@@ -64,8 +66,8 @@ rna:
     exclude_mt_genes: True
     mt_column: mt
     model_args:
-        n_layers: 
-        n_latent:
+        nlayers: 
+        nlatent:
         gene_likelihood: zinb
     training_args:
         max_epochs: 400
@@ -87,8 +89,9 @@ rna:
   # number of Principal Components to calculate for neighbours and umap:
   #   -if no correction is applied, PCA will be calculated and used to run UMAP and clustering on
   #   -if Harmony is the method of choice, it will use these components to create a corrected dim red.)
+  # the maximum number of dims for neighbors calculation can only only be lower or equal to the total number of dims for PCA or Harmony
   # note: scvelo default is 30
-    npcs: 30
+    ndims: 30
     # number of neighbours
     k: 30
     # metric: euclidean | cosine
@@ -111,9 +114,11 @@ prot:
   #----------------------------
   # Harmony args
   #-----------------------------
+  harmony:
   # sigma value, used by Harmony
-  sigma: 0.1 #prot_sigma
-  harmony_npcs: 30
+    sigma: 0.1 
+  # number of pcs, used by Harmony
+    npcs: 30
   #----------------------------›
   # find neighbour parameters
   #-----------------------------
@@ -122,7 +127,7 @@ prot:
     #   -if no correction is applied, PCA will be calculated and used to run UMAP and clustering on
     #   -if Harmony is the method of choice, it will use these components to create a corrected dim red.)
     # note: scvelo default is 30
-    npcs: 30
+    ndims: 30
     # number of neighbours
     k: 30
     # metric: euclidean | cosine
@@ -144,9 +149,11 @@ atac:
   #----------------------------
   # Harmony args
   #-----------------------------
+  harmony:
   # sigma value, used by Harmony
-  sigma: 0.1 #prot_sigma
-  harmony_npcs: 30
+    sigma: 0.1 
+  # number of pcs, used by Harmony
+    npcs: 30
   #----------------------------
   # find neighbour parameters
   #-----------------------------
@@ -155,7 +162,7 @@ atac:
     #   -if no correction is applied, PCA will be calculated and used to run UMAP and clustering on
     #   -if Harmony is the method of choice, it will use these components to create a corrected dim red.)
     # note: scvelo default is 30
-    npcs: 30
+    ndims: 30
     # number of neighbours
     k: 30
     # metric: euclidean | cosine
