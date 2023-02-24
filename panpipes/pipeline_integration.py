@@ -164,7 +164,9 @@ def run_harmony(outfile):
     if harmony_params['npcs'] is not None:
         cmd += " --harmony_npcs %s" % harmony_params['npcs']
     if harmony_params['sigma'] is not None:
-        cmd += " --sigma_val %s" % harmony_params['sigma']    
+        cmd += " --sigma_val %s" % harmony_params['sigma'] 
+    if harmony_params['theta'] is not None:
+        cmd += " --theta_val %s" % harmony_params['theta']       
     neighbor_params = PARAMS['rna']['neighbors']
     if neighbor_params['method'] is not None:
         cmd += " --neighbors_method %s" % neighbor_params['method']
@@ -331,6 +333,8 @@ def run_harmony_prot( outfile):
         cmd += " --harmony_npcs %s" % harmony_params['npcs']
     if harmony_params['sigma'] is not None:
         cmd += " --sigma_val %s" % harmony_params['sigma'] 
+    if harmony_params['theta'] is not None:
+        cmd += " --theta_val %s" % harmony_params['theta']   
     neighbor_params = PARAMS['prot']['neighbors']
     if neighbor_params['method'] is not None:
         cmd += " --neighbors_method %s" % neighbor_params['method']
@@ -432,6 +436,8 @@ def run_harmony_atac( outfile):
         cmd += " --harmony_npcs %s" % harmony_params['npcs']
     if harmony_params['sigma'] is not None:
         cmd += " --sigma_val %s" % harmony_params['sigma'] 
+    if harmony_params['theta'] is not None:
+        cmd += " --theta_val %s" % harmony_params['theta']   
     neighbor_params = PARAMS['atac']['neighbors']
     if neighbor_params['method'] is not None:
         cmd += " --neighbors_method %s" % neighbor_params['method']

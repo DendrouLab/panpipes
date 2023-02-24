@@ -57,6 +57,8 @@ rna:
   harmony:
   # sigma value, used by Harmony
     sigma: 0.1 
+  # theta value used by Harmony, default is 1
+    theta: 1.0
   # number of pcs, used by Harmony
     npcs: 30
   #-----------------------------
@@ -117,6 +119,8 @@ prot:
   harmony:
   # sigma value, used by Harmony
     sigma: 0.1 
+  # theta value used by Harmony, default is 1
+    theta: 1.0
   # number of pcs, used by Harmony
     npcs: 30
   #----------------------------›
@@ -152,6 +156,8 @@ atac:
   harmony:
   # sigma value, used by Harmony
     sigma: 0.1 
+  # theta value used by Harmony, default is 1
+    theta: 1.0
   # number of pcs, used by Harmony
     npcs: 30
   #----------------------------
