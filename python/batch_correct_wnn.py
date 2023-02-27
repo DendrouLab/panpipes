@@ -85,8 +85,8 @@ dict_graph = {}
 for x in wnn_params_bc.keys():
     dict_graph[x] = {}
     if wnn_params_bc[x] is not None:
-        dict_graph[x]["obsm"] = "X_" + wnn_params_bc[x].lower()
-        dict_graph[x]["anndata"] = "tmp/" + wnn_params_bc[x] + "_scaled_adata_" + x +".h5ad"
+        dict_graph[x]["obsm"] = "X_" + wnn_params_bc[x]
+        dict_graph[x]["anndata"] = "tmp/" + wnn_params_bc[x].lower() + "_scaled_adata_" + x +".h5ad"
     else: 
         dict_graph[x]["obsm"] = None
 
