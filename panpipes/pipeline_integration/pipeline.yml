@@ -273,8 +273,11 @@ multimodal:
     # run wnn on batch corrected unimodal data, set each of the modalities you want to use to calc WNN to ONE method.
     # leave to None and it will default to de novo calculation of neighbours on non corrected data for that modality using specified params 
     batch_corrected:
+      # options are: "bbknn", "scVI", "harmony", "scanorama"
       rna: None
+      # options are "harmony", "bbknn"
       prot: None
+      # options are "harmony"
       atac: None 
     # please use anchors (&) and scalars (*) in the relevant place
     # i.e. &rna_neighbors will be called by *rna_neighbors where referenced
