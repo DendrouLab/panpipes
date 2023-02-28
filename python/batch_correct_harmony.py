@@ -35,9 +35,13 @@ parser.add_argument('--integration_col',
                     help='')
 parser.add_argument('--n_threads', default=1,
                     help="num threads to use for neighbor computations")
+parser.add_argument('--harmony_npcs', default=30,
+                    help="npcs for running harmony")        
 parser.add_argument('--sigma_val', default=0.1,
                     help="sigma")
-parser.add_argument('--neighbors_n_pcs',
+parser.add_argument('--theta_val', default=1.0,
+                    help="theta")                   
+parser.add_argument('--neighbors_n_pcs', default=30,
                     help="n_pcs")
 parser.add_argument('--neighbors_method',
                     help="neighbours method, scanpy or hnsw")
@@ -73,18 +77,19 @@ if len(columns)>1:
     adata.obs["comb_columns"] = adata.obs["comb_columns"].astype("category")
     # run harmony
 
-    ho = hm.run_harmony(adata.obsm['X_pca'][:,0:int(args.neighbors_n_pcs)], adata.obs, ["comb_columns"], 
-                                       sigma = float(args.sigma_val), verbose=True,max_iter_kmeans=30, 
+    ho = hm.run_harmony(adata.obsm['X_pca'][:,0:int(args.harmony_npcs)], adata.obs, ["comb_columns"], 
+                                       sigma = float(args.sigma_val),theta = float(args.theta_val),verbose=True,max_iter_kmeans=30, 
                                        max_iter_harmony=40)
 
 else:
     # make sure that batch is a categorical
     adata.obs[args.integration_col] = adata.obs[args.integration_col].astype("category")
     # run harmony
-    ho = hm.run_harmony(adata.obsm['X_pca'][:,0:int(args.neighbors_n_pcs)],
+    ho = hm.run_harmony(adata.obsm['X_pca'][:,0:int(args.harmony_npcs)],
                         adata.obs,
                         [args.integration_col],
                         sigma=float(args.sigma_val),
+                        theta = float(args.theta_val),
                         verbose=True,max_iter_kmeans=30,
                         max_iter_harmony=40)
 

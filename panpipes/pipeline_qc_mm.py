@@ -285,9 +285,9 @@ def concat_bg_mudatas(infiles, outfile):
         """
     if PARAMS['metadatacols'] is not None and PARAMS['metadatacols'] != "":
         cmd += " --metadatacols  %(metadatacols)s"
-    if PARAMS["barcode_mtd_include"] is True:
-        cmd += " --barcode_mtd_df %(barcode_mtd_path)s"
-        cmd += " --barcode_mtd_metadatacols %(barcode_mtd_metadatacols)s"
+   # if PARAMS["barcode_mtd_include"] is True:
+   #     cmd += " --barcode_mtd_df %(barcode_mtd_path)s"
+    #    cmd += " --barcode_mtd_metadatacols %(barcode_mtd_metadatacols)s"
     cmd += " > logs/concat_bg_mudatas.log"
     job_kwargs["job_threads"] = PARAMS['resources_threads_high']
     P.run(cmd, **job_kwargs)

@@ -160,6 +160,13 @@ def run_harmony(outfile):
      --modality rna
      """
     # cannot use the normal method for importing params from yaml, because it only works up to depth 2
+    harmony_params = PARAMS['rna']['harmony']
+    if harmony_params['npcs'] is not None:
+        cmd += " --harmony_npcs %s" % harmony_params['npcs']
+    if harmony_params['sigma'] is not None:
+        cmd += " --sigma_val %s" % harmony_params['sigma'] 
+    if harmony_params['theta'] is not None:
+        cmd += " --theta_val %s" % harmony_params['theta']       
     neighbor_params = PARAMS['rna']['neighbors']
     if neighbor_params['method'] is not None:
         cmd += " --neighbors_method %s" % neighbor_params['method']
@@ -321,6 +328,13 @@ def run_harmony_prot( outfile):
      --n_threads %(resources_threads_high)s
      """
     cmd += " --modality prot"
+    harmony_params = PARAMS['prot']['harmony']
+    if harmony_params['npcs'] is not None:
+        cmd += " --harmony_npcs %s" % harmony_params['npcs']
+    if harmony_params['sigma'] is not None:
+        cmd += " --sigma_val %s" % harmony_params['sigma'] 
+    if harmony_params['theta'] is not None:
+        cmd += " --theta_val %s" % harmony_params['theta']   
     neighbor_params = PARAMS['prot']['neighbors']
     if neighbor_params['method'] is not None:
         cmd += " --neighbors_method %s" % neighbor_params['method']
@@ -416,9 +430,14 @@ def run_harmony_atac( outfile):
      --n_threads %(resources_threads_high)s
      --modality atac
      """
-    
-    if PARAMS['atac_sigma'] is not None:
-        cmd += " --sigma_val %(atac_sigma)s"
+
+    harmony_params = PARAMS['atac']['harmony']
+    if harmony_params['npcs'] is not None:
+        cmd += " --harmony_npcs %s" % harmony_params['npcs']
+    if harmony_params['sigma'] is not None:
+        cmd += " --sigma_val %s" % harmony_params['sigma'] 
+    if harmony_params['theta'] is not None:
+        cmd += " --theta_val %s" % harmony_params['theta']   
     neighbor_params = PARAMS['atac']['neighbors']
     if neighbor_params['method'] is not None:
         cmd += " --neighbors_method %s" % neighbor_params['method']
