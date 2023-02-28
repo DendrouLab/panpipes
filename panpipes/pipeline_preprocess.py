@@ -67,8 +67,15 @@ def filter_mudata(outfile):
             sys.exit(1)
 
 
+def run_plotqc_query(pqc_dict):
+    # avoid deleting from PARAMS
+    pqc = pqc_dict.copy()
+    del pqc['grouping_var']
+    return any([x != None for x in pqc.values()])
+
+
 @active_if(PARAMS['filtering_run'])
-@active_if(PARAMS['plotqc_metrics'] is not None)
+@active_if(run_plotqc_query(PARAMS['plotqc']))
 @follows(filter_mudata)
 @originate("logs/postfilterplot.log")
 def postfilterplot(log_file):

@@ -250,24 +250,29 @@ def load_bg_mudatas(rna_path, outfile,
     job_kwargs["job_threads"] = PARAMS['resources_threads_medium']
     P.run(cmd, **job_kwargs)
 
+
 @active_if(PARAMS["bg_required"])
 @active_if(PARAMS['downsample_background'])
 @follows(load_bg_mudatas)
-@transform(load_bg_mudatas, regex("(.*)_bg.h5mu"), r"\1_bg_downsampled.log")
+@transform(load_bg_mudatas, 
+           regex("./tmp/(.*)_raw.h5(.*)"), 
+           r"./logs/\1_bg_downsampled.log")
 def downsample_bg_mudatas(infile, outfile):
     cmd = """
     python %(py_path)s/downsample.py 
-    --input_anndata %(infile)s
-    --output_anndata "%(infile)s" 
-    --downsample_value 20000
-    --use_muon True  > %(outfile)s
+    --input_mudata %(infile)s
+    --output_mudata "%(infile)s" 
+    --downsample_value 20000  > %(outfile)s
     """
     job_kwargs["job_threads"] = PARAMS['resources_threads_medium']
     P.run(cmd, **job_kwargs)
 
+
 @active_if(PARAMS["bg_required"])
 @active_if(PARAMS["assess_background"])
 @active_if(PARAMS["use_existing_h5mu"] is False)
+@follows(load_bg_mudatas)
+@follows(downsample_bg_mudatas)
 @collate(load_bg_mudatas,
          formatter(""),
          bg_file())
@@ -285,9 +290,9 @@ def concat_bg_mudatas(infiles, outfile):
         """
     if PARAMS['metadatacols'] is not None and PARAMS['metadatacols'] != "":
         cmd += " --metadatacols  %(metadatacols)s"
-   # if PARAMS["barcode_mtd_include"] is True:
-   #     cmd += " --barcode_mtd_df %(barcode_mtd_path)s"
-    #    cmd += " --barcode_mtd_metadatacols %(barcode_mtd_metadatacols)s"
+    if PARAMS["barcode_mtd_include"] is True:
+        cmd += " --barcode_mtd_df %(barcode_mtd_path)s"
+        cmd += " --barcode_mtd_metadatacols %(barcode_mtd_metadatacols)s"
     cmd += " > logs/concat_bg_mudatas.log"
     job_kwargs["job_threads"] = PARAMS['resources_threads_high']
     P.run(cmd, **job_kwargs)

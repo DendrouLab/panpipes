@@ -85,4 +85,5 @@ for i in range(uf.shape[0]):
             L.warning("cannot integrate %s into mdata as obs_names mismatch" % uf.iloc[i,:] )
 
 mdata.write(args.output_mudata)
-mdata.obs.to_csv(re.sub(".h5mu", "_cell_metdata.csv", args.output_mudata), sep='\t')
+mdata.obs.to_csv(re.sub(".h5mu", "_cell_metdata.tsv", args.output_mudata), sep='\t')
+L.info("done")
