@@ -22,7 +22,9 @@ condaenv:
 sample_prefix: mdata
 scaled_obj: mdata_scaled.h5mu
 # full obj only applicable if you have filtered your sacled object by hvgs
-# otherwise leave blank
+# in this case panpipes will use the full obj to calculate rank_gene_groups and for plotting those genes
+# it should contain all the genes you want to include in rank_gene_groups, plus logged_counts as a layer
+# if your scaled_obj contains all the genes then leave full_obj blank
 full_obj: 
 
 # run clustering on each individual modality:
