@@ -155,6 +155,7 @@ L.debug(mdata['rna'].obs['sample_id'].value_counts())
 # because we don't want to necessarily filter by repertoire
 if args.intersect_mods is not None:
     intersect_mods = args.intersect_mods.split(',')
+    intersect_mods= [a.strip() for a in intersect_mods]
     L.info("intersecting barcodes in %s" % args.intersect_mods)
     intersect_obs_by_mod(mdata, mods = intersect_mods)
     L.info("Remaining cells %d" % mdata.n_obs)

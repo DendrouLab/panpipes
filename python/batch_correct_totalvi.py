@@ -61,7 +61,6 @@ sc.settings.figdir = args.figdir
 
 threads_available = multiprocessing.cpu_count()
 params = pp.io.read_yaml("pipeline.yml")
-params['sample_prefix']
 
 
 test_script=False

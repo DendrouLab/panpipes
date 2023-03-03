@@ -137,6 +137,7 @@ pyparsing==3.0.9
 pyro-api==0.1.2
 pyro-ppl==1.8.1
 pyrsistent==0.18.1
+pysam
 pytest==7.1.2
 python-dateutil==2.8.2
 python-igraph==0.9.10
