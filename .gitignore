@@ -1,11 +1,2 @@
-panpipes/__pycache__/__init__.cpython-39.pyc
-panpipes/__pycache__/entry.cpython-39.pyc
-panpipes/__pycache__/pipeline_vis.cpython-39.pyc
-panpipes.egg-info/dependency_links.txt
-panpipes.egg-info/entry_points.txt
-panpipes.egg-info/PKG-INFO
-panpipes.egg-info/requires.txt
-panpipes.egg-info/SOURCES.txt
-panpipes.egg-info/top_level.txt
-panpipes/funcs/__pycache__/__init__.cpython-39.pyc
-panpipes/funcs/__pycache__/io.cpython-39.pyc
+panpipes/__pycache__/*
+panpipes.egg-info/*
