@@ -8,6 +8,7 @@ import cgatcore.iotools as IOTools
 import re
 from itertools import chain, product
 import glob
+from panpipes.funcs.io import dictionary_stripper 
 
 PARAMS = P.get_parameters(
     ["%s/pipeline.yml" % os.path.splitext(__file__)[0],
@@ -56,6 +57,7 @@ def plot_custom_markers_per_group(marker_file, log_file):
     print(log_file)
     group_vars = " ".join(PARAMS["grouping_vars"])
     layer_vars = {key:val  for key, val in PARAMS['custom_markers_layers'].items() if PARAMS['modalities'][key]}
+    layer_vals = dictionary_stripper(layer_vals)
     modalities = ",".join([key for key, val in PARAMS['modalities'].items() if val])
     cmd = """
         python %(py_path)s/plot_custom_markers.py \
