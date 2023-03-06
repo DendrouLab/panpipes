@@ -56,9 +56,12 @@ def plot_custom_markers_per_group(marker_file, log_file):
     print(marker_file)
     print(log_file)
     group_vars = " ".join(PARAMS["grouping_vars"])
+    # pull out the modalities to use, not including multimodal.
+    modalities = [key for key, val in PARAMS['modalities'].items() if val and key not in ["multimodal", "rep"]]
+    modalities = ",".join(modalities)
+    # pull out the (optional) layer choices
     layer_vars = {key:val  for key, val in PARAMS['custom_markers_layers'].items() if PARAMS['modalities'][key]}
     layer_vars = dictionary_stripper(layer_vars)
-    modalities = ",".join([key for key, val in PARAMS['modalities'].items() if val])
     cmd = """
         python %(py_path)s/plot_custom_markers.py \
             --infile %(mudata_obj)s \
