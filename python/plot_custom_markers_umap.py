@@ -108,12 +108,12 @@ else:
         try:
             ll = layers[mod]
         except KeyError:
-            ll = None
+            ll = [None]
         if mod in basis_dict.keys():
             bb= basis_dict[mod]
         else:
             bb = []
-        if len(bb) > 0:
+        if len(bb) > 0 :
             for basis, layer in product(bb, ll):
                 print(basis,layer)
                 main(adata=mdata[mod], 

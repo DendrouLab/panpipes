@@ -136,8 +136,8 @@ else:
         try:
             ll = layers[mod]
         except KeyError:
-            ll = None
-        if len(group_vars) > 0:
+            ll = [None]
+        if len(group_vars) > 0 and ll is not None:
             for gv, layer in product(group_vars, ll):
                 print(gv, layer)
                 main(adata=mdata[mod], 
