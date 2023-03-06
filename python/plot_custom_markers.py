@@ -133,8 +133,11 @@ else:
         for gv in group_vars:
             mdata[mod].obs[gv] = mdata.obs.loc[mdata[mod].obs_names,gv].astype('category')
         mdata.update_obs()
-        ll = layers[mod]
-        if len(ll) > 0  and len(group_vars) > 0:
+        try:
+            ll = layers[mod]
+        except KeyError:
+            ll = None
+        if len(group_vars) > 0:
             for gv, layer in product(group_vars, ll):
                 print(gv, layer)
                 main(adata=mdata[mod], 
