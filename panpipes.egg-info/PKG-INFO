@@ -5,7 +5,6 @@ Summary: Panpipes - multimodal single cell pipelines
 Author: Charlotte Rich-Griffin, Fabiola Curion
 Classifier: License :: OSI Approved :: BSD License
 Classifier: Development Status :: 3 - Alpha
-Classifier: Topic :: Scientific/Engineering :: Bioinformatics
 Classifier: Intended Audience :: Science/Research
 Classifier: Programming Language :: Python :: 3
 Classifier: Programming Language :: R
