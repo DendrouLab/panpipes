@@ -9,10 +9,8 @@ import argparse
 import os
 import muon as mu
 
-from cgatcore import pipeline as P
 import panpipes.funcs as pp
-from panpipes.funcs.processing import check_for_bool
-from panpipes.funcs.io import read_anndata, write_anndata
+from panpipes.funcs.io import read_anndata
 from panpipes.funcs.scmethods import run_neighbors_method_choice
 
 import sys

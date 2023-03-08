@@ -105,12 +105,19 @@ else:
         print(mod)
         df_sub = df[df['mod'] == mod]
         mdata.update_obs()
-        ll = layers[mod]
+        # pull out the layers and set ll to None 
+        # if no layer sepcificed 
+        # (so the plotting funcs will use X)
+        try:
+            ll = layers[mod]
+        except KeyError:
+            ll = [None]
+        # pull out the basis e.g. X_umap
         if mod in basis_dict.keys():
             bb= basis_dict[mod]
         else:
             bb = []
-        if len(ll) > 0  and len(bb) > 0:
+        if len(bb) > 0:
             for basis, layer in product(bb, ll):
                 print(basis,layer)
                 main(adata=mdata[mod], 
