@@ -8,6 +8,7 @@ import cgatcore.iotools as IOTools
 import re
 from itertools import chain, product
 import glob
+from panpipes.funcs.io import dictionary_stripper 
 
 PARAMS = P.get_parameters(
     ["%s/pipeline.yml" % os.path.splitext(__file__)[0],
@@ -55,8 +56,12 @@ def plot_custom_markers_per_group(marker_file, log_file):
     print(marker_file)
     print(log_file)
     group_vars = " ".join(PARAMS["grouping_vars"])
+    # pull out the modalities to use, not including multimodal.
+    modalities = [key for key, val in PARAMS['modalities'].items() if val and key not in ["multimodal", "rep"]]
+    modalities = ",".join(modalities)
+    # pull out the (optional) layer choices
     layer_vars = {key:val  for key, val in PARAMS['custom_markers_layers'].items() if PARAMS['modalities'][key]}
-    modalities = ",".join([key for key, val in PARAMS['modalities'].items() if val])
+    layer_vars = dictionary_stripper(layer_vars)
     cmd = """
         python %(py_path)s/plot_custom_markers.py \
             --infile %(mudata_obj)s \
@@ -79,7 +84,9 @@ plot_embeddings = any([True if val['run'] is True else False for val in PARAMS["
 def plot_custom_markers_umap(marker_file, log_file):
     embedding_dict = PARAMS["embedding"]
     embedding_dict =  {mod:val['basis'] for mod, val in embedding_dict.items() if val['run'] is True}
+    embedding_dict = dictionary_stripper(embedding_dict)
     layer_vars = {key:val  for key, val in PARAMS['custom_markers_layers'].items() if PARAMS['modalities'][key]}
+    layer_vars = dictionary_stripper(layer_vars)
     modalities = ",".join([key for key, val in PARAMS['modalities'].items() if val])
     cmd = """
         python %(py_path)s/plot_custom_markers_umap.py \
@@ -158,7 +165,7 @@ def plot_continuous_umaps(log_file):
     """
     cmd += " > %(log_file)s "
     job_kwargs["job_threads"] = PARAMS['resources_threads_high']
-    P.run(cmd, *job_kwargs)
+    P.run(cmd, **job_kwargs)
 
 
 do_plot_metrics = any([PARAMS['do_plots_categorical_barplots'],
