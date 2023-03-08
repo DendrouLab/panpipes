@@ -1,0 +1,119 @@
+# Pipeline pipeline_refmap.py configuration file
+# ==============================================
+
+# compute resource options
+# ------------------------
+# customize this depending on the cluster you're using
+resources:
+  # Number of threads used for parallel jobs
+  # this must be enough memory to load your mudata and do computationally intensive tasks
+  threads_high: 1
+  # this must be enough memory to load your mudata and do computationally light tasks
+  threads_medium: 1
+  # this must be enough memory to load text files and do plotting, requires much less memory than the other two
+  threads_low: 1
+# path to conda env, leave blank if running native or your cluster automatically inherits the login node environment
+condaenv:
+
+# allows for tweaking which queues jobs get submitted to, 
+# in case there is a special queue for long jobs or you have access to a gpu-sepcific queue
+# the default queue should be specified in your .cgat.yml file
+# leave as is if you do not want to use the alternative queues
+queues:
+  long: 
+  gpu:  
+
+#----------------------
+# query dataset
+#----------------------
+query: path_to_dataset
+# we support raw10x formats, or preprocessed quality filtered mudata or anndata as input query
+modality: rna
+# if you supplied a mu data, specify the modality to be used
+# currently only RNA query supported
+
+# does your query data have a batch effect, what column?
+# transform_batch term is only used in totalvi?
+query_batch:
+#----------------------
+# scvi tools params
+#----------------------
+# specify one or more reference models that you would like to use as reference
+# you can use your own reference that you built using pipeline_integration here
+# leave blank for no model specification
+
+# specify the reference anndata/mudata with RNA. you need this only if you want to calc umap on both reference and query data.
+# or leave blank and only provide model paths
+reference_data: path_to_mudata 
+# path to tovalvi saved model
+totalvi: 
+  - path_to_totalvi1
+  - path_to_totalvi2
+impute_proteins: True
+transform_batch:
+# if you did not run scanvi, and you want to simply map query onto reference, 
+# path_to_scvi will be used to initialize scanvi for label transfer.
+# if you have an initialized scanvi model instead, add it here
+scvi:
+  - path_to_scvi
+scanvi: 
+  - path_to_scanvi 
+
+
+
+#----------------------
+# training params
+#----------------------
+
+# to reuse these params, (for example for WNN) please use anchors (&) and scalars (*) in the relevant place
+# i.e. &rna_neighbors will be called by *rna_neighbors where referenced
+
+training_plan:
+  totalvi: &totalvitraining 
+    # example params here https://docs.scvi-tools.org/en/0.14.1/api/reference/scvi.model.TOTALVI.train.html
+    max_epochs: 200
+      # recommended weight decay is 0.0
+      # This ensures the latent representation of the reference cells will remain exactly the same if passing them through this new query model.
+    weight_decay: 0.0
+  scvi: *totalvitraining
+  scanvi:
+#----------------------
+# neighbors params to calculate umaps on either query alone, or query+ reference dataset
+#----------------------
+
+neighbors: 
+  # number of Principal Components to calculate for neighbours and umap:
+  #   -if no correction is applied, PCA will be calculated and used to run UMAP and clustering on
+  #   -if Harmony is the method of choice, it will use these components to create a corrected dim red.)
+  # note: scvelo default is 30
+    npcs: 30
+    # number of neighbours
+    k: 30
+    # metric: euclidean | cosine
+    metric: euclidean
+    # scanpy | hnsw (from scvelo)
+    method: scanpy
+
+#----------------------
+# wnn seurat params
+#----------------------
+
+wnn: path_to_wnn_h5
+# instead to a path to a model, in wnn you have to provide a path to a seurat or mudata/anndata object with wnn integration precomputed
+wnn_mapping_normalization: SCTransform, LogNormalize
+# specify normalization to use for query data, same used to build reference wnn.
+normalize: False
+# if RNA is pre-normalized specify method above and set normalize to False
+# provide here a dictionary of the columns or assays you want to predict as defined here
+# https://satijalab.org/seurat/reference/transferdata
+# for the param refdata ( https://satijalab.org/seurat/reference/transferdata#:~:text=(%0A%20%20anchorset%2C-,refdata,-%2C%0A%20%20reference%20%3D%20NULL)
+# if multiple lines are specified these will be supplied as list.
+# write as the example that follows [column_or_data_to_create_in_query]:[name_of_data_in_reference]
+refdata:
+  celltype.l1 : celltype.l1
+  celltype.l2 : celltype.l2
+  predicted_ADT : ADT
+
+
+
+  

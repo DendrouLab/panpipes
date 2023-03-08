@@ -1,0 +1,183 @@
+# Pipeline pipeline_clustering_scanpy.py configuration file
+# ==============================================
+
+# compute resource options
+# ------------------------
+resources:
+  # Number of threads used for parallel jobs
+  # this must be enough memory to load your mudata and do computationally intensive tasks
+  threads_high: 7
+  # this must be enough memory to load your mudata and do computationally light tasks
+  threads_medium: 6
+# this must be enough memory to load text files and do plotting, required much less memory than the other two
+  threads_low: 1
+
+  fewer_jobs: True
+# path to conda env, leave blank if running native or your cluster automatically inherits the login node environment
+condaenv:
+
+# Start
+# --------------------------
+# either one that exists already with
+sample_prefix: mdata
+scaled_obj: mdata_scaled.h5mu
+# full obj only applicable if you have filtered your sacled object by hvgs
+# in this case panpipes will use the full obj to calculate rank_gene_groups and for plotting those genes
+# it should contain all the genes you want to include in rank_gene_groups, plus logged_counts as a layer
+# if your scaled_obj contains all the genes then leave full_obj blank
+full_obj: 
+
+# run clustering on each individual modality:
+modalities:
+  rna: True 
+  prot: True
+  atac: False
+
+# if True, will look for WNN, or totalVI output
+multimodal:
+  run_clustering: True
+  #WNN, mofa, totalVI # this will tell us where to look for 
+  integration_method: 
+
+# batch_correction: harmony  # None, harmony, scanorama, bbknn or combat
+# ---------------------------------------
+# parameters for find neighbours
+# ---------------------------------------
+# find neighbour parameters
+#-----------------------------
+# number of neighbors to use when calculating the graph for clustering and umap.
+neighbors:
+  rna:
+    use_existing: True
+    # number of Principal Components to calculate for neighbours and umap:
+    dim_red: X_pca
+    n_pcs: 30
+    # number of neighbours
+    k: 30
+    # metric: euclidean | cosine
+    metric: euclidean
+    # scanpy | hnsw (from scvelo)
+    method: scanpy
+  prot:
+    use_existing: True
+    # number of Principal Components to calculate for neighbours and umap:
+    dim_red: X_pca
+    n_dim_red: 30
+    # number of neighbours
+    k: 30
+    # metric: euclidean | cosine
+    metric: euclidean
+    # scanpy | hnsw (from scvelo)
+    method: scanpy
+  atac:
+    use_existing: True
+    # number of Principal Components to calculate for neighbours and umap:
+    dim_red: X_pca
+    n_dim_red: 30
+    # number of neighbours
+    k: 30
+    # metric: euclidean | cosine
+    metric: euclidean
+    # scanpy | hnsw (from scvelo)
+    method: scanpy
+
+# ---------------------------------------
+# parameters for umap calculation
+# ---------------------------------------
+umap:
+# set run to False if you are happy with the existing umap from integration
+  run: True
+  rna:
+    mindist:
+      - 0.25
+      - 0.5
+  prot:
+    mindist: 
+      - 0.1
+  atac: 
+    mindist:
+      - 0.5
+  multimodal:
+    mindist:
+      - 0.5
+
+# UMAP reduced dimensions will be stored using the format 
+# ---------------------------------------
+# parameters for clustering
+# ---------------------------------------
+clusterspecs:
+  rna:
+    resolutions:
+     - 0.2
+     - 0.6
+     - 1 
+    algorithm: leiden # (louvain or leiden)
+  prot:
+    resolutions:
+     - 0.2
+     - 0.6
+     - 1 
+    algorithm: leiden # (louvain or leiden)
+  multimodal:
+    resolutions:
+      - 0.5
+      - 0.7
+    algorithm: leiden
+# ---------------------------------------
+# parameters for finding marker genes
+# ---------------------------------------
+markerspecs:
+  rna:
+    run: True
+    layer: logged_counts
+    mincells: 10 # if a cluster contains less than n cells then do not bother doing marker analysis
+    # Setting pseudo_seurat to True means that rather than use scanpy.rank_gene_groups to identify gene groups,
+    # a python implementation of Seurat::FindMarkers (written by CRG) is used,
+    # We recommend that pseudo_seurat is set to False
+    pseudo_seurat: False
+    # these next two settings do not matter unless pseudo_seurat is set to True,
+    # If applicable look at Seurat documentation for FindMarkers for details
+    minpct: 0.1
+    threshuse: 0.25
+  prot:
+    run:
+    layer: clr
+    mincells: 10
+    pseudo_seurat: False
+    minpct: 0.1
+    threshuse: 0.25
+  atac:
+    run:
+    layer: 
+    mincells: 10
+    pseudo_seurat: False
+    minpct: 0.1
+    threshuse: 0.25
+  multimodal:
+    mincells: 10
+    pseudo_seurat: False
+    minpct: 0.1
+    threshuse: 0.25
+
+
+# ---------------------------------------
+# plot specs are used to define which metadata columns are used in the visualisations
+# ---------------------------------------
+plotspecs:
+  layers:
+    rna: logged_counts
+    prot: clr
+    atac: 
+  top_n_markers: 10
+
+
+
+# ----
+# making a cellxgene object with your favourite parameters
+# run this bit with panpipes clustering make generate_cellxgene
+cellxgene:
+  nneighbours: 
+  npcs: 
+  cluster_res: 
+  umap_md: 
+

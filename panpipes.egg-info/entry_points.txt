@@ -1,0 +1,2 @@
+[console_scripts]
+panpipes = panpipes:entry.main

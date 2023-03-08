@@ -1,3 +1,91 @@
+
+[project]
+name = "panpipes"
+version = "0.2.0"
+authors = [
+    {name = "Charlotte Rich-Griffin"},
+    {name = "Fabiola Curion"}
+]
+description = "Panpipes - multimodal single cell pipelines"
+readme = "README.md"
+
+classifiers = [
+    # Pick your license as you wish
+    "License :: OSI Approved :: BSD License",
+
+    # Optional
+    # How mature is this project? Common values are
+    #   3 - Alpha
+    #   4 - Beta
+    #   5 - Production/Stable
+    "Development Status :: 3 - Alpha",
+
+    # Indicate who your project is intended for
+    "Topic :: Scientific/Engineering :: Bioinformatics",
+    "Intended Audience :: Science/Research",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: R"
+    ]
+
+requires-python = ">= 3.8"
+
+dependencies = [
+    #"anndata>=0.8.0",
+    "apsw", 
+    "bbknn", 
+    "cgatcore", 
+    "drmaa", 
+    "gevent",
+    #"harmonypy", 
+    #"leidenalg", 
+    #"louvain",
+    #"matplotlib",
+    #"mofapy2",
+    #"mudata @ git+https://github.com/scverse/mudata",
+    #"muon @ git+https://github.com/scverse/muon",
+    #"numpy>=1.22.4", 
+    "packaging", 
+    #"pandas>=1.0", 
+    "paramiko", 
+    "pep8",
+    #"pysam",
+    "pytest",
+    "pyyaml",
+    "ruffus", 
+    #"scanorama", 
+    #"scanpy>=1.9.1", 
+    #"seaborn",
+    #"scikit-misc", 
+    #"scirpy @ git+https://github.com/scverse/scirpy",
+    #"scrublet", 
+    #"scvi-tools>=0.16.3",
+    "sqlalchemy"
+]
+
+[project.optional-dependencies]
+notebook = [
+    "jupyter",
+    "jupyterlab"
+]
+
+# The following would provide a command line executable called `sample`
+# which executes the function `entry` from this package when invoked.
+[project.scripts]  # Optional
+panpipes = "panpipes:entry.main"
+
+# This is configuration specific to the `setuptools` build backend.
+# If you are using a different build backend, you will need to change this.
+[tool.setuptools]
+# If there are data files included in your packages that need to be
+# installed, specify them here.
+package-data = {"panpipes" = ["panpipes/*/*.yml", "R_scripts/*.R"]}
+
+
 [build-system]
-requires = ["setuptools ~= 58.0", "wheel"]
+# These are the assumed default build requirements from pip:
+# https://pip.pypa.io/en/stable/reference/pip/#pep-517-and-518-support
+requires = ["setuptools>=43.0.0", "wheel"]
 build-backend = "setuptools.build_meta"
+
+
+#template for this file from https://github.com/pypa/sampleproject/blob/main/pyproject.toml

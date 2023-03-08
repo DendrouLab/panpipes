@@ -1,0 +1,16 @@
+apsw
+bbknn
+cgatcore
+drmaa
+gevent
+packaging
+paramiko
+pep8
+pytest
+pyyaml
+ruffus
+sqlalchemy
+
+[notebook]
+jupyter
+jupyterlab

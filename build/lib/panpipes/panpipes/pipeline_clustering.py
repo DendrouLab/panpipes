@@ -1,0 +1,399 @@
+"""
+CGAT pipeline for clustering single cell data with Scanpy.
+# ASSUMED INPUT: 2 anndata objects, one containing all the data logn normalised but unscaled.
+# the second containing scaled data and subset by highly variable genes.
+# dimension reduction such as PCA or equivalent from harmobny or scanorama
+# must have has been computed and saved within object
+
+# This pipeline is designed to follow on from pipeline_integration.py
+
+"""
+
+from ruffus import *
+import sys
+import os
+from cgatcore import pipeline as P
+import pandas as pd
+import cgatcore.iotools as IOTools
+import re
+from itertools import chain, product
+import glob
+
+from panpipes.funcs.processing import is_float_try, splitall, extract_parameter_from_fname
+PARAMS = P.get_parameters(
+    ["%s/pipeline.yml" % os.path.splitext(__file__)[0],
+     "../pipeline.yml",
+     "pipeline.yml"])
+
+PARAMS['py_path'] =  os.path.join(os.path.dirname(__file__), 'python_scripts')
+PARAMS['r_path'] = os.path.join(os.path.dirname(__file__), 'R_scripts')
+
+
+job_kwargs={}
+if PARAMS['condaenv'] is not None:
+    job_kwargs["job_condaenv"] =PARAMS['condaenv']
+
+
+@originate("logs/setup_dirs.sentinel")
+def set_up_dirs(log_file):
+    os.mkdir("logs")
+    
+    mods =  [key for key, value in PARAMS['modalities'].items() if value is True]
+    if PARAMS["multimodal"]["run_clustering"] is True :
+        mods.append("multimodal")
+    for mod in mods:
+        os.makedirs(os.path.join(mod, "figures"))
+    IOTools.touch_file(log_file)
+    pass
+## ------------------------------------
+## Single modality scripts
+## ------------------------------------
+
+# ------------------------------------
+# UMAP
+# ------------------------------------
+def gen_umap_jobs():
+    """
+    Generate find neighbor jobs with all parameter combinations.
+    """
+    # same infile for all jobs
+    # define files based on jobs
+    infile = PARAMS['scaled_obj']
+    mods =  [key for key, value in PARAMS['modalities'].items() if value is True]
+    if PARAMS["multimodal"]["run_clustering"] is True :
+        mods.append("multimodal")
+    for mod in mods:
+        for md in PARAMS['umap'][mod]['mindist']:
+            if PARAMS['umap'][mod]['mindist'] is not None:
+                output_file = os.path.join(mod,  'md' + str(md) +"_umap.txt.gz")
+                log_file = os.path.join("logs","_".join([mod,  'md' + str(md) +"_umap.log"]))
+                yield [infile, output_file, mod, md, log_file]
+
+
+@follows(set_up_dirs)
+@files(gen_umap_jobs)
+def calc_sm_umaps(infile, outfile, mod, mindist, log_file):
+    prefix = os.path.split(infile)[0]
+    cmd = """
+        python %(py_path)s/run_umap.py \
+            --infile %(scaled_obj)s \
+            --outfile %(outfile)s \
+            --min_dist %(mindist)s 
+            """
+    if mod is not None and mod != "multimodal":
+        # if this is not specified it will use gex default
+        cmd += " --modality %(mod)s"
+    elif mod=="multimodal":
+        if PARAMS['multimodal_integration_method'].lower() == "wnn":
+            cmd += " --neighbors_key wnn"
+    cmd += " > %(log_file)s"
+    job_kwargs["job_threads"] = PARAMS['resources_threads_high']
+    P.run(cmd, **job_kwargs)
+
+
+# ------------------------------------
+# Clustering
+# ------------------------------------
+
+def gen_cluster_jobs():
+    """
+    Generate find neighbor jobs with all parameter combinations.
+    """
+    # same infile for all jobs
+    # define files based on jobs
+    infile = PARAMS['scaled_obj']
+    mods =  [key for key, value in PARAMS['modalities'].items() if value is True]
+    if PARAMS['multimodal']['run_clustering'] is True:
+        mods.append("multimodal")
+    for mod in mods:
+        for res in PARAMS['clusterspecs'][mod]['resolutions']:
+            if PARAMS['clusterspecs'][mod]['resolutions'] is not None:
+                alg = PARAMS['clusterspecs'][mod]['algorithm']
+                output_file = os.path.join(mod, 'alg' + alg + '_res' + str(res), "clusters.txt.gz")
+                log_file = os.path.join("logs", "_".join([mod, 'alg' + alg + '_res' + str(res), "clusters.log"]))
+                yield [infile, output_file, mod, res, alg, log_file]
+
+@follows(set_up_dirs)
+@files(gen_cluster_jobs)
+def calc_cluster(infile, outfile,  mod, res, alg, log_file):
+    cmd = """python %(py_path)s/run_clustering.py 
+            --infile %(infile)s 
+            --outfile %(outfile)s 
+            --resolution %(res)s 
+            --algorithm %(alg)s
+    """ 
+    if mod is not None and mod != "multimodal":
+        # if this is not specified it will use gex default
+        cmd += " --modality %(mod)s"
+    elif mod=="multimodal":
+        if PARAMS['multimodal_integration_method'].lower() == "wnn":
+            cmd += " --neighbors_key wnn"
+    cmd += " > %(log_file)s"
+    job_kwargs["job_threads"] = PARAMS['resources_threads_medium']
+    P.run(cmd, **job_kwargs)
+
+
+@collate(calc_cluster,
+         regex("(.*)/(.*)/clusters.txt.gz"),
+         r"\1/all_res_clusters_list.txt.gz")
+def aggregate_clusters(infiles, outfile):
+    print(infiles)
+    print(outfile)
+    infiles_str = ','.join(infiles)
+    cmd = "python %(py_path)s/aggregate_csvs.py \
+               --input_files_str %(infiles_str)s \
+               --output_file %(outfile)s \
+               --clusters_or_markers clusters > logs/aggregate_clusters.log"
+    job_kwargs["job_threads"] = PARAMS['resources_threads_low']           
+    P.run(cmd, **job_kwargs)
+
+
+@collate([[calc_cluster], [calc_sm_umaps]], formatter(), PARAMS['sample_prefix'] + "_clustered.h5mu")
+def collate_mdata(infiles,outfile):
+    cluster_files = infiles[0]
+    cluster_mods = [os.path.dirname(os.path.dirname(x)) for x in cluster_files]
+    cluster_col = [os.path.basename(os.path.dirname(x)) for x in cluster_files]
+    cluster_col = [re.sub("alg", "", x) for x in cluster_col]
+    cluster_df = pd.DataFrame(zip(cluster_mods,cluster_col,cluster_files), columns = ['mod', 'new_key', 'fpath'])
+    cluster_df.to_csv("cluster_file_paths.csv", index=None)
+    umap_files = infiles[1]
+    print(umap_files)
+    umap_mods = [os.path.dirname(x) for x in umap_files]
+    umap_key = [extract_parameter_from_fname(x, "md", prefix="") for x in umap_files]
+    umap_key = ["X_umap_mindist_" + str(x) for x in umap_key]
+    umap_df = pd.DataFrame(zip(umap_mods,umap_key,umap_files), columns = ['mod', 'new_key', 'fpath'])
+    umap_df.to_csv("umap_file_paths.csv", index=None)
+    
+    cmd = """python %(py_path)s/collate_mdata.py
+        --clusters_files_csv cluster_file_paths.csv
+        --umap_files_csv umap_file_paths.csv
+        --output_mudata %(outfile)s 
+    """
+    # if PARAMS['full_obj'] is None:
+    cmd += "--input_mudata %(scaled_obj)s"
+    # else:
+    #     cmd += "--input_mudata %(scaled_obj)s %(full_obj)s"
+    cmd += " > logs/collate_data.log"
+    job_kwargs["job_threads"] = PARAMS['resources_threads_medium']
+    P.run(cmd, **job_kwargs)
+
+
+@transform(collate_mdata, 
+            formatter(""),
+            'logs/plot_clusters_umaps.log')
+def plot_cluster_umaps(infile, log_file,):
+    # get associated umap
+    cmd = """python %(py_path)s/plot_cluster_umaps.py \
+    --infile %(infile)s 
+    """
+    cmd += " >> %(log_file)s"
+    job_kwargs["job_threads"] = PARAMS['resources_threads_medium']
+    P.run(cmd, jobs_limit=1, **job_kwargs)
+
+@transform(aggregate_clusters, regex("(.*)/all_res_clusters_list.txt.gz"),
+            r'logs/\1_clustree.log',
+            r'\1/figures/clustree.png', ) 
+def plot_clustree(infile, log_file, outfile):
+    # convert infiles to comma sep. string
+    prefix = re.sub('_dir', '', os.path.dirname(infile))
+    # call R
+    cmd = "Rscript %(r_path)s/plotclustree.R \
+        --infile %(infile)s  \
+        --plot_title %(prefix)s \
+        --outfile %(outfile)s > %(log_file)s"
+    
+    job_kwargs["job_threads"] = PARAMS['resources_threads_low']
+    P.run(cmd,  **job_kwargs)
+
+
+
+# # all the defs
+# # def clustering_umbrella
+@follows(calc_cluster, collate_mdata, plot_cluster_umaps, plot_clustree)
+@originate("logs/cluster_analysis.sentinel")
+def cluster_analysis(fname):
+    IOTools.touch_file(fname)
+    pass
+
+
+# ------------------------------------
+# Markers
+# ------------------------------------
+@transform(calc_cluster,
+           regex("(.*)/(.*)/clusters.txt.gz"),
+           r"\1/\2/markers.txt",
+           r"\1/\2/markers",
+           r"\1",
+           r"logs/\1_\2_markers.log",
+           )
+def find_markers(infile, outfile, outfile_prefix, mod, log_file ):
+    """
+    Runs scanpy.tl.rank_gene_groups in parallel for each cluster
+    """
+    min_cells = PARAMS["markerspecs"][mod]["mincells"]
+    cmd = """
+    python %(py_path)s/run_find_markers_multi.py 
+    --infile %(scaled_obj)s 
+    --output_file_prefix %(outfile_prefix)s 
+    --cluster_file %(infile)s 
+    --mincells %(min_cells)s
+    """
+    if mod is not None and mod != "multimodal":
+        cmd += " --modality %(mod)s"
+        layers = {mod: PARAMS["markerspecs"][mod]["layer"] for mod in ['rna', 'prot', 'atac']} 
+        cmd += " --layer '%(layers)s'"
+    if PARAMS['markerspecs_pseudo_seurat'] is True:
+        min_pct =  PARAMS["markerspecs"][mod]["minpct"]
+        threshuse =  PARAMS["markerspecs"][mod]["threshuse"]
+        cmd += """ --pseudo_seurat True 
+         --minpct %(min_pct)s 
+         --threshuse %(threshuse)s 
+        """
+    else:
+        cmd += " --pseudo_seurat False"
+    cmd += " > %(log_file)s "
+    job_kwargs["job_threads"] = PARAMS['resources_threads_high']
+    P.run(cmd, **job_kwargs)
+
+
+
+
+# # limit jobs because reading the h5 file simultaneouly is problematic
+# @collate([ [collate_mdata],[find_markers]],
+#         formatter(),
+#         os.path.join("logs", "marker_heatmap.log"))
+# def heatmap_markers(infiles, log_file):
+#     """
+#     Plots a standard Seurat Heatmap, or a Complex Heatmap
+#     """
+#     # print(infiles, log_file)
+#     marker_files = infiles[1]
+#     scaled_obj = infiles[0][0]
+#     cmd = """
+#     Rscript %(r_path)s/marker_heatmaps.R \
+#     --anndata %(scaled_obj)s \
+#     --marker_files %(marker_file)s \
+#     --docomplex %(plotspecs_docomplex)s \
+#     --subgroup %(plotspecs_discrete_variables)s > %(log_file)s"""
+#     P.run(cmd, job_threads=PARAMS['resources_threads_high'])
+
+
+# limit jobs because reading the h5 file simultaneouly is problematic
+# @follows(heatmap_markers)
+@follows(collate_mdata)
+@transform(find_markers,
+            regex(r"(.*)/alg(.*)/markers.txt"),
+            r"logs/\1_alg\2_dotplots.log",
+            r"\1/alg\2/figures/dotplot_top_markers.png",
+            r"\1/alg\2/figures",
+             r"\1", r"\2")
+def plot_marker_dotplots(marker_file, log_file, outfile, fig_path,mod, cluster_col):
+    """
+    Plots some additional marker plots
+    """
+    data_obj=PARAMS['sample_prefix'] + "_clustered.h5mu"
+    # check there is a figures directory
+    if not os.path.exists(fig_path):
+        os.makedirs(fig_path)
+    cmd = """
+        python %(py_path)s/plot_scanpy_markers.py \
+            --infile %(data_obj)s \
+            --marker_file %(marker_file)s \
+            --figure_prefix %(fig_path)s
+            --group_col %(cluster_col)s
+            --n %(plotspecs_top_n_markers)s
+            
+     """
+    if mod is not None:
+        cmd += " --modality %(mod)s"
+        cmd += " --layer '%(plotspecs_layers)s'"
+    else:
+        cmd += " --layer logged_counts"
+    cmd += " > %(log_file)s "
+    job_kwargs["job_threads"] = PARAMS['resources_threads_medium']
+    P.run(cmd, **job_kwargs)
+
+
+
+
+
+@follows(find_markers, plot_marker_dotplots)
+@originate("marker_analysis.sentinel")
+def marker_analysis(fname):
+    IOTools.touch_file(fname)
+    pass
+
+
+
+
+
+# #--------
+# # Generate cellxgene
+# #--------
+
+# cellxgene_file = PARAMS['sample_prefix'] + "_" + PARAMS['modality'] + "_cellxgene.h5ad"
+# # @originate(cellxgene_file, add_inputs(gen_neighbor_jobs))
+# @merge(calc_neighbors, cellxgene_file)
+# def cellxgene(infiles, cellxgene_file):
+#     print(infiles)
+#     print(cellxgene_file)
+#     desired_match = "nneigh" + str(PARAMS['cellxgene_nneighbours']) + "_pcs" + str(PARAMS['cellxgene_npcs'])
+#     print(desired_match)
+#     desired_match = re.compile(".*" + desired_match + ".*")
+#     infiles = list(filter(desired_match.match, infiles))
+#     print(infiles)
+#     if len(infiles) > 1:
+#         sys.exit("too many matches, ask charlotte to debug")
+#     elif len(infiles) == 0:
+#         sys.exit("no matches, did you fill in the cellxgene section of the yml?")
+#     else:
+#         infile = infiles[0]
+    
+#     umaps = glob.glob(os.path.dirname(infile) +"/*_umap.txt.gz")
+#     umaps_str = ",".join(umaps)
+
+#     clusters_file = os.path.dirname(infile) + "/all_res_clusters_list.txt.gz"
+#     best_cluster_res = PARAMS['clusterspecs_algorithm'] + "_res_" + str(PARAMS['cellxgene_cluster_res'])
+#     cmd="""
+#     python  %(py_path)s/generate_cellxgene.py
+#     --input_anndata %(infile)s \
+#     --output_anndata %(cellxgene_file)s \
+#     --sample_prefix %(sample_prefix)s
+#     --clusters %(clusters_file)s \
+#     --umaps %(umaps_str)s \
+#     --best_md %(cellxgene_umap_md)s \
+#     --best_cluster_col %(best_cluster_res)s
+#     """
+#     if PARAMS['use_muon']:
+#         cmd += " --use_muon True"
+#     if PARAMS['modality']:
+#         # if this is not specified it will use gex default
+#         cmd += " --modality %(modality)s"
+#     print(cmd)
+#     P.run(cmd, job_threads=PARAMS['resources_threads_medium'])
+
+# #--------
+
+
+
+
+
+@follows(cluster_analysis, marker_analysis, )
+def full():
+    """
+    All cgat pipelines should end with a full() function which updates,
+    if needed, all branches of the pipeline.
+    The @follows statement should ensure that all functions are covered,
+    either directly or as prerequisites.
+    """
+    pass
+
+
+def main(argv=None):
+    if argv is None:
+        argv = sys.argv
+    P.main(argv)
+
+
+if __name__ == "__main__":
+    sys.exit(P.main(sys.argv))
