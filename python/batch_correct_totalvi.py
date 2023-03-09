@@ -8,17 +8,15 @@ import argparse
 import os
 import gc
 import muon as mu
-from cgatcore import pipeline as P
 
-import panpipes.funcs as pp
-from panpipes.funcs.processing import check_for_bool, intersect_obs_by_mod
-from panpipes.funcs.io import read_anndata, write_anndata, read_yaml
+from panpipes.funcs.io import read_anndata, read_yaml
 from panpipes.funcs.scmethods import run_neighbors_method_choice, X_is_raw
+from panpipes.funcs.processing import intersect_obs_by_mod
 
 import sys
 import logging
 L = logging.getLogger()
-L.setLevel(logging.DEBUG)
+L.setLevel(logging.INFO)
 log_handler = logging.StreamHandler(sys.stdout)
 formatter = logging.Formatter('%(asctime)s: %(levelname)s - %(message)s')
 log_handler.setFormatter(formatter)
@@ -30,7 +28,7 @@ parser.add_argument('--scaled_anndata',
                     default='adata_scaled.h5ad',
                     help='')
 parser.add_argument('--raw_anndata',
-                    default='adata_raw.h5ad',
+                    default=None,
                     help='')
 parser.add_argument('--output_csv', default='batch_correction/umap_bc_totalvi.csv',
                     help='')
@@ -60,7 +58,10 @@ sc.settings.figdir = args.figdir
 # load parameters
 
 threads_available = multiprocessing.cpu_count()
-params = pp.io.read_yaml("pipeline.yml")
+
+params = read_yaml("pipeline.yml")
+params['sample_prefix']
+
 
 
 test_script=False
@@ -78,6 +79,7 @@ intersect_obs_by_mod(mdata, ['rna', 'prot'])
 
 # this is a copy so we can subset vars and obs without changing the original object
 rna = mdata['rna'].copy()
+prot = mdata['prot'].copy()
 
 kwargs={}
 # in case of more than 1 variable, create a fake column with combined information
@@ -129,6 +131,9 @@ if params['multimodal']['totalvi']['filter_adt_outliers']:
     else:
         raise ValueError("adt_outliers column not found in mdata['prot'].obs")
 
+# exluding isotypes
+if 'isotype' in prot.var.columns:
+    prot = prot[:, ~prot.var.isotype]
 
 # filter out mitochondria
 if params['multimodal']['totalvi']['exclude_mt_genes']:
@@ -142,22 +147,25 @@ if params['multimodal']['totalvi']['filter_by_hvg']:
     rna = rna[:, rna.var.highly_variable]
 
 mdata.update()
+
 #make protein obsm pandas
-# need to find the raw counts in mdata['prot']
-if X_is_raw(mdata['prot']):
-    X_array = mdata['prot'].X.copy()
-elif "raw_counts" in mdata['prot'].layers.keys(): 
-    X_array = mdata['prot'].layers['raw_counts'].copy()
+# need to find the raw counts in prot
+if X_is_raw(prot):
+    X_array = prot.X.copy()
+elif "raw_counts" in prot.layers.keys(): 
+    X_array = prot.layers['raw_counts'].copy()
 else:
-    raise AttributeError("raw counts not found in mdata['prot'], \
+    raise AttributeError("raw counts not found in prot, \
                         store in either X or in 'raw_counts' layer")
 
-X_df = pd.DataFrame(X_array.todense(), index=mdata['prot'].obs_names, columns=mdata['prot'].var_names)
+
+X_df = pd.DataFrame(X_array.todense(), index=prot.obs_names, columns=prot.var_names)
 
 if X_df.shape[0] == rna.X.shape[0]:
     L.info("adding protein_expression to obsm")
     #check the obs are in the correct order
     X_df = X_df.loc[rna.obs_names,:]
+    X_df = X_df.astype('int')
     rna.obsm['protein_expression'] = X_df 
 else:
     L.error("dimensions do not match, cannot integrate protein")
@@ -229,10 +237,12 @@ mdata.obsm["X_totalVI"] = vae.get_latent_representation()
 
 if batch_categories is not None:
     L.debug(batch_categories)
+    if type(batch_categories) is not list:
+        batch_categories = [batch_categories]
     normX, protein = vae.get_normalized_expression(
         n_samples=25,
         return_mean=True,
-        transform_batch=[batch_categories]
+        transform_batch=batch_categories
     )
 
     # this is stored in obsm, because if we have filtered by hvg, it no longer fits specifications for a layer
@@ -243,7 +253,7 @@ if batch_categories is not None:
     df = vae.get_protein_foreground_probability(
         n_samples=25,
         return_mean=True,
-        transform_batch=[batch_categories]
+        transform_batch=batch_categories
     )
     mdata['prot'].obsm["totalvi_protein_foreground_prob"] = df.loc[mdata['prot'].obs_names,:]
 

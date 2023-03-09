@@ -49,7 +49,7 @@ def filter_mudata(outfile):
         python %(py_path)s/run_filter.py
         --input_mudata %(unfiltered_obj)s
         --output_mudata %(outfile)s
-        --filter_dict "%(filtering)s"
+        --filter_dict "%(filter_dict)s"
         """
         if PARAMS['filtering_keep_barcodes'] is not None:
             cmd += " --keep_barcodes %(filtering_keep_barcodes)s"

@@ -23,7 +23,7 @@ Available pipelines:
 
 See [installation instrcutions here](https://github.com/DendrouLab/panpipes/blob/main/docs/install.md)
 
-<!-- Oxford BMRC Rescomp users find additional advice in [docs/installation_rescomp](https://github.com/DendrouLab/panpipes/blob/main/docs/installation_rescomp.md) -->
+Oxford BMRC Rescomp users find additional advice in [docs/installation_rescomp](https://github.com/DendrouLab/panpipes/blob/main/docs/installation_rescomp.md)
 
 # General principles for running pipelines
 

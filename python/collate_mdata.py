@@ -34,6 +34,7 @@ args, opt = parser.parse_known_args()
 L.info(args)
 mdata = mu.read(args.input_mudata)
 
+L.info("loading clusters")
 cf = pd.read_csv(args.clusters_files_csv)
 
 if isinstance(mdata, MuData):

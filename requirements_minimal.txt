@@ -26,6 +26,6 @@ scrublet
 scikit-misc
 mofapy2
 pysam
-#mudata @ git+https://github.com/scverse/mudata
-#muon @ git+https://github.com/scverse/muon
-#scirpy @ git+https://github.com/scverse/scirpy
+mudata @ git+https://github.com/scverse/mudata
+muon @ git+https://github.com/scverse/muon
+scirpy @ git+https://github.com/scverse/scirpy

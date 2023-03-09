@@ -71,13 +71,20 @@ if len(columns)>1:
 
 
 # run neighbours and umap without batch correction
+pc_kwargs = {}
+if int(args.neighbors_n_pcs) > 0:
+    pc_kwargs['use_rep'] = "X_pca"
+    pc_kwargs['n_pcs'] = int(args.neighbors_n_pcs)
+else:
+    # If n_pcs==0 use .X if use_rep is None.
+    pc_kwargs['use_rep'] = None
+    pc_kwargs['n_pcs'] = int(args.neighbors_n_pcs)
+    
 run_neighbors_method_choice(adata, 
     method=args.neighbors_method, 
     n_neighbors=int(args.neighbors_k), 
-    n_pcs=int(args.neighbors_n_pcs), 
     metric=args.neighbors_metric, 
-    use_rep='X_pca',
-    nthreads=max([threads_available, 6]))
+    nthreads=max([threads_available, 6]), **pc_kwargs)
 
 L.info("done n_neighbours, saving stuff")
 

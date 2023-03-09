@@ -92,6 +92,7 @@ for x in wnn_params_bc.keys():
 
 for kmod in dict_graph.keys():
     L.info(kmod)
+    pkmod=params['multimodal']['WNN']['knn'][kmod]
     if dict_graph[kmod]["obsm"] is not None:
         if dict_graph[kmod]["obsm"] not in tmp.mod[kmod].obsm.keys():
             if dict_graph[kmod]["anndata"] is not None:
@@ -114,8 +115,11 @@ for kmod in dict_graph.keys():
         if repuse not in tmp.mod[kmod].obsm.keys():
             if "X_LSI" in tmp.mod[kmod].obsm.keys():
                 repuse = "X_LSI"
-        L.info("falling back on %s" %(repuse) )
-    pkmod=params['multimodal']['WNN']['knn'][kmod]
+            else:
+                L.info("falling back on %s" %(repuse) )
+        if int(pkmod['npcs']) == 0:
+            repuse = None
+            
     L.info("calculating neighbours")
     if repuse != "X_bbknn":
         run_neighbors_method_choice(tmp.mod[kmod], 

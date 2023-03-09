@@ -130,21 +130,11 @@ else:
     for mod in modalities:
         print(mod)
         df_sub = df[df['mod'] == mod]
-        # make sure every grouping var is a category
-        if mod is not "multimodal":
-            for gv in group_vars:
-                mdata[mod].obs[gv] = mdata.obs.loc[mdata[mod].obs_names,gv].astype('category')
-            mdata.update_obs()
-        else:
-            for gv in group_vars:
-                mdata.obs[gv] = mdata.obs.loc[mdata.obs_names,gv].astype('category')
-            mdata.update_obs()
-        # pull out the layers and set ll to None if no layer sepcificed (so the plotting funcs will use X)
-        try:
-            ll = layers[mod]
-        except KeyError:
-            ll = [None]
-        if len(group_vars) > 0 and ll is not None:
+        for gv in group_vars:
+            mdata[mod].obs[gv] = mdata.obs.loc[mdata[mod].obs_names,gv].astype('category')
+        mdata.update_obs()
+        ll = layers[mod]
+        if len(ll) > 0  and len(group_vars) > 0:
             for gv, layer in product(group_vars, ll):
                 print(gv, layer)
                 main(adata=mdata[mod], 

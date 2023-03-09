@@ -58,7 +58,6 @@ base_obj = mu.read(base_object)
 
 if multi_mod=="totalvi":
     totalvi_extra_obsm = {'prot': ['totalvi_protein_foreground_prob', 'totalvi_denoised_protein'], 'rna': [ 'totalvi_denoised_rna']}
-
     # we will want to keep these so extract them first
     totalvi_extra_obsm_keep = {}
     for k, v in totalvi_extra_obsm.items():
@@ -68,7 +67,21 @@ if multi_mod=="totalvi":
 
 # this overwrites the old modalities
 for k,v in uni_mod_paths.items():
-    base_obj.mod[k] = mu.read(v)
+    mod_replace = mu.read(v)
+    if mod_replace.shape[1] == base_obj.shape[1]:
+        L.info('replacing the whole anndata object with batch corrected')
+        base_obj.mod[k] = mod_replace
+    else:
+        # in this situation the vars in the mod has been subset but the 
+        # original object contains all the genes.
+        L.info("number of genes does not match base object, only integrating obsp and obsm into full mdata[%s] object" % k)
+        base_obj.mod[k].obsm = mod_replace.obsm
+        base_obj.mod[k].obsp = mod_replace.obsp
+        base_obj.mod[k].uns = mod_replace.uns
+        base_obj.mod[k].uns['scVI_gene_subset'] = mod_replace.var_names.tolist()
+        # merge any extra obs columns
+        new_obs = mod_replace.obs.iloc[:, ~ mod_replace.obs.columns.isin( base_obj.mod[k].obs.columns)]
+        base_obj.mod[k].obs = base_obj.mod[k].obs.merge(new_obs, left_index=True, right_index=True)
 
 if multi_mod=="totalvi":
     # restore the totalvi extras
