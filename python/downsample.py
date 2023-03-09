@@ -7,6 +7,7 @@ import pandas as pd
 from muon import MuData
 from anndata import AnnData
 import muon as mu
+import re
 
 from panpipes.funcs.io import read_anndata, write_anndata, write_obs
 from panpipes.funcs.processing import downsample_mudata,  intersect_obs_by_mod, check_for_bool
@@ -87,10 +88,10 @@ L.info("Number of cells per sample")
 L.info(mdata.obs.sample_id.value_counts())
 
 # write out the observations
-write_obs(mdata, output_prefix=args.sampleprefix, 
+write_obs(mdata, output_prefix=re.sub("\\.(.*)", "", args.output_mudata), 
         output_suffix="_downsampled_cell_metadata.tsv")
 
 
-mdata.write(args.input_mudata)
+mdata.write(args.output_mudata)
 #This stage is the point (i.e. pre-normalisation) where the mdata file can be outputted so that we can extract raw matrix for the cellphonedb.
 L.info("Completed")

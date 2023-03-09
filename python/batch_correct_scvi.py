@@ -10,8 +10,8 @@ import os
 import muon as mu
 
 import panpipes.funcs as pp
-from panpipes.funcs.io import read_anndata
-from panpipes.funcs.scmethods import run_neighbors_method_choice
+from panpipes.funcs.io import read_anndata, read_yaml
+from panpipes.funcs.scmethods import run_neighbors_method_choice, X_is_raw
 
 import sys
 import logging
@@ -28,7 +28,7 @@ parser.add_argument('--scaled_anndata',
                     default='adata_scaled.h5ad',
                     help='')
 parser.add_argument('--raw_anndata',
-                    default='adata_raw.h5ad',
+                    default=None,
                     help='')
 parser.add_argument('--output_csv', default='batch_correction/umap_bc_scvi.csv',
                     help='')
@@ -47,12 +47,12 @@ parser.add_argument('--neighbors_metric',
 
 
 args, opt = parser.parse_known_args()
-
+L.info(args)
 
 threads_available = multiprocessing.cpu_count()
 
 # load parameters
-params = pp.io.read_yaml("pipeline.yml")
+params = read_yaml("pipeline.yml")
 L.info("Running scvi script")
 L.info("threads available: %s", threads_available)
 
@@ -77,7 +77,7 @@ L.info("loading in anndata object ")
 
 mdata = mu.read(args.scaled_anndata)
 if type(mdata) is mu.MuData:
-    rna = mdata['rna'].copy()
+    rna = mdata['rna']
     L.info(rna)
 elif type(mdata) is sc.AnnData:
     rna = mdata
@@ -106,6 +106,8 @@ else:
 # add in test to see if raw layer exists alread
 if "raw_counts" in rna.layers.keys():
     L.info("raw counts found in layer")
+elif X_is_raw(rna):
+    rna.layers["raw_counts"] = rna.X.copy()
 else:
     L.info("merge in raw counts")
     sc_raw = read_anndata(args.raw_anndata, use_muon=True, modality="rna")

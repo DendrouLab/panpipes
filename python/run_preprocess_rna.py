@@ -235,3 +235,5 @@ mdata.update()
 
 mdata.write(args.output_scaled_mudata)
 L.debug(adata.uns['log1p'])
+
+L.info("done")

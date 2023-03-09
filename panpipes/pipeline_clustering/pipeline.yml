@@ -126,38 +126,54 @@ clusterspecs:
 # ---------------------------------------
 # parameters for finding marker genes
 # ---------------------------------------
+# where pseudo_suerat is set to False 
+# we run https://scanpy.readthedocs.io/en/stable/generated/scanpy.tl.rank_genes_groups.html
+# where pseudo_seurat is set to True, we run an a python implementation of Seurat::FindMarkers (written by CRG) is used,
+
 markerspecs:
   rna:
     run: True
     layer: logged_counts
+    # method options: [‘logreg’, ‘t-test’, ‘wilcoxon’, ‘t-test_overestim_var’]]
+    method: t-test_overestim_var
     mincells: 10 # if a cluster contains less than n cells then do not bother doing marker analysis
-    # Setting pseudo_seurat to True means that rather than use scanpy.rank_gene_groups to identify gene groups,
-    # a python implementation of Seurat::FindMarkers (written by CRG) is used,
-    # We recommend that pseudo_seurat is set to False
+    # where pseudo_suerat is set to False 
+    # we run https://scanpy.readthedocs.io/en/stable/generated/scanpy.tl.rank_genes_groups.html
+    # where pseudo_seurat is set to True, we run an a python implementation of Seurat::FindMarkers (written by CRG) is used,
     pseudo_seurat: False
     # these next two settings do not matter unless pseudo_seurat is set to True,
     # If applicable look at Seurat documentation for FindMarkers for details
     minpct: 0.1
     threshuse: 0.25
+
   prot:
     run:
     layer: clr
-    mincells: 10
+    mincells: 10 # if a cluster contains less than n cells then do not bother doing marker analysis
+    # method options: [‘logreg’, ‘t-test’, ‘wilcoxon’, ‘t-test_overestim_var’]]
+    method: wilcoxon
     pseudo_seurat: False
     minpct: 0.1
     threshuse: 0.25
+
   atac:
     run:
     layer: 
     mincells: 10
+    # method options: [‘logreg’, ‘t-test’, ‘wilcoxon’, ‘t-test_overestim_var’]]
+    method: wilcoxon
     pseudo_seurat: False
     minpct: 0.1
     threshuse: 0.25
+
   multimodal:
     mincells: 10
+    # method options: [‘logreg’, ‘t-test’, ‘wilcoxon’, ‘t-test_overestim_var’]]
+    method: wilcoxon
     pseudo_seurat: False
     minpct: 0.1
     threshuse: 0.25
+
 
 
 # ---------------------------------------

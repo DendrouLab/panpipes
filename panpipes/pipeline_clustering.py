@@ -19,7 +19,7 @@ import re
 from itertools import chain, product
 import glob
 
-from panpipes.funcs.processing import is_float_try, splitall, extract_parameter_from_fname
+from panpipes.funcs.processing import extract_parameter_from_fname
 PARAMS = P.get_parameters(
     ["%s/pipeline.yml" % os.path.splitext(__file__)[0],
      "../pipeline.yml",
@@ -27,7 +27,7 @@ PARAMS = P.get_parameters(
 
 PARAMS['py_path'] =  os.path.join(os.path.dirname(os.path.dirname(__file__)), 'python')
 PARAMS['r_path'] = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'R')
-
+PARAMS['mudata_with_knn'] = 'mudata_w_neighbors.h5mu'
 job_kwargs={}
 if PARAMS['condaenv'] is not None:
     job_kwargs["job_condaenv"] =PARAMS['condaenv']
@@ -36,7 +36,6 @@ if PARAMS['condaenv'] is not None:
 @originate("logs/setup_dirs.sentinel")
 def set_up_dirs(log_file):
     os.mkdir("logs")
-    
     mods =  [key for key, value in PARAMS['modalities'].items() if value is True]
     if PARAMS["multimodal"]["run_clustering"] is True :
         mods.append("multimodal")
@@ -48,16 +47,44 @@ def set_up_dirs(log_file):
 ## Single modality scripts
 ## ------------------------------------
 
+# -----------------------------------=
+# neighbors
+# --------------------------------------
+@follows(set_up_dirs)
+@originate(PARAMS['mudata_with_knn'])
+def run_neighbors(outfile):
+    mods =  [key for key, value in PARAMS['modalities'].items() if value is True]
+    if  any([PARAMS['neighbors'][mod]['use_existing'] is False for mod in mods]):
+        # this means we want to rerun neighbors for at least one assay
+        #we want to replace thhe scaled obj with the new neighbors
+        log_file="logs/run_single_mod_neighbors.log"
+        cmd="""
+        python %(py_path)s/rerun_find_neighbors_for_clustering.py \
+            --infile %(scaled_obj)s \
+            --outfile %(outfile)s  \
+            --neighbor_dict '%(neighbors)s' \
+            --n_threads %(resources_threads_high)s
+            """
+        cmd += " > %(log_file)s"
+        job_kwargs["job_threads"] = PARAMS['resources_threads_high']
+        P.run(cmd, **job_kwargs)
+    else:
+        P.run('ln -s %(scaled_obj)s %(outfile)s', without_cluster=True)
+
+
+
+
 # ------------------------------------
 # UMAP
 # ------------------------------------
+
 def gen_umap_jobs():
     """
     Generate find neighbor jobs with all parameter combinations.
     """
     # same infile for all jobs
     # define files based on jobs
-    infile = PARAMS['scaled_obj']
+    infile = PARAMS['mudata_with_knn']
     mods =  [key for key, value in PARAMS['modalities'].items() if value is True]
     if PARAMS["multimodal"]["run_clustering"] is True :
         mods.append("multimodal")
@@ -68,14 +95,14 @@ def gen_umap_jobs():
                 log_file = os.path.join("logs","_".join([mod,  'md' + str(md) +"_umap.log"]))
                 yield [infile, output_file, mod, md, log_file]
 
-
+@follows(run_neighbors)
 @follows(set_up_dirs)
 @files(gen_umap_jobs)
 def calc_sm_umaps(infile, outfile, mod, mindist, log_file):
     prefix = os.path.split(infile)[0]
     cmd = """
         python %(py_path)s/run_umap.py \
-            --infile %(scaled_obj)s \
+            --infile %(infile)s \
             --outfile %(outfile)s \
             --min_dist %(mindist)s 
             """
@@ -100,7 +127,7 @@ def gen_cluster_jobs():
     """
     # same infile for all jobs
     # define files based on jobs
-    infile = PARAMS['scaled_obj']
+    infile = PARAMS['mudata_with_knn']
     mods =  [key for key, value in PARAMS['modalities'].items() if value is True]
     if PARAMS['multimodal']['run_clustering'] is True:
         mods.append("multimodal")
@@ -114,6 +141,7 @@ def gen_cluster_jobs():
 
 @follows(set_up_dirs)
 @files(gen_cluster_jobs)
+@follows(run_neighbors)
 def calc_cluster(infile, outfile,  mod, res, alg, log_file):
     cmd = """python %(py_path)s/run_clustering.py 
             --infile %(infile)s 
@@ -168,10 +196,11 @@ def collate_mdata(infiles,outfile):
         --umap_files_csv umap_file_paths.csv
         --output_mudata %(outfile)s 
     """
-    # if PARAMS['full_obj'] is None:
-    cmd += "--input_mudata %(scaled_obj)s"
-    # else:
-    #     cmd += "--input_mudata %(scaled_obj)s %(full_obj)s"
+    if PARAMS['full_obj'] is None:
+        mdata_in = PARAMS['mudata_with_knn']
+        cmd += "--input_mudata %(mdata_in)s"
+    else:
+        cmd += "--input_mudata  %(full_obj)s"
     cmd += " > logs/collate_data.log"
     job_kwargs["job_threads"] = PARAMS['resources_threads_medium']
     P.run(cmd, **job_kwargs)
@@ -182,12 +211,18 @@ def collate_mdata(infiles,outfile):
             'logs/plot_clusters_umaps.log')
 def plot_cluster_umaps(infile, log_file,):
     # get associated umap
+    mods =  [key for key, value in PARAMS['modalities'].items() if value is True]
+    if PARAMS['multimodal']['run_clustering']:
+        mods.append("multimodal")
+    mods = ','.join(mods)
     cmd = """python %(py_path)s/plot_cluster_umaps.py \
     --infile %(infile)s 
+    --modalities '%(mods)s'
     """
     cmd += " >> %(log_file)s"
     job_kwargs["job_threads"] = PARAMS['resources_threads_medium']
     P.run(cmd, jobs_limit=1, **job_kwargs)
+
 
 @transform(aggregate_clusters, regex("(.*)/all_res_clusters_list.txt.gz"),
             r'logs/\1_clustree.log',
@@ -218,38 +253,50 @@ def cluster_analysis(fname):
 # ------------------------------------
 # Markers
 # ------------------------------------
-@transform(calc_cluster,
-           regex("(.*)/(.*)/clusters.txt.gz"),
-           r"\1/\2/markers.txt",
-           r"\1/\2/markers",
+
+@subdivide(calc_cluster, regex("(.*)/(.*)/clusters.txt.gz"),
+           r"\1/\2/*_markers.txt",
+           r"\1/\2")
+def gen_marker_jobs(infile, outfile, base_dir):
+    mods =  [key for key, value in PARAMS['modalities'].items() if value is True]
+    for md in mods:
+        IOTools.touch_file(os.path.join(base_dir, md + "_markers.txt"))
+
+@follows(collate_mdata)
+@transform(gen_marker_jobs,
+           regex("(.*)/(.*)/(.*)_markers.txt"),
+           r"logs/\1_\2_\3_markers.log",
+           r"\1/\2/\3_markers",
            r"\1",
-           r"logs/\1_\2_markers.log",
+           r"\1/\2",
+           r"\3"
            )
-def find_markers(infile, outfile, outfile_prefix, mod, log_file ):
+def find_markers(infile, log_file, outfile_prefix, base_mod, cluster_dir, data_mod):
     """
     Runs scanpy.tl.rank_gene_groups in parallel for each cluster
     """
-    min_cells = PARAMS["markerspecs"][mod]["mincells"]
+    anndata_file=PARAMS['sample_prefix'] + "_clustered.h5mu" + "/" + data_mod
+    cluster_file = os.path.join(cluster_dir, "clusters.txt.gz")
     cmd = """
     python %(py_path)s/run_find_markers_multi.py 
-    --infile %(scaled_obj)s 
+    --infile %(anndata_file)s
+    --cluster_file %(cluster_file)s 
     --output_file_prefix %(outfile_prefix)s 
-    --cluster_file %(infile)s 
-    --mincells %(min_cells)s
+    --mod %(data_mod)s
     """
-    if mod is not None and mod != "multimodal":
-        cmd += " --modality %(mod)s"
-        layers = {mod: PARAMS["markerspecs"][mod]["layer"] for mod in ['rna', 'prot', 'atac']} 
-        cmd += " --layer '%(layers)s'"
-    if PARAMS['markerspecs_pseudo_seurat'] is True:
-        min_pct =  PARAMS["markerspecs"][mod]["minpct"]
-        threshuse =  PARAMS["markerspecs"][mod]["threshuse"]
+    min_cells = PARAMS["markerspecs"][data_mod]["mincells"]
+    cmd += " --mincells %(min_cells)s"
+    layer_choice = PARAMS["markerspecs"][data_mod]["layer"]
+    cmd += " --layer '%(layer_choice)s'"
+    testuse = PARAMS["markerspecs"][data_mod]["method"]
+    cmd += " --testuse '%(testuse)s'"
+    if PARAMS['markerspecs'][data_mod]['pseudo_seurat'] is True:
+        min_pct =  PARAMS["markerspecs"][data_mod]["minpct"]
+        threshuse =  PARAMS["markerspecs"][data_mod]["threshuse"]
         cmd += """ --pseudo_seurat True 
-         --minpct %(min_pct)s 
-         --threshuse %(threshuse)s 
+        --minpct %(min_pct)s 
+        --threshuse %(threshuse)s 
         """
-    else:
-        cmd += " --pseudo_seurat False"
     cmd += " > %(log_file)s "
     job_kwargs["job_threads"] = PARAMS['resources_threads_high']
     P.run(cmd, **job_kwargs)
@@ -276,19 +323,23 @@ def find_markers(infile, outfile, outfile_prefix, mod, log_file ):
 #     --subgroup %(plotspecs_discrete_variables)s > %(log_file)s"""
 #     P.run(cmd, job_threads=PARAMS['resources_threads_high'])
 
-
-# limit jobs because reading the h5 file simultaneouly is problematic
-# @follows(heatmap_markers)
+# this transforms gen_marker_jobs instead of find_markers because gen_marker_jobs creates empty marker files
+# which are then filled by find_markers.
 @follows(collate_mdata)
-@transform(find_markers,
-            regex(r"(.*)/alg(.*)/markers.txt"),
-            r"logs/\1_alg\2_dotplots.log",
-            r"\1/alg\2/figures/dotplot_top_markers.png",
+@follows(find_markers)
+@transform(gen_marker_jobs,
+            regex(r"(.*)/alg(.*)/(.*)_markers.txt"),
+            r"logs/cluster\1_alg\2_exprs_\3_dotplots.log",
+            r"\1/alg\2/figures/dotplot_top_markers_\3.png",
             r"\1/alg\2/figures",
-             r"\1", r"\2")
-def plot_marker_dotplots(marker_file, log_file, outfile, fig_path,mod, cluster_col):
+             r"\1", r"\2", r"\3")
+def plot_marker_dotplots(marker_file, log_file, outfile, 
+                         fig_path, cluster_mod, cluster_col, expr_mod):
     """
     Plots some additional marker plots
+    Read in the h5mu file, pull the cluster col from the h5mu obs.
+    then pull the epxression values from the expr_mod.
+    
     """
     data_obj=PARAMS['sample_prefix'] + "_clustered.h5mu"
     # check there is a figures directory
@@ -297,17 +348,17 @@ def plot_marker_dotplots(marker_file, log_file, outfile, fig_path,mod, cluster_c
     cmd = """
         python %(py_path)s/plot_scanpy_markers.py \
             --infile %(data_obj)s \
+            --modality %(expr_mod)s
             --marker_file %(marker_file)s \
-            --figure_prefix %(fig_path)s
-            --group_col %(cluster_col)s
+            --figure_prefix %(fig_path)s \
             --n %(plotspecs_top_n_markers)s
             
      """
-    if mod is not None:
-        cmd += " --modality %(mod)s"
-        cmd += " --layer '%(plotspecs_layers)s'"
-    else:
-        cmd += " --layer logged_counts"
+    if cluster_mod != "multimodal":
+        cluster_col = cluster_mod + ":" + cluster_col
+    cmd += " --group_col %(cluster_col)s"
+    layer_choice = PARAMS["markerspecs"][expr_mod]["layer"]
+    cmd += " --layer %(layer_choice)s"
     cmd += " > %(log_file)s "
     job_kwargs["job_threads"] = PARAMS['resources_threads_medium']
     P.run(cmd, **job_kwargs)
@@ -374,10 +425,7 @@ def marker_analysis(fname):
 # #--------
 
 
-
-
-
-@follows(cluster_analysis, marker_analysis, )
+@follows(cluster_analysis, marker_analysis )
 def full():
     """
     All cgat pipelines should end with a full() function which updates,

@@ -59,81 +59,78 @@ sc.settings.figdir = args.figure_prefix
 
 # script
 
+def calc_dendrogram(adata, group_col):
+    if len(adata.obs[group_col].cat.categories) > 5:
+        incl_dendrogram = True
+        if "X_pca" not in adata.obsm.keys():
+            sc.pp.pca(adata)
+        L.info("calculating dendrogram")
+        sc.tl.dendrogram(adata, groupby=group_col, use_rep="X_pca")
+    else:
+        incl_dendrogram = False
+    return incl_dendrogram
 
-def main(adata, mod, layer, group_col, mf, n):
+
+def do_plots(adata, mod, group_col, mf, n=10, layer=None):
     L.debug("check layers")
-    if layer != 'X':
-        adata.X = adata.layers[layer]
-    # run pca if not done already.( for dendorgram calc)
-    if("X_pca" in adata.obsm.keys()):
-        sc.pp.pca(adata)
-    # read file
+    # get markers for plotting
+    mf = mf[mf['avg_logFC'] > 0]
     df = mf.groupby(group_col).apply(lambda x: x.nlargest(n, ['scores'])).reset_index(drop=True)
     marker_list={str(k): list(v) for k,v in df.groupby(group_col)["gene"]}
     # add cluseter col to obs
-    adata.obs[group_col] = adata.obs[group_col].astype('str').astype('category')
-    L.debug("do plots")
+    # check whether a dendrogram is computed/
+    incl_dendrogram = calc_dendrogram(adata, group_col)
+    L.info("start plotting")
     sc.pl.stacked_violin(adata,
                 marker_list,
                 groupby=group_col,
-                save=  '_top_markers'+ mod +'.png',
-                figsize=(24, 5))
+                layer=layer,
+                save = '_top_markers'+ mod +'.png',
+                dendrogram=incl_dendrogram,
+                # figsize=(24, 5)
+                )
     sc.pl.matrixplot(adata,
                     marker_list,
                     groupby=group_col,
                     save=  '_top_markers'+ mod +'.png',
+                    dendrogram=incl_dendrogram,
                     figsize=(24, 5))
     sc.pl.dotplot(adata,
                 marker_list,
                 groupby=group_col,
                 save=  '_top_markers'+ mod +'.png',
+                dendrogram=incl_dendrogram,
                 figsize=(24, 5))
     sc.pl.heatmap(adata,
                 marker_list,
                 groupby=group_col,
                 save=  '_top_markers'+ mod +'.png',
-                figsize=(24, 5))
+                dendrogram=incl_dendrogram,
+                # figsize=(24, 5)
+                )
 
 
-L.debug("load data")
+# read data
 mdata = mu.read(args.infile)
-
-
-L.debug("load marker file")
-mf = pd.read_csv(args.marker_file, sep='\t' )
-mf[args.group_col] = mf['cluster'].astype('str').astype('category')
-# get layer
-try:
-    layers = read_yaml(args.layer)
-except AttributeError:
-    layers = args.layer
-
-if type(mdata) is mu.MuData and args.modality is None and type(layers) is not dict:
-    sys.exit('if inputting a mudata object, layers must be in a dictionary')
-    
 
 if type(mdata) is AnnData:
     adata = mdata
-    main(adata,mod=args.modality, layer=args.layer, n=args.n)
-elif args.modality is not None:
-    adata = mdata[args.modality]
-    if type(layers) is dict:
-        ll = layers[args.modality]
-    else:
-        ll = layers
-    main(adata,
-         mod=args.modality, 
-         layer = ll, 
-         mf=mf, 
-         group_col = args.group_col,
-         n=int(args.n))
+    # main function only does rank_gene_groups on X, so 
+elif type(mdata) is mu.MuData and args.modality is not None:
+    adata = mdata[args.modality]    
 else:
-    # we have multimodal object, and some kind of multimodal clustering output
-    for mod in mf['mod'].unique():
-        print(mod)
-        mf_sub = mf[mf['mod'] == mod]
-        mdata[mod].obs[args.group_col] = mdata.obs.loc[mdata[mod].obs_names,args.group_col].astype('category')
-        mdata.update_obs()
-        main(mdata[mod], mod=mod, layer = layers[mod], group_col = args.group_col, mf=mf_sub, n=int(args.n))
+    sys.exit('if inputting a mudata object, you need to specify a modality')
+    
 
+L.info("load marker file")
+mf = pd.read_csv(args.marker_file, sep='\t' )
+mf[args.group_col] = mf['cluster'].astype('category')
 
+# get layer
+adata.obs[args.group_col] = mdata.obs[args.group_col]
+do_plots(adata,
+         mod=args.modality, 
+         group_col=args.group_col,
+         mf=mf,
+         layer=args.layer, 
+         n=int(args.n))
