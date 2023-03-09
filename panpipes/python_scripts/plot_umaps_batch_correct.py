@@ -178,3 +178,4 @@ for mod in umaps_df['mod'].unique():
                     g.savefig(os.path.join(args.fig_dir, mod, "umap_method_" + qc + ".png"), dpi = 300)
                 plt.clf()
 
+L.info('done')

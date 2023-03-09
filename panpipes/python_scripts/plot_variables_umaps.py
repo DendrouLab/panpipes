@@ -8,7 +8,7 @@ import muon as mu
 from anndata import AnnData
 import pandas as pd
 import argparse
-from panpipes.funcs.io import read_yaml
+from panpipes.funcs.io import read_yaml, dictionary_stripper
 from itertools import product, chain
 
 sc.settings.autoshow = False
@@ -69,10 +69,11 @@ mdata = mu.read(args.infile)
 
 
 # get bases
-basis_dict = read_yaml(args.basis_dict)
+basis_dict = dictionary_stripper(read_yaml(args.basis_dict))
 
 if args.categorical_variables is not None:
-    cat_vars = read_yaml(args.categorical_variables)
+    cat_vars = dictionary_stripper(read_yaml(args.categorical_variables))
+    
     uniq_discrete = list(set(chain(*cat_vars.values())))
     # make sure they are categories
     mdata.obs[uniq_discrete] = mdata.obs[uniq_discrete].apply(lambda x: x. astype('category'))
@@ -82,7 +83,7 @@ else:
 
 if args.continuous_variables is not None:
     try:
-        cont_vars = read_yaml(args.continuous_variables)
+        cont_vars = dictionary_stripper(read_yaml(args.continuous_variables))
     except AttributeError:
         # this assumes that we have tried to parse a dict and nstead found a string
         # there is probably a better solution
