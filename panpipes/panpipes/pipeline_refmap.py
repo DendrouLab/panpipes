@@ -21,10 +21,9 @@ if PARAMS['condaenv'] is not None:
     job_kwargs["job_condaenv"] =PARAMS['condaenv']
 
 
-
-PARAMS['py_path'] = os.path.join(os.path.dirname(os.path.dirname(__file__)), "python")
-PARAMS['R_path'] = os.path.join(os.path.dirname(os.path.dirname(__file__)), "R")
-PARAMS['resources_path'] = os.path.join(os.path.dirname(os.path.dirname(__file__)), "resources")
+PARAMS['py_path'] =  os.path.join(os.path.dirname(__file__), 'python_scripts')
+PARAMS['r_path'] = os.path.join(os.path.dirname(__file__), 'R_scripts')
+PARAMS['resources_path'] = os.path.join(os.path.dirname(__file__), "resources")
 
 
 

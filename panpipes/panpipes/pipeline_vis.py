@@ -15,8 +15,8 @@ PARAMS = P.get_parameters(
      "../pipeline.yml",
      "pipeline.yml"])
 
-PARAMS['py_path'] =  os.path.join(os.path.dirname(os.path.dirname(__file__)), 'python')
-PARAMS['r_path'] = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'R')
+PARAMS['py_path'] =  os.path.join(os.path.dirname(__file__), 'python_scripts')
+PARAMS['r_path'] = os.path.join(os.path.dirname(__file__), 'R_scripts')
 
 job_kwargs = {}
 

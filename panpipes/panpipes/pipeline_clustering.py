@@ -25,9 +25,10 @@ PARAMS = P.get_parameters(
      "../pipeline.yml",
      "pipeline.yml"])
 
-PARAMS['py_path'] =  os.path.join(os.path.dirname(os.path.dirname(__file__)), 'python')
-PARAMS['r_path'] = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'R')
+PARAMS['py_path'] =  os.path.join(os.path.dirname(__file__), 'python_scripts')
+PARAMS['r_path'] = os.path.join(os.path.dirname(__file__), 'R_scripts')
 PARAMS['mudata_with_knn'] = 'mudata_w_neighbors.h5mu'
+
 job_kwargs={}
 if PARAMS['condaenv'] is not None:
     job_kwargs["job_condaenv"] =PARAMS['condaenv']
