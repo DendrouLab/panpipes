@@ -21,9 +21,9 @@ PARAMS = P.get_parameters(
      "pipeline.yml"])
 
 
-PARAMS['py_path'] =  os.path.join(os.path.dirname(__file__), 'python_scripts')
-PARAMS['r_path'] = os.path.join(os.path.dirname(__file__), 'R_scripts')
-PARAMS['resources_path'] = os.path.join(os.path.dirname(__file__), "resources")
+PARAMS['py_path'] =  os.path.join(os.path.dirname(os.path.dirname(__file__)), 'python_scripts')
+PARAMS['r_path'] = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'R_scripts')
+PARAMS['resources_path'] = os.path.join(os.path.dirname(os.path.dirname(__file__)), "resources")
 
 if  PARAMS['sample_prefix'] is not None:
     PARAMS['filt_file'] = PARAMS['sample_prefix'] + "_filt.h5mu"

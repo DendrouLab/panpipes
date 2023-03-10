@@ -1,5 +1,4 @@
-dist/panpipes-0.2.0-py3-none-any.whl
-dist/panpipes-0.2.0.tar.gz
-panpipes.egg-info/PKG-INFO
-panpipes.egg-info/requires.txt
+dist/
 panpipes/__pycache__
+build/
+panpipes.egg-info
