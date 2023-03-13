@@ -130,16 +130,9 @@ else:
     for mod in modalities:
         print(mod)
         df_sub = df[df['mod'] == mod]
-        # make sure every grouping var is a category
-        if mod is not "multimodal":
-            for gv in group_vars:
-                mdata[mod].obs[gv] = mdata.obs.loc[mdata[mod].obs_names,gv].astype('category')
-            mdata.update_obs()
-        else:
-            for gv in group_vars:
-                mdata.obs[gv] = mdata.obs.loc[mdata.obs_names,gv].astype('category')
-            mdata.update_obs()
-        # pull out the layers and set ll to None if no layer sepcificed (so the plotting funcs will use X)
+        for gv in group_vars:
+            mdata[mod].obs[gv] = mdata.obs.loc[mdata[mod].obs_names,gv].astype('category')
+        mdata.update_obs()
         try:
             ll = layers[mod]
         except KeyError:
@@ -153,5 +146,3 @@ else:
                     grouping_var=gv, 
                     pfx = pfx,
                     df=df_sub)
-
-L.info('done')

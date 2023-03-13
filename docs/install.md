@@ -33,7 +33,7 @@ conda activate pipeline_env
 we include an environment.yml for a conda environment tested on all the pipelines packaged in this version of Panpipes.
 
 ##### Step 2 Download and install this repo
-
+If you have not already set up SSH keys for github first follow these [instructions](https://github.com/DendrouLab/panpipes/docs/set_up_ssh_keys_for_github.md): 
 
 ```
 git clone https://github.com/DendrouLab/panpipes

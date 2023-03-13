@@ -4,6 +4,7 @@ import numpy as np
 from scipy.sparse import issparse
 from scanpy.get import obs_df as get_obs_df
 from scanpy.pp import normalize_total
+import scanpy as sc
 import warnings
 import logging
 from typing import Optional, Literal
@@ -38,9 +39,53 @@ def exp_mean_dense(x):
     # convert out of compressed sparse matrix
     return np.log((np.sum(np.exp(x)-1)/x.shape[1]) + 1)
 
+def find_all_markers_pseudo_seurat(
+        adata, 
+        groups,
+        groupby,
+        layer=None,
+        method=None,
+        n_genes=float("inf"), 
+        corr_method="bonferroni",
+        arg_minpct=0.1,
+        arg_mindiffpct=-float("inf"), 
+        arg_logfcdiff=0.25):
+    # add replace X with layer
+    if layer is not None:
+        adata.X = adata.layers[layer]
+    # need to check is the assay layer is dense or not
+    assay_is_sparse = issparse(adata.X)
+    use_dense = assay_is_sparse==False 
+    if groups == 'all':
+        groups = adata.obs[groupby].unique().tolist()
+    markers_dict = {}
+    filter_dict = {}
+    for cv in groups:
+        # \ set up idenst as cv ==1 and everything else = 0
+        adata.obs['idents'] = ['1' if x == cv else '0' for x in adata.obs[groupby]]
+        filter_dict[cv] = pseudo_seurat(adata, use_dense=use_dense,arg_minpct=arg_minpct,
+                  arg_mindiffpct=arg_mindiffpct, 
+                  arg_logfcdiff=arg_logfcdiff )
+        logging.info("number of genes remaining after filtering:  %i\n" % filter_dict[cv]['background'].sum())
+        adata_rg = adata[:, filter_dict[cv]['background'].tolist()].copy()
+        sc.tl.rank_genes_groups(adata_rg, layer=layer,
+                                groupby="idents", groups=["1"],  
+                                reference="0",
+                                method=method, 
+                                n_genes=float("inf"), 
+                                corr_method="bonferroni")
+        markers_dict[cv] = sc.get.rank_genes_groups_df(adata_rg, group="1")
+        # remove adata from mem
+        adata_rg = None
+    markers = pd.concat(markers_dict.values(), keys=markers_dict.keys())
+    filter_stats = pd.concat(filter_dict.values(), keys=filter_dict.keys())
+    return markers, filter_stats
 
-
-def pseudo_seurat(adata, arg_minpct=0.1, arg_mindiffpct=-float("inf"), arg_logfcdiff=0.25, use_dense=False):
+def pseudo_seurat(adata, 
+                  arg_minpct=0.1,
+                  arg_mindiffpct=-float("inf"), 
+                  arg_logfcdiff=0.25, 
+                  use_dense=False):
     """
     alternative method that"s more like seurat (pseudo seurat if you will)
     In that you filter genes before running rank genes
@@ -79,7 +124,6 @@ def pseudo_seurat(adata, arg_minpct=0.1, arg_mindiffpct=-float("inf"), arg_logfc
     min_pct = pcts.min(axis=1)
     diff_pct = max_pct - min_pct
     take_diff_pct = diff_pct > arg_mindiffpct
-
     # remove genes that are not expressed higher than 0.1 in one of the groups
     take_min_pct = max_pct > arg_minpct
 
@@ -88,7 +132,7 @@ def pseudo_seurat(adata, arg_minpct=0.1, arg_mindiffpct=-float("inf"), arg_logfc
     # this has the potential to be very slow. Transposeing it speeds it up a bit.
     # I need to undertand sparse matrices better to make it work
     if use_dense:
-        print("using dense matrix")
+        logging.info("using dense matrix")
         # extract the counts for cluster cells and calculate exp means on each row
         nct = adata.X.T[:, cluster_cells_ind]
         cluster_mean = np.apply_along_axis(exp_mean_dense, 1, nct.todense())
@@ -98,7 +142,7 @@ def pseudo_seurat(adata, arg_minpct=0.1, arg_mindiffpct=-float("inf"), arg_logfc
         other_mean = np.apply_along_axis(exp_mean_dense, 1, nct.todense())
         diff_mean = abs(cluster_mean - other_mean)
     else:
-        print("using sparse matrix")
+        logging.info("using sparse matrix")
         cluster_mean = exp_mean_sparse(adata.X.T[:, cluster_cells_ind])
         other_mean = exp_mean_sparse(adata.X.T[:, other_cells_ind])
         diff_mean = abs(cluster_mean - other_mean).A1
@@ -122,7 +166,7 @@ def run_neighbors_method_choice(adata, method, n_neighbors, n_pcs, metric, use_r
     # useful if we are dealing with a MuData object but we want to use single rep, e.g.
     # calculating neighbors on a totalVI latent rep
     if method == "scanpy":
-        print("Computing neighbors using scanpy")
+        logging.info("Computing neighbors using scanpy")
         from scanpy.pp import neighbors
         neighbors(adata,
                         n_pcs=n_pcs,
@@ -131,7 +175,7 @@ def run_neighbors_method_choice(adata, method, n_neighbors, n_pcs, metric, use_r
                         use_rep=use_rep)
     elif method == "hnsw":
         from scvelo.pp import neighbors
-        print("Computing neighbors using hnswlib (with scvelo a la pegasus!)")
+        logging.info("Computing neighbors using hnswlib (with scvelo a la pegasus!)")
         # we use the neighbors function from scvelo (thanks!)
         # with parameters from pegasus (for a more exact result).
         # code snippet from Steve Sansom, via COMBAT project
