@@ -19,15 +19,15 @@ import re
 from itertools import chain, product
 import glob
 
-from panpipes.funcs.processing import is_float_try, splitall, extract_parameter_from_fname
+from panpipes.funcs.processing import extract_parameter_from_fname
 PARAMS = P.get_parameters(
     ["%s/pipeline.yml" % os.path.splitext(__file__)[0],
      "../pipeline.yml",
      "pipeline.yml"])
 
-PARAMS['py_path'] =  os.path.join(os.path.dirname(__file__), 'python_scripts')
-PARAMS['r_path'] = os.path.join(os.path.dirname(__file__), 'R_scripts')
-
+PARAMS['py_path'] =  os.path.join(os.path.dirname(os.path.dirname(__file__)), 'python_scripts')
+PARAMS['r_path'] = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'R_scripts')
+PARAMS['mudata_with_knn'] = 'mudata_w_neighbors.h5mu'
 
 job_kwargs={}
 if PARAMS['condaenv'] is not None:
