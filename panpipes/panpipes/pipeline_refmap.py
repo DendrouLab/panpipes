@@ -104,7 +104,7 @@ def run_refmap_scvi(infile, outfile, log_file, ref_architecture ):
 @originate("logs/refmap_wnn.log")
 def run_refmap_wnn(outfile):
     cmd = """
-        Rscript %(R_path)s/refmap_wnn.R
+        Rscript %(r_path)s/refmap_wnn.R
             --reference_path %(wnn)s
             --query_path %(query_path)s 
           """  

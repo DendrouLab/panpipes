@@ -91,3 +91,6 @@ if multi_mod=="totalvi":
 
 base_obj.update()
 base_obj.write(args.output_mudata)
+
+L.info("Done")
+

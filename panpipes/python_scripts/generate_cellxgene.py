@@ -2,11 +2,8 @@ import argparse
 import pandas as pd
 import scanpy as sc
 import numpy as np
-import os 
-import re
-from itertools import chain
 
-from panpipes.funcs.processing import is_float_try, splitall, extract_parameter_from_fname, check_for_bool
+from panpipes.funcs.processing import extract_parameter_from_fname, check_for_bool
 from panpipes.funcs.io import read_anndata
 import sys
 import logging
@@ -87,3 +84,7 @@ if args.best_cluster_col is not None:
 
 
 adata.write(args.output_anndata)
+
+
+L.info("Done")
+

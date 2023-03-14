@@ -71,3 +71,6 @@ if args.clusters_or_markers == "markers":
     frame_sub = frame_sub[frame_sub['avg_logFC'] > 0]
     frame_sub.to_csv(args.output_file, sep='\t', header=True, index=False)
 
+
+L.info("Done")
+

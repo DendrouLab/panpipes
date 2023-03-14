@@ -50,7 +50,7 @@ parser.add_argument("--figdir",
                     default="./figures/prot/",
                     help="path to save the figures to")
 parser.add_argument('--identify_isotype_outliers',
-                    default=False,
+                    default=False, type=check_for_bool,
                     help='')
 parser.add_argument('--isotype_upper_quantile',
                     default=0.9,
@@ -189,11 +189,5 @@ if args.per_adt_metrics is not None:
     # write out the per channel metrics in a separate csv.
     var_dat.to_csv(args.sampleprefix + "_adt_qc_metrics_per_" + channel_col + ".csv")
 
-
-
-
-
-
-
-
+L.info("Done")
 

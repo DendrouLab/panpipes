@@ -5,7 +5,7 @@ import re
 import numpy as np
 from scipy.sparse import issparse
 from panpipes.funcs.processing import check_for_bool
-from panpipes.funcs.io import read_anndata, write_anndata
+from panpipes.funcs.io import read_anndata
 from panpipes.funcs.scmethods import pseudo_seurat
 
 import sys
@@ -40,7 +40,7 @@ parser.add_argument("--testuse",
                     default='wilcoxon', 
                     help="wilcoxon, t-test or logreg")
 parser.add_argument("--pseudo_seurat",
-                    default=False, 
+                    default=False, type=check_for_bool,
                     help="apply seurat like filtering before marker test")
 parser.add_argument("--minpct", 
                     default=0.1,
@@ -57,7 +57,7 @@ parser.add_argument("--mincells",
 
 
 args, opt = parser.parse_known_args()
-use_muon = check_for_bool(args.use_muon)
+use_muon = args.use_muon
 
 
 # script -------------------------------
@@ -180,3 +180,6 @@ if run_pseudo_seurat:
 
 
 # quick do some plotting!
+
+L.info("Done")
+

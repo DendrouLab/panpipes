@@ -24,7 +24,7 @@ from panpipes.funcs.scmethods import X_is_raw
 import sys
 import logging
 L = logging.getLogger()
-L.setLevel(logging.DEBUG)
+L.setLevel(logging.INFO)
 log_handler = logging.StreamHandler(sys.stdout)
 formatter = logging.Formatter('%(asctime)s: %(levelname)s - %(message)s')
 log_handler.setFormatter(formatter)
@@ -44,7 +44,7 @@ parser.add_argument('--output_scaled_mudata',
                     default=None,
                     help='if not specified then the output will be written to output_logged_mudata path')
 parser.add_argument('--use_muon',
-                    default=False,
+                    default=False, type=check_for_bool,
                     help='')  
 parser.add_argument('--fig_dir', 
                     default="./figures",
@@ -60,11 +60,11 @@ parser.add_argument('--n_top_genes', default=None)
 parser.add_argument('--min_mean', default=0.0125)
 parser.add_argument('--max_mean', default=3)
 parser.add_argument('--min_disp', default=0.5)
-parser.add_argument("--filter_by_hvg", default=False)
+parser.add_argument("--filter_by_hvg", default=False, type=check_for_bool)
 # regress out options
 parser.add_argument('--regress_out', default=None)
 # scale options
-parser.add_argument('--scale', default=True)
+parser.add_argument('--scale', default=True, type=check_for_bool)
 parser.add_argument('--scale_max_value', default=None)
 # pca options
 parser.add_argument("--n_pcs", default=50)
@@ -110,7 +110,7 @@ else:
 
 # sc.pp.highly variabel genes Expects logarithmized data, except when flavor='seurat_v3' in which count data is expected.
 # change the order accordingly
-L.info("run hvgs")
+L.info("normalise, log and calucalte highly variable genes")
 if args.flavor == "seurat_v3":
     if args.n_top_genes is None:
         raise ValueError("if seurat_v3 is used you must give a n_top_genes value")
@@ -160,15 +160,18 @@ if args.exclude_file is not None:
             L.info("number of hvgs after filtering")
             L.info(adata.var.highly_variable.sum())
             sc.pl.highly_variable_genes(adata,show=False, save ="_exclude_genes_highlyvar.png")
+    else:
+        sys.exit("exclusion file %s not found, check the path andn try again" % args.exclude_file)
 
 if isinstance(mdata, mu.MuData):
     mdata.update()
 
 L.debug(adata.uns['log1p'])
 # filter by hvgs
-filter_by_hvgs = check_for_bool(args.filter_by_hvg)
+filter_by_hvgs = args.filter_by_hvg
 
 if filter_by_hvgs is True:
+    L.info("filtering object to only include highly variable genes")
     adata = adata[:, adata.var.highly_variable]
     if isinstance(mdata, mu.MuData):
         mdata.update()
@@ -193,12 +196,15 @@ L.debug(adata.uns['log1p'])
 # regress out
 if args.regress_out is not None:
     regress_opts = args.regress_out.split(",")
+    L.info("regressing out %s" % regress_opts)
     sc.pp.regress_out(adata, regress_opts)
 
 
 if args.scale is True and args.scale_max_value is None:
+    L.info("scaling data with default parameters")
     sc.pp.scale(adata)
 elif args.scale is True:
+    L.info("scaling data to max value %i" % int(args.scale_max_value))
     sc.pp.scale(adata, max_value=int(args.scale_max_value))
 else:
     L.info("not scaling data")

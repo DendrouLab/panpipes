@@ -3,16 +3,11 @@ import multiprocessing
 import scanpy as sc
 import pandas as pd
 import matplotlib.pyplot as plt
-import scvi
 import argparse
 import os
-import gc
 import muon as mu
 from cgatcore import pipeline as P
 
-from scpipelines.funcs.processing import check_for_bool
-from scpipelines.funcs.io import read_anndata, write_anndata
-from scpipelines.funcs.scmethods import run_neighbors_method_choice, X_is_raw
 
 import sys
 import logging
@@ -66,3 +61,7 @@ mdata = mu.read(args.input_mudata)
 
 mu.pp.neighbors(mdata)
 mu.tl.umap(mdata)
+
+
+L.info("Done")
+

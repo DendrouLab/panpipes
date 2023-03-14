@@ -24,10 +24,8 @@ import argparse
 import scanpy as sc
 import muon as mu
 
-from panpipes.funcs.io import read_anndata, write_anndata, write_obs
-from panpipes.funcs.processing import check_for_bool
-from panpipes.funcs.scmethods import identify_isotype_outliers
-from panpipes.funcs.plotting import adjust_x_axis
+from panpipes.funcs.io import write_obs
+
 
 parser = argparse.ArgumentParser()
 # required option
@@ -167,7 +165,5 @@ write_obs(mdata, output_prefix=args.sampleprefix,
 # CRITICAL to do WORK OUT WHICH QC SCRIPT TO USE  TO SAVE THE MDATA OR ANNDATA
 mdata.write(args.outfile)
 
-
-
-
+L.info("done")
 

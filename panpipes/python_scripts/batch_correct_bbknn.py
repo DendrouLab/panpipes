@@ -97,4 +97,5 @@ outfiletmp = ("tmp/bbknn_scaled_adata_" + args.modality + ".h5ad" )
 L.info("saving bbknn corrected adata")
 write_anndata(adata, outfiletmp, use_muon=False, modality=args.modality)
 
-L.debug("done")
+L.info("Done")
+

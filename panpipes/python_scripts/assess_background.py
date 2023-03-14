@@ -193,3 +193,7 @@ if 'prot' in mdata.mod.keys():
         plt.savefig(os.path.join(args.figpath,"barplot_background_" + args.channel_col + "_prot_top_expressed.png"))
 
 plt.clf()
+
+
+L.info("Done")
+

@@ -12,7 +12,7 @@ from panpipes.funcs.scmethods import find_all_markers_pseudo_seurat
 import sys
 import logging
 L = logging.getLogger()
-L.setLevel(logging.DEBUG)
+L.setLevel(logging.INFO)
 log_handler = logging.StreamHandler(sys.stdout)
 formatter = logging.Formatter('%(asctime)s: %(levelname)s - %(message)s')
 log_handler.setFormatter(formatter)
@@ -36,7 +36,8 @@ parser.add_argument("--cluster_file",
                     default=None,
                     help="file name, format: .h5ad")
 parser.add_argument("--testuse", default='wilcoxon', help="wilcoxon, t-test or logreg")
-parser.add_argument("--pseudo_seurat", default=False, help="apply seurat like filtering before marker test")
+parser.add_argument("--pseudo_seurat", default=False, type=check_for_bool,
+                    help="apply seurat like filtering before marker test")
 parser.add_argument("--minpct", type=str, default='0.1', help="minimum fraction of cells expressing gene")
 parser.add_argument("--mindiffpct", type=str, default='-inf',
                     help="minimum fraction difference between cluster and other cells. Setting not recommended.")
@@ -215,7 +216,7 @@ main(adata,
     mincells=int(args.mincells),
     layer=args.layer,
     testuse=args.testuse,
-    pseudo_seurat=check_for_bool(args.pseudo_seurat),
+    pseudo_seurat=args.pseudo_seurat,
     output_file_prefix=args.output_file_prefix)
 
 L.info("done")

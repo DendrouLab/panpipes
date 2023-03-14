@@ -146,3 +146,6 @@ else:
                     grouping_var=gv, 
                     pfx = pfx,
                     df=df_sub)
+
+L.info("Done")
+

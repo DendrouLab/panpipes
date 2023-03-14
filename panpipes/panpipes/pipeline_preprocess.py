@@ -26,8 +26,6 @@ PARAMS['r_path'] = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'R_s
 PARAMS['resources_path'] = os.path.join(os.path.dirname(os.path.dirname(__file__)), "resources")
 
 if  PARAMS['sample_prefix'] is not None:
-    PARAMS['filt_file'] = PARAMS['sample_prefix'] + "_filt.h5mu"
-    PARAMS['scaled_file'] = PARAMS['sample_prefix'] + "_scaled.h5mu"
     PARAMS['mudata_file'] = PARAMS['sample_prefix'] + ".h5mu"
 else:
     logging.warning("sample prefix is None, please use a string")
@@ -79,10 +77,9 @@ def run_plotqc_query(pqc_dict):
 @follows(filter_mudata)
 @originate("logs/postfilterplot.log")
 def postfilterplot(log_file):
-    R_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "R")
     cell_mtd_file = PARAMS['sample_prefix'] + "_filtered_cell_metadata.tsv"
     cmd = """
-    Rscript %(R_path)s/plotQC.R 
+    Rscript %(r_path)s/plotQC.R 
     --prefilter FALSE
     --cell_metadata %(cell_mtd_file)s 
     --sampleprefix %(sample_prefix)s
@@ -241,15 +238,15 @@ def atac_preprocess(log_file, scaled_file):
     job_kwargs["job_threads"] = PARAMS['resources_threads_high']
     P.run(cmd, **job_kwargs)
 
-@active_if(mode_dictionary['rep'] is True)
-@follows(atac_preprocess)
-# @transform(rna_preprocess,formatter(),"logs/preprocess_rep.log")
-@originate("logs/preprocess_rep.log", PARAMS['mudata_file'])
-def rep_preprocess( log_file, scaled_file):
-    pass
+# @active_if(mode_dictionary['rep'] is True)
+# @follows(atac_preprocess)
+# # @transform(rna_preprocess,formatter(),"logs/preprocess_rep.log")
+# @originate("logs/preprocess_rep.log", PARAMS['mudata_file'])
+# def rep_preprocess( log_file, scaled_file):
+#     pass
 
 # ---- end stub
-@follows(postfilterplot,rna_preprocess,atac_preprocess,prot_preprocess,rep_preprocess)
+@follows(postfilterplot,rna_preprocess,atac_preprocess,prot_preprocess)
 def full():
     """
     All cgat pipelines should end with a full() function which updates,

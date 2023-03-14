@@ -2,9 +2,7 @@ import argparse
 import pandas as pd
 import scanpy as sc
 
-from muon import read as muread
-from panpipes.funcs.processing import check_for_bool
-from panpipes.funcs.io import read_anndata
+from muon import read 
 
 import sys
 import logging
@@ -26,5 +24,5 @@ args = parser.parse_args()
 args, opt = parser.parse_known_args()
 
 # read file
-mdata = muread(args.infile)
+mdata = read(args.infile)
 mdata.obs.to_csv(args.outfile, sep='\t')

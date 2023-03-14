@@ -85,3 +85,6 @@ if os.path.exists(os.path.basename(args.outfile)) is False:
     os.makedirs(os.path.basename(args.outfile))
 adata.write(args.outfile)
 
+
+L.info("Done")
+

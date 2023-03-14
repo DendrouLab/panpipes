@@ -70,3 +70,6 @@ for idx in range(df.shape[0]):
     # plt.legend(bbox_to_anchor=(1.04,0.5), loc="center left", borderaxespad=0)
     plt.subplots_adjust(right=0.85)
     plt.savefig(fname, bbox_inches="tight")
+
+L.info("Done")
+

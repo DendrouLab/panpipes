@@ -4,7 +4,7 @@ import glob
 import pandas as pd
 import argparse
 from panpipes.funcs.processing import check_for_bool
-from panpipes.funcs.io import read_anndata, write_anndata
+from panpipes.funcs.io import read_anndata
 from panpipes.funcs.scmethods import merge_consensus_clust
 
 import sys

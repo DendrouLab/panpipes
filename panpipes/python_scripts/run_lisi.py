@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 import sys
 import logging
 L = logging.getLogger()
-L.setLevel(logging.DEBUG)
+L.setLevel(logging.INFO)
 log_handler = logging.StreamHandler(sys.stdout)
 formatter = logging.Formatter("%(asctime)s: %(levelname)s - %(message)s")
 log_handler.setFormatter(formatter)
@@ -75,3 +75,4 @@ for md in batch_dict.keys():
 
 
 
+L.info("Done")

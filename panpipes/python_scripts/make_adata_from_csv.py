@@ -13,7 +13,7 @@ import sys
 import logging
 
 L = logging.getLogger()
-L.setLevel(logging.DEBUG)
+L.setLevel(logging.INFO)
 log_handler = logging.StreamHandler(sys.stdout)
 formatter = logging.Formatter('%(asctime)s: %(levelname)s - %(message)s')
 log_handler.setFormatter(formatter)
@@ -188,5 +188,6 @@ L.info("saving data")
 L.debug(mdata)
 # this will write the file as anndata or muon depending on the class of mdata.
 mdata.write(args.output_file)
+
 L.info("done")
 
