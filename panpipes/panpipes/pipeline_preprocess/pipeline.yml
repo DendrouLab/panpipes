@@ -27,8 +27,9 @@ sample_prefix:
 unfiltered_obj: 
 # if running this on prefiltered datat then
 #1. set unfiltered obj (above) to blank
-#2. rename your filtered file to match, the format PARAMS['sample_prefix'] + '_filt.h5ad'
+#2. rename your filtered file to match, the format PARAMS['sample_prefix'] + '.h5mu'
 #3. put renamed file in the same folder as this yml.
+#4. set filtering run: to False below.
 
 #TO DO this needs to go i think it doesn't make sense to save this file.
 
@@ -151,6 +152,7 @@ downsample_mods:
 # ------------
 ## plotting vars
 # ------------
+
 plotqc:
   # use these categorical variables to plot/split by and count the cells
   grouping_var: sample_id
