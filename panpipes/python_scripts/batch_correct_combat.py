@@ -95,4 +95,6 @@ umap.to_csv(args.output_csv)
 
 adata.write("tmp/combat_scaled_adata_" + args.modality + ".h5ad")
 
-L.debug("done")
+
+L.info("Done")
+

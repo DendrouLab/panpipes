@@ -131,8 +131,7 @@ outfiletmp = ("tmp/harmony_scaled_adata_" + args.modality + ".h5ad" )
 L.info("saving harmony corrected adata")
 write_anndata(adata, outfiletmp, use_muon=False, modality=args.modality)
 
-L.debug("done")
+
+L.info("Done")
 
 
-
-L.debug("done")

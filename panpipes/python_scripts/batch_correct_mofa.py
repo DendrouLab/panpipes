@@ -182,7 +182,5 @@ if removed_mods is not None:
 tmp.write("tmp/mofa_scaled_adata.h5mu")
 
 
-
-
-
+L.info("Done")
 

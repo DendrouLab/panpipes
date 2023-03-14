@@ -208,3 +208,6 @@ umap.to_csv(args.output_csv)
 
 # save anndata to be used by other scvi tools applications
 rna.write(os.path.join("tmp", "scvi_scaled_adata_rna.h5ad"))
+
+L.info("Done")
+

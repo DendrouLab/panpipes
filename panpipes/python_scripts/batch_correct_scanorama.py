@@ -151,4 +151,6 @@ umap.to_csv(args.output_csv)
 
 # save the scanorama dim reduction in case scanorama is our favourite
 adata.write("tmp/scanorama_scaled_adata.h5ad")
-L.debug("done")
+
+L.info("done")
+

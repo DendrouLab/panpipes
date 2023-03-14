@@ -277,3 +277,6 @@ umap = pd.DataFrame(mdata.obsm['X_umap'], mdata.obs.index)
 umap.to_csv(args.output_csv)
 
 write_anndata(mdata, "tmp/multivi_scaled_adata.h5mu",use_muon=False)
+
+L.info("Done")
+

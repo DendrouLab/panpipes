@@ -134,3 +134,6 @@ do_plots(adata,
          mf=mf,
          layer=args.layer, 
          n=int(args.n))
+
+L.info("Done")
+

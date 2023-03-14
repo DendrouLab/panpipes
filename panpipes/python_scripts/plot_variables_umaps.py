@@ -116,3 +116,6 @@ for mod in ['rna', 'prot', 'atac', 'multimodal']:
             main(adata=mdata, basis = mod + ":" + basis, **params_dict)
 
 
+
+L.info("Done")
+

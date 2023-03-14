@@ -46,6 +46,6 @@ umaps_df = umaps_df.sort_values(by='method')
 # save umap df to file
 L.info("save umap df to file")
 umaps_df.iloc[:,0:4].to_csv(args.output_combined_umaps_tsv, sep="\t")
+
 L.info("done")
 
-# plotting

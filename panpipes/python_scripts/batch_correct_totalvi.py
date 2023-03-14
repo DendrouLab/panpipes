@@ -282,3 +282,6 @@ umap = pd.DataFrame(mdata.obsm['X_umap'], mdata['rna'].obs.index)
 umap.to_csv(args.output_csv)
 
 mdata.write("tmp/totalvi_scaled_adata.h5mu")
+
+L.info("Done")
+
