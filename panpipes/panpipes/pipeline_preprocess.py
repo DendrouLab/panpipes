@@ -79,10 +79,9 @@ def run_plotqc_query(pqc_dict):
 @follows(filter_mudata)
 @originate("logs/postfilterplot.log")
 def postfilterplot(log_file):
-    R_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "R")
     cell_mtd_file = PARAMS['sample_prefix'] + "_filtered_cell_metadata.tsv"
     cmd = """
-    Rscript %(R_path)s/plotQC.R 
+    Rscript %(r_path)s/plotQC.R 
     --prefilter FALSE
     --cell_metadata %(cell_mtd_file)s 
     --sampleprefix %(sample_prefix)s

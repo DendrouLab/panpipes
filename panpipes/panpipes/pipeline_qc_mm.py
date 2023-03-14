@@ -44,7 +44,6 @@ mode_dictionary = PARAMS["modalities"]
 @follows(mkdir("figures/tenx_metrics"))
 @originate("logs/plot_tenx_metrics.log")
 def plot_tenx_metrics(outfile):
-    r_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "R")
     cmd = """
         Rscript %(r_path)s/produce_barplot_10xmetric.v3.R
             --csvpaths %(submission_file)s
@@ -545,10 +544,9 @@ def run_qc():
 #             r"logs/plot_qc.log", )
 @originate("logs/plot_qc.log", orfile())
 def plot_qc(log_file, cell_file):
-    R_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "R")
     qcmetrics = PARAMS['plotqc_rna_metrics']
     cmd = """
-    Rscript %(R_path)s/plotQC.R 
+    Rscript %(r_path)s/plotQC.R 
     --prefilter TRUE
     --cell_metadata %(cell_file)s 
     --sampleprefix %(sample_prefix)s
