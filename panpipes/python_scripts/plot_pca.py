@@ -1,15 +1,11 @@
-import numpy as np
-import pandas as pd
+
 import scanpy as sc
-import scipy.io
-import matplotlib.pyplot as plt
 import os
-import anndata
 import argparse
 import muon as mu
 from muon import atac as ac
 from panpipes.funcs.processing import check_for_bool
-from panpipes.funcs.io import read_anndata, write_anndata
+
 
 import sys
 import logging
@@ -40,8 +36,8 @@ sc.settings.autoshow=False
 sc.settings.figdir=args.fig_dir 
 sc.settings.set_figure_params(dpi_save=300)
 
-use_muon = check_for_bool(args.use_muon)
-mdata = mu.read()
+
+mdata = mu.read(args.input_mudata)
 
 
 if args.color_by is not None:
@@ -63,3 +59,6 @@ for mod in mdata.mod.keys():
         ac.pl.lsi(mdata[mod],color=qc_vars)
         #https://satijalab.org/signac/reference/DepthCor.html
         #muon.pl.scatter(mdata[mod], x=)
+
+L.info("Done")
+

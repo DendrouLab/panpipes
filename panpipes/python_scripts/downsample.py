@@ -9,8 +9,8 @@ from anndata import AnnData
 import muon as mu
 import re
 
-from panpipes.funcs.io import read_anndata, write_anndata, write_obs
-from panpipes.funcs.processing import downsample_mudata,  intersect_obs_by_mod, check_for_bool
+from panpipes.funcs.io import write_obs
+from panpipes.funcs.processing import downsample_mudata
 
 
 import sys
@@ -94,4 +94,4 @@ write_obs(mdata, output_prefix=re.sub("\\.(.*)", "", args.output_mudata),
 
 mdata.write(args.output_mudata)
 #This stage is the point (i.e. pre-normalisation) where the mdata file can be outputted so that we can extract raw matrix for the cellphonedb.
-L.info("Completed")
+L.info("Done")

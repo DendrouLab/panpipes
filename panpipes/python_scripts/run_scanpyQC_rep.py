@@ -138,3 +138,6 @@ mdata.update()
 write_obs(mdata, output_prefix=args.sampleprefix, 
     output_suffix="_cell_metadata.tsv")
 mdata.write(args.output_mudata)
+
+L.info("Done")
+

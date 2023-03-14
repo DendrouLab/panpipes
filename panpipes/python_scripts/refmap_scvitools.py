@@ -13,12 +13,12 @@ from mudata import MuData
 import numpy as np
 import panpipes.funcs as pp
 from panpipes.funcs.processing import check_for_bool
-from panpipes.funcs.io import read_anndata, write_anndata, read_yaml
+from panpipes.funcs.io import read_yaml
 from panpipes.funcs.scmethods import run_neighbors_method_choice, X_is_raw
 import sys
 import logging
 L = logging.getLogger()
-L.setLevel(logging.DEBUG)
+L.setLevel(logging.INFO)
 log_handler = logging.StreamHandler(sys.stdout)
 formatter = logging.Formatter('%(asctime)s: %(levelname)s - %(message)s')
 log_handler.setFormatter(formatter)

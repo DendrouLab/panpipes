@@ -190,3 +190,6 @@ L.info(args.output_mudata)
 L.debug(mdata.obs['sample_id'].value_counts())
 L.debug(mdata['rna'].obs['sample_id'].value_counts())
 mdata.write(args.output_mudata)
+
+L.info("Done")
+

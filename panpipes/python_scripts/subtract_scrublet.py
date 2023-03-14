@@ -31,7 +31,7 @@ parser.add_argument('--output_anndata',
                     default='data/anndata-n5000-filt.h5ad',
                     help='')
 parser.add_argument('--use_muon',
-                    default=False,
+                    default=False,type=check_for_bool,
                     help='')
 parser.add_argument('--output_prefix',
                     default='',
@@ -46,7 +46,7 @@ L.warning("Running subtract scrublet")
 parser.set_defaults(verbose=True)
 args, opt = parser.parse_known_args()
 
-use_muon = check_for_bool(args.use_muon)
+use_muon = args.use_muon
 
 # load data
 # if muon is True then rna only is loaded

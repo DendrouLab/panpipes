@@ -5,7 +5,6 @@ from calendar import c
 import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
-import scipy.io
 import matplotlib.pyplot as plt
 plt.ioff()
 import numpy as np
@@ -17,8 +16,8 @@ import argparse
 import seaborn as sns
 from muon import atac as ac
 import muon as mu
+
 import sys
-import re
 import logging
 L = logging.getLogger()
 L.setLevel(logging.INFO)
@@ -28,10 +27,9 @@ log_handler.setFormatter(formatter)
 L.addHandler(log_handler)
 L.debug("testing logger works")
 
-from panpipes.funcs.io import read_anndata, write_anndata, write_obs
+from panpipes.funcs.io import  write_obs
 from panpipes.funcs.processing import check_for_bool
-from panpipes.funcs.scmethods import identify_isotype_outliers
-from panpipes.funcs.plotting import adjust_x_axis
+
 
 sc.settings.verbosity = 3
 
@@ -170,4 +168,5 @@ write_obs(mdata, output_prefix=args.sampleprefix,
 
 mdata.write(args.outfile)
 
+L.info("Done")
 

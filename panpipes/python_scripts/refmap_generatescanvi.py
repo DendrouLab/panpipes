@@ -63,3 +63,7 @@ if args.generate_scanvi:
         adata_full = adata_query.concatenate(adata_ref)
     else:
         sys.exit("To generate a scanvi reference i need a reference dataset to start from")
+        
+
+L.info("Done")
+

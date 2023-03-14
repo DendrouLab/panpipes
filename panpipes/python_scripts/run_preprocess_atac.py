@@ -25,10 +25,9 @@ log_handler.setFormatter(formatter)
 L.addHandler(log_handler)
 L.debug("testing logger works")
 
-from panpipes.funcs.io import read_anndata, write_anndata, write_obs
-from panpipes.funcs.processing import check_for_bool
-from panpipes.funcs.scmethods import identify_isotype_outliers, X_is_raw
-from panpipes.funcs.plotting import adjust_x_axis
+
+from panpipes.funcs.scmethods import X_is_raw
+
 
 sc.settings.verbosity = 3
 
@@ -150,3 +149,6 @@ if args.dim_remove is not None:
         
 mdata.update()
 mdata.write(args.output_mudata)
+
+L.info("Done")
+

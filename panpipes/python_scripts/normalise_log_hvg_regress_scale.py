@@ -32,17 +32,17 @@ L.addHandler(log_handler)
 parser = argparse.ArgumentParser()
 
 
-parser.add_argument('--input_anndata',
-                    default='data/anndata-n5000_filt.h5ad',
+parser.add_argument('--input_mudata',
+                    default='data/anndata_filt.h5mu',
                     help='')
-parser.add_argument('--output_logged_anndata',
+parser.add_argument('--output_logged_mudata',
                     default=None,
                     help='if not specified, then the input file will be overwritten')
 parser.add_argument('--output_scaled_anndata',
                     default=None,
                     help='if not specified then the output will be written to output_logged_anndata path')
 parser.add_argument('--use_muon',
-                    default=False,
+                    default=False, type=check_for_bool,
                     help='')  
 parser.add_argument('--fig_dir', 
                     default="./figures",
@@ -56,11 +56,11 @@ parser.add_argument('--n_top_genes', default=None)
 parser.add_argument('--min_mean', default=0.0125)
 parser.add_argument('--max_mean', default=3)
 parser.add_argument('--min_disp', default=0.5)
-parser.add_argument("--filter_by_hvg", default=False)
+parser.add_argument("--filter_by_hvg", default=False, type=check_for_bool)
 # regress out options
 parser.add_argument('--regress_out', default=None)
 # scale options
-parser.add_argument('--scale_data', default=True)
+parser.add_argument('--scale_data', default=True, type=check_for_bool)
 parser.add_argument('--scale_max_value', default=None)
 # pca options
 parser.add_argument("--n_pcs", default=50)
@@ -70,7 +70,7 @@ parser.set_defaults(verbose=True)
 args, opt = parser.parse_known_args()
 L.info(args)
 
-use_muon = check_for_bool(args.use_muon)
+use_muon = args.use_muon
 
 # sc.settings.verbosity = 3
 # sc.logging.print_header()
@@ -82,7 +82,7 @@ if not os.path.exists(figdir):
 sc.settings.figdir = figdir
 sc.set_figure_params(scanpy=True, fontsize=14, dpi=300, facecolor='white', figsize=(5,5))
 
-mdata = read_anndata(args.input_anndata, use_muon=use_muon, modality="all")
+mdata = mu.read(args.input_anndata)
 
 # if we have actually loaded an anndata object, make into a mudata
 if isinstance(mdata, AnnData):
@@ -131,7 +131,7 @@ if args.exclude_file is not None:
     sc.pl.highly_variable_genes(adata,show=False, save ="_exclude_genes_highlyvar.png")
 
 # filter by hvgs
-filter_by_hvgs = check_for_bool(args.filter_by_hvg)
+filter_by_hvgs = args.filter_by_hvg
 
 if filter_by_hvgs is True:
     adata = adata[:, adata.var.highly_variable]
@@ -204,3 +204,6 @@ if use_muon:
 else:
     write_anndata(adata, args.output_scaled_anndata, use_muon=use_muon, modality="rna")
     
+
+L.info("Done")
+

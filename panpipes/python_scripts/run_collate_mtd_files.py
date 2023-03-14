@@ -82,4 +82,6 @@ L.info("save umap df to file")
 umaps_df = umaps_df.iloc[:,0:4]
 umaps_df['cellbarcode'] = umaps_df.index
 umaps_df.to_csv(args.output_combined_umaps_tsv, sep="\t")
+
 L.info("done")
+

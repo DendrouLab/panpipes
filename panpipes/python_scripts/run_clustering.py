@@ -70,4 +70,5 @@ if "sample_id" in adata.obs.columns:
     tmp = ccounts.value_counts().to_frame("cell_num").reset_index()
     tmp.to_csv(os.path.dirname(args.outfile) + "/cellnum_per_sample_id_per_cluster.csv")
 
+L.info("Done")
 
