@@ -110,7 +110,7 @@ else:
 
 # sc.pp.highly variabel genes Expects logarithmized data, except when flavor='seurat_v3' in which count data is expected.
 # change the order accordingly
-L.info("run hvgs")
+L.info("normalise, log and calucalte highly variable genes")
 if args.flavor == "seurat_v3":
     if args.n_top_genes is None:
         raise ValueError("if seurat_v3 is used you must give a n_top_genes value")
@@ -161,7 +161,7 @@ if args.exclude_file is not None:
             L.info(adata.var.highly_variable.sum())
             sc.pl.highly_variable_genes(adata,show=False, save ="_exclude_genes_highlyvar.png")
     else:
-        L.info("exclusion file %s not found, check the path andn try again" % args.exclude_file)
+        sys.exit("exclusion file %s not found, check the path andn try again" % args.exclude_file)
 
 if isinstance(mdata, mu.MuData):
     mdata.update()
@@ -171,6 +171,7 @@ L.debug(adata.uns['log1p'])
 filter_by_hvgs = args.filter_by_hvg
 
 if filter_by_hvgs is True:
+    L.info("filtering object to only include highly variable genes")
     adata = adata[:, adata.var.highly_variable]
     if isinstance(mdata, mu.MuData):
         mdata.update()
@@ -195,12 +196,15 @@ L.debug(adata.uns['log1p'])
 # regress out
 if args.regress_out is not None:
     regress_opts = args.regress_out.split(",")
+    L.info("regressing out %s" % regress_opts)
     sc.pp.regress_out(adata, regress_opts)
 
 
 if args.scale is True and args.scale_max_value is None:
+    L.info("scaling data with default parameters")
     sc.pp.scale(adata)
 elif args.scale is True:
+    L.info("scaling data to max value %i" % int(args.scale_max_value))
     sc.pp.scale(adata, max_value=int(args.scale_max_value))
 else:
     L.info("not scaling data")
