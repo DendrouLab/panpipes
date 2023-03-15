@@ -68,7 +68,7 @@ if multi_mod=="totalvi":
 # this overwrites the old modalities
 for k,v in uni_mod_paths.items():
     mod_replace = mu.read(v)
-    if mod_replace.shape[1] == base_obj.shape[1]:
+    if mod_replace.shape[1] == base_obj[k].shape[1]:
         L.info('replacing the whole anndata object with batch corrected')
         base_obj.mod[k] = mod_replace
     else:
@@ -78,7 +78,7 @@ for k,v in uni_mod_paths.items():
         base_obj.mod[k].obsm = mod_replace.obsm
         base_obj.mod[k].obsp = mod_replace.obsp
         base_obj.mod[k].uns = mod_replace.uns
-        base_obj.mod[k].uns['scVI_gene_subset'] = mod_replace.var_names.tolist()
+        base_obj.mod[k].uns['batch_correct_gene_subset'] = mod_replace.var_names.tolist()
         # merge any extra obs columns
         new_obs = mod_replace.obs.iloc[:, ~ mod_replace.obs.columns.isin( base_obj.mod[k].obs.columns)]
         base_obj.mod[k].obs = base_obj.mod[k].obs.merge(new_obs, left_index=True, right_index=True)
