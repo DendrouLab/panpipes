@@ -22,7 +22,7 @@ Available pipelines:
 
 
 See [installation instrcutions here](https://github.com/DendrouLab/panpipes/blob/main/docs/install.md)
-Review this issue before installatiion: https://github.com/DendrouLab/panpipes/issues/11 
+
 
 Oxford BMRC Rescomp users find additional advice in [docs/installation_rescomp](https://github.com/DendrouLab/panpipes/blob/main/docs/installation_rescomp.md)
 
