@@ -28,12 +28,10 @@ queues:
 # Start
 # --------------------------
 # either one that exists already with
-#tenx_dir:
-#create_anndata: False
 sample_prefix: test
 #this is what comes out of the filtering/preprocessing
-preprocessed_obj: ../run_filt/test.h5mu
-# contains layers: raw_counts, log1p, and has scaled in X
+preprocessed_obj: ../preprocess/test.h5mu
+# contains layers: raw_counts, logged_counts, and has scaled or logged counts in X 
 
 
 #--------------------------

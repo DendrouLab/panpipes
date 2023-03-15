@@ -30,12 +30,13 @@ vim ~/.cgat.yml
 add the following information (pressing `i` to start inserting text)
 ```
 cluster:
-    queue_manager: sge
-    parallel_environment: shmem
-    queue: short.qc@@short.qa
+    queue_manager: slurm 
+    queue: short
+    options: --constraint=skl 
+
 ```
 Currently I restrict jobs to either a nodes or e nodes (short.qc@@short.qe) because of the multiple architectures on rescomp.
-If you want the code to be able to run on any of the nodes on rescomp then, install everything on rescomp3, specify `queue: short.qc` in .cgat.yml and run the pipeline from rescomp3. (I think this works).
+If you want the code to be able to run on any of the nodes on rescomp then, install everything on rescomp3, specify `queue: short` in .cgat.yml and run the pipeline from rescomp3. (I think this works).
 This works because ivybridge is the older hardware, so any softare compiled on ivybridge should work in skylake, but not the other way round. 
 
 (to exit vim press ESC then type `:x`)
@@ -45,7 +46,13 @@ This works because ivybridge is the older hardware, so any softare compiled on i
 if `echo $DRMAA_LIBRARY_PATH` does not return anything, add DRMAA_LIBRARY_PATH to your bash environment (the line below is specific to the rescomp server)
 
 ```
-echo "export DRMAA_LIBRARY_PATH=/mgmt/uge/8.6.8/lib/lx-amd64/libdrmaa.so.1.0" >> ~/.bashrc
+vim ~/.bashrc
+```
+
+```
+export SLURM_CONF=/run/slurm/conf/slurm.conf  
+export DRMAA_LIBRARY_PATH=/usr/lib64/libdrmaa.so
+export SBATCH_ACCOUNT=*project*.prj
 ```
 
 #### R packages

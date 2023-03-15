@@ -21,6 +21,7 @@ Available pipelines:
 # Installation and configuration
 
 
+
 See [installation instrcutions here](https://github.com/DendrouLab/panpipes/blob/main/docs/install.md)
 
 
