@@ -56,7 +56,7 @@ for mod in neighbor_dict.keys():
         # run command
         opts = dict(method=neighbor_dict[mod]['method'],
                     n_neighbors=int(neighbor_dict[mod]['k']),
-                    n_pcs=int(neighbor_dict[mod]['n_pcs']),
+                    n_pcs=int(neighbor_dict[mod]['n_dim_red']),
                     metric=neighbor_dict[mod]['metric'],
                     nthreads=args.n_threads,
                     use_rep=neighbor_dict[mod]['dim_red'])
