@@ -10,8 +10,7 @@ It is advisable to run everything in a virtual environment either pip or conda.
 Using pip venv
 Navigate to where you want to create your virtual environment  and follow the steps below to create a pip virtual environment
 ```
-mkdir panpipes
-cd panpipes
+
 python3 -m venv --prompt=panpipes python3-venv-panpipes/
 # This will create a panpipes/venv folder
 ```
@@ -19,7 +18,6 @@ python3 -m venv --prompt=panpipes python3-venv-panpipes/
 activate the environment
 
 ```
-cd my-project
 source python3-venv-panpipes/bin/activate
 ```
 
@@ -34,6 +32,7 @@ we include an environment.yml for a conda environment tested on all the pipeline
 
 ##### Step 2 Download and install this repo
 If you have not already set up SSH keys for github first follow these [instructions](https://github.com/DendrouLab/panpipes/docs/set_up_ssh_keys_for_github.md): 
+
 
 ```
 git clone https://github.com/DendrouLab/panpipes
