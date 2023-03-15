@@ -89,10 +89,22 @@ cluster:
 
 ```
 
+
+
 See [cgat-core documentation](https://cgat-core.readthedocs.io/en/latest/getting_started/Cluster_config.html) for cluster specific additional configuration instructions.
 
 Note that there is extra information on the .cgat.yml for Oxford BMRC rescomp users in [docs/installation_rescomp](https://github.com/DendrouLab/sc_pipelines/blob/master/docs/installation_rescomp.md)
 
+### DRMAA library path
+
+
+if `echo $DRMAA_LIBRARY_PATH` does not return anything, add DRMAA_LIBRARY_PATH to your bash environment (the line below is specific to the rescomp server)
+You need to find the path to this libdrmaa.so.1.0 file on your server, ask your sys admin if you cannot find it!
+
+```
+PATH_TO_DRMAA = ""
+echo "export DRMAA_LIBRARY_PATH=$PATH_TO/libdrmaa.so.1.0" >> ~/.bashrc
+```
 
 ### Conda environments
 If one or more conda environments are needed to run each of the pipelines, (i.e. one pipeline = one environment) the environment (s) should be specified in the .cgat.yml file or in the pipeline.yml configuration file and it will be picked up by the pipeline as the default environment.
