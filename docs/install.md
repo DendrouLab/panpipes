@@ -90,7 +90,10 @@ cluster:
 
 See [cgat-core documentation](https://cgat-core.readthedocs.io/en/latest/getting_started/Cluster_config.html) for cluster specific additional configuration instructions.
 
+You will also need to know the path to you DRMAA library
+
 Note that there is extra information on the .cgat.yml for Oxford BMRC rescomp users in [docs/installation_rescomp](https://github.com/DendrouLab/sc_pipelines/blob/master/docs/installation_rescomp.md)
+
 
 
 ### Conda environments
