@@ -50,7 +50,8 @@ tcr/bcr     |tracer| data from [TraCeR](https://github.com/Teichlab/tracer)
 tcr/bcr     |bracer| data from [BraCeR](https://github.com/Teichlab/bracer)
 tcr/bcr     |airr  | the "outs" folder produced by **cellranger vdj**
 
-
+For repertoire (tcr/bcr) inputs, panpipes uses the scirpy io functions https://scverse.org/scirpy/latest/api.html 
+Review their documentation for more specific details about inputs.
 
 
 # Combining data sets.
