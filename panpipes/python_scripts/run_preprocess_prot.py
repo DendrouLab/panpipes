@@ -92,6 +92,8 @@ if 'dsb' in norm_methods:
 # find isotypes columns 
 if "isotype" in all_mdata["prot"].var.columns:
     isotypes = list(all_mdata["prot"].var_names[all_mdata["prot"].var.isotype])
+    # exclude isotypes from downstream analysis by setting them as the only not highly variable genes.
+    all_mdata['prot'].var['highly_variable'] = ~all_mdata['prot'].var['isotype'] 
 else:
     isotypes = None
     
@@ -226,7 +228,9 @@ else:
         
     # run pca on X 
     # this basically makes no sense if you have a small panel of antibodies.
-    sc.tl.pca(all_mdata['prot'], n_comps=min(50,all_mdata['prot'].var.shape[0]-1), svd_solver='arpack', random_state=0) 
+    sc.tl.pca(all_mdata['prot'], 
+              n_comps=min(50,all_mdata['prot'].var.shape[0]-1), 
+              svd_solver='arpack', random_state=0) 
 
     if args.save_mudata_path is not None:
         all_mdata.update()
