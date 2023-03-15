@@ -45,7 +45,7 @@ gex/adt/atac|hd5 | Read a generic .h5 (hdf5) file.
 gex/adt/atac|h5ad  | Anndata h5ad objects (one per sample)
 gex/adt/atac|txt_matrix  | tab-delimited file (one per sample)
 gex/adt/atac|csv_matrix  | comma-delimited file (one per sample)
-tcr/bcr     |cellranger_vdj| the "outs" folder produced by **cellranger vdj**
+tcr/bcr     |cellranger_vdj| Path to filtered_contig_annotations.csv, all_contig_annotations.csv or all_contig_annotations.json.  produced by **cellranger vdj**
 tcr/bcr     |tracer| data from [TraCeR](https://github.com/Teichlab/tracer)
 tcr/bcr     |bracer| data from [BraCeR](https://github.com/Teichlab/bracer)
 tcr/bcr     |airr  | the "outs" folder produced by **cellranger vdj**
