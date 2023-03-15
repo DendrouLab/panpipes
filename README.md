@@ -21,8 +21,9 @@ Available pipelines:
 # Installation and configuration
 
 
-See [installation instructions here](https://github.com/DendrouLab/panpipes/blob/main/docs/install.md)
-Review this issue before installatiion: https://github.com/DendrouLab/panpipes/issues/11 
+
+See [installation instrcutions here](https://github.com/DendrouLab/panpipes/blob/main/docs/install.md)
+
 
 Oxford BMRC Rescomp users find additional advice in [docs/installation_rescomp](https://github.com/DendrouLab/panpipes/blob/main/docs/installation_rescomp.md)
 
