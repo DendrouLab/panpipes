@@ -190,13 +190,3 @@ plotspecs:
   top_n_markers: 10
 
 
-
-# ----
-# making a cellxgene object with your favourite parameters
-# run this bit with panpipes clustering make generate_cellxgene
-cellxgene:
-  nneighbours: 
-  npcs: 
-  cluster_res: 
-  umap_md: 
-

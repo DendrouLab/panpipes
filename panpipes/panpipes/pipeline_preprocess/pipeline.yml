@@ -1,4 +1,4 @@
-# Pipeline pipeline_integration.py configuration file
+# Pipeline pipeline_preprocess.py configuration file
 # ==============================================
 
 # compute resource options
@@ -21,8 +21,8 @@ condaenv:
 # Start
 # --------------------------
 # either one that exists already with
-#tenx_dir:
-#create_anndata: False
+
+
 sample_prefix: 
 unfiltered_obj: 
 # if running this on prefiltered datat then
@@ -38,10 +38,10 @@ unfiltered_obj:
 output_logged_mudata:
 
 modalities:
-  rna:  
-  prot: 
-  rep: 
-  atac: 
+  rna:  False
+  prot: False
+  rep: False
+  atac: False
 
 # Filtering
 # --------------------------
@@ -93,7 +93,7 @@ filtering:
         # this should be a value between 0 and 100%. 
         # leave blank or set to 100 to avoid filtering for any of these param
         pct_counts_mt: 
-        pct_counts_rt:
+        pct_counts_rp:
         # either one score for all samples e.g. 0.25, 
         # or a csv file with two columns sample_id, and cut off
         # less than
@@ -173,7 +173,7 @@ plotqc:
 hvg:
   # there is a defaul exclusions file for immune cells in sc_pipelines/resources/exclude_genes_HLAIGTR_v1.txt
   # examine this to see what format is expected, if you want to use this file set the parameter to "default
-  exclude_file: /gpfs3/well/cartography/users/zsj686/non_cart_projects/005-multimodal_scpipelines/src/sc_pipelines_muon_dev/resources/qc_genelist_1.0.csv
+  exclude_file: resources/qc_genelist_1.0.csv
   exclude: exclude # this is the variable that defines the genes to be excluded in the above file
   flavor: seurat_v3 # "seurat", "cell_ranger", "seurat_v3"
   n_top_genes: 2000
