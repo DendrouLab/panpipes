@@ -77,7 +77,7 @@ panpipes = "panpipes:entry.main"
 [tool.setuptools]
 # If there are data files included in your packages that need to be
 # installed, specify them here.
-package-data = {"panpipes" = ["panpipes/*/*.yml", "R_scripts/*.R"]}
+package-data = {"panpipes" = ["panpipes/*/*.yml", "R_scripts/*.R", "resources/*"]}
 
 
 [build-system]
