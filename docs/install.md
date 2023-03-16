@@ -51,7 +51,12 @@ The pipelines are now installed as a local python package.
 ### Step 3 installing R requirements
 The pipelines use R (mostly for ggplot visualisations). 
 
-If you are using a venv virtual environment,  the pipeline will call a local R installation, so make sure R is installed and install the required pacakges by running the run the code in  `panpipes/R_scripts/install_R_libs.R`
+If you are using a venv virtual environment,  the pipeline will call a local R installation, so make sure R is installed and install the required packages with the following command
+
+From within the panpipes repo folder run:
+ ```
+ Rscript panpipes/R_scripts/install_R_libs.R
+ ```
 
 If you are using a conda virtual environment, R *and the required packages (check this)* will be installed along with the python packages. 
 
