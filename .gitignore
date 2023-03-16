@@ -2,3 +2,4 @@ dist/
 panpipes/__pycache__
 build/
 panpipes.egg-info
+*.pyc
