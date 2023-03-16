@@ -58,7 +58,7 @@ From within the panpipes repo folder run:
  Rscript panpipes/R_scripts/install_R_libs.R
  ```
 
-If you are using a conda virtual environment, R *and the required packages (check this)* will be installed along with the python packages. 
+<!-- If you are using a conda virtual environment, R *and the required packages (check this)* will be installed along with the python packages.  -->
 
 ### Step 4 pipeline configuration (for SGE or SLURM)
 Create a yml file for the cgat core pipeline software to read
