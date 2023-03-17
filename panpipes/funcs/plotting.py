@@ -79,7 +79,7 @@ def batch_scatter_two_var(plot_df, method, batch, palette_choice=None):
                             colour=palette_choice[i], 
                             title=str(method_choice) + "|" + str(group_choice))
                 idx+=1
-                logging.debug(idx)
+                logging.info(idx)
     return fig, axs
         
 
