@@ -16,7 +16,7 @@ from pandas.api.types import is_string_dtype
 import sys
 import logging
 L = logging.getLogger()
-L.setLevel(logging.WARNING)
+L.setLevel(logging.INFO)
 log_handler = logging.StreamHandler(sys.stdout)
 formatter = logging.Formatter('%(asctime)s: %(levelname)s - %(message)s')
 log_handler.setFormatter(formatter)
@@ -116,8 +116,9 @@ for mod in umaps_df['mod'].unique():
         g = (g.map(sns.scatterplot, "umap_1", "umap_2", col, s=pointsize, linewidth=0))
         g.add_legend() 
         g.savefig(os.path.join(args.fig_dir, mod, "umap_method_" + str(col) + ".png"))
-        batch_scatter_two_var(plt_df, "method", col, palette_choice=palette_choice)
-        plt.savefig(os.path.join(args.fig_dir,mod,  "umap_method_facet_" + str(col) + ".png"), dpi=300)
+        fig, ax = batch_scatter_two_var(plt_df, "method", col, palette_choice=palette_choice)
+        if fig is not None:
+            fig.savefig(os.path.join(args.fig_dir, mod,  "umap_method_facet_" + str(col) + ".png"), dpi=300)
         plt.clf()
 
     ncats  = len(plt_df['method'].unique())
