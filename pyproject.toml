@@ -41,7 +41,7 @@ dependencies = [
     "matplotlib",
     "mofapy2",
     "mudata>=0.2.1",
-    "muon==",
+    "muon",
     "numpy>=1.22.4", 
     "packaging", 
     "pandas>=1.0", 
