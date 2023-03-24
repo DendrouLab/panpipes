@@ -61,6 +61,7 @@ parser.add_argument('--min_mean', default=0.0125)
 parser.add_argument('--max_mean', default=3)
 parser.add_argument('--min_disp', default=0.5)
 parser.add_argument("--filter_by_hvg", default=False, type=check_for_bool)
+parser.add_argument('--hvg_batch_key', default=None)
 # regress out options
 parser.add_argument('--regress_out', default=None)
 # scale options
@@ -116,7 +117,7 @@ if args.flavor == "seurat_v3":
         raise ValueError("if seurat_v3 is used you must give a n_top_genes value")
         # sc.pp.highly_variable_genes(adata, flavor="seurat_v3",)
     else:
-        sc.pp.highly_variable_genes(adata, flavor="seurat_v3", n_top_genes=int(args.n_top_genes))
+        sc.pp.highly_variable_genes(adata, flavor="seurat_v3", n_top_genes=int(args.n_top_genes),batch_key=args.hvg_batch_key)
     sc.pp.normalize_total(adata, target_sum=1e4)
     sc.pp.log1p(adata)
 else:
@@ -125,7 +126,7 @@ else:
     L.debug(adata.uns['log1p'])
     sc.pp.highly_variable_genes(adata, flavor=args.flavor,
                                 min_mean=float(args.min_mean), max_mean=float(args.max_mean),
-                                min_disp=float(args.min_disp))
+                                min_disp=float(args.min_disp),batch_key=args.hvg_batch_key)
     L.debug(adata.uns['log1p'])
 
 sc.pl.highly_variable_genes(adata,show=False, save ="_genes_highlyvar.png")

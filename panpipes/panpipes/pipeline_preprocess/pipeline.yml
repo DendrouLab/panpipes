@@ -176,6 +176,9 @@ hvg:
   exclude_file: resources/qc_genelist_1.0.csv
   exclude: exclude # this is the variable that defines the genes to be excluded in the above file
   flavor: seurat_v3 # "seurat", "cell_ranger", "seurat_v3"
+  # If batch key is specified, highly-variable genes are selected within each batch separately and merged. 
+  # details: https://scanpy.readthedocs.io/en/stable/generated/scanpy.pp.highly_variable_genes.html#:~:text=or%20return%20them.-,batch_key,-%3A%20Optional%5B
+  batch_key:
   n_top_genes: 2000
   min_mean:
   max_mean:
