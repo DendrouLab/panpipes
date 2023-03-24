@@ -142,16 +142,13 @@ for mod in umaps_df['mod'].unique():
         qcmetrics = [qc for qc in qcmetrics if qc in plt_df.columns ]
         if len(qcmetrics) > 0:
             for qc in qcmetrics:
-                L.info("plotting qc var %s" % qc)
-                plt_df[qc] = plt_df[qc].fillna("NA")
-                #clear up any NAs
                 fig, axes = plt.subplots(ncols=ncols, nrows=nrows, figsize=(5*ncols,4*nrows))
                 if nrows > 1 or ncols > 1:
                     axes = axes.ravel()
                 else:
                     axes=[axes]
                 if pd.api.types.is_numeric_dtype(plt_df[qc]):
-                    
+                    L.info("plotting qc var (numeric) %s" % qc)
                     for idx, mm in enumerate(plt_df['method'].cat.categories):
                         im = axes[idx].scatter(data=plt_df[plt_df['method']== mm], 
                                         x="umap_1",
@@ -173,10 +170,15 @@ for mod in umaps_df['mod'].unique():
                     plt.clf()
                 else:
                     # this is a categorical colored plot
-                    g = sns.FacetGrid(plt_df, col="method", col_wrap=3, sharex=False, sharey=False)
-                    g = (g.map(sns.scatterplot, "umap_1", "umap_2", qc, s=pointsize, linewidth=0))
-                    g.add_legend() 
-                    g.savefig(os.path.join(args.fig_dir, mod, "umap_method_" + qc + ".png"), dpi = 300)
-                plt.clf()
+                    plt_df[qc] = plt_df[qc].fillna('nan')
+                    if len(plt_df[qc].unique()) < 40:
+                        L.info("plotting qc var (categorical) %s"%qc)
+                        g = sns.FacetGrid(plt_df, col="method", col_wrap=3, sharex=False, sharey=False)
+                        g = (g.map(sns.scatterplot, "umap_1", "umap_2", qc, s=pointsize, linewidth=0))
+                        g.add_legend() 
+                        g.savefig(os.path.join(args.fig_dir, mod, "umap_method_" + qc + ".png"), dpi = 300)
+                        plt.clf()
+                    else:
+                        L.info('skipping plot as too many categorys %s' % qc )
 
 L.info('done')
