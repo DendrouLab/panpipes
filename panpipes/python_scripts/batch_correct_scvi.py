@@ -90,7 +90,7 @@ else:
 
 
 # in case of more than 1 variable, create a fake column with combined information
-columns = [x.replace(" ", "") for x in args.integration_col.split(",")]
+columns = [x.strip() for x in args.integration_col.split(",")]
 if len(columns) > 1:
     L.info("using 2 columns to integrate on more variables")
     # bc_batch = "_".join(columns)

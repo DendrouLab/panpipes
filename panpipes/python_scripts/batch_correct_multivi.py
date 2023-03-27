@@ -155,7 +155,7 @@ adata_mvi = scvi.data.organize_multiome_anndatas(adata_paired)
 # MultiVI integrates by modality, to use batch correction you need a batch covariate to specify in
 # categorical_covariate_keys
 if args.integration_col_categorical is not None :
-    cols = [x.replace(" ", "") for x in args.integration_col_categorical.split(",")]
+    cols = [x.strip() for x in args.integration_col_categorical.split(",")]
     columns = []
     for cc in cols:
         if cc in rna_cols:

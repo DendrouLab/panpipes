@@ -66,7 +66,7 @@ adata = mdata.mod[args.modality]
 
 # Harmony can integrate on 2+ variables,
 # but for consistency with other approaches create a fake column with combined information
-columns = [x.replace(" " ,"") for x in args.integration_col.split(",")]
+columns = [x.strip() for x in args.integration_col.split(",")]
 
 if len(columns)>1: 
     L.info("using 2 columns to integrate on more variables")

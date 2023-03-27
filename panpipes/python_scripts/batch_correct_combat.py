@@ -58,7 +58,7 @@ mdata = mu.read(args.input_anndata)
 adata = mdata.mod[args.modality] 
 
 # combat can't integrate on 2+ variables, so create a fake column with combined information
-columns = [x.replace(" ", "") for x in args.integration_col.split(",")]
+columns = [x.strip() for x in args.integration_col.split(",")]
 if len(columns) > 1: 
     L.info("using 2 columns to integrate on more variables")
     #comb_columns = "_".join(columns)

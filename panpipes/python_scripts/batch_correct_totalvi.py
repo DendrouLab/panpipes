@@ -84,7 +84,7 @@ prot = mdata['prot'].copy()
 kwargs={}
 # in case of more than 1 variable, create a fake column with combined information
 if args.integration_col_categorical is not None :
-    columns = [x.replace(" ", "") for x in args.integration_col_categorical.split(",")]
+    columns = [x.strip() for x in args.integration_col_categorical.split(",")]
     if len(columns) > 1:
         L.info("using 2 columns to integrate on more variables")
         # bc_batch = "_".join(columns)

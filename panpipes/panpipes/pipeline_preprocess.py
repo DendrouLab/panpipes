@@ -141,6 +141,8 @@ def rna_preprocess(adata_obj, log_file):
             cmd += " --exclude %(hvg_exclude)s"
     if PARAMS['hvg_flavor'] is not None:
         cmd += " --flavor %(hvg_flavor)s"
+    if PARAMS['hvg_batch_key'] is not None:
+        cmd += " --hvg_batch_key %(hvg_batch_key)s"
     if PARAMS['hvg_n_top_genes'] is not None:
         cmd += " --n_top_genes %(hvg_n_top_genes)s"
     if PARAMS['hvg_min_mean'] is not None:

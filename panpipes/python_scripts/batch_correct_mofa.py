@@ -72,7 +72,7 @@ mdata = mu.read(args.scaled_anndata)
 
 if params['multimodal']['mofa']['modalities'] is not None:
     modalities= params['multimodal']['mofa']['modalities']
-    modalities = [x.replace(" ", "") for x in modalities.split(",")]
+    modalities = [x.strip() for x in modalities.split(",")]
     L.info(f"using modalities :{modalities}")
     removed_mods = None
     if all(x in modalities for x in mdata.mod.keys()):
