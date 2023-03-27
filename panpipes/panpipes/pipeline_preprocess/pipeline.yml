@@ -178,6 +178,8 @@ hvg:
   flavor: seurat_v3 # "seurat", "cell_ranger", "seurat_v3"
   # If batch key is specified, highly-variable genes are selected within each batch separately and merged. 
   # details: https://scanpy.readthedocs.io/en/stable/generated/scanpy.pp.highly_variable_genes.html#:~:text=or%20return%20them.-,batch_key,-%3A%20Optional%5B
+  # If you want to use more than one obs column as a covariates, include it as covariate1,covariate2 (comma separated list)
+  # Leave blank for no batch (default)
   batch_key:
   n_top_genes: 2000
   min_mean:

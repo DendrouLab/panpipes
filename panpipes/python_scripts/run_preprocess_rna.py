@@ -93,9 +93,21 @@ if isinstance(mdata, sc.AnnData):
     mdata =  mu.MuData({'rna': mdata})
 
 adata = mdata['rna']
+# resolve multi-column batch for hvg batch key
+if args.hvg_batch_key is not None:
+    columns = [x.replace(" ", "") for x in args.integration_col.split(",")]
+    if len(columns) > 1: 
+        L.info("combining batch comlumns into one column 'hvg_batch_key'")
+        adata.obs["hvg_batch_key"] = adata.obs[columns].apply(lambda x: '|'.join(x), axis=1)
+        # make sure that batch is a categorical
+        adata.obs["hvg_batch_key"] = adata.obs["hvg_batch_key"].astype("category")
+        hvg_batch_key="hvg_batch_key"
+    else:
+        hvg_batch_key=columns[0]
+else:
+    hvg_batch_key=None
 
-
-# save raw counts
+# save raw counts as a layer
 if X_is_raw(adata):
     adata.layers['raw_counts'] = adata.X.copy()
 elif "raw_counts" in adata.layers :
@@ -106,18 +118,17 @@ else:
     sys.exit("X is not raw data and raw_counts layer not found")
 
 
-
-# Normalise to depth 10k, store raw data, assess and drop highly variable genes, regress mitochondria and count
-
-# sc.pp.highly variabel genes Expects logarithmized data, except when flavor='seurat_v3' in which count data is expected.
+# sc.pp.highly variabel genes Expects logarithmized data, 
+# except when flavor='seurat_v3' in which count data is expected.
 # change the order accordingly
 L.info("normalise, log and calucalte highly variable genes")
 if args.flavor == "seurat_v3":
     if args.n_top_genes is None:
         raise ValueError("if seurat_v3 is used you must give a n_top_genes value")
-        # sc.pp.highly_variable_genes(adata, flavor="seurat_v3",)
     else:
-        sc.pp.highly_variable_genes(adata, flavor="seurat_v3", n_top_genes=int(args.n_top_genes),batch_key=args.hvg_batch_key)
+        sc.pp.highly_variable_genes(adata, flavor="seurat_v3", 
+                                    n_top_genes=int(args.n_top_genes),
+                                    batch_key=hvg_batch_key)
     sc.pp.normalize_total(adata, target_sum=1e4)
     sc.pp.log1p(adata)
 else:
@@ -125,8 +136,10 @@ else:
     sc.pp.log1p(adata)
     L.debug(adata.uns['log1p'])
     sc.pp.highly_variable_genes(adata, flavor=args.flavor,
-                                min_mean=float(args.min_mean), max_mean=float(args.max_mean),
-                                min_disp=float(args.min_disp),batch_key=args.hvg_batch_key)
+                                min_mean=float(args.min_mean), 
+                                max_mean=float(args.max_mean),
+                                min_disp=float(args.min_disp),
+                                batch_key=hvg_batch_key)
     L.debug(adata.uns['log1p'])
 
 sc.pl.highly_variable_genes(adata,show=False, save ="_genes_highlyvar.png")
@@ -146,8 +159,6 @@ if args.exclude_file is not None:
             cat_dic[cc] = customgenes.loc[customgenes["group"] == cc,"feature"].tolist()
         exclude_action = str(args.exclude)
         excl = cat_dic[exclude_action]
-        
-    
         L.info(len(excl))
         L.info("number of hvgs prior to filtering")
         L.info(adata.var.highly_variable.sum())
@@ -162,7 +173,7 @@ if args.exclude_file is not None:
             L.info(adata.var.highly_variable.sum())
             sc.pl.highly_variable_genes(adata,show=False, save ="_exclude_genes_highlyvar.png")
     else:
-        sys.exit("exclusion file %s not found, check the path andn try again" % args.exclude_file)
+        sys.exit("exclusion file %s not found, check the path and try again" % args.exclude_file)
 
 if isinstance(mdata, mu.MuData):
     mdata.update()
