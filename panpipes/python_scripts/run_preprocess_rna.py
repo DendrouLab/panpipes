@@ -95,7 +95,7 @@ if isinstance(mdata, sc.AnnData):
 adata = mdata['rna']
 # resolve multi-column batch for hvg batch key
 if args.hvg_batch_key is not None:
-    columns = [x.replace(" ", "") for x in args.integration_col.split(",")]
+    columns = [x.strip() for x in args.integration_col.split(",")]
     if len(columns) > 1: 
         L.info("combining batch comlumns into one column 'hvg_batch_key'")
         adata.obs["hvg_batch_key"] = adata.obs[columns].apply(lambda x: '|'.join(x), axis=1)

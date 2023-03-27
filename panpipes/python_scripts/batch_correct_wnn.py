@@ -55,7 +55,7 @@ threads_available = multiprocessing.cpu_count()
 
 if params['multimodal']['WNN']['modalities'] is not None:
     modalities= params['multimodal']['WNN']['modalities']
-    modalities = [x.replace(" ", "") for x in modalities.split(",")]
+    modalities = [x.strip() for x in modalities.split(",")]
     L.info(f"using modalities :{modalities}")
 
 L.info("running with batch corrections:")

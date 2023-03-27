@@ -60,7 +60,7 @@ adata = mu.read(args.input_anndata +"/" + args.modality)
 
 
 
-columns = [x.replace (" " ,"") for x in args.integration_col.split(",")]
+columns = [x.strip() for x in args.integration_col.split(",")]
 if len(columns)>1: 
     comb_columns = "|".join(columns)
     adata.obs[comb_columns] = adata.obs[columns].apply(lambda x: '|'.join(x), axis=1)
