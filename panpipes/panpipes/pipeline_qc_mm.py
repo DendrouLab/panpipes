@@ -39,26 +39,65 @@ mode_dictionary = PARAMS["modalities"]
 # TODO: update this to check for each modality csv file
 # TODO: check this works with current submission file
 @active_if(PARAMS['plot_10X_metrics'])
+@split(PARAMS['submission_file'], ['tmp/tenx_submission_count.tsv', 
+                                   'tmp/tenx_submission_multi.tsv' ])
+def split_tenx_summary_caf(infile, outfiles):
+    caf = pd.read_csv(infile, sep='\t')
+    count_df = caf[caf['gex_filetype'] == 'cellranger']
+    count_df.to_csv(outfiles[0])
+    count_df = caf[caf['gex_filetype'] == 'cellranger_multi']
+    count_df.to_csv(outfiles[0])
+
+
+
+@follows(split_tenx_summary_caf)
+@active_if(os.path.exists("tmp/tenx_submission_count.tsv"))
 @follows(mkdir("logs"))
 @follows(mkdir("figures"))
 @follows(mkdir("figures/tenx_metrics"))
-@originate("logs/plot_tenx_metrics.log")
-def plot_tenx_metrics(outfile):
+@transform("tmp/tenx_submission_count.tsv", regex(), 
+           "logs/plot_tenx_metrics_count.log")
+def plot_tenx_metrics(infile, outfile):
+    """this is the original R script which plots outputs to for cellranger count metrics
+    """    
     cmd = """
         Rscript %(r_path)s/produce_barplot_10xmetric.v3.R
-            --csvpaths %(submission_file)s
+            --csvpaths %(infile)s
             --outdir ./
             --figdir ./figures/tenx_metrics/
             --project %(project)s
             --kneeplot %(kneeplot)s > %(outfile)s
             """
-    
     if PARAMS['kneeplot']:
         job_kwargs["job_threads"] = PARAMS['resources_threads_medium']
     else:
        job_kwargs["job_threads"] = PARAMS['resources_threads_low']
     P.run(cmd, **job_kwargs)
 
+
+
+@follows(mkdir("logs"))
+@follows(split_tenx_summary_caf)
+@active_if(os.path.exists("tmp/tenx_submission_multi.tsv"))
+@transform("tmp/tenx_submission_multi.tsv", regex(), 
+           "logs/aggregate_tenx_metrics_multi.log")
+def aggregate_tenx_metrics_multi(infile, outfile):
+    """this is to aggregate all the cellranger multi metric_summary files
+    it also does some plotting
+    """    
+    cmd = """
+        python %(py_path)s/aggregate_cellranger_summary_metrics.py
+            --pipe_df %(infile)s
+            --figdir figures/tenx_metrics/
+            --output_file 10x_metrics_multi.csv > %(outfile)s
+            """
+    job_kwargs["job_threads"] = PARAMS['resources_threads_low']
+    P.run(cmd, **job_kwargs)
+
+
+@follows(aggregate_tenx_metrics_multi, plot_tenx_metrics)
+def process_all_tenx_metrics():
+    pass
 # -----------------------------------------------------------------------------------------------
 ## Creating h5mu from filtered data files
 # -----------------------------------------------------------------------------------------------
@@ -594,7 +633,7 @@ def run_assess_background(log_file, unfilt_file, bg_file):
 # # ------------
 # TO DO change the decorator to follow all qc plots?
 @follows(plot_qc)
-@follows(run_rna_qc, plot_tenx_metrics, run_assess_background)
+@follows(run_rna_qc, run_assess_background)
 def all_rna_qc():
     pass
 
@@ -602,7 +641,7 @@ def all_rna_qc():
 def all_prot_qc():
     pass
 
-
+@follows(process_all_tenx_metrics)
 @follows(all_prot_qc)
 @follows(all_rna_qc)
 #@originate("ruffus.check")
