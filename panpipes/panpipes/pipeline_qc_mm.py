@@ -44,9 +44,11 @@ mode_dictionary = PARAMS["modalities"]
 def split_tenx_summary_caf(infile, outfiles):
     caf = pd.read_csv(infile, sep='\t')
     count_df = caf[caf['gex_filetype'] == 'cellranger']
-    count_df.to_csv(outfiles[0])
+    if count_df.shape[0] > 0:
+        count_df.to_csv(outfiles[0])
     count_df = caf[caf['gex_filetype'] == 'cellranger_multi']
-    count_df.to_csv(outfiles[0])
+    if count_df.shape[0] > 0:
+        count_df.to_csv(outfiles[1])
 
 
 
@@ -55,7 +57,7 @@ def split_tenx_summary_caf(infile, outfiles):
 @follows(mkdir("logs"))
 @follows(mkdir("figures"))
 @follows(mkdir("figures/tenx_metrics"))
-@transform("tmp/tenx_submission_count.tsv", regex(), 
+@transform("tmp/tenx_submission_count.tsv", formatter(), 
            "logs/plot_tenx_metrics_count.log")
 def plot_tenx_metrics(infile, outfile):
     """this is the original R script which plots outputs to for cellranger count metrics
@@ -79,8 +81,8 @@ def plot_tenx_metrics(infile, outfile):
 @follows(mkdir("logs"))
 @follows(split_tenx_summary_caf)
 @active_if(os.path.exists("tmp/tenx_submission_multi.tsv"))
-@transform("tmp/tenx_submission_multi.tsv", regex(), 
-           "logs/aggregate_tenx_metrics_multi.log")
+@transform("tmp/tenx_submission_multi.tsv", formatter(), 
+           "logs/tenx_metrics_multi_aggregate.log")
 def aggregate_tenx_metrics_multi(infile, outfile):
     """this is to aggregate all the cellranger multi metric_summary files
     it also does some plotting
