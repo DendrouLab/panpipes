@@ -1,7 +1,7 @@
 
 ## Rescomp specific advice
 Created: 2020-09-21 CRG
-Last edited:
+Last edited: 2023-03-29 (updated for slurm)
 
 
 ### modules to use
@@ -72,3 +72,19 @@ Alternatively use:
 ```
 nohup sc_pipelines clustering make full &
 ```
+
+### A note on GPUS
+
+GPU usage is supported in `panpipes integration` and in `panpipes refmap`.
+GPUs are utilised by scvi-tools and mofa.
+
+GPU resources on bmrc are included here: https://www.medsci.ox.ac.uk/for-staff/resources/bmrc/gpu-resources-slurm
+
+There is a section in the integration `pipeline.yml` for the specific configuration of the gpu queue:
+```
+queues:
+  long: long
+  gpu:  "gpu_short --gres=gres:gpu:1"
+```
+
+
