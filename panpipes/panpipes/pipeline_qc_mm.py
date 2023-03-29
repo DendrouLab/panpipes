@@ -39,48 +39,7 @@ mode_dictionary = PARAMS["modalities"]
 # TODO: update this to check for each modality csv file
 # TODO: check this works with current submission file
 @active_if(PARAMS['plot_10X_metrics'])
-@split(PARAMS['submission_file'], ['tmp/tenx_submission_count.tsv', 
-                                   'tmp/tenx_submission_multi.tsv' ])
-def split_tenx_summary_caf(infile, outfiles):
-    caf = pd.read_csv(infile, sep='\t')
-    count_df = caf[caf['gex_filetype'] == 'cellranger']
-    if count_df.shape[0] > 0:
-        count_df.to_csv(outfiles[0])
-    count_df = caf[caf['gex_filetype'] == 'cellranger_multi']
-    if count_df.shape[0] > 0:
-        count_df.to_csv(outfiles[1])
-
-
-
-@follows(split_tenx_summary_caf)
-@active_if(os.path.exists("tmp/tenx_submission_count.tsv"))
 @follows(mkdir("logs"))
-@follows(mkdir("figures"))
-@follows(mkdir("figures/tenx_metrics"))
-@transform("tmp/tenx_submission_count.tsv", formatter(), 
-           "logs/plot_tenx_metrics_count.log")
-def plot_tenx_metrics(infile, outfile):
-    """this is the original R script which plots outputs to for cellranger count metrics
-    """    
-    cmd = """
-        Rscript %(r_path)s/produce_barplot_10xmetric.v3.R
-            --csvpaths %(infile)s
-            --outdir ./
-            --figdir ./figures/tenx_metrics/
-            --project %(project)s
-            --kneeplot %(kneeplot)s > %(outfile)s
-            """
-    if PARAMS['kneeplot']:
-        job_kwargs["job_threads"] = PARAMS['resources_threads_medium']
-    else:
-       job_kwargs["job_threads"] = PARAMS['resources_threads_low']
-    P.run(cmd, **job_kwargs)
-
-
-
-@follows(mkdir("logs"))
-@follows(split_tenx_summary_caf)
-@active_if(os.path.exists("tmp/tenx_submission_multi.tsv"))
 @transform("tmp/tenx_submission_multi.tsv", formatter(), 
            "logs/tenx_metrics_multi_aggregate.log")
 def aggregate_tenx_metrics_multi(infile, outfile):
@@ -89,7 +48,7 @@ def aggregate_tenx_metrics_multi(infile, outfile):
     """    
     cmd = """
         python %(py_path)s/aggregate_cellranger_summary_metrics.py
-            --pipe_df %(infile)s
+            --pipe_df %(submission_file)s
             --figdir figures/tenx_metrics/
             --output_file 10x_metrics_multi.csv > %(outfile)s
             """
@@ -97,7 +56,7 @@ def aggregate_tenx_metrics_multi(infile, outfile):
     P.run(cmd, **job_kwargs)
 
 
-@follows(aggregate_tenx_metrics_multi, plot_tenx_metrics)
+@follows(aggregate_tenx_metrics_multi)
 def process_all_tenx_metrics():
     pass
 # -----------------------------------------------------------------------------------------------
