@@ -51,6 +51,7 @@ use_existing_h5mu: False
 submission_file: 
 
 # which metadata cols from the submission file do you want to include in the anndata object
+# as a comma-separated string e.g. batch,disease,sex
 metadatacols: 
 
 # which concat join to you want to perform on your mudata objects, recommended inner
@@ -182,6 +183,7 @@ score_genes: MarkersNeutro
 
 # Plot RNA QC metrics
 # ------------
+# all metrics should be inputted as a comma separated string e.g. a,b,c
 
 # likely a combination of metadatacolumns and demultiplex_metadatacols
 plotqc_grouping_var: sample_id
@@ -192,6 +194,7 @@ plotqc_rna_metrics: doublet_scores,pct_counts_mt,pct_counts_rp,pct_counts_hb,pct
 # ------------
 # ADT qc - requires prot_path to be included in the submission file
 # ------------
+# all metrics should be inputted as a comma separated string e.g. a,b,c
 
 ###  ADT QC metrics:
 # as standard the following metrics are calculated for prot data
@@ -280,6 +283,7 @@ partner_rna:
 #supported annotations for protein coding genes provided
 features_tss: #resources/features_tss_hg19.tsv
 #these will be used to plot and saved in the metadata
+# all metrics should be inputted as a comma separated string e.g. a,b,c
 plotqc_atac_metrics: n_genes_by_counts,total_counts,pct_fragments_in_peaks,atac_peak_region_fragments,atac_mitochondrial_reads,atac_TSS_fragments
 
 
