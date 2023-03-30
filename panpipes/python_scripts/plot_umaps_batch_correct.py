@@ -107,10 +107,8 @@ for mod in umaps_df['mod'].unique():
     columns = [cl for cl in columns if cl in plt_df.columns ]
     for col in columns:
         L.info("plotting grouping var %s" % col)
-        if pd.api.types.is_bool_dtype(plt_df[col]):
-            plt_df[col] = plt_df[col].astype(str)
-        if pd.api.types.is_numeric_dtype(plt_df[col]):
-            plt_df[col] = plt_df[col].astype(str) #this would take care of categories too?
+        # make sure everything is a category so that when they get plotted it's the same color
+        plt_df[col] = plt_df[col].astype(str).astype('category')
         plt_df = plt_df.sort_values(by="umap_1")
         g = sns.FacetGrid(plt_df, col="method", col_wrap=3, sharex=False, sharey=False)
         g = (g.map(sns.scatterplot, "umap_1", "umap_2", col, s=pointsize, linewidth=0))
@@ -154,7 +152,7 @@ for mod in umaps_df['mod'].unique():
                                         x="umap_1",
                                         y="umap_2",
                                         c=qc, 
-                                        s=3,
+                                        s=pointsize,
                                         cmap=cmap_choice)
                         axes[idx].set_title(mm)
                         axes[idx].axis('off')

@@ -39,10 +39,11 @@ mode_dictionary = PARAMS["modalities"]
 # TODO: update this to check for each modality csv file
 # TODO: check this works with current submission file
 @active_if(PARAMS['plot_10X_metrics'])
+@follows(mkdir('figures'))
+@follows(mkdir('figures/tenx_metrics'))
 @follows(mkdir("logs"))
-@transform("tmp/tenx_submission_multi.tsv", formatter(), 
-           "logs/tenx_metrics_multi_aggregate.log")
-def aggregate_tenx_metrics_multi(infile, outfile):
+@originate("logs/tenx_metrics_multi_aggregate.log")
+def aggregate_tenx_metrics_multi(outfile):
     """this is to aggregate all the cellranger multi metric_summary files
     it also does some plotting
     """    
@@ -50,7 +51,8 @@ def aggregate_tenx_metrics_multi(infile, outfile):
         python %(py_path)s/aggregate_cellranger_summary_metrics.py
             --pipe_df %(submission_file)s
             --figdir figures/tenx_metrics/
-            --output_file 10x_metrics_multi.csv > %(outfile)s
+            --cellranger_column_conversion_df %(resources_path)s/metrics_summary_col_conversion.tsv
+            --output_file 10x_metrics.csv > %(outfile)s
             """
     job_kwargs["job_threads"] = PARAMS['resources_threads_low']
     P.run(cmd, **job_kwargs)

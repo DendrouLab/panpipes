@@ -34,9 +34,9 @@ parser.add_argument('--output_file',
 parser.add_argument('--figdir',
                     default='./figures',
                     help='')
-# parser.add_argument('--cellranger_column_conversion_df',
-#                     default='',
-#                     help='')
+parser.add_argument('--cellranger_column_conversion_df',
+                    default='',
+                    help='')
 parser.set_defaults(verbose=True)
 args = parser.parse_args()
 
