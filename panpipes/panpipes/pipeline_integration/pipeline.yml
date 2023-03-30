@@ -18,7 +18,7 @@ resources:
 condaenv:
 
 # allows for tweaking which queues jobs get submitted to, 
-# in case there is a special queue for long jobs or you have access to a gpu-sepcific queue
+# in case there is a special queue for long jobs or you have access to a gpu-specific queue
 # the default queue should be specified in your .cgat.yml file
 # leave as is if you do not want to use the alternative queues
 queues:
@@ -42,7 +42,7 @@ rna:
   # True or false depending on whether you want to run batch correction
   run: True 
   # what method(s) to use to run batch correction, you can specify multiple 
-  # choices: harmony,bbknn,scanorama,scvi,combat
+  # choices: harmony,bbknn,scanorama,scvi,combat (comma-seprated string, no spaces)
   tools: harmony,bbknn,scanorama,scvi,combat
   # this is the column you want to batch correct on. if you specify a comma separated list, 
   # they will be all used simultaneosly. if you want to test correction for one at a time, 
@@ -106,7 +106,7 @@ prot:
   # what method(s) to use to run batch correction, you can specify multiple 
   # choices: harmony,bbknn,combat
   tools: harmony
-  # this is the column you want to batch correct on. if you specify a comma separated list, 
+  # this is the column you want to batch correct on. if you specify a comma separated list (no spaces), 
   # they will be all used simultaneosly. if you want to test correction for one at a time, 
   # specify one at a time and run the pipeline in different folders i.e. integration_by_sample, 
   # integration_by_tissue ...
@@ -141,6 +141,7 @@ atac:
   # True or false depending on whether you want to run batch correction
   run: False
   # what method(s) to use to run batch correction, you can specify multiple 
+  # (comma-seprated string, no spaces)
   # choices: harmony,bbknn,combat
   tools: 
   # this is the column you want to batch correct on. if you specify a comma separated list, 
@@ -182,6 +183,7 @@ multimodal:
   run: True 
   # what method(s) to use to run batch correction, you can specify multiple 
   # choices: totalvi, mofa, MultiVI, WNN
+  # list e.g. below
   tools: 
     - WNN
     - totalvi
@@ -269,6 +271,7 @@ multimodal:
     # this is a minimal set of parameters that will be expected
     # you can add any other param from the tutorials and they will
     # be parsed alongside the others
+    #  (comma-separated string, no spaces)
     modalities: rna,prot,atac
     filter_by_hvg: True
     n_factors: 10
@@ -326,6 +329,7 @@ multimodal:
 #-----------------------------
 plotqc:
   # grouping var must be a categorical varible, 
+  #  (comma-seprated strings, no spaces)
   # umaps comparing the integration (one plot per value in the group)
   # for each batch correction column plus any extras in grouping var
   grouping_var: sample_id
