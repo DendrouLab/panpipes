@@ -136,7 +136,7 @@ if args.channel_col is not None:
         # first run clr
         if 'clr' in norm_methods:
             # make sure to start from raw counts
-            mdata["prot"].X = mdata["prot"].layers["raw_counts"]
+            mdata["prot"].X = mdata["prot"].layers["raw_counts"].copy()
             pnp.scmethods.run_adt_normalise(mdata=mdata, mdata_bg=None,
                     method="clr",
                     clr_margin=int(args.clr_margin))
@@ -154,7 +154,7 @@ if args.channel_col is not None:
             mdata_bg = mdata_bg_per_sample[si]
             mdata = mdata_per_sample[si]
             # make sure to start from raw counts
-            mdata["prot"].X = mdata["prot"].layers["raw_counts"]
+            mdata["prot"].X = mdata["prot"].layers["raw_counts"].copy()
             # plot hiustogram of bg
             mdata_bg["rna"].obs["log10umi"] = np.array(np.log10(mdata_bg["rna"].X.sum(axis=1) + 1)).reshape(-1)
             # mu.pl.histogram(mdata_bg["rna"], ["log10umi"], bins=50)
@@ -181,7 +181,7 @@ else:
     plot_features = [x for x in plot_features if x not in isotypes]
     if 'clr' in norm_methods:
         # make sure to start from raw counts
-        all_mdata["prot"].X = all_mdata["prot"].layers["raw_counts"]
+        all_mdata["prot"].X = all_mdata["prot"].layers["raw_counts"].copy()
         # run normalise
         # this stores a layer named after the method as well as overwriting X
         pnp.scmethods.run_adt_normalise(mdata=all_mdata, 
@@ -198,7 +198,7 @@ else:
             pnp.io.write_10x_counts(all_mdata["prot"], os.path.join("adt_clr"), layer="clr")
     if 'dsb' in norm_methods:
         # make sure to start from raw counts
-        all_mdata["prot"].X = all_mdata["prot"].layers["raw_counts"]
+        all_mdata["prot"].X = all_mdata["prot"].layers["raw_counts"].copy()
         # then run dsb
         # comput log 10 umi
         all_mdata_bg["rna"].obs["log10umi"] = np.array(np.log10(all_mdata_bg["rna"].X.sum(axis=1) + 1)).reshape(-1)
