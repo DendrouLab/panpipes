@@ -124,10 +124,6 @@ def load_mudatas(rna_path, outfile,
         cmd += " --fragments_file %(fragments_file)s"
     if peak_annotation_file is not None and pd.notna(peak_annotation_file):
         cmd += " --peak_annotation_file %(peak_annotation_file)s"
-    if PARAMS['protein_metadata_table'] is not None:
-        cmd += " --protein_var_table %(protein_metadata_table)s"
-    if PARAMS['index_col_choice'] is not None:
-        cmd += " --protein_new_index_col %(index_col_choice)s"
       # ~ means this tests "is not nan"
     if tcr_path is not None and pd.notna(tcr_path):
         cmd += " --tcr_filtered_contigs %(tcr_path)s"
@@ -163,6 +159,10 @@ def concat_filtered_mudatas(infiles, outfile):
     if PARAMS["barcode_mtd_include"] is True:
         cmd += " --barcode_mtd_df %(barcode_mtd_path)s"
         cmd += " --barcode_mtd_metadatacols %(barcode_mtd_metadatacols)s"
+    if PARAMS['protein_metadata_table'] is not None:
+        cmd += " --protein_var_table %(protein_metadata_table)s"
+    if PARAMS['index_col_choice'] is not None:
+        cmd += " --protein_new_index_col %(index_col_choice)s"
     cmd += " > logs/concat_filtered_mudatas.log"
     job_kwargs["job_threads"] = PARAMS['resources_threads_high']
     P.run(cmd, **job_kwargs)
