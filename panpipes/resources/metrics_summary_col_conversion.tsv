@@ -1,0 +1,55 @@
+category	library_type	grouped_by	metric_name	count_metric_name
+Library	Antibody Capture	Physical library ID	Fraction antibody reads	Antibody: Fraction Antibody Reads
+Library	Antibody Capture	Physical library ID	Fraction antibody reads in aggregate barcodes	Antibody: Fraction Antibody Reads in Aggregate Barcodes
+Library	Antibody Capture	Physical library ID	Fraction antibody reads usable	Antibody: Fraction Antibody Reads Usable
+Library	Antibody Capture	Physical library ID	Fraction reads in cells	Antibody: Antibody Reads Usable per Cell
+Library	Antibody Capture	Physical library ID	Fraction unrecognized antibody	Antibody: Fraction Unrecognized Antibody
+Library	Antibody Capture	Physical library ID	Mean reads per cell	Antibody: Mean Reads per Cell
+Library	Antibody Capture	Physical library ID	Number of reads	Antibody: Number of Reads
+Library	Antibody Capture	Fastq ID	Q30 RNA read	Antibody: Q30 Bases in Antibody Read
+Library	Antibody Capture	Fastq ID	Q30 UMI	Antibody: Q30 Bases in UMI
+Library	Antibody Capture	Fastq ID	Q30 barcodes	Antibody: Q30 Bases in Barcode
+Library	Antibody Capture	Physical library ID	Sequencing saturation	Antibody: Sequencing Saturation
+Library	Antibody Capture	Physical library ID	Valid barcodes	Antibody: Valid Barcodes
+Library	Gene Expression	Physical library ID	Confidently mapped antisense	Reads Mapped Antisense to Gene
+Library	Gene Expression	Physical library ID	Confidently mapped to exonic regions	Reads Mapped Confidently to Exonic Regions
+Library	Gene Expression	Physical library ID	Confidently mapped to genome	Reads Mapped Confidently to Genome
+Library	Gene Expression	Physical library ID	Confidently mapped to intergenic regions	Reads Mapped Confidently to Intergenic Regions
+Library	Gene Expression	Physical library ID	Confidently mapped to intronic regions	Reads Mapped Confidently to Intronic Regions
+Library	Gene Expression	Physical library ID	Confidently mapped to transcriptome	Reads Mapped Confidently to Transcriptome
+Library	Gene Expression	Physical library ID	Estimated number of cells	Estimated Number of Cells
+Library	Gene Expression	Physical library ID	Mapped to genome	Reads Mapped to Genome
+Library	Gene Expression	Physical library ID	Mean reads per cell	Mean Reads per Cell
+Library	Gene Expression	Physical library ID	Number of reads	Number of Reads
+Library	Gene Expression	Fastq ID	Q30 RNA read	Q30 Bases in RNA Read
+Library	Gene Expression	Fastq ID	Q30 UMI	Q30 Bases in UMI
+Library	Gene Expression	Fastq ID	Q30 barcodes	Q30 Bases in Barcode
+Library	Gene Expression	Physical library ID	Sequencing saturation	Sequencing Saturation
+Library	Gene Expression	Physical library ID	Valid barcodes	Valid Barcodes
+Library	VDJ B	Physical library ID	Estimated number of cells	Estimated Number of Cells
+Library	VDJ B	Physical library ID	Fraction reads in cells	Fraction Reads in Cells
+Library	VDJ B	Physical library ID	Mean reads per cell	Mean Read Pairs per Cell
+Library	VDJ B	Physical library ID	Mean used reads per cell	Mean Used Read Pairs per Cell
+Library	VDJ B	Fastq ID	Number of reads	Number of Read Pairs
+Library	VDJ B	Fastq ID	Q30 RNA read	Q30 Bases in RNA Read 1
+Library	VDJ B	Fastq ID	Q30 RNA read 2	Q30 Bases in RNA Read 2
+Library	VDJ B	Fastq ID	Q30 UMI	Q30 Bases in UMI
+Library	VDJ B	Fastq ID	Q30 barcodes	Q30 Bases in Barcode
+Library	VDJ B	Physical library ID	Reads mapped to IGH	Reads Mapped to IGH
+Library	VDJ B	Physical library ID	Reads mapped to IGK	Reads Mapped to IGK
+Library	VDJ B	Physical library ID	Reads mapped to IGL	Reads Mapped to IGL
+Library	VDJ B	Physical library ID	Reads mapped to any V(D)J gene	Reads Mapped to Any V(D)J Gene
+Library	VDJ B	Physical library ID	Valid barcodes	Valid Barcodes
+Library	VDJ T	Physical library ID	Estimated number of cells	Estimated Number of Cells
+Library	VDJ T	Physical library ID	Fraction reads in cells	Fraction Reads in Cells
+Library	VDJ T	Physical library ID	Mean reads per cell	Mean Read Pairs per Cell
+Library	VDJ T	Physical library ID	Mean used reads per cell	Mean Used Read Pairs per Cell
+Library	VDJ T	Physical library ID	Number of reads	Number of Read Pairs
+Library	VDJ T	Fastq ID	Q30 RNA read	Q30 Bases in RNA Read 1
+Library	VDJ T	Fastq ID	Q30 RNA read 2	Q30 Bases in RNA Read 2
+Library	VDJ T	Fastq ID	Q30 UMI	Q30 Bases in UMI
+Library	VDJ T	Fastq ID	Q30 barcodes	Q30 Bases in Barcode
+Library	VDJ T	Physical library ID	Reads mapped to TRA	Reads Mapped to TRA
+Library	VDJ T	Physical library ID	Reads mapped to TRB	Reads Mapped to TRB
+Library	VDJ T	Physical library ID	Reads mapped to any V(D)J gene	Reads Mapped to Any V(D)J Gene
+Library	VDJ T	Physical library ID	Valid barcodes	Valid Barcodes
