@@ -22,7 +22,6 @@ import glob
 from panpipes.funcs.processing import extract_parameter_from_fname
 PARAMS = P.get_parameters(
     ["%s/pipeline.yml" % os.path.splitext(__file__)[0],
-     "../pipeline.yml",
      "pipeline.yml"])
 
 PARAMS['py_path'] =  os.path.join(os.path.dirname(os.path.dirname(__file__)), 'python_scripts')
