@@ -8,16 +8,11 @@ from anndata import AnnData
 import muon as mu
 import pandas as pd
 import argparse
-import os
-import re
+
 sc.settings.autoshow = False
-from panpipes.funcs.io import read_yaml
+
 import matplotlib
 matplotlib.use('agg')
-
-
-# from panpipes.funcs.processing import check_for_bool
-# from panpipes.funcs.io import read_anndata, write_anndata
 
 import sys
 import logging
@@ -65,7 +60,11 @@ def calc_dendrogram(adata, group_col):
         if "X_pca" not in adata.obsm.keys():
             sc.pp.pca(adata)
         L.info("calculating dendrogram")
-        sc.tl.dendrogram(adata, groupby=group_col, use_rep="X_pca")
+        try:
+            sc.tl.dendrogram(adata, groupby=group_col, use_rep="X_pca")
+        except ValueError:
+            L.info("cannot calculate dendrogram")
+            incl_dendrogram = False
     else:
         incl_dendrogram = False
     return incl_dendrogram
