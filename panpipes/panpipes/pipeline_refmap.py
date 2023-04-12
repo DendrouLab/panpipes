@@ -12,7 +12,6 @@ import glob
 # __file__="/well/cartography/users/zsj686/non_cart_projects/005-multimodal_scpipelines/src/sc_pipelines_muon_dev/panpipes/pipeline_refmap.py"
 PARAMS = P.get_parameters(
     ["%s/pipeline.yml" % os.path.splitext(__file__)[0],
-     "../pipeline.yml",
      "pipeline.yml"])
 
 job_kwargs = {}

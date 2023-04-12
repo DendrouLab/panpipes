@@ -12,7 +12,6 @@ import glob
 
 PARAMS = P.get_parameters(
     ["%s/pipeline.yml" % os.path.splitext(__file__)[0],
-     "../pipeline.yml",
      "pipeline.yml"])
 
 
