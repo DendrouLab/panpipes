@@ -95,7 +95,7 @@ def run_no_batch_umap(outfile):
 @active_if(PARAMS['rna_tools'] is not None and 'bbknn' in PARAMS['rna_tools'])
 # @follows(normalise_log_hvg_regress_scale)
 @originate("batch_correction/umap_rna_bbknn.csv")
-def run_bbknn(outfile):
+def run_bbknn_rna(outfile):
     cmd = """python %(py_path)s/batch_correct_bbknn.py 
      --input_anndata %(preprocessed_obj)s
      --output_csv %(outfile)s
@@ -277,7 +277,7 @@ def run_scvi(outfile):
 #     print(cmd)
 #     P.run(cmd, job_threads=PARAMS['resources_threads_high'])
 @active_if(PARAMS['rna_run'])
-@follows(run_harmony, run_bbknn, run_combat, run_scanorama, run_scvi, run_no_batch_umap)
+@follows(run_harmony, run_bbknn_rna, run_combat, run_scanorama, run_scvi, run_no_batch_umap)
 def run_unimodal_integration_rna():
     pass
 
@@ -359,7 +359,7 @@ def run_harmony_prot( outfile):
 @active_if(PARAMS['prot_tools'] is not None and 'bbknn' in PARAMS['prot_tools'])
 # @follows(normalise_log_hvg_regress_scale)
 @originate("batch_correction/umap_prot_bbknn.csv")
-def run_bbknn(outfile):
+def run_bbknn_prot(outfile):
     cmd = """python %(py_path)s/batch_correct_bbknn.py 
      --input_anndata %(preprocessed_obj)s
      --output_csv %(outfile)s
@@ -378,10 +378,44 @@ def run_bbknn(outfile):
     P.run(cmd, **job_kwargs) 
 
 
+# prot COMBAT
+@follows(set_up_dirs)
 @active_if(PARAMS['prot_run'])
-@follows(run_harmony_prot, run_bbknn_prot, run_no_batch_umap_prot)
+@active_if(PARAMS['prot_tools'] is not None and 'combat' in PARAMS['prot_tools'])
+@originate("batch_correction/umap_prot_combat.csv")
+def run_combat_prot(outfile):
+    cmd = """python %(py_path)s/batch_correct_combat.py 
+     --input_anndata %(preprocessed_obj)s
+     --output_csv %(outfile)s
+     --integration_col %(prot_column)s
+     --n_threads %(resources_threads_high)s
+     --modality prot
+     """
+    # cannot use the normal method for importing params from yaml, because it only works up to depth 2
+    neighbor_params = PARAMS['prot']['neighbors']
+    if neighbor_params['method'] is not None:
+        cmd += " --neighbors_method %s" % neighbor_params['method']
+    if neighbor_params['metric'] is not None:
+        cmd += " --neighbors_metric %s" % neighbor_params['metric']
+    if neighbor_params['npcs'] is not None:
+        cmd += " --neighbors_n_pcs %s"  % neighbor_params['npcs']
+    if neighbor_params['k'] is not None:
+        cmd += " --neighbors_k %s" % neighbor_params['k']
+    cmd += " > logs/prot_combat.log "
+    
+    if PARAMS['queues_long'] is not None:
+        job_kwargs["job_queue"] = PARAMS['queues_long']
+
+    job_kwargs["job_threads"] = PARAMS['resources_threads_high']
+    P.run(cmd, **job_kwargs) 
+    
+
+@active_if(PARAMS['prot_run'])
+@follows(run_harmony_prot, run_bbknn_prot,run_combat_prot, run_no_batch_umap_prot)
 def run_unimodal_integration_prot():
     pass
+
+
 # ------------------------------------------------------------------------
 # ATAC unimodal Integration:
 # - nobatch
@@ -471,7 +505,7 @@ def run_bbknn_atac(outfile):
         cmd += " --neighbors_n_pcs %s" % PARAMS['atac']['neighbors']['npcs']
     cmd += " > logs/atac_bbknn.log "
     if PARAMS['queues_long'] is not None:
-        job_kwargs["job_queue"] = job_queue=PARAMS['queues_long']
+        job_kwargs["job_queue"] = PARAMS['queues_long']
     job_kwargs["job_threads"] = PARAMS['resources_threads_high']
     P.run(cmd, **job_kwargs) 
 
@@ -667,8 +701,8 @@ def run_multimodal_integration():
 # Evaluation
 # ------------------------------------------------------------------------
 
-@collate([run_no_batch_umap, run_scanorama, run_bbknn,run_harmony, run_scvi, run_combat, 
-          run_no_batch_umap_prot, run_harmony_prot, 
+@collate([run_no_batch_umap, run_scanorama, run_bbknn_rna,run_harmony, run_scvi, run_combat, 
+          run_no_batch_umap_prot, run_harmony_prot, run_bbknn_prot, run_combat_prot,
           run_no_batch_umap_atac, run_bbknn_atac,run_harmony_atac, 
           run_totalvi, run_wnn, run_multivi, run_mofa], 
          regex(r"(.*)/(.*)"), 

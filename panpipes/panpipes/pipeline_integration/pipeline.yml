@@ -42,8 +42,8 @@ rna:
   # True or false depending on whether you want to run batch correction
   run: True 
   # what method(s) to use to run batch correction, you can specify multiple 
-  # choices: harmony,bbknn,scanorama,scvi,combat (comma-seprated string, no spaces)
-  tools: harmony,bbknn,scanorama,scvi,combat
+  # choices: harmony,bbknn,scanorama,scvi (comma-seprated string, no spaces)
+  tools: harmony,bbknn,scanorama,scvi
   # this is the column you want to batch correct on. if you specify a comma separated list, 
   # they will be all used simultaneosly. 
   # Specifically all columns specified will be merged into one 'batch' columns.
