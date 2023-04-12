@@ -95,17 +95,17 @@ def run_no_batch_umap(outfile):
 @active_if(PARAMS['rna_tools'] is not None and 'bbknn' in PARAMS['rna_tools'])
 # @follows(normalise_log_hvg_regress_scale)
 @originate("batch_correction/umap_rna_bbknn.csv")
-def run_bbknn(outfile):
+def run_bbknn_rna(outfile):
     cmd = """python %(py_path)s/batch_correct_bbknn.py 
      --input_anndata %(preprocessed_obj)s
      --output_csv %(outfile)s
      --integration_col %(rna_column)s
      --modality rna
      """
+    if PARAMS['rna']['bbknn']['neighbors_within_batch'] is not None:
+        cmd += " --neighbors_within_batch %s" & PARAMS['rna']['bbknn']['neighbors_within_batch']
     if PARAMS['rna']['neighbors']['npcs'] is not None:
-        npcs = PARAMS['rna']['neighbors']['npcs']
-        cmd += " --neighbors_n_pcs %s" % npcs
-    
+        cmd += " --neighbors_n_pcs %s" % PARAMS['rna']['neighbors']['npcs']
     cmd += " > logs/rna_bbknn.log "
     
     if PARAMS['queues_long'] is not None:
@@ -277,7 +277,7 @@ def run_scvi(outfile):
 #     print(cmd)
 #     P.run(cmd, job_threads=PARAMS['resources_threads_high'])
 @active_if(PARAMS['rna_run'])
-@follows(run_harmony, run_bbknn, run_combat, run_scanorama, run_scvi, run_no_batch_umap)
+@follows(run_harmony, run_bbknn_rna, run_combat, run_scanorama, run_scvi, run_no_batch_umap)
 def run_unimodal_integration_rna():
     pass
 
@@ -351,39 +351,71 @@ def run_harmony_prot( outfile):
     job_kwargs["job_threads"] = PARAMS['resources_threads_high']
     P.run(cmd, **job_kwargs)
 
-# @collate([run_no_batch_umap_prot, run_harmony_prot], 
-#             regex(r"(.*)/(.*)"), r'batch_correction/prot_combined_umaps.tsv')
-# def plot_umaps_prot(infiles, outfile):
-#     print(infiles, outfile)
-#     sampleprefix = PARAMS['sample_prefix']
-#     if PARAMS['downsample'] is None:
-#         cell_file = sampleprefix + "_filtered_cell_metadata.tsv"
-#     else:
-#         cell_file = sampleprefix + "_downsampled_cell_metadata.tsv"
-#     infiles_string = ','.join(infiles)
-#     cmd = """python %(py_path)s/plot_umaps_batch_correct.py 
-#     --input_files %(infiles_string)s 
-#     --batch_mtd batch_correction/batch_prot_mtd.csv
-#     --cell_meta_df %(cell_file)s
-#     --groupingvar %(plotqc_adt_metrics)s 
-#     --outfile %(outfile)s
-#     --fig_dir figures/prot/ 
-#     --mod prot
-#     """
-#     if PARAMS['use_muon']:
-#         rna_metrics = ','.join(['rna:' + x for x in  PARAMS['plotqc_rna_metrics'].split(',')])
-#         prot_metrics = ','.join(['prot:' + x for x in  PARAMS['plotqc_prot_metrics'].split(',')])
-#         qc_metrics = rna_metrics + ',' + prot_metrics
-#         cmd += " --qc_metrics %(qc_metrics)s"
-#     else:
-#         cmd += " --qc_metrics %(plotqc_rna_metrics)s"
 
-#     cmd += " > logs/plot_umaps_prot.log" 
-#     P.run(cmd, job_threads=PARAMS['resources_threads_low'])
+
+# prot BBKNN
+@follows(set_up_dirs)
 @active_if(PARAMS['prot_run'])
-@follows(run_harmony_prot, run_no_batch_umap_prot)
+@active_if(PARAMS['prot_tools'] is not None and 'bbknn' in PARAMS['prot_tools'])
+# @follows(normalise_log_hvg_regress_scale)
+@originate("batch_correction/umap_prot_bbknn.csv")
+def run_bbknn_prot(outfile):
+    cmd = """python %(py_path)s/batch_correct_bbknn.py 
+     --input_anndata %(preprocessed_obj)s
+     --output_csv %(outfile)s
+     --integration_col %(prot_column)s
+     --modality prot
+     """
+    if PARAMS['prot']['bbknn']['neighbors_within_batch'] is not None:
+        cmd += " --neighbors_within_batch %s" & PARAMS['prot']['bbknn']['neighbors_within_batch']
+    if PARAMS['prot']['neighbors']['npcs'] is not None:
+        cmd += " --neighbors_n_pcs %s" % PARAMS['prot']['neighbors']['npcs']
+    cmd += " > logs/prot_bbknn.log "
+    
+    if PARAMS['queues_long'] is not None:
+        job_kwargs["job_queue"] = job_queue=PARAMS['queues_long']
+    job_kwargs["job_threads"] = PARAMS['resources_threads_high']
+    P.run(cmd, **job_kwargs) 
+
+
+# prot COMBAT
+@follows(set_up_dirs)
+@active_if(PARAMS['prot_run'])
+@active_if(PARAMS['prot_tools'] is not None and 'combat' in PARAMS['prot_tools'])
+@originate("batch_correction/umap_prot_combat.csv")
+def run_combat_prot(outfile):
+    cmd = """python %(py_path)s/batch_correct_combat.py 
+     --input_anndata %(preprocessed_obj)s
+     --output_csv %(outfile)s
+     --integration_col %(prot_column)s
+     --n_threads %(resources_threads_high)s
+     --modality prot
+     """
+    # cannot use the normal method for importing params from yaml, because it only works up to depth 2
+    neighbor_params = PARAMS['prot']['neighbors']
+    if neighbor_params['method'] is not None:
+        cmd += " --neighbors_method %s" % neighbor_params['method']
+    if neighbor_params['metric'] is not None:
+        cmd += " --neighbors_metric %s" % neighbor_params['metric']
+    if neighbor_params['npcs'] is not None:
+        cmd += " --neighbors_n_pcs %s"  % neighbor_params['npcs']
+    if neighbor_params['k'] is not None:
+        cmd += " --neighbors_k %s" % neighbor_params['k']
+    cmd += " > logs/prot_combat.log "
+    
+    if PARAMS['queues_long'] is not None:
+        job_kwargs["job_queue"] = PARAMS['queues_long']
+
+    job_kwargs["job_threads"] = PARAMS['resources_threads_high']
+    P.run(cmd, **job_kwargs) 
+    
+
+@active_if(PARAMS['prot_run'])
+@follows(run_harmony_prot, run_bbknn_prot,run_combat_prot, run_no_batch_umap_prot)
 def run_unimodal_integration_prot():
     pass
+
+
 # ------------------------------------------------------------------------
 # ATAC unimodal Integration:
 # - nobatch
@@ -467,14 +499,13 @@ def run_bbknn_atac(outfile):
      --integration_col %(atac_column)s
      --modality atac
      """
-    neighbor_params = PARAMS['atac']['neighbors']
-    if neighbor_params['npcs'] is not None:
-        cmd += " --neighbors_n_pcs %s"  % neighbor_params['npcs']
-    
+    if PARAMS['atac']['bbknn']['neighbors_within_batch'] is not None:
+        cmd += " --neighbors_within_batch %s" & PARAMS['atac']['bbknn']['neighbors_within_batch']
+    if PARAMS['atac']['neighbors']['npcs'] is not None:
+        cmd += " --neighbors_n_pcs %s" % PARAMS['atac']['neighbors']['npcs']
     cmd += " > logs/atac_bbknn.log "
-    
     if PARAMS['queues_long'] is not None:
-        job_kwargs["job_queue"] = job_queue=PARAMS['queues_long']
+        job_kwargs["job_queue"] = PARAMS['queues_long']
     job_kwargs["job_threads"] = PARAMS['resources_threads_high']
     P.run(cmd, **job_kwargs) 
 
@@ -670,8 +701,8 @@ def run_multimodal_integration():
 # Evaluation
 # ------------------------------------------------------------------------
 
-@collate([run_no_batch_umap, run_scanorama, run_bbknn,run_harmony, run_scvi, run_combat, 
-          run_no_batch_umap_prot, run_harmony_prot, 
+@collate([run_no_batch_umap, run_scanorama, run_bbknn_rna,run_harmony, run_scvi, run_combat, 
+          run_no_batch_umap_prot, run_harmony_prot, run_bbknn_prot, run_combat_prot,
           run_no_batch_umap_atac, run_bbknn_atac,run_harmony_atac, 
           run_totalvi, run_wnn, run_multivi, run_mofa], 
          regex(r"(.*)/(.*)"), 

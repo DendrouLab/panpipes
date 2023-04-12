@@ -61,20 +61,10 @@ if len(columns) > 1:
 
     # make sure that batch is a categorical
     adata.obs["comb_columns"] = adata.obs["comb_columns"].astype("category")
-    nn_test = nnb * len(adata.obs["comb_columns"].unique())
-    if nn_test > 40:
-        nnb = nnb - 1
-        if nnb < 1:
-            sys.exit("can't work with 0 neighbors_within_batch")
     # run bbknn
     adata = sc.external.pp.bbknn(adata, batch_key="comb_columns", copy=True, neighbors_within_batch=nnb)
 else:
     adata.obs[args.integration_col] = adata.obs[args.integration_col].astype("category")
-    nn_test = nnb * len(adata.obs[args.integration_col].unique())
-    if nn_test > 40:
-        nnb = nnb - 1
-        if nnb < 1:
-            sys.exit("can't work with 0 neighbors_within_batch") 
     # run bbknn
     adata = sc.external.pp.bbknn(adata,
                         batch_key=args.integration_col,

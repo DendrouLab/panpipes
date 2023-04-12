@@ -42,10 +42,12 @@ rna:
   # True or false depending on whether you want to run batch correction
   run: True 
   # what method(s) to use to run batch correction, you can specify multiple 
-  # choices: harmony,bbknn,scanorama,scvi,combat (comma-seprated string, no spaces)
-  tools: harmony,bbknn,scanorama,scvi,combat
+  # choices: harmony,bbknn,scanorama,scvi (comma-seprated string, no spaces)
+  tools: harmony,bbknn,scanorama,scvi
   # this is the column you want to batch correct on. if you specify a comma separated list, 
-  # they will be all used simultaneosly. if you want to test correction for one at a time, 
+  # they will be all used simultaneosly. 
+  # Specifically all columns specified will be merged into one 'batch' columns.
+  # if you want to test correction for one at a time, 
   # specify one at a time and run the pipeline in different folders i.e. integration_by_sample, 
   # integration_by_tissue ...
   column: sample_id 
@@ -59,6 +61,11 @@ rna:
     theta: 1.0
   # number of pcs, used by Harmony
     npcs: 30
+  #----------------------------
+  # BBKNN args # https://bbknn.readthedocs.io/en/latest/
+  #-----------------------------
+  bbknn:
+    neighbors_within_batch: 
   #-----------------------------
   # SCVI args
   #-----------------------------
@@ -121,6 +128,11 @@ prot:
     theta: 1.0
   # number of pcs, used by Harmony
     npcs: 30
+  #----------------------------
+  # BBKNN args # https://bbknn.readthedocs.io/en/latest/
+  #-----------------------------
+  bbknn:
+    neighbors_within_batch: 
   #----------------------------›
   # find neighbour parameters
   #-----------------------------
@@ -159,6 +171,11 @@ atac:
     theta: 1.0
   # number of pcs, used by Harmony
     npcs: 30
+  #----------------------------
+  # BBKNN args # https://bbknn.readthedocs.io/en/latest/
+  #-----------------------------
+  bbknn:
+    neighbors_within_batch: 
   #----------------------------
   # find neighbour parameters
   #-----------------------------
