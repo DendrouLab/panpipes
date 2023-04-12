@@ -61,9 +61,13 @@ if len(columns) > 1:
 
     # make sure that batch is a categorical
     adata.obs["comb_columns"] = adata.obs["comb_columns"].astype("category")
+    # test the minimum number of neighbours needed for the function to not break,
+    # the safe point is 40 in my tests
     nn_test = nnb * len(adata.obs["comb_columns"].unique())
     if nn_test > 40:
         nnb = nnb - 1
+        L.info("reducing the numbers within batch to %i as the number of batches is high, \
+               and bbknn will likely crash" % nnb)
         if nnb < 1:
             sys.exit("can't work with 0 neighbors_within_batch")
     # run bbknn
