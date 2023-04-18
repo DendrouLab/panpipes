@@ -288,7 +288,7 @@ def run_unimodal_integration_rna():
 # ------------------------------------------------------------------------
 
 @follows(set_up_dirs)
-# @active_if(PARAMS['prot_run'])
+@active_if(PARAMS['prot_run'])
 @originate("batch_correction/umap_prot_none.csv")
 def run_no_batch_umap_prot(outfile):
     cmd = """python %(py_path)s/batch_correct_none.py 
