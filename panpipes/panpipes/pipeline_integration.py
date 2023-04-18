@@ -103,7 +103,7 @@ def run_bbknn_rna(outfile):
      --modality rna
      """
     if PARAMS['rna']['bbknn']['neighbors_within_batch'] is not None:
-        cmd += " --neighbors_within_batch %s" & PARAMS['rna']['bbknn']['neighbors_within_batch']
+        cmd += " --neighbors_within_batch %i" % PARAMS['rna']['bbknn']['neighbors_within_batch']
     if PARAMS['rna']['neighbors']['npcs'] is not None:
         cmd += " --neighbors_n_pcs %s" % PARAMS['rna']['neighbors']['npcs']
     cmd += " > logs/rna_bbknn.log "
@@ -367,7 +367,7 @@ def run_bbknn_prot(outfile):
      --modality prot
      """
     if PARAMS['prot']['bbknn']['neighbors_within_batch'] is not None:
-        cmd += " --neighbors_within_batch %s" & PARAMS['prot']['bbknn']['neighbors_within_batch']
+        cmd += " --neighbors_within_batch %i" % PARAMS['prot']['bbknn']['neighbors_within_batch']
     if PARAMS['prot']['neighbors']['npcs'] is not None:
         cmd += " --neighbors_n_pcs %s" % PARAMS['prot']['neighbors']['npcs']
     cmd += " > logs/prot_bbknn.log "
@@ -500,7 +500,7 @@ def run_bbknn_atac(outfile):
      --modality atac
      """
     if PARAMS['atac']['bbknn']['neighbors_within_batch'] is not None:
-        cmd += " --neighbors_within_batch %s" & PARAMS['atac']['bbknn']['neighbors_within_batch']
+        cmd += " --neighbors_within_batch %i" % PARAMS['atac']['bbknn']['neighbors_within_batch']
     if PARAMS['atac']['neighbors']['npcs'] is not None:
         cmd += " --neighbors_n_pcs %s" % PARAMS['atac']['neighbors']['npcs']
     cmd += " > logs/atac_bbknn.log "
