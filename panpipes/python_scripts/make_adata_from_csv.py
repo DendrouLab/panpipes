@@ -67,12 +67,6 @@ parser.add_argument('--bcr_filetype',
 parser.add_argument('--output_file',
                     default=None,
                     help='')
-parser.add_argument('--protein_var_table',
-                    default=None,
-                    help='')
-parser.add_argument('--protein_new_index_col',
-                    default=None,
-                    help='')
 parser.add_argument('--per_barcode_metrics_file',
                     default=None,
                     help='ATAC/Multiome specific input file from csv')                    
@@ -123,31 +117,6 @@ if 'prot' in mdata.mod.keys():
             intersect_obs_by_mod(mdata, ['rna', 'prot'])
             mdata.update()
     L.info(mdata['prot'].var.head())
-    if args.protein_var_table is not None:
-        try:
-            df = pd.read_csv(args.protein_var_table, sep='\t', index_col=0)
-            L.info("merging protein table with var")
-            # add_var_mtd(mdata['prot'], df)
-            var_df = mdata['prot'].var.merge(df, left_index=True, right_index=True)
-            if args.protein_new_index_col is not None:
-                L.info("updating prot.var index")
-                # update_var_index(mdata['prot'], args.protein_new_index_col)
-                var_df =var_df.reset_index().set_index(args.protein_new_index_col)
-                var_df = var_df.rename(columns={'index':'orig_id'})
-                var_df.index.name = None
-            mdata['prot'].var = var_df
-            mdata.update_var()
-            mdata.update()
-            # we might want to split hashing antibodies into a separate modalities
-            # we assume this has been inidicated in a "hashing_ab" column in the protein metadata file
-            if "hashing_ab" in mdata['prot'].var.columns:
-                # create new modality for hashing
-                mdata.mod["hashing_ab"]=mdata["prot"][:, mdata["prot"].var["hashing_ab"]]
-                # subset old modality to remove hashing
-                mdata.mod['prot'] = mdata["prot"][:, ~mdata["prot"].var["hashing_ab"]]
-        except FileNotFoundError:
-            warnings.warn("protein metadata table not found")
-    mdata.update()
 
 if 'atac' in mdata.mod.keys():
     mdata['atac'].var_names_make_unique()

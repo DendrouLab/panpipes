@@ -384,4 +384,3 @@ def mu_get_obs(mdata, features=[],modalities=[], layers=None):
     df = concat(out, axis=1)
     df.columns = ['-'.join(col).strip() for col in df.columns.values]
     return df
-
