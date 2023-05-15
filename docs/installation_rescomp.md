@@ -61,6 +61,11 @@ git clone https://github.com/DendrouLab/panpipes
 cd panpipes
 pip install .
 ```
+OR if you anticipate doing development on panpipes:
+```
+pip install --editable .
+```
+
 The pipelines are now installed as a local python package.
 
 ### Step 3 installing R requirements
