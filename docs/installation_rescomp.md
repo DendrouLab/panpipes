@@ -62,6 +62,7 @@ cd panpipes
 pip install .
 ```
 OR if you anticipate doing development on panpipes:
+For this you need setuptool > 64.0.0
 ```
 pip install --editable .
 ```
