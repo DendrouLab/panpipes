@@ -120,9 +120,9 @@ if `echo $DRMAA_LIBRARY_PATH` does not return anything, add DRMAA_LIBRARY_PATH t
 
 
 ```
-echo "export SLURM_CONF=/run/slurm/conf/slurm.conf"  > ~/.bashrc
-echo "export DRMAA_LIBRARY_PATH=/usr/lib64/libdrmaa.so"  > ~/.bashrc
-echo "export SBATCH_ACCOUNT=${project}.prj" > ~/.bashrc
+echo "export SLURM_CONF=/run/slurm/conf/slurm.conf"  >> ~/.bashrc
+echo "export DRMAA_LIBRARY_PATH=/usr/lib64/libdrmaa.so"  >> ~/.bashrc
+echo "export SBATCH_ACCOUNT=${project}.prj" >> ~/.bashrc
 
 tail ~/.bashrc
 ```
