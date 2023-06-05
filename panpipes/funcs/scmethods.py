@@ -14,10 +14,46 @@ from muon import MuData
 from anndata import AnnData
 import os
 from matplotlib.pyplot import savefig
+from statsmodels.distributions.empirical_distribution import ECDF
 
 from .plotting import ridgeplot
 from .io import write_10x_counts
 from .processing import check_for_bool, which_ind
+
+
+def findTopFeatures_pseudo_signac(adata, min_cutoff):
+    # https://stuartlab.org/signac/reference/findtopfeatures
+    # fit ecdf
+    ecdf = ECDF(adata.var["total_counts"])
+    # need to perform the following step and not directly merge adata.var with ecdf.x and ecdf.y because:
+    # when two features have the same total counts ---> will assign both features 2 different probabilities
+    # --> & have two columns for one feature
+    # therefore: extract features and sort decreasingly by total_counts
+    extracted = adata.var[["gene_ids", "total_counts"]]
+    extracted = extracted.sort_values("total_counts", ascending=False)
+    # add decreasingly ordered percentiles to dataframe:
+    extracted["percentile"] = -np.sort(-ecdf.y)[:-1]  # last percentile always corresponds to the percentile of -Inf
+    # merge extracted with adata.var by "gene_ids", i.e. feature name
+    extracted = pd.merge(adata.var, extracted.drop("total_counts", axis=1), on="gene_ids")
+    # add row names
+    extracted.index = adata.var["gene_ids"]
+    adata.var = extracted
+
+    # Note: could also extract row names/gene_id column
+    #      and sort adata.var decreasingly & add ecdf.y
+    #      then sort adata.var back to original ordering according to the extracted row names
+
+    if min_cutoff.startswith("q"):  # quantile filtering
+        min_cutoff = int(min_cutoff[1:]) / 100
+        adata.var['highly_variable'] = [True if percentile > min_cutoff else False for percentile in
+                                        adata.var["percentile"]]
+        return  # adata
+    if min_cutoff == "NA":  # don't change variable features
+        return  # adata
+    if min_cutoff == "NULL":  # assign all features as highly variable
+        adata.var["highly_variable"] = True
+        return  # adata
+
 
 
 

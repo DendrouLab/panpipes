@@ -27,6 +27,7 @@ L.debug("testing logger works")
 
 
 from panpipes.funcs.scmethods import X_is_raw
+from panpipes.funcs.scmethods import findTopFeatures_pseudo_signac
 
 
 sc.settings.verbosity = 3
@@ -44,7 +45,7 @@ parser.add_argument("--figdir",
                     help="path to save the figures to")
 parser.add_argument("--binarize",
                     default=False,
-                    help="wheter to binarize the peak counts matrix before any other normalization, like TFIDF")
+                    help="whether to binarize the peak counts matrix before any other normalization, like TFIDF")
 parser.add_argument("--normalize",
                     default="TFIDF",
                     help="what operation to use to normalize data. Options are: log1p, TFIDF, None")
@@ -66,6 +67,13 @@ parser.add_argument("--dimred",
 parser.add_argument("--dim_remove",
                     default=None,
                     help="which dimensionality red components to remove")
+
+parser.add_argument("--feature_selection_flavour",
+                    default=None,
+                    help="which HVF selection to perform, scanpy or signac")
+parser.add_argument("--min_cutoff",
+                    default=None,
+                    help="cutoff for Signac's HVF selection")
 
 
 args, opt = parser.parse_known_args()
@@ -123,8 +131,16 @@ else:
 
 
 #highly variable feat selection
-sc.pp.highly_variable_genes(atac, min_mean=float(args.min_mean), max_mean=float(args.max_mean), min_disp=float(args.min_disp))
+if args.feature_selection_flavour == "scanpy":
+	sc.pp.highly_variable_genes(atac, min_mean=float(args.min_mean), max_mean=float(args.max_mean), min_disp=float(args.min_disp))
+elif args.feature_selection_flavour == "signac":
+	findTopFeatures_pseudo_signac(atac, args.min_cutoff)
+#else: throw error/warning?
+
+# wenn min_cutoff == NA und kein atac.var.highly_variable slot -> line below will throw error
 L.warning( "You have %s Highly Variable Features", np.sum(atac.var.highly_variable))
+
+
 
 
 # The combined steps of TF-IDF followed by SVD are known as latent semantic indexing (LSI), 
