@@ -254,12 +254,25 @@ atac:
   binarize: False
   normalize: TFIDF
   TFIDF_flavour: signac
-  # leave the below blank to use defaults
+
+  # highly variable feature selection:
+  # HVF selection either with scanpy's pp.highly_variable_genes() function or a pseudo-FindTopFeatures() function of the signac package
+  feature_selection_flavour: signac  # "signac" or "scanpy"
+  # parameters for HVF flavour == "scanpy", leave the below blank to use defaults
   min_mean:
   max_mean:
   min_disp:
+  # parameter for HVF flavour == "signac"
+  min_cutoff: q5
+  # min_cutoff can be specified as follows:
+  #   "q[x]": "q" followed by the minimum percentile, e.g. q5 will set the top 95% most common features as higly variable
+  #   "c[x]": "c" followed by a minimum cell count, e.g. c100 will set features present in > 100 cells as highly variable
+  #   "tc[x]": "tc" followed by a minimum total count, e.g. tc100 will set features with total counts > 100 as highly variable
+  #   "NULL": All features are assigned as highly variable
+  #   "NA": Highly variable features won't be changed
+
   # which dimred to use
-  dimred: PCA, LSI
+  dimred: LSI #PCA or LSI
   # which dimension to exclude from further processing (sometimes useful to remove PC/LSI_1  if it's associated to tech factors)
   # leave blank to retain all 
   dim_remove: 1
