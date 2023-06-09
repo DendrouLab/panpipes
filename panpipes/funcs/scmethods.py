@@ -22,38 +22,51 @@ from .processing import check_for_bool, which_ind
 
 
 def findTopFeatures_pseudo_signac(adata, min_cutoff):
+    # Adapted from:
     # https://stuartlab.org/signac/reference/findtopfeatures
-    # fit ecdf
-    ecdf = ECDF(adata.var["total_counts"])
-    # need to perform the following step and not directly merge adata.var with ecdf.x and ecdf.y because:
-    # when two features have the same total counts ---> will assign both features 2 different probabilities
-    # --> & have two columns for one feature
-    # therefore: extract features and sort decreasingly by total_counts
-    extracted = adata.var[["gene_ids", "total_counts"]]
-    extracted = extracted.sort_values("total_counts", ascending=False)
-    # add decreasingly ordered percentiles to dataframe:
-    extracted["percentile"] = -np.sort(-ecdf.y)[:-1]  # last percentile always corresponds to the percentile of -Inf
-    # merge extracted with adata.var by "gene_ids", i.e. feature name
-    extracted = pd.merge(adata.var, extracted.drop("total_counts", axis=1), on="gene_ids")
-    # add row names
-    extracted.index = adata.var["gene_ids"]
-    adata.var = extracted
+    """
+    :param adata:
+    :param min_cutoff:
+        "q[x]": "q" followed by the minimum percentile, e.g. q5 will set the top 95% most common features as higly variable
+        "c[x]": "c" followed by a minimum cell count, e.g. c100 will set features present in > 100 cells as highly variable
+        "tc[x]": "tc" followed by a minimum total count, e.g. tc100 will set features with total counts > 100 as highly variable
+        "NULL": All features are assigned as highly variable
+        "NA": Highly variable features won't be changed
+    :return: percentile rank of each feature stored in "adata.var["percentile"], highly variable features stored in adata.var["highly_variable"].
+    Filtering is done according to the "min_cutoff" parameter. If min_cutoff == NA, adata.var["highly_variable"] won't be changed
+    """
 
-    # Note: could also extract row names/gene_id column
-    #      and sort adata.var decreasingly & add ecdf.y
-    #      then sort adata.var back to original ordering according to the extracted row names
+    if "percentile" not in adata.var:
+        # fit ecdf
+        ecdf = ECDF(adata.var["total_counts"])
+        extracted = adata.var[["gene_ids", "total_counts"]]
+        extracted = extracted.sort_values("total_counts", ascending=False)
+        # add decreasingly ordered percentiles to dataframe:
+        extracted["percentile"] = -np.sort(-ecdf.y)[:-1]  # last percentile always corresponds to the percentile of -Inf
+        # merge extracted with adata.var by "gene_ids", i.e. feature name
+        extracted = pd.merge(adata.var, extracted.drop("total_counts", axis=1), on="gene_ids")
+        # add row names
+        extracted.index = adata.var["gene_ids"]
+        extracted.index.name = None
+        adata.var = extracted
 
     if min_cutoff.startswith("q"):  # quantile filtering
         min_cutoff = int(min_cutoff[1:]) / 100
-        adata.var['highly_variable'] = [True if percentile > min_cutoff else False for percentile in
-                                        adata.var["percentile"]]
-        return  # adata
+        adata.var['highly_variable'] = [True if percentile > min_cutoff else False for percentile in adata.var["percentile"]]
+        return
+    if min_cutoff.startswith("c"):  # filtering by minimum number of cells
+        min_cutoff = int(min_cutoff[1:])
+        adata.var['highly_variable'] = [True if ncells > min_cutoff else False for ncells in adata.var["n_cells_by_counts"]]
+        return
+    if min_cutoff.startswith("tc"):  # filtering by total counts
+        min_cutoff = int(min_cutoff[2:])
+        adata.var['highly_variable'] = [True if totalcounts > min_cutoff else False for totalcounts in adata.var["total_counts"]]
+        return
     if min_cutoff == "NA":  # don't change variable features
-        return  # adata
+        return
     if min_cutoff == "NULL":  # assign all features as highly variable
         adata.var["highly_variable"] = True
-        return  # adata
-
+        return
 
 
 
