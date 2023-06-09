@@ -70,7 +70,7 @@ parser.add_argument("--dim_remove",
 
 parser.add_argument("--feature_selection_flavour",
                     default=None,
-                    help="which HVF selection to perform, scanpy or signac")
+                    help="which HVF selection to perform, 'scanpy' or 'signac'")
 parser.add_argument("--min_cutoff",
                     default=None,
                     help="cutoff for Signac's HVF selection")
@@ -130,15 +130,18 @@ else:
     sys.exit("Exiting because no normalization was specified. If None was intended, check your pipeline.yml file")
 
 
-#highly variable feat selection
+#highly variable feature selection
+
 if args.feature_selection_flavour == "scanpy":
 	sc.pp.highly_variable_genes(atac, min_mean=float(args.min_mean), max_mean=float(args.max_mean), min_disp=float(args.min_disp))
 elif args.feature_selection_flavour == "signac":
 	findTopFeatures_pseudo_signac(atac, args.min_cutoff)
-#else: throw error/warning?
+else:
+    L.warning("No highly variable feature selection was performed!")
 
-# wenn min_cutoff == NA und kein atac.var.highly_variable slot -> line below will throw error
-L.warning( "You have %s Highly Variable Features", np.sum(atac.var.highly_variable))
+
+if "highly_variable" in atac.var: #if min_cutoff == NA and no highly variable features stored in atac.var, line below will throw error
+    L.warning( "You have %s Highly Variable Features", np.sum(atac.var.highly_variable))
 
 
 
