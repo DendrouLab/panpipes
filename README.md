@@ -1,8 +1,13 @@
 # Panpipes - multimodal single cell pipelines 
 
-Created and Maintained by Charlotte Rich-Griffin and Fabiola Curion
+Created and Maintained by Charlotte Rich-Griffin and Fabiola Curion  
+Additional contributors: Devika Agarwal and Tom Thomas 
 
-Additional contributors: Tom Thomas 
+See our [preprint](https://www.biorxiv.org/content/10.1101/2023.03.11.532085v1):  
+Panpipes: a pipeline for multiomic single-cell data analysis  
+Charlotte Rich-Griffin, Fabiola Curion, Tom Thomas, Devika Agarwal, Fabian J. Theis, Calliope A. Dendrou.  
+bioRxiv 2023.03.11.532085;  
+doi: https://doi.org/10.1101/2023.03.11.532085
 
 
 # Introduction
