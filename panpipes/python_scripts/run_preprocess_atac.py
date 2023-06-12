@@ -67,7 +67,6 @@ parser.add_argument("--dimred",
 parser.add_argument("--dim_remove",
                     default=None,
                     help="which dimensionality red components to remove")
-
 parser.add_argument("--feature_selection_flavour",
                     default=None,
                     help="which HVF selection to perform, 'scanpy' or 'signac'")
@@ -139,8 +138,7 @@ elif args.feature_selection_flavour == "signac":
 else:
     L.warning("No highly variable feature selection was performed!")
 
-
-if "highly_variable" in atac.var: #if min_cutoff == NA and no highly variable features stored in atac.var, line below will throw error
+if "highly_variable" in atac.var: 
     L.warning( "You have %s Highly Variable Features", np.sum(atac.var.highly_variable))
 
 
