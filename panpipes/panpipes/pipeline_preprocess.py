@@ -233,7 +233,12 @@ def atac_preprocess(log_file, scaled_file):
     else:    
         cmd += " --dimred PCA"
     if PARAMS['atac_dim_remove'] is not None:
-        cmd += " --dimremove %(atac_dim_remove)s"
+        cmd += " --dim_remove %(atac_dim_remove)s"
+
+    if PARAMS['atac_feature_selection_flavour'] is not None:
+        cmd += " --feature_selection_flavour %(atac_feature_selection_flavour)s"
+    if PARAMS['min_cutoff'] is not None:
+        cmd += " --min_cutoff %(atac_min_cutoff)s"
     
     cmd += " > %(log_file)s"
     job_kwargs["job_threads"] = PARAMS['resources_threads_high']
