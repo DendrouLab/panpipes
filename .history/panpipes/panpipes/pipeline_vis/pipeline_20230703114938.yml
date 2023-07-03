@@ -5,7 +5,7 @@
 
 # WARNING: Do not edit any line with the format `continuous_vars: &continuous_vars` or `continuous_vars: *continuous_vars`
 
-
+# compute resource options
 # ------------------------
 # compute resource options
 # ------------------------
