@@ -4,7 +4,8 @@ if (!requireNamespace("BiocManager", quietly = TRUE))
 install.packages("systemfonts", dependencies = TRUE)
 BiocManager::install(c("ComplexHeatmap"))
 
-cran_packages <- c("foreign","clustree","remotes","Seurat")
+cran_packages <- c("ggforce","ggraph",
+                    "foreign","xtable","clustree","remotes","Seurat")
 for (pp in cran_packages){
     message("============ Installing ", pp, " ============")
     install.packages(pp)
