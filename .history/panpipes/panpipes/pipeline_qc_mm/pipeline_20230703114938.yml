@@ -1,18 +1,17 @@
 # ----------------------- #
 # QC pipeline DendrouLab
 # ----------------------- #
-# written by Charlotte Rich-Griffin, Fabiola Curion
-
-# This pipeline needs a sample metadata file (see resources for an example)
+# written by Charlotte Rich-Griffin, Thom Tomas, Fabiola Curion
+# maintained by Charlotte Rich-Griffin
+# needs a sample metadata file (see resources for an example)
 # will run :
 #   summary plots of 10x metrics
 #   scrublet scores
 #   scanpy QC
 #   summary QC plots
 
-# Followed by preprocess pipeline. 
-# The qc_mm pipeline does not perform any filtering of cells or genes.
-# Filtering happens as the first stpe in the preprocess pipeline. See pipeline_preprocess for details
+# Followed by integration pipeline and clustering pipeline. This pipeline does not perform any filtering,
+# this happens as the first stpe in the integration pipeline. See pipeline_integration.yml for details
 
 # Note that if you are combining mutliple datasets from different source the final anndata object will only contain the intersect of the genes
 # from all the data sets. For example if the mitochondrial genes have been excluded from one of the inputs, they will be excluded from the final data set.
