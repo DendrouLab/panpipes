@@ -1,4 +1,4 @@
- Panpipes - multimodal single cell pipelines 
+Panpipes - multimodal single cell pipelines 
 ==================================================
 
 
