@@ -16,12 +16,22 @@ doi: https://doi.org/10.1101/2023.03.11.532085
 These pipelines use cgat-core pipeline software
 
 Available pipelines:
-1. "qc_mm" : for the ingestion of data and computation of QC metrics' 
-2. "preprocess" : for filtering and normalising of each modality
-3. "integration" : integrate and batch correction using  single and multimodal methods
-4. "clustering" : cell clustering on single modalities
-5. "refmap" : transfer scvi-tools models from published data to your data
-6. "vis" : visualise metrics from other pipelines in context of experiment metadata
+
+1. **qc_mm** : for the ingestion of data and computation of QC metrics' 
+2. **preprocess** : for filtering and normalising of each modality
+3. **integration** : integrate and batch correction using  single and multimodal methods
+4. **clustering** : cell clustering on single modalities
+5. **refmap** : transfer scvi-tools models from published data to your data
+6. **vis** : visualise metrics from other pipelines in context of experiment metadata
 
 Check out the :doc:`usage` section for further information, including
 how to :ref:`installation` the project.
+
+
+Contents
+--------
+
+.. toctree::
+
+   install
+   api

@@ -1,4 +1,4 @@
-Installation and configuration
+Installation
 ==============================
 
 See `installation instrcutions
