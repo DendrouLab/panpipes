@@ -130,6 +130,14 @@ filtering:
     ## var filtering: (feature) fragment level filtering here
     var:    
       nucleosome_signal:
+  #------------------------------------------------------
+  spatial:
+  #------------------------------------------------------ 
+    obs:
+      min:
+        n_genes_by_counts: 
+      max:
+        total_counts: 
 
 # Intersecting barcodes
 # ----------------------
