@@ -115,7 +115,7 @@ if args.norm_hvg_flavour == "squidpy":
     else:
         sc.pp.normalize_total(spatial)
         sc.pp.log1p(spatial)
-        sc.pp.highly_variable_genes(spatial, flavor=args.squidpy_hvg_flavor,
+        sc.pp.highly_variable_genes(spatial, flavor=args.squidpy_hvg_flavour,
                                     min_mean=float(args.min_mean),
                                     max_mean=float(args.max_mean),
                                     min_disp=float(args.min_disp), subset=args.filter_by_hvg, batch_key=args.hvg_batch_key)
@@ -124,12 +124,16 @@ if args.norm_hvg_flavour == "squidpy":
     sc.pl.highly_variable_genes(spatial, show=False, save="_genes_highlyvar.png")
 
 elif args.norm_hvg_flavour == "seurat":
-    if args.clip is not None:
-        clip = float(args.clip)
-    else:
+    if args.clip is None:
         clip = args.clip
-		
-    sce.pp.highly_variable_genes(spatial, theta=float(args.theta), clip=clip, n_top_genes=int(args.n_top_genes),
+    elif args.clip == "None":
+        clip = None
+    elif args.clip == "np.Inf":
+        clip = np.Inf
+    else:
+        clip = float(args.clip)
+
+	sce.pp.highly_variable_genes(spatial, theta=float(args.theta), clip=clip, n_top_genes=int(args.n_top_genes),
                                  batch_key=args.hvg_batch_key, flavor='pearson_residuals',
                                  layer="raw_counts", subset=args.filter_by_hvg)
     sce.pp.normalize_pearson_residuals(spatial, theta=float(args.theta), clip=clip, layer="raw_counts")
@@ -147,6 +151,7 @@ if "highly_variable" in spatial.var:
 #PCA
 sc.pp.pca(spatial, n_comps=int(args.n_pcs), svd_solver='arpack', random_state=0)
 sc.pl.pca(spatial, save = "_vars.png")
+sc.pl.pca_variance_ratio(spatial, log=True, n_pcs=int(args.n_pcs), save=".png")
 
 
         
