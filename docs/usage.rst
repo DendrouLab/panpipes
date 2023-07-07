@@ -1,4 +1,4 @@
-Installation
+Usage guidelines
 ==============================
 
 See `installation instrcutions
@@ -8,7 +8,7 @@ Oxford BMRC Rescomp users find additional advice in
 `docs/installation_rescomp <https://github.com/DendrouLab/panpipes/blob/main/docs/installation_rescomp.md>`__
 
 General principles for running pipelines
-========================================
+''''''''''''''''''''''''''''''''''
 
 Run the pipeline from the login node on your server, it will use in
 built the job submission system to submit jobs.
@@ -51,8 +51,8 @@ this you can run any task in the ``show full`` list such as:
 
    panpipes qc_mm make plot_tenx_metrics
 
-Running the complete pipeline
-=============================
+Pipeline components
+''''''''''''''''''''''''''''''''''
 
 Run each of pipeline qc, integration and clustering in separate folders.
 ### QC
@@ -163,7 +163,7 @@ To repeat the pipeline after editing the pipeline.yml, delete the files
 in log and repeat step 3.
 
 Running pipeline modules from different entry points.
-=====================================================
+''''''''''''''''''''''''''''''''''
 
 `see
 details <https://github.com/DendrouLab/panpipes/blob/main/docs/different_entry_points.md>`__

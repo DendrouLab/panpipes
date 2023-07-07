@@ -32,6 +32,13 @@ Contents
 --------
 
 .. toctree::
+   :maxdepth: 2
+   :hidden:
 
+   usage
+   tutorials
    install
    api
+   release_notes
+   contributors
+   references

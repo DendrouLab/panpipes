@@ -1,4 +1,4 @@
-Insallation of panpipes
+Installation
 -----------------------
 
 Step 1 create virutal environment:
