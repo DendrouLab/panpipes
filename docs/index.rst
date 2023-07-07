@@ -32,8 +32,7 @@ Contents
 --------
 
 .. toctree::
-   :maxdepth: 2
-   :hidden:
+   :maxdepth: 10
 
    usage
    tutorials
