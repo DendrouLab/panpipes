@@ -60,7 +60,6 @@ Run each of pipeline qc, integration and clustering in separate folders.
 Pipeline specifications
 ''''''''''''''''''''''''
 .. toctree::
-   :maxdepth: 1
    components/qc
    components/preprocess
    components/integration
