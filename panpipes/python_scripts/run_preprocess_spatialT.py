@@ -133,9 +133,10 @@ elif args.norm_hvg_flavour == "seurat":
     else:
         clip = float(args.clip)
 
-	sce.pp.highly_variable_genes(spatial, theta=float(args.theta), clip=clip, n_top_genes=int(args.n_top_genes),
+    sce.pp.highly_variable_genes(spatial, theta=float(args.theta), clip=clip, n_top_genes=int(args.n_top_genes),
                                  batch_key=args.hvg_batch_key, flavor='pearson_residuals',
                                  layer="raw_counts", subset=args.filter_by_hvg)
+    
     sce.pp.normalize_pearson_residuals(spatial, theta=float(args.theta), clip=clip, layer="raw_counts")
     spatial.layers["norm_pearson_resid"] = spatial.X.copy()
 else:
