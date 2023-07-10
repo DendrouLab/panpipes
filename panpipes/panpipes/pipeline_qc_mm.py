@@ -157,7 +157,7 @@ def concat_filtered_mudatas(infiles, outfile):
         """
     if PARAMS['metadatacols'] is not None and PARAMS['metadatacols'] != "":
         cmd += " --metadatacols  %(metadatacols)s"
-    if PARAMS["barcode_mtd_include"] is True:
+    if PARAMS["barcode_mtd_include"] is not None and PARAMS["barcode_mtd_include"] is True:
         cmd += " --barcode_mtd_df %(barcode_mtd_path)s"
         cmd += " --barcode_mtd_metadatacols %(barcode_mtd_metadatacols)s"
     if PARAMS['protein_metadata_table'] is not None:
