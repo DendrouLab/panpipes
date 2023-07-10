@@ -58,6 +58,11 @@ pip install .
 pip install git+https://github.com/DendrouLab/panpipes
 ``` -->
 
+if you're running on a macos, you may need to also install the `time` package to avoid that the pipeline uses the shell's internal `time` command.
+ 
+```
+conda install -c conda-forge time
+```
 The pipelines are now installed as a local python package.
 
 ### Step 3 installing R requirements
