@@ -414,7 +414,7 @@ message ("saving some counts tables for references")
 if(opt$prefilter){
   if(all(c("pct_counts_mt", "pct_counts_hb", "n_genes_by_counts", "doublet_scores") %in% colnames(rna_data_plot))){
     f1 <- rna_data_plot %>% 
-      filter(pct_counts_mt<=20 & pct_counts_hb<=70 &n_genes_by_counts>=100 & doublet_scores<=0.25) %>%
+      dplyr::filter(pct_counts_mt<=20 & pct_counts_hb<=70 &n_genes_by_counts>=100 & doublet_scores<=0.25) %>%
       group_by_at(.vars=c(rna_source_facet)) %>%
       group_by_at(.vars=c(rna_source_facet)) %>%
       summarise(cell.count= n()) %>%
@@ -422,14 +422,14 @@ if(opt$prefilter){
       rename(cell.count_f1=cell.count) 
     
     f2 <- rna_data_plot %>% 
-      filter(pct_counts_mt<=10 & pct_counts_hb<=50 &n_genes_by_counts>=100 & doublet_scores<=0.25) %>%
+      dplyr::filter(pct_counts_mt<=10 & pct_counts_hb<=50 &n_genes_by_counts>=100 & doublet_scores<=0.25) %>%
       group_by_at(.vars=c(rna_source_facet)) %>%
       summarise(cell.count= n()) %>% 
       group_by_at(.vars="sample_id") %>% 
       rename(cell.count_f2=cell.count) 
     
     f3 <- rna_data_plot %>% 
-      filter(pct_counts_mt<=5 & pct_counts_hb<=50 &n_genes_by_counts>=100 & n_genes_by_counts<=3000) %>%
+      dplyr::filter(pct_counts_mt<=5 & pct_counts_hb<=50 &n_genes_by_counts>=100 & n_genes_by_counts<=3000) %>%
       group_by_at(.vars=c(rna_source_facet)) %>%
       summarise(cell.count= n()) %>% 
       group_by_at(.vars="sample_id") %>% 
