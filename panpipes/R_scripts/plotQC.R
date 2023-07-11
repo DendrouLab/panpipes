@@ -103,14 +103,25 @@ data_plot = read.delim(opt$cell_metadata)
 # define source facet for all plots
 if (!is.null(opt$groupingvar)){
   source_facet <- strsplit(opt$groupingvar,",")[[1]]
-  source_facet <- source_facet[source_facet %in% colnames(data_plot)] 
+  check_excl <- source_facet[!source_facet %in% colnames(data_plot)] 
+  keep_source <- NULL
+  for (cc in check_excl){
+    for (mod in c("rna","prot","atac","rep")){
+      id <- paste(mod,cc,sep=".")
+      if(id %in% colnames(data_plot)){
+        keep_source <- c(keep_source,id)
+      }
+    }
+  }
+
+  source_facet <- source_facet[source_facet %in% colnames(data_plot)]
+  source_facet <- unique(c(source_facet, keep_source) )
   if(length(source_facet)>0){
     print("Plotting with")
+    # add sample_id as a minimum requirement if it's not there already
+    source_facet = unique(c("sample_id", source_facet))
     print(source_facet)
   }
-  # add sample_id as a minimum requirement if it's not there already
-  source_facet = unique(c("sample_id", source_facet))
-  
 }else{
   stop("i don't have the minimum variable _sampleid_ to facet on, will stop here")
 }
@@ -146,9 +157,12 @@ if (!is.null(opt$rna_qc_metrics)) {
 }
 qcmetrics <- qcmetrics[qcmetrics %in% colnames(rna_data_plot)]
 uniq_sample_id <- nrow(unique(rna_data_plot["sample_id"]))
+rna_source_facet <- gsub("^rna\\.", "",grep("^rna.", source_facet, value = TRUE))
+rna_source_facet <- unique(c(rna_source_facet, source_facet[!grepl("^rna.", source_facet)]))
+rna_source_facet <- rna_source_facet[rna_source_facet %in% colnames(rna_data_plot)]
 for (qc in qcmetrics){
   print(qc)
-  for (sc in source_facet){
+  for (sc in rna_source_facet){ #add gsub temp here
     print(sc)
     g <- do_violin_plot(rna_data_plot, qc, sc)
     if (uniq_sample_id  > 50){width=12}else{width=6}
@@ -157,7 +171,7 @@ for (qc in qcmetrics){
   }
 }
 
-for (sc in source_facet){
+for (sc in rna_source_facet){
   uniq_source <- nrow(unique(rna_data_plot[sc]))
   if(uniq_source >6){
     ncols=6
@@ -202,7 +216,10 @@ if(!is.null(opt$prot_qc_metrics)){
   qcmetrics <- strsplit(opt$prot_qc_metrics,",")[[1]]
   prot_data_plot <- data_plot[,grep("^prot\\.",colnames(data_plot))]
   colnames(prot_data_plot) <- gsub("^prot\\.", "", colnames(prot_data_plot))
-  
+  prot_source_facet <- gsub("^prot\\.", "",grep("^prot.", source_facet, value = TRUE))
+  prot_source_facet <- unique(c(prot_source_facet, source_facet[!grepl("^prot.", source_facet)]))
+  prot_source_facet <- prot_source_facet[prot_source_facet %in% colnames(prot_data_plot)]
+
   outpath = file.path(run, "prot")
   if (!dir.exists(outpath)) { 
     dir.create(outpath)
