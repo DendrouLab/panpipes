@@ -12,7 +12,7 @@ from panpipes.funcs.io import check_submission_file, gen_load_anndata_jobs
 import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
 warnings.filterwarnings("ignore", category=DeprecationWarning) 
-from numba.errors import NumbaDeprecationWarning, NumbaPendingDeprecationWarning
+
 import warnings
 
 warnings.simplefilter('ignore', category=NumbaDeprecationWarning)
