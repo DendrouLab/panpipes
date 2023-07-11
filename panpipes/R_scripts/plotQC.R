@@ -230,7 +230,7 @@ if(!is.null(opt$prot_qc_metrics)){
   qcmetrics <- qcmetrics[qcmetrics %in% colnames(prot_data_plot)]
   for (qc in qcmetrics){
     print(qc)
-    for (sc in source_facet){
+    for (sc in prot_source_facet){
       g <- do_violin_plot(prot_data_plot, qc, sc)
       if (uniq_sample_id  > 50){width=12}else{width=6}
       ggsave(g, filename=file.path(outpath, paste0("violin_", sc, "_prot-", qc,".png")), type="cairo", width= width, height=6)
@@ -244,7 +244,7 @@ if(!is.null(opt$prot_qc_metrics)){
   # - prot:total_counts vs prot:pct_isotype_counts
   
   
-  for (sc in source_facet){
+  for (sc in prot_source_facet){
     uniq_source <- nrow(unique(prot_data_plot[sc]))
     if(uniq_source >6){
       ncols=6
@@ -290,7 +290,11 @@ if(!is.null(opt$atac_qc_metrics)){
   message("Atac plots")
   atac_data_plot <- data_plot[,grep("^atac\\.",colnames(data_plot))]
   colnames(atac_data_plot) <- gsub("^atac\\.", "", colnames(atac_data_plot))
-  
+  atac_source_facet <- gsub("^atac\\.", "",grep("^atac.", source_facet, value = TRUE))
+  atac_source_facet <- unique(c(atac_source_facet, source_facet[!grepl("^atac.", source_facet)]))
+  atac_source_facet <- atac_source_facet[atac_source_facet %in% colnames(atac_data_plot)]
+
+
   outpath = file.path(run, "atac")
   if (!dir.exists(outpath)) dir.create(outpath)
   
@@ -300,7 +304,7 @@ if(!is.null(opt$atac_qc_metrics)){
   qcmetrics <- qcmetrics[qcmetrics %in% colnames(atac_data_plot)]
   for (qc in qcmetrics){
     print(qc)
-    for (sc in source_facet){
+    for (sc in atac_source_facet){
       g <- do_violin_plot(atac_data_plot, qc, sc)
       if (uniq_sample_id  > 50){width=12}else{width=6}
       ggsave(g, filename=file.path(outpath, paste0("violin_", sc, "_atac-", qc,".png")), type="cairo", width= width, height=6)
@@ -319,6 +323,11 @@ if (!is.null(opt$rep_qc_metrics)) {
   colnames(rep_data_plot) <- gsub("^rep\\.", "", colnames(rep_data_plot))
   rep_data_plot = rep_data_plot %>% filter(sample_id!="")
   
+  rep_source_facet <- gsub("^rep\\.", "",grep("^rep.", source_facet, value = TRUE))
+  rep_source_facet <- unique(c(rep_source_facet, source_facet[!grepl("^rep.", source_facet)]))
+  rep_source_facet <- rep_source_facet[rep_source_facet %in% colnames(rep_data_plot)]
+
+  
   outpath = file.path(run, "rep")
   if (!dir.exists(outpath)) dir.create(outpath)
   
@@ -328,7 +337,7 @@ if (!is.null(opt$rep_qc_metrics)) {
   # check these qc metrics are in the file
   qcmetrics <- qcmetrics[qcmetrics %in% colnames(rep_data_plot)]
   for (qc in qcmetrics){
-    for (sc in source_facet){
+    for (sc in rep_source_facet){
       g <- do_bar_plot(rep_data_plot, qc, sc)
       if (uniq_sample_id  > 50){width=12}else{width=6}
         ggsave(g, filename=file.path(outpath, paste0("bar_", sc, "_rep-", qc,".png")), type="cairo", width= width, height=6)
@@ -350,7 +359,7 @@ if(!is.null(opt$prot_qc_metrics)){
 
   outpath = file.path(run, "rna_v_prot")
   if (!dir.exists(outpath)) dir.create(outpath)    
-source_facet = source_facet[source_facet %in% colnames(data_plot)]
+  
 
   for (sc in source_facet){
     
