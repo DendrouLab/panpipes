@@ -333,10 +333,12 @@ plotqc_rep_metrics:
 
   
 # ------------
-# Profiling Ambient background
+# Profiling Protein Ambient background
 # ------------
-# This pipeline does not include removal of background contamination as you would with soupX or cellblender.
-# However it is useful to chararcterise the background of your gene expression assay and antibody binding assay
+# It is useful to chararcterise the background of your gene expression assay and antibody binding assay
+# Inspect the plots and decide if to apply corrections, for example see Cellbender or SoupX.
+# Please note that this analysis only makes sense if you are providing a RAW input (so the "empty" droplets can be used to
+# estimate the BG )
 # Setting `assess_background` to True will:
 # 1. create h5mu from raw data inputs (expected as cellranger h5 or mtx folder, if you do not have this then set to False)
 # 2. Plot comparitive QC plots to compare distribution of UMI and feature counts in background and foreground

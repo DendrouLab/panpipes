@@ -3,7 +3,27 @@
 
 
 
-##### Step 1 create virutal environment:
+##### Step 1 create environment
+
+#### Option 1: create conda environment
+(Recommended)
+similarly to what suggested in https://www.biostars.org/p/498049/ we create a conda environment with R and python
+
+```
+conda config --add channels conda-forge
+conda config --set channel_priority strict
+# you should remove the strict priority afterwards!
+conda search r-base
+conda create --name pipeline_env python=3.9 r-base=4.3.0
+```
+now we activate the environment
+```
+conda activate pipeline_env
+```
+
+
+
+#### Option 2: Python Virutal environment:
 
 It is advisable to run everything in a virtual environment either pip or conda.
 
@@ -21,26 +41,10 @@ activate the environment
 source python3-venv-panpipes/bin/activate
 ```
 
-**OR** using conda:
-similarly to what suggested in https://www.biostars.org/p/498049/ we create a conda environment with R and python
-
-
-
-```
-conda config --add channels conda-forge
-conda config --set channel_priority strict
-# you should remove the strict priority afterwards!
-conda search r-base
-conda create --name pipeline_env python=3.9 r-base=4.3.0
-```
-now we activate the environment
-```
-conda activate pipeline_env
-```
 
 
 ##### Step 2 Download and install this repo
-If you have not already set up SSH keys for github first follow these [instructions](https://github.com/DendrouLab/panpipes/docs/set_up_ssh_keys_for_github.md): 
+If you have not already set up SSH keys for github first follow these [instructions](https://github.com/DendrouLab/panpipes/blob/main/docs/set_up_ssh_keys_for_github.md): 
 
 
 ```
@@ -54,16 +58,19 @@ pip install .
 pip install git+https://github.com/DendrouLab/panpipes
 ``` -->
 
+if you're running on a macos, you may need to also install the `time` package to avoid that the pipeline uses the shell's internal `time` command.
+ 
+```
+conda install -c conda-forge time
+```
 The pipelines are now installed as a local python package.
-
 
 ### Step 3 installing R requirements
 The pipelines uses R for some ggplot visualisations and the interoperability components. 
 
-
 If you are using a venv virtual environment,  the pipeline will call a local R installation, so make sure R is installed and install the required packages with the command we provide below.
 
-Install the following R packages along with their binaries using conda
+If using conda, install the following R packages along with their binaries using conda
 ```
 conda install -c conda-forge r-tidyverse r-optparse r-ggforce r-ggraph r-xtable r-hdf5r
 ```
@@ -139,7 +146,7 @@ echo "export DRMAA_LIBRARY_PATH=$PATH_TO/libdrmaa.so.1.0" >> ~/.bashrc
 ```
 
 ### Specifying Conda environments to run panpipes
-If using conda environments, you can use one single one or create one for each of the workflows in panpipes, (i.e. one workflow = one environment) 
+If using conda environments, you can use one single big environment (the instructions provided do that) or create one for each of the workflows in panpipes, (i.e. one workflow = one environment) 
 The environment (s) should be specified in the .cgat.yml global configuration file or in each of the single workflows pipeline.yml configuration files and it will be picked up by the pipeline as the default environment. 
 Please note that if you specify the conda environment in the workflows configuration file this will be the first choice to run the pipeline. 
 
