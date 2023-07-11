@@ -103,7 +103,7 @@ data_plot = read.delim(opt$cell_metadata)
 # define source facet for all plots
 if (!is.null(opt$groupingvar)){
   source_facet <- strsplit(opt$groupingvar,",")[[1]]
-  source_fact <- source_facet[source_facet %in% colnames(data_plot)] 
+  source_facet <- source_facet[source_facet %in% colnames(data_plot)] 
   if(length(source_facet)>0){
     print("Plotting with")
     print(source_facet)
@@ -333,8 +333,10 @@ if(!is.null(opt$prot_qc_metrics)){
 
   outpath = file.path(run, "rna_v_prot")
   if (!dir.exists(outpath)) dir.create(outpath)    
+source_facet = source_facet[source_facet %in% colnames(data_plot)]
 
   for (sc in source_facet){
+    
     message(sc)
     uniq_source <- nrow(unique(data_plot[sc]))
     if(uniq_source >6){
