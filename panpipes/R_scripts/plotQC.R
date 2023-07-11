@@ -415,33 +415,33 @@ if(opt$prefilter){
   if(all(c("pct_counts_mt", "pct_counts_hb", "n_genes_by_counts", "doublet_scores") %in% colnames(rna_data_plot))){
     f1 <- rna_data_plot %>% 
       filter(pct_counts_mt<=20 & pct_counts_hb<=70 &n_genes_by_counts>=100 & doublet_scores<=0.25) %>%
-      group_by_at(.vars=c(source_facet)) %>%
-      group_by_at(.vars=c(source_facet)) %>%
+      group_by_at(.vars=c(rna_source_facet)) %>%
+      group_by_at(.vars=c(rna_source_facet)) %>%
       summarise(cell.count= n()) %>%
       group_by_at(.vars="sample_id") %>% 
       rename(cell.count_f1=cell.count) 
     
     f2 <- rna_data_plot %>% 
       filter(pct_counts_mt<=10 & pct_counts_hb<=50 &n_genes_by_counts>=100 & doublet_scores<=0.25) %>%
-      group_by_at(.vars=c(source_facet)) %>%
+      group_by_at(.vars=c(rna_source_facet)) %>%
       summarise(cell.count= n()) %>% 
       group_by_at(.vars="sample_id") %>% 
       rename(cell.count_f2=cell.count) 
     
     f3 <- rna_data_plot %>% 
       filter(pct_counts_mt<=5 & pct_counts_hb<=50 &n_genes_by_counts>=100 & n_genes_by_counts<=3000) %>%
-      group_by_at(.vars=c(source_facet)) %>%
+      group_by_at(.vars=c(rna_source_facet)) %>%
       summarise(cell.count= n()) %>% 
       group_by_at(.vars="sample_id") %>% 
       rename(cell.count_f3=cell.count) 
     
     baseline <- rna_data_plot %>% 
-      group_by_at(.vars=c(source_facet)) %>%
+      group_by_at(.vars=c(rna_source_facet)) %>%
       summarise(cell.count= n()) %>% 
       group_by_at(.vars="sample_id") %>% 
       rename(baseline.counts=cell.count)
     
-    info <- merge(merge(merge(f1,f2,by=source_facet,all=TRUE),f3, by=source_facet, all=TRUE), baseline, by=source_facet, all=T) %>%
+    info <- merge(merge(merge(f1,f2,by=rna_source_facet,all=TRUE),f3, by=rna_source_facet, all=TRUE), baseline, by=rna_source_facet, all=T) %>%
       mutate(percent_retain_f1 = 100*cell.count_f1/baseline.counts,
              percent_retain_f2 = 100*cell.count_f2/baseline.counts,
              percent_retain_f3 = 100*cell.count_f3/baseline.counts) 
@@ -482,7 +482,7 @@ if(opt$prefilter){
   message("producing files with final counts for cells after filtering")
   
   baseline <- rna_data_plot %>% 
-    group_by_at(.vars=c(source_facet)) %>% 
+    group_by_at(.vars=c(rna_source_facet)) %>% 
     summarise(cell.count= n()) %>% 
     group_by_at(.vars="sample_id") 
   
