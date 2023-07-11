@@ -117,7 +117,7 @@ if (!is.null(opt$groupingvar)){
   source_facet <- source_facet[source_facet %in% colnames(data_plot)]
   source_facet <- unique(c(source_facet, keep_source) )
   if(length(source_facet)>0){
-    print("Plotting with")
+    print("Facet plotting with")
     # add sample_id as a minimum requirement if it's not there already
     source_facet = unique(c("sample_id", source_facet))
     print(source_facet)
