@@ -131,8 +131,8 @@ filtering:
 
 # Intersecting barcodes
 # ----------------------
-# set a comma separated list where you want to keep only the intersection of barcodes. e.g. rna,prot 
-intersect_mods: rna, prot, atac
+# set a comma separated list (no whitespaces) where you want to keep only the intersection of barcodes. e.g. rna,prot 
+intersect_mods: rna,prot,atac
 
 
 # ------------
@@ -154,11 +154,11 @@ downsample_mods:
 # all metrics should be inputted as a comma separated string e.g. a,b,c
 plotqc:
   # use these categorical variables to plot/split by and count the cells
-  grouping_var: sample_id, orig.ident
+  grouping_var: sample_id,orig.ident
   # use these continuous variables to plot gradients and distributions
   rna_metrics: pct_counts_mt,pct_counts_rp,pct_counts_hb,doublet_scores
-  prot_metrics: total_counts,log1p_total_counts,n_adt_by_counts,
-  atac_metrics: 
+  prot_metrics: total_counts,log1p_total_counts,n_adt_by_counts
+  atac_metrics: total_counts
   rep_metrics: 
 
 
@@ -173,11 +173,12 @@ hvg:
   # there is a defaul exclusions file for immune cells in sc_pipelines/resources/exclude_genes_HLAIGTR_v1.txt
   # examine this file, it has a first column with gene ids and the second column identifying the groups to
   # which this genes belong. 
-  # This workflow will exclude the genes that you specify by their group name. I.e. in the file, the genes flagged "exclude"
-  # will be removed from the hvg selection. You can customize the gene list and change the name of the gene group accordingly.
+  # This workflow will exclude the genes that you specify by their group name. when specifying "default", the workflows will
+  # remove from hvg the genes that in the file are flagged "exclude". You can customize the gene list and change the name of the gene group in
+  # the `exclude:` param accordingly.
   exclude_file: 
-  exclude: exclude # this is the variable that defines the genes to be excluded in the above file
-  flavor: seurat_v3 # "seurat", "cell_ranger", "seurat_v3"
+  exclude: # this is the variable that defines the genes to be excluded in the above file, leave empty if you're not excluding genes from HVG
+  flavor: seurat # "seurat", "cell_ranger", "seurat_v3"
   # If batch key is specified, highly-variable genes are selected within each batch separately and merged. 
   # details: https://scanpy.readthedocs.io/en/stable/generated/scanpy.pp.highly_variable_genes.html#:~:text=or%20return%20them.-,batch_key,-%3A%20Optional%5B
   # If you want to use more than one obs column as a covariates, include it as covariate1,covariate2 (comma separated list)
@@ -259,7 +260,7 @@ atac:
 
   # highly variable feature selection:
   # HVF selection either with scanpy's pp.highly_variable_genes() function or a pseudo-FindTopFeatures() function of the signac package
-  feature_selection_flavour: signac  # "signac" or "scanpy"
+  feature_selection_flavour: scanpy  # "signac" or "scanpy"
   # parameters for HVF flavour == "scanpy", leave the below blank to use defaults
   min_mean:
   max_mean:
