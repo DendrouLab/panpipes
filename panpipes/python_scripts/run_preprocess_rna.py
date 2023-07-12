@@ -121,7 +121,7 @@ else:
 # sc.pp.highly variabel genes Expects logarithmized data, 
 # except when flavor='seurat_v3' in which count data is expected.
 # change the order accordingly
-L.info("normalise, log and calucalte highly variable genes")
+L.info("normalise, log and calculate highly variable genes")
 if args.flavor == "seurat_v3":
     if args.n_top_genes is None:
         raise ValueError("if seurat_v3 is used you must give a n_top_genes value")
