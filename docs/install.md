@@ -53,6 +53,11 @@ cd panpipes
 pip install .
 ```
 
+
+```
+conda install -c conda-forge pynndescent
+```
+
 <!-- 
 ```
 pip install git+https://github.com/DendrouLab/panpipes
