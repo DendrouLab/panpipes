@@ -1,7 +1,8 @@
 
-# Inputs to QC_MM pipeline
+Inputs to Multimodal QC pipeline
+===========================
 
-For qc_mm the minimum required columns are
+For multimodal QC (qc_mm) the minimum required columns are
 
 sample_id | gex_path | gex_filetype  
 ----------|----------|-------------

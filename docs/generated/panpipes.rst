@@ -2,6 +2,7 @@
 ========
 
 .. automodule:: panpipes
+    :noindex:
 
    
    

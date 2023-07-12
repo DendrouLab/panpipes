@@ -8,7 +8,7 @@ Oxford BMRC Rescomp users find additional advice in
 `docs/installation_rescomp <https://github.com/DendrouLab/panpipes/blob/main/docs/installation_rescomp.md>`__
 
 General principles for running pipelines
-''''''''''''''''''''''''''''''''''
+''''''''''''''''''''''''''''''''''''''''
 
 Run the pipeline from the login node on your server, it will use in
 built the job submission system to submit jobs.
@@ -57,15 +57,7 @@ Pipeline components
 Run each of pipeline qc, integration and clustering in separate folders.
 
 
-Pipeline specifications
-''''''''''''''''''''''''
-.. toctree::
-   components/qc
-   components/preprocess
-   components/integration
-   components/refmap
-   components/clustering
-   components/visualisation
+
 
 
 

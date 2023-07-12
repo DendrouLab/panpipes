@@ -3,15 +3,10 @@ QC
 
 
 
-1. Generate sample submission file
+1. Generate sample submission file as described in :doc:`../setup_for_qc_mm` 
 
-   -  `more details on creating the submission
-      file <https://github.com/DendrouLab/panpipes/blob/main/docs/setup_for_qc_mm.md>`__
+2. Generate qc genelists as described in :doc:`../gene_list_format`
 
-2. Generate qc genelists
-
-   -  `more
-      details <https://github.com/DendrouLab/panpipes/blob/main/docs/gene_list_format.md>`__
 
 3. For adt assay - generate the protein metadata file
    `example <(https://github.com/DendrouLab/panpipes/blob/main/resources/protein_metadata_w_iso.md)>`__.
@@ -36,8 +31,6 @@ user to determine data quality and filtering thresholds.
 
 
 
-Running pipeline modules from different entry points.
-''''''''''''''''''''''''''''''''''
-
-`see
-details <https://github.com/DendrouLab/panpipes/blob/main/docs/different_entry_points.md>`__
+.. Running pipeline modules from different entry points.
+.. ''''''''''''''''''''''''''''''''''
+..  :doc:`../different_entry_points`

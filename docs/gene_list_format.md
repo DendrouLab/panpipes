@@ -1,4 +1,5 @@
-# Gene list formats
+Gene list formats
+=================
 
 In the qc_mm and vis pipelines, the user can provide custom genelists in order to compute gene list scores and to visualise
 

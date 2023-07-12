@@ -1,7 +1,12 @@
-visualisation
+Visualisation
 =============
 
+Pipeline description
+--------------------
 
+
+Steps:
+------
 
 1. In a new folder, generate config file for integration,
    ``panpipes vis config`` and edit the pipeline.yml file.

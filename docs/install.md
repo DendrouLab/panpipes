@@ -1,9 +1,9 @@
 
-## Insallation of panpipes
+# Installation of panpipes
 
 
 
-##### Step 1 create virutal environment:
+##### Step 1 create virtual environment:
 
 It is advisable to run everything in a virtual environment either pip or conda.
 
