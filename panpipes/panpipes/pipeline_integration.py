@@ -483,6 +483,11 @@ def run_harmony_atac( outfile):
         cmd += " --neighbors_n_pcs %s"  % neighbor_params['npcs']
     if neighbor_params['k'] is not None:
         cmd += " --neighbors_k %s" % neighbor_params['k']
+    atac_dimred = PARAMS['atac']['dimred']
+    if PARAMS['atac']['dimred'] is not None:
+        cmd += " --dimred %s" % atac_dimred
+    else:
+        cmd += " --dimred PCA"
     cmd += " > logs/atac_harmony.log " 
      #job arguments
     
@@ -508,6 +513,8 @@ def run_bbknn_atac(outfile):
         cmd += " --neighbors_within_batch %i" % PARAMS['atac']['bbknn']['neighbors_within_batch']
     if PARAMS['atac']['neighbors']['npcs'] is not None:
         cmd += " --neighbors_n_pcs %s" % PARAMS['atac']['neighbors']['npcs']
+    #Forcing bbknn to run on PCA in case of atac
+    cmd += " --dimred PCA"
     cmd += " > logs/atac_bbknn.log "
     if PARAMS['queues_long'] is not None:
         job_kwargs["job_queue"] = PARAMS['queues_long']

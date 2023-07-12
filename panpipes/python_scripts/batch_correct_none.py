@@ -71,12 +71,16 @@ if len(columns)>1:
 
 # write out batch
 # adata.obs[columns].to_csv(os.path.join(os.path.dirname(args.output_csv), 'batch_'+ args.modality +'_mtd.csv'))
+if args.dimred == "PCA":
+    dimred = "X_pca"
+elif args.dimred == "LSI":
+    dimred = "X_LSI"
 
 
 # run neighbours and umap without batch correction
 pc_kwargs = {}
 if int(args.neighbors_n_pcs) > 0:
-    pc_kwargs['use_rep'] = "X_pca"
+    pc_kwargs['use_rep'] = dimred
     pc_kwargs['n_pcs'] = int(args.neighbors_n_pcs)
 else:
     # If n_pcs==0 use .X if use_rep is None.
