@@ -73,7 +73,7 @@ columns = [x.strip() for x in args.integration_col.split(",")]
 if args.dimred == "PCA":
     dimred = "X_pca"
 elif args.dimred == "LSI":
-    dimred = "X_LSI"
+    dimred = "X_lsi"
 
 if len(columns)>1: 
     L.info("using 2 columns to integrate on more variables")

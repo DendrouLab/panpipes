@@ -74,7 +74,7 @@ if len(columns)>1:
 if args.dimred == "PCA":
     dimred = "X_pca"
 elif args.dimred == "LSI":
-    dimred = "X_LSI"
+    dimred = "X_lsi"
 
 
 # run neighbours and umap without batch correction
