@@ -57,6 +57,16 @@ nnb = int(args.neighbors_within_batch)
 # bbknn can't integrate on 2+ variables, so create a fake column with combined information
 columns = [x.strip() for x in args.integration_col.split(",")]
 
+if args.modality =="atac":
+    if "scaled_counts" in atac.layers.keys():
+        pass
+    else:
+        L.info("to run BBKNN on atac we need to compute PCA. Computing on the flight now")
+        sc.pp.scale(adata)
+        adata.layers["scaled_counts"] = adata.X.copy()
+        sc.tl.pca(adata, n_comps=min(50,adata.var.shape[0]-1), svd_solver='arpack', random_state=0) 
+
+
 if len(columns) > 1:
     L.info("using 2 columns to integrate on more variables")
     # comb_columns = "_".join(columns)
