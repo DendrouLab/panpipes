@@ -29,6 +29,9 @@ parser.add_argument('--input_anndata',
 parser.add_argument('--modality',
                     default='rna',
                     help='')
+parser.add_argument('--dimred',
+                    default='PCA',
+                    help='which dimred to expect, relevant for ATAC')
 parser.add_argument('--output_csv', default='batch_correction/umap_bc_harmony.csv',
                     help='')
 parser.add_argument('--integration_col',
@@ -67,6 +70,10 @@ adata = mdata.mod[args.modality]
 # Harmony can integrate on 2+ variables,
 # but for consistency with other approaches create a fake column with combined information
 columns = [x.strip() for x in args.integration_col.split(",")]
+if args.dimred == "PCA":
+    dimred = "X_pca"
+elif args.dimred == "LSI":
+    dimred = "X_LSI"
 
 if len(columns)>1: 
     L.info("using 2 columns to integrate on more variables")
@@ -77,7 +84,7 @@ if len(columns)>1:
     adata.obs["comb_columns"] = adata.obs["comb_columns"].astype("category")
     # run harmony
 
-    ho = hm.run_harmony(adata.obsm['X_pca'][:,0:int(args.harmony_npcs)], adata.obs, ["comb_columns"], 
+    ho = hm.run_harmony(adata.obsm[dimred][:,0:int(args.harmony_npcs)], adata.obs, ["comb_columns"], 
                                        sigma = float(args.sigma_val),theta = float(args.theta_val),verbose=True,max_iter_kmeans=30, 
                                        max_iter_harmony=40)
 
@@ -85,7 +92,7 @@ else:
     # make sure that batch is a categorical
     adata.obs[args.integration_col] = adata.obs[args.integration_col].astype("category")
     # run harmony
-    ho = hm.run_harmony(adata.obsm['X_pca'][:,0:int(args.harmony_npcs)],
+    ho = hm.run_harmony(adata.obsm[dimred][:,0:int(args.harmony_npcs)],
                         adata.obs,
                         [args.integration_col],
                         sigma=float(args.sigma_val),

@@ -30,6 +30,9 @@ parser.add_argument('--input_anndata',
 parser.add_argument('--modality',
                     default='rna',
                     help='')
+parser.add_argument('--dimred',
+                    default='PCA',
+                    help='which dimred to expect, relevant for ATAC')
 parser.add_argument('--output_csv', default='batch_correction/umap_bc_none.csv',
                     help='')
 parser.add_argument('--n_threads', default=1,

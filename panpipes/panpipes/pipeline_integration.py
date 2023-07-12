@@ -441,6 +441,11 @@ def run_no_batch_umap_atac(outfile):
         cmd += " --neighbors_n_pcs %s"  % neighbor_params['npcs']
     if neighbor_params['k'] is not None:
         cmd += " --neighbors_k %s" % neighbor_params['k']
+    atac_dimred = PARAMS['atac']['dimred']
+    if PARAMS['atac']['dimred'] is not None:
+        cmd += " --dimred %s" % atac_dimred
+    else:
+        cmd += " --dimred PCA"
     cmd += " > logs/atac_no_correct.log"
     
     if PARAMS['queues_long'] is not None:

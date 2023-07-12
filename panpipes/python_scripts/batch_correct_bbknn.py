@@ -26,6 +26,9 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--input_anndata',
                     default='adata_scaled.h5ad',
                     help='')
+parser.add_argument('--dimred',
+                    default='PCA',
+                    help='which dimred to expect, relevant for ATAC')
 parser.add_argument('--output_csv', default='batch_correction/umap_bc_bbknn.csv',
                     help='')
 parser.add_argument('--integration_col', default='batch',
