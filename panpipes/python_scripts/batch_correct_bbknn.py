@@ -52,13 +52,13 @@ L.info("Running with options: %s", args)
 #adata = read_anndata(args.input_anndata, use_muon=use_muon, modality="rna")
 mdata = mu.read(args.input_anndata)
 adata = mdata.mod[args.modality] 
-
+L.info("read files")
 nnb = int(args.neighbors_within_batch)
 # bbknn can't integrate on 2+ variables, so create a fake column with combined information
 columns = [x.strip() for x in args.integration_col.split(",")]
 
 if args.modality =="atac":
-    if "scaled_counts" in atac.layers.keys():
+    if "scaled_counts" in adata.layers.keys():
         pass
     else:
         L.info("to run BBKNN on atac we need to compute PCA. Computing on the flight now")
@@ -66,7 +66,7 @@ if args.modality =="atac":
         adata.layers["scaled_counts"] = adata.X.copy()
         sc.tl.pca(adata, n_comps=min(50,adata.var.shape[0]-1), svd_solver='arpack', random_state=0) 
 
-
+L.info("preparing for integration")
 if len(columns) > 1:
     L.info("using 2 columns to integrate on more variables")
     # comb_columns = "_".join(columns)
