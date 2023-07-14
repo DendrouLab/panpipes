@@ -30,9 +30,9 @@ preprocessed_file = PARAMS['preprocessed_file']
 
 @originate("logs/setup_dirs.sentinel")
 def set_up_dirs(log_file):
-    os.mkdir("logs")
-    os.mkdir("tmp")
-    os.mkdir("batch_correction")
+    os.makedirs("logs", exist_ok=True)
+    os.makedirs("tmp", exist_ok=True)
+    os.makedirs("batch_correction", exist_ok=True)
     if PARAMS['rna']['run']:
         os.makedirs("figures/rna")
     if PARAMS['prot']['run']:

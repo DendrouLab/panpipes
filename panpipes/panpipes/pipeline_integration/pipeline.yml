@@ -15,12 +15,12 @@ resources:
   # so that panpipes can find your gpu queue
   threads_gpu: 2
 # path to conda env, leave blank if running native or your cluster automatically inherits the login node environment
-condaenv:
+condaenv: /Users/fabiola.curion/Documents/devel/miniconda3/envs/pipeline_bbknn
 
 # allows for tweaking which queues jobs get submitted to, 
 # in case there is a special queue for long jobs or you have access to a gpu-specific queue
 # the default queue should be specified in your .cgat.yml file
-# leave as is if you do not want to use the alternative queues
+# leave blank if you do not want to use the alternative queues
 queues:
   long: 
   gpu:  
@@ -28,9 +28,9 @@ queues:
 # Start
 # --------------------------
 # either one that exists already with
-sample_prefix: test
+sample_prefix: teaseq
 #this is what comes out of the filtering/preprocessing
-preprocessed_obj: ../preprocess/test.h5mu
+preprocessed_obj: teaseq.h5mu
 # contains layers: raw_counts, logged_counts, and has scaled or logged counts in X 
 
 
@@ -43,14 +43,14 @@ rna:
   run: True 
   # what method(s) to use to run batch correction, you can specify multiple 
   # choices: harmony,bbknn,scanorama,scvi (comma-seprated string, no spaces)
-  tools: harmony,bbknn,scanorama,scvi
+  tools: harmony,scvi,bbknn
   # this is the column you want to batch correct on. if you specify a comma separated list, 
   # they will be all used simultaneosly. 
   # Specifically all columns specified will be merged into one 'batch' columns.
   # if you want to test correction for one at a time, 
   # specify one at a time and run the pipeline in different folders i.e. integration_by_sample, 
   # integration_by_tissue ...
-  column: sample_id 
+  column: dataset
   #-----------------------------
   # Harmony args
   #-----------------------------
@@ -65,7 +65,7 @@ rna:
   # BBKNN args # https://bbknn.readthedocs.io/en/latest/
   #-----------------------------
   bbknn:
-    neighbors_within_batch: 
+    neighbors_within_batch: 20
   #-----------------------------
   # SCVI args
   #-----------------------------
@@ -117,7 +117,7 @@ prot:
   # they will be all used simultaneosly. if you want to test correction for one at a time, 
   # specify one at a time and run the pipeline in different folders i.e. integration_by_sample, 
   # integration_by_tissue ...
-  column: sample_id 
+  column: orig.ident 
   #----------------------------
   # Harmony args
   #-----------------------------
@@ -132,7 +132,7 @@ prot:
   # BBKNN args # https://bbknn.readthedocs.io/en/latest/
   #-----------------------------
   bbknn:
-    neighbors_within_batch: 
+    neighbors_within_batch: 20
   #----------------------------›
   # find neighbour parameters
   #-----------------------------
@@ -151,16 +151,18 @@ prot:
 #--------------------------
 atac:
   # True or false depending on whether you want to run batch correction
-  run: False
+  run: True
+  # which dimensionality reduction to expect, LSI or PCA
+  dimred: LSI 
   # what method(s) to use to run batch correction, you can specify multiple 
   # (comma-seprated string, no spaces)
   # choices: harmony,bbknn,combat
-  tools: 
+  tools: harmony,bbknn
   # this is the column you want to batch correct on. if you specify a comma separated list, 
   # they will be all used simultaneosly. if you want to test correction for one at a time, 
   # specify one at a time and run the pipeline in different folders i.e. integration_by_sample, 
   # integration_by_tissue ...
-  column: sample_id 
+  column: dataset
   #----------------------------
   # Harmony args
   #-----------------------------
@@ -181,7 +183,7 @@ atac:
   #-----------------------------
   neighbors: &atac_neighbors
     # number of Principal Components to calculate for neighbours and umap:
-    #   -if no correction is applied, PCA will be calculated and used to run UMAP and clustering on
+    #   -if no correction is applied, PCA will be calculated and used to run UMAP and clustering 
     #   -if Harmony is the method of choice, it will use these components to create a corrected dim red.)
     # note: scvelo default is 30
     npcs: 30
@@ -204,7 +206,6 @@ multimodal:
   tools: 
     - WNN
     - totalvi
-    - multiVI
 
   # this is the column you want to batch correct on. if you specify a comma separated list, 
   # they will be all used simultaneosly. if you want to test correction for one at a time, 
@@ -289,7 +290,7 @@ multimodal:
     # you can add any other param from the tutorials and they will
     # be parsed alongside the others
     #  (comma-separated string, no spaces)
-    modalities: rna,prot,atac
+    modalities: 
     filter_by_hvg: True
     n_factors: 10
     n_iterations: 1000
@@ -349,7 +350,7 @@ plotqc:
   #  (comma-seprated strings, no spaces)
   # umaps comparing the integration (one plot per value in the group)
   # for each batch correction column plus any extras in grouping var
-  grouping_var: sample_id
+  grouping_var: dataset,sample_id
   # what other metrics do you want to plot on each modalities embedding, (one plot per group)
   # use mod:variable notation, 
   # any metrics that you want to plot on all modality umaps go under "all"
@@ -365,24 +366,25 @@ plotqc:
 # ----------------
 # Make final object
 # ----------------
-## Final choices: Leave blank until you have reviewed the results from running
+# Final choices: Leave blank until you have reviewed the results from running
 # panpipes integration make full
-# choose the parameters to integrate into the final anndata object
+# This step will produce a mudata object with one layer per modality with 
+# one correction per modality and one multimodal layer.
+# Choose the integration results you want to merge in the final object
+# For unimodal integration: to pick the uncorrected version use "no_correction"
 # then run
 # panpipes integration make merge_integration
 final_obj:
   rna:
     include: True
-    bc_choice: harmony
+    bc_choice: no_correction
   prot:
     include: True
     bc_choice: harmony
   atac:
     include: False
-    bc_choice: harmony
-    n_neighbors:
-    umap_min_dist:
+    bc_choice: bbknn
   multimodal:
     include: True
-    bc_choice: totalvi
+    bc_choice: WNN
 
