@@ -113,8 +113,8 @@ for kmod in dict_graph.keys():
     else:
         repuse = "X_pca"
         if repuse not in tmp.mod[kmod].obsm.keys():
-            if "X_LSI" in tmp.mod[kmod].obsm.keys():
-                repuse = "X_LSI"
+            if "X_lsi" in tmp.mod[kmod].obsm.keys():
+                repuse = "X_lsi"
             else:
                 L.info("falling back on %s" %(repuse) )
         if int(pkmod['npcs']) == 0:
