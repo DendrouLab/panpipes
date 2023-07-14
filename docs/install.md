@@ -50,7 +50,7 @@ If you have not already set up SSH keys for github first follow these [instructi
 ```
 git clone https://github.com/DendrouLab/panpipes
 cd panpipes
-pip install .
+pip install -e .
 ```
 
 
