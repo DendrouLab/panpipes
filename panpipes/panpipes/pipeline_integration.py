@@ -720,7 +720,10 @@ def run_multimodal_integration():
          regex(r"(.*)/(.*)"), 
           r'batch_correction/combined_umaps.tsv')
 def collate_integration_outputs(infiles,outfile):
-    infiles_string = ','.join(infiles)
+    #infiles_string = ','.join(infiles)
+    contents = glob.glob("batch_correction/*.csv")
+    union = list(set(infiles) | set(contents))
+    infiles_string = ','.join(union)
     batch_dict =  "batch_correction/batch_dict.yml"
     cell_mtd_file = sprefix + "_cell_mtd.csv"
     cmd = """python %(py_path)s/run_collate_mtd_files.py 
