@@ -1,8 +1,32 @@
-Installation
------------------------
+Installation of panpipes
+========================
 
-Step 1 create virutal environment:
-''''''''''''''''''''''''''''''''''
+Step 1 create environment
+'''''''''''''''''''''''''
+
+Option 1: create conda environment
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+(Recommended) similarly to what suggested in
+https://www.biostars.org/p/498049/ we create a conda environment with R
+and python
+
+::
+
+   conda config --add channels conda-forge
+   conda config --set channel_priority strict
+   # you should remove the strict priority afterwards!
+   conda search r-base
+   conda create --name pipeline_env python=3.9 r-base=4.3.0
+
+now we activate the environment
+
+::
+
+   conda activate pipeline_env
+
+Option 2: Python Virutal environment:
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 It is advisable to run everything in a virtual environment either pip or
 conda.
@@ -23,28 +47,21 @@ activate the environment
 
    source python3-venv-panpipes/bin/activate
 
-**OR** using conda:
-
-::
-
-   conda create --name pipeline_env python=3.8.6
-   conda activate pipeline_env
-
-we include an environment.yml for a conda environment tested on all the
-pipelines packaged in this version of Panpipes.
-
 Step 2 Download and install this repo
 '''''''''''''''''''''''''''''''''''''
 
 If you have not already set up SSH keys for github first follow these
-:doc:`set_up_ssh_keys_for_github.md<instructions>`
-
+`instructions <https://github.com/DendrouLab/panpipes/blob/main/docs/set_up_ssh_keys_for_github.md>`__:
 
 ::
 
    git clone https://github.com/DendrouLab/panpipes
    cd panpipes
    pip install .
+
+::
+
+   conda install -c conda-forge pynndescent
 
 .. raw:: html
 
@@ -53,26 +70,62 @@ If you have not already set up SSH keys for github first follow these
    pip install git+https://github.com/DendrouLab/panpipes
    ``` -->
 
+if you’re running on a macos, you may need to also install the ``time``
+package to avoid that the pipeline uses the shell’s internal ``time``
+command.
+
+::
+
+   conda install -c conda-forge time
+
 The pipelines are now installed as a local python package.
 
 Step 3 installing R requirements
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The pipelines use R (mostly for ggplot visualisations).
+The pipelines uses R for some ggplot visualisations and the
+interoperability components.
 
 If you are using a venv virtual environment, the pipeline will call a
 local R installation, so make sure R is installed and install the
-required packages with the following command
+required packages with the command we provide below.
 
-From within the panpipes repo folder run:
-``Rscript panpipes/R_scripts/install_R_libs.R``
+If using conda, install the following R packages along with their
+binaries using conda
+
+::
+
+   conda install -c conda-forge r-tidyverse r-optparse r-ggforce r-ggraph r-xtable r-hdf5r
+
+We provide an Rscript with the additional few R packages needed, please
+remember to customize the CRAN mirror selection in the first line of the
+script (or remove the line if you have already specified a CRAN mirror
+in your ``.Rprofile``) Then, from within the panpipes folder run:
+``Rscript panpipes/R_scripts/install_R_libs.R`` running with the option
+``--vanilla`` or ``--no-site-file`` prevents R from reading your
+``.Renvironment`` or ``.Rprofile`` in case you want to use different
+settings from you local R installation.
+
+You can expect the installation of R libraries to take quite some time,
+this is not something related to ``panpipes`` but how R manages their
+libraries and dipendencies in conda!
 
 .. raw:: html
 
    <!-- If you are using a conda virtual environment, R *and the required packages (check this)* will be installed along with the python packages.  -->
 
-Step 4 pipeline configuration (for SGE or SLURM)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+To check the installation was successful run the following line
+
+::
+
+   panpipes --help
+
+A list of available pipelines should appear!
+
+Step 4 pipeline configuration (for SGE or SLURM clusters)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+*Note: You won’t need this for a local installation of panpipes.*
 
 Create a yml file for the cgat core pipeline software to read
 
@@ -128,14 +181,17 @@ file on your server, ask your sys admin if you cannot find it!
    PATH_TO_DRMAA = ""
    echo "export DRMAA_LIBRARY_PATH=$PATH_TO/libdrmaa.so.1.0" >> ~/.bashrc
 
-Conda environments
-~~~~~~~~~~~~~~~~~~
+Specifying Conda environments to run panpipes
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-If one or more conda environments are needed to run each of the
-pipelines, (i.e. one pipeline = one environment) the environment (s)
-should be specified in the .cgat.yml file or in the pipeline.yml
-configuration file and it will be picked up by the pipeline as the
-default environment.
+If using conda environments, you can use one single big environment (the
+instructions provided do that) or create one for each of the workflows
+in panpipes, (i.e. one workflow = one environment) The environment (s)
+should be specified in the .cgat.yml global configuration file or in
+each of the single workflows pipeline.yml configuration files and it
+will be picked up by the pipeline as the default environment. Please
+note that if you specify the conda environment in the workflows
+configuration file this will be the first choice to run the pipeline.
 
 If no environment is specified, the default behaviour of the pipeline is
 to inherit environment variables from the node where the pipeline is
@@ -153,12 +209,30 @@ i.e. :
        queue_manager: slurm
        queue: cpu_p
        options: --qos=xxx --exclude=compute-node-0[02-05,08-19],compute-node-010-0[05,07,35,37,51,64,68-71]
-   condaenv: pipeline_env
+   condaenv: /path/to/pipeline_env
 
-To check the installation was successful run the following line
+or
 
 ::
 
-   panpipes --help
+   # ----------------------- #
+   # Visualisation pipeline DendrouLab
+   # ----------------------- #
+   # written by Charlotte Rich-Griffin and Fabiola Curion
 
-A list of available pipelines should appear!
+   # WARNING: Do not edit any line with the format `continuous_vars: &continuous_vars` or `continuous_vars: *continuous_vars`
+
+   # ------------------------
+   # compute resource options
+   # ------------------------
+   resources:
+     # Number of threads used for parallel jobs
+     # this must be enough memory to load your mudata and do computationally intensive tasks
+     threads_high: 1
+     # this must be enough memory to load your mudata and do computationally light tasks
+     threads_medium: 1
+     # this must be enough memory to load text files and do plotting, requires much less memory than the other two
+     threads_low: 1
+
+   # path to conda env, leave blank if running native or your cluster automatically inherits the login node environment
+   condaenv: /path/to/env
