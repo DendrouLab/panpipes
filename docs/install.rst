@@ -37,7 +37,8 @@ Step 2 Download and install this repo
 '''''''''''''''''''''''''''''''''''''
 
 If you have not already set up SSH keys for github first follow these
-`instructions <https://github.com/DendrouLab/panpipes/docs/set_up_ssh_keys_for_github.md>`__:
+:doc:`set_up_ssh_keys_for_github.md<instructions>`
+
 
 ::
 

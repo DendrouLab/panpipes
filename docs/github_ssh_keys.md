@@ -1,5 +1,6 @@
+Set up SSH key for GitHub
+=========================
 
-## Set up SSH key for GitHub
 For more advice: https://docs.github.com/en/authentication/connecting-to-github-with-ssh/about-ssh
 
 After checking for existing keys, if you receive error that ~/.ssh doesn't exist then you don't have one. If there already is one (ie. id_rsa.pub, id_ed25519.pub) then you can either connect it to GitHub or generate new one.

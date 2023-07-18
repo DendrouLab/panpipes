@@ -9,8 +9,10 @@ with additional contributions Tom Thomas
 | **Panpipes: a pipeline for multiomic single-cell data analysis**  
 | Charlotte Rich-Griffin, Fabiola Curion, Tom Thomas, Devika Agarwal, Fabian J. Theis, Calliope A. Dendrou. https://doi.org/10.1101/2023.03.11.532085
 
+
+
 What is panpipes?
-------------
+-----------------
 
 
 Panpipes is a collection of cgat-core/ruffus pipelines to streamline the analysis of multi-modal single cell data.

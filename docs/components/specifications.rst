@@ -4,8 +4,7 @@ Pipeline modules
 
 .. toctree::
     :numbered:
-    :maxdepth: 0
-
+    :maxdepth: 1
    qc
    preprocess
    integration
