@@ -1,15 +1,14 @@
-
-Pipeline modules
-''''''''''''''''''''''''
+================
+Pipeline Specifications
+================
 
 .. toctree::
-    :numbered:
     :maxdepth: 1
-   qc
-   preprocess
-   integration
-   refmap
-   clustering
-   vis
-
+    
+    qc
+    preprocess
+    integration
+    refmap
+    clustering
+    vis
 

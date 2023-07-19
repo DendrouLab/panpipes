@@ -42,7 +42,7 @@ list. This is done by listibng them as qc_vars in
 `scanpy.pp.calculate_qc_metrics <https://scanpy.readthedocs.io/en/stable/generated/scanpy.pp.calculate_qc_metrics.html#scanpy.pp.calculate_qc_metrics>`__.
 For example, for the rna modality, including a list of mitochondiral
 genes in the group “mt”, will add pct_counts_mt, and total_counts_mt to
-the mdata[‘rna’].obs assay.
+the mdata["rna"].obs assay.
 
 Score genes: score a set of genes using
 `scanpy.tl.score_genes <https://scanpy.readthedocs.io/en/stable/generated/scanpy.tl.score_genes.html>`__

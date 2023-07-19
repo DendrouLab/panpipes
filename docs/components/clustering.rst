@@ -2,8 +2,6 @@ Clustering
 ===========
 
 
-
-
 1. In a new folder, generate config file for integration,
    ``panpipes clustering config`` and edit the pipeline.yml file.
 2. Run the clustering pipeline
