@@ -5,3 +5,5 @@ panpipes.egg-info
 *.pyc
 .history
 panpipes/.DS_Store
+.DS_Store
+
