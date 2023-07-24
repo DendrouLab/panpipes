@@ -139,7 +139,7 @@ def gen_load_anndata_jobs(caf, load_raw=False, mode_dictionary = {}, load_prot_f
                     spatial_metadata = None
                 #transformation is optional
                 if pd.notna(caf["spatial_transformation"][nn]):
-                    spatial_transformation = caf["spatial_tranformation"][nn]
+                    spatial_transformation = caf["spatial_transformation"][nn]
                 else:
                     spatial_transformation = None
             elif caf['spatial_filetype'][nn]=="cellranger":
