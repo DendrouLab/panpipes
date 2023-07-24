@@ -48,19 +48,20 @@ def gen_load_anndata_jobs(caf, load_raw=False, mode_dictionary = {}, load_prot_f
     Generate a load_adatas job for each line in submission.txt
     """
     for nn in range(0, caf.shape[0]):
-        if pd.isna(caf['gex_path'][nn]):
-                gex_path= None
-                gex_filetype=None
-        elif caf['gex_filetype'][nn]=="cellranger" and mode_dictionary["rna"]:
-            gex_path, gex_filetype = update_cellranger_col(caf['gex_path'][nn], raw=load_raw, method="count")
-        elif caf['gex_filetype'][nn]=="cellranger_multi" and mode_dictionary["rna"]:
-            gex_path, gex_filetype = update_cellranger_col(caf['gex_path'][nn], raw=load_raw, method="multi", 
-                                                            sample_id=caf['sample_id'][nn])
-        else:
-            gex_path, gex_filetype = caf[['gex_path', "gex_filetype"]].iloc[nn]
-            if load_raw:
-                gex_path = re.sub("filtered", "raw", gex_path)
-        # manage the adt paths
+        if ('gex_path' in caf.columns and mode_dictionary["rna"]):
+            if pd.isna(caf['gex_path'][nn]):
+                    gex_path= None
+                    gex_filetype=None
+            elif caf['gex_filetype'][nn]=="cellranger" and mode_dictionary["rna"]:
+                gex_path, gex_filetype = update_cellranger_col(caf['gex_path'][nn], raw=load_raw, method="count")
+            elif caf['gex_filetype'][nn]=="cellranger_multi" and mode_dictionary["rna"]:
+                gex_path, gex_filetype = update_cellranger_col(caf['gex_path'][nn], raw=load_raw, method="multi", 
+                                                                sample_id=caf['sample_id'][nn])
+            else:
+                gex_path, gex_filetype = caf[['gex_path', "gex_filetype"]].iloc[nn]
+                if load_raw:
+                    gex_path = re.sub("filtered", "raw", gex_path)
+            # manage the adt paths
         if ('adt_path' in caf.columns and mode_dictionary["prot"]):
             # check if its the same as the gex path (data in the same file)
             if pd.isna(caf['adt_path'][nn]):
@@ -119,6 +120,26 @@ def gen_load_anndata_jobs(caf, load_raw=False, mode_dictionary = {}, load_prot_f
             fragments_file = None
             peak_annotation_file = None
             per_barcode_metrics_file = None
+        if "spatial_path" in caf.columns and mode_dictionary["spatialT"]:
+            if pd.isna(caf["spatial_path"][nn]):
+                spatial_path= None
+                spatial_filetype = None
+            elif caf['spatial_filetype'][nn]=="vizgen":
+                #path, counts and metadata are mandatory
+                if pd.notna(caf["spatial_counts"]):
+                    spatial_counts= caf["spatial_counts"]
+                if pd.notna(caf["spatial_metadata"]):
+                    spatial_metadata = caf["spatial_metadata"]
+                #transformation is optional
+                if pd.notna(caf["spatial_transformation"]):
+                    spatial_transformation = caf["spatial_tranformation"]
+            elif caf['spatial_filetype'][nn]=="cellranger":
+                # @@@@temporary here 
+                # check file formats
+                spatial_path, spatial_filetype = update_cellranger_col(caf['adt_path'][nn], raw=load_prot_from_raw)
+        else:
+            spatial_path= None
+            spatial_filetype = None
             
         if 'barcode_mtd_path' in caf.columns:
             cell_mtd_path = caf['barcode_mtd_path'][nn]
@@ -131,15 +152,16 @@ def gen_load_anndata_jobs(caf, load_raw=False, mode_dictionary = {}, load_prot_f
         else:
             outfile = outfile + ".h5mu"
         sample_id = caf['sample_id'][nn]
-        yield gex_path, outfile, \
-              sample_id, \
+        yield sample_id, outfile, \
+              gex_path, \
               gex_filetype,  \
               adt_path, adt_filetype, \
               tcr_path, tcr_filetype,  \
               bcr_path, bcr_filetype, \
               atac_path, atac_filetype, \
               fragments_file, per_barcode_metrics_file, peak_annotation_file, \
-              cell_mtd_path
+              cell_mtd_path, \
+              spatial_path, spatial_filetype, spatial_counts, spatial_metadata, spatial_transformation
 
 def read_anndata(
     fname: Optional[str] = None,
