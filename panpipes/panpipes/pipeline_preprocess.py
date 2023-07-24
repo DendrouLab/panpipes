@@ -237,12 +237,57 @@ def atac_preprocess(log_file, scaled_file):
 
     if PARAMS['atac_feature_selection_flavour'] is not None:
         cmd += " --feature_selection_flavour %(atac_feature_selection_flavour)s"
-    if PARAMS['min_cutoff'] is not None:
+    if PARAMS['atac_min_cutoff'] is not None:
         cmd += " --min_cutoff %(atac_min_cutoff)s"
     
     cmd += " > %(log_file)s"
     job_kwargs["job_threads"] = PARAMS['resources_threads_high']
     P.run(cmd, **job_kwargs)
+
+
+@active_if(mode_dictionary['spatialT'] is True)
+@follows(atac_preprocess)
+@originate("logs/preprocess_spatialT.log", PARAMS['mudata_file'])
+def spatialT_preprocess(log_file, scaled_file):
+    if os.path.exists("figures/spatialT") is False:
+        os.mkdir("figures/spatialT")
+    cmd = """
+        python %(py_path)s/run_preprocess_spatialT.py
+        --input_mudata %(scaled_file)s
+        --output_mudata %(scaled_file)s
+        --figdir ./figures/spatialT
+        """
+    if PARAMS['spatialT_norm_hvg_flavour'] is not None:
+        cmd += " --norm_hvg_flavour %(spatialT_norm_hvg_flavour)s"
+    if PARAMS['spatialT_n_top_genes'] is not None:
+        cmd += " --n_top_genes %(spatialT_n_top_genes)s"
+    if PARAMS['spatialT_filter_by_hvg'] is True:
+        cmd += " --filter_by_hvg True"
+    else:
+        cmd += " --filter_by_hvg False"
+    if PARAMS['spatialT_hvg_batch_key'] is not None:
+        cmd += " --hvg_batch_key %(spatialT_hvg_batch_key)s"
+    if PARAMS['spatialT_squidpy_hvg_flavour'] is not None:
+        cmd += " --squidpy_hvg_flavour %(spatialT_squidpy_hvg_flavour)s"
+    if PARAMS['spatialT_min_mean'] is not None:
+        cmd += " --min_mean %(spatialT_min_mean)s"
+    if PARAMS['spatialT_max_mean'] is not None:
+        cmd += " --max_mean %(spatialT_max_mean)s"
+    if PARAMS['spatialT_min_disp'] is not None:
+        cmd += " --min_disp %(spatialT_min_disp)s"
+    if PARAMS['spatialT_theta'] is not None:
+        cmd += " --theta %(spatialT_theta)s"
+    if PARAMS['spatialT_clip'] is not None:
+        cmd += " --clip %(spatialT_clip)s"
+    if PARAMS['spatialT_n_pcs'] is not None:
+        cmd += " --n_pcs %(spatialT_n_pcs)s"
+
+    cmd += " > %(log_file)s"
+    job_kwargs["job_threads"] = PARAMS['resources_threads_high']
+    P.run(cmd, **job_kwargs)
+
+
+
 
 # @active_if(mode_dictionary['rep'] is True)
 # @follows(atac_preprocess)
@@ -252,7 +297,7 @@ def atac_preprocess(log_file, scaled_file):
 #     pass
 
 # ---- end stub
-@follows(postfilterplot,rna_preprocess,atac_preprocess,prot_preprocess)
+@follows(postfilterplot,rna_preprocess,atac_preprocess,prot_preprocess, spatialT_preprocess)
 def full():
     """
     All cgat pipelines should end with a full() function which updates,
