@@ -129,26 +129,29 @@ def gen_load_anndata_jobs(caf, load_raw=False, mode_dictionary = {}, load_prot_f
                 spatial_filetype = None
             elif caf['spatial_filetype'][nn]=="vizgen":
                 #path, counts and metadata are mandatory
-                if pd.notna(caf["spatial_counts"]):
-                    spatial_counts= caf["spatial_counts"]
+                if pd.notna(caf["spatial_counts"][nn]):
+                    spatial_counts= caf["spatial_counts"][nn]
                 else:
                     spatial_counts = None
-                if pd.notna(caf["spatial_metadata"]):
-                    spatial_metadata = caf["spatial_metadata"]
+                if pd.notna(caf["spatial_metadata"][nn]):
+                    spatial_metadata = caf["spatial_metadata"][nn]
                 else: 
                     spatial_metadata = None
                 #transformation is optional
-                if pd.notna(caf["spatial_transformation"]):
-                    spatial_transformation = caf["spatial_tranformation"]
+                if pd.notna(caf["spatial_transformation"][nn]):
+                    spatial_transformation = caf["spatial_tranformation"][nn]
                 else:
                     spatial_transformation = None
             elif caf['spatial_filetype'][nn]=="cellranger":
                 # @@@@temporary here 
                 # check file formats
-                spatial_path, spatial_filetype = update_cellranger_col(caf['adt_path'][nn], raw=load_prot_from_raw)
+                spatial_path, spatial_filetype = update_cellranger_col(caf['spatial_path'][nn], raw=load_prot_from_raw)
         else:
             spatial_path= None
             spatial_filetype = None
+            spatial_counts = None
+            spatial_metadata = None
+            spatial_transformation = None
             
         if 'barcode_mtd_path' in caf.columns:
             cell_mtd_path = caf['barcode_mtd_path'][nn]
