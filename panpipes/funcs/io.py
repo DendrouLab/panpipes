@@ -61,7 +61,10 @@ def gen_load_anndata_jobs(caf, load_raw=False, mode_dictionary = {}, load_prot_f
                 gex_path, gex_filetype = caf[['gex_path', "gex_filetype"]].iloc[nn]
                 if load_raw:
                     gex_path = re.sub("filtered", "raw", gex_path)
-            # manage the adt paths
+            # manage the adt path
+        else: 
+            gex_path = None
+            gex_filetype = None
         if ('adt_path' in caf.columns and mode_dictionary["prot"]):
             # check if its the same as the gex path (data in the same file)
             if pd.isna(caf['adt_path'][nn]):
@@ -128,11 +131,17 @@ def gen_load_anndata_jobs(caf, load_raw=False, mode_dictionary = {}, load_prot_f
                 #path, counts and metadata are mandatory
                 if pd.notna(caf["spatial_counts"]):
                     spatial_counts= caf["spatial_counts"]
+                else:
+                    spatial_counts = None
                 if pd.notna(caf["spatial_metadata"]):
                     spatial_metadata = caf["spatial_metadata"]
+                else: 
+                    spatial_metadata = None
                 #transformation is optional
                 if pd.notna(caf["spatial_transformation"]):
                     spatial_transformation = caf["spatial_tranformation"]
+                else:
+                    spatial_transformation = None
             elif caf['spatial_filetype'][nn]=="cellranger":
                 # @@@@temporary here 
                 # check file formats
