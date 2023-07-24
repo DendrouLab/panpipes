@@ -127,7 +127,10 @@ def gen_load_anndata_jobs(caf, load_raw=False, mode_dictionary = {}, load_prot_f
             if pd.isna(caf["spatial_path"][nn]):
                 spatial_path= None
                 spatial_filetype = None
-            elif caf['spatial_filetype'][nn]=="vizgen":
+            else:
+                spatial_path = caf["spatial_path"][nn]
+            if caf['spatial_filetype'][nn]=="vizgen":
+                spatial_filetype = caf['spatial_filetype'][nn]
                 #path, counts and metadata are mandatory
                 if pd.notna(caf["spatial_counts"][nn]):
                     spatial_counts= caf["spatial_counts"][nn]
@@ -200,7 +203,7 @@ def read_anndata(
         elif modality=="atac":
             return mu.read(fname + "/atac")
         elif modality=="rep":
-            return mu.read(fname + "/atac")
+            return mu.read(fname + "/rep")
         
         else:
             sys.exit("modality not found, must be one of 'all', 'rna', 'prot','atac', 'rep' ")
