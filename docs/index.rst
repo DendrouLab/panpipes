@@ -21,16 +21,16 @@ Panpipes supports any combination of the following single-cell modalities: scRNA
 
 
 Available pipelines:
+--------------------
 
-1. :doc:`components/qc` : for the ingestion of data and computation of QC metrics' 
-2. :doc:`components/preprocess`: for filtering and normalising of each modality
-3. :doc:`components/integration`: integrate and batch correction using  single and multimodal methods
-4. :doc:`components/clustering` : cell clustering on single modalities
-5. :doc:`components/refmap` : transfer scvi-tools models from published data to your data
-6. :doc:`components/vis` : visualise metrics from other pipelines in context of experiment metadata
+1. :doc:`workflows/qc` : for the ingestion of data and computation of QC metrics' 
+2. :doc:`workflows/preprocess`: for filtering and normalising of each modality
+3. :doc:`workflows/integration`: integrate and batch correction using  single and multimodal methods
+4. :doc:`workflows/clustering` : cell clustering on single modalities
+5. :doc:`workflows/refmap` : transfer scvi-tools models from published data to your data
+6. :doc:`workflows/vis` : visualise metrics from other pipelines in context of experiment metadata
 
-Check out the :doc:`usage` page for further information, including
-how to :doc:`install<install>` the project.
+Check out the :doc:`installation<install>` and :doc:`usage guidelines<usage>` page for further information.
 
 
 Contents
@@ -40,13 +40,12 @@ Contents
    :maxdepth: 1
 
    usage
-   components/specifications
+   workflows/index
    tutorials
    install
    api
    release_notes
    contributors
    references
-   components
 
 
