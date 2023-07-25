@@ -66,7 +66,8 @@ def unfilt_file():
 def gen_load_filtered_anndata_jobs():
     caf = pd.read_csv(PARAMS['submission_file'], sep='\t')
     #check with cellranger
-    return gen_load_anndata_jobs(caf, load_raw=False, mode_dictionary=PARAMS["modalities"])
+    return gen_load_anndata_jobs(caf, load_raw=False, 
+                                 mode_dictionary=PARAMS["modalities"])
 
     
 

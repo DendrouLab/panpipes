@@ -7,6 +7,7 @@ import sys
 import h5py
 from typing import Optional, Literal
 from scanpy import read_10x_mtx, read_10x_h5, read_h5ad, read_text, read_csv, read_hdf
+import squidpy as sq
 import muon as mu
 import logging
 import scirpy as ir 
@@ -177,7 +178,10 @@ def gen_load_anndata_jobs(caf, load_raw=False, mode_dictionary = {}, load_prot_f
               fragments_file, per_barcode_metrics_file, peak_annotation_file, \
               cell_mtd_path, \
               spatial_path, spatial_filetype, spatial_counts, spatial_metadata, spatial_transformation
-
+# it was originally yielding in this order
+# yield gex_path, outfile, \
+#              sample_id, \
+#              gex_filetype,  \
 def read_anndata(
     fname: Optional[str] = None,
     use_muon: Optional[bool] = False, 
@@ -264,7 +268,8 @@ def check_filetype(path, filetype):
             "txt_matrix" : ".txt",
             "10X_h5": ".h5",
             "hdf": ".h5",
-            "cellranger_vdj": r".json|.csv"
+            "cellranger_vdj": r".json|.csv",
+            "vizgen": "vizgen" #suboptimal for now but roll with it
         }
         if filetype not in ftype_checks.keys():
             sys.exit("unknown filetype %s, please specify one of: %s" % filetype, ftype_checks.keys().join(", "))
@@ -463,7 +468,8 @@ def load_mdata_from_multiple_files(all_files_dict):
         https://scverse.org/scirpy/latest/api.html#module-scirpy.io
     """
     # convert names to match mudata conventions
-    # mudata_conventional_names={"GEX":"rna", "ADT":"prot", "TCR":"tcr", "BCR":"bcr", "ATAC": "atac"}
+    # mudata_conventional_names={"GEX":"rna", "ADT":"prot", "TCR":"tcr", 
+    # "BCR":"bcr", "ATAC": "atac", "SPATIALT":"spatialT"}
     # all_files_dict = {mudata_conventional_names[nm]: x  for (nm, x) in all_files_dict.items()}
     logging.debug(all_files_dict.keys())
     # load in separate anndata for each expected modality
@@ -486,9 +492,15 @@ def load_mdata_from_multiple_files(all_files_dict):
             extra_args["gex_only"] = False
             extra_args['library'] = "Peaks"
             extra_args['extended'] = False
+        if nm == "spatialT":
+            extra_args["gex_only"] = True # check this for techs other than merfish and visium H&E
+            #extra_args["counts_file"] =
+            extra_args['extended'] = False
+
         logging.debug("extra args")
         logging.debug(extra_args)
-        data_dict[nm] = load_adata_in(x[0], x[1], **extra_args) #**
+        data_dict[nm] = load_adata_in(x[0], x[1], **extra_args) #** 
+        #x[0] is the path, x[1] is the filetype
     logging.debug(data_dict["rna"])
     logging.debug(data_dict.keys())
     # we want unique var names for each assay
