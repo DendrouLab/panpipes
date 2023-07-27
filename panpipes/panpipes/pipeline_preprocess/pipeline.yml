@@ -161,15 +161,18 @@ downsample_mods:
 # ------------
 ## plotting vars
 # ------------
-# all metrics should be inputted as a comma separated string e.g. a,b,c
+# all metrics should be inputted as a comma separated string without spaces e.g. a,b,c
 plotqc:
-  # use these categorical variables to plot/split by and count the cells
+  # use these categorical variables to plot/split by
   grouping_var: sample_id
-  # use these continuous variables to plot gradients and distributions
+  # specify metrics in the metadata to plot:
   rna_metrics: pct_counts_mt,pct_counts_rp,pct_counts_hb,pct_counts_ig,doublet_scores
   prot_metrics: total_counts,log1p_total_counts,n_adt_by_counts,pct_counts_isotype
   atac_metrics: 
-  rep_metrics: 
+  rep_metrics:
+  spatialT_metrics: total_counts
+
+
 
 
 # RNA Normalisation
