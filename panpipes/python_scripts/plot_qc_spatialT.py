@@ -35,10 +35,10 @@ parser.add_argument("--figdir",
                     help="path to save the figures to")
 
 parser.add_argument("--spatialT_qc_metrics",
-                    default=None,
+                    default="None",
                     help="metrics to plot")
 parser.add_argument("--grouping_var",
-                    default=None,
+                    default="None",
                     help="variables to group the cells by")
 
 
@@ -91,15 +91,15 @@ for metric in qc_metrics:
             L.warning("Variable '%s' not numerical in adata.obs, will not be plotted" % metric)
         else:
             if group_var is None: 
-                sc.pl.violin(adata, keys = metric, xlabel = metric+ " in .obs",
-                            save = "_obs_" + metric+ "_" +  ".png")
+                sc.pl.violin(spatial, keys = metric, xlabel = metric+ " in .obs",
+                            save = "_obs_" + metric+ "_" +  ".png", show = False)
             
             else: #plot violin for each group
                 for group in group_var: 
                     sc.pl.violin(spatial, keys = metric,groupby = group, xlabel = group + ", "+ metric+ " in .obs",
-                            save = "_obs_" + metric+ "_" + group+ ".png")
+                            save = "_obs_" + metric+ "_" + group+ ".png", show = False)
             #plot spatial 
-            sc.pl.spatial(spatial, color = metric, save = "_spatial_" + metric + ".png")
+            sc.pl.spatial(spatial, color = metric, save = "_spatial_" + metric + ".png", show = False)
 
     #check if in adata.var: 
     if metric in spatial.var.columns:
@@ -113,7 +113,7 @@ for metric in qc_metrics:
                     orient='vertical', 
                 )
             ax.set(xlabel=metric+ " in .var" )
-            ax.figure.savefig(figdir + "violin_var_" + metric+".png")
+            ax.figure.savefig(figdir + "/" + "violin_var_" + metric+".png")
 
 
             
