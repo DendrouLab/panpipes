@@ -90,8 +90,17 @@ def load_mudatas(sample_id, outfile,
     print(modality_dict)
     
     cmd = """
-        python %(py_path)s/make_adata_from_csv.py 
+        python %(py_path)s/make_mudataspatial_from_csv.py 
         --mode_dictionary "%(modality_dict)s"
         --sample_id %(sample_id)s
         --output_file %(outfile)s 
+        --spatial_filetype %(spatial_filetype)s
+        --spatial_infile %(spatial_infile)s
+        --spatial_counts %(spatial_counts)s
+        --spatial_metadata %(spatial_metadata)s 
+        --spatial_transformation %(spatial_transformation)s
+
     """
+    
+
+    

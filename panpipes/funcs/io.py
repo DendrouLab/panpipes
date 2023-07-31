@@ -354,6 +354,14 @@ def scp_read_10x_mtx(filename: PathLike, library_keep=None, *args, **kwargs) -> 
         ].copy()
     return adata
 
+#----------------
+# temp loading functions for spatial data
+# load_Spatial_in
+# load_spatial_from_multiple_files
+# ->>>how to write?
+#----------------
+
+
 
 
 
