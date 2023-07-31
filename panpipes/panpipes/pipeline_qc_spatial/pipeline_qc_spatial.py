@@ -100,7 +100,35 @@ def load_mudatas(sample_id, outfile,
         --spatial_metadata %(spatial_metadata)s 
         --spatial_transformation %(spatial_transformation)s
 
+        """
+    cmd += " > logs/make_mudatas_%(sample_id)s.log"
+    # print(cmd)
+    job_kwargs["job_threads"] = PARAMS['resources_threads_medium']
+    P.run(cmd, **job_kwargs)
+
+# in this workflow we qc each ST independently
+# 
+# concat happens 
+# so add the optional concat here
+
+@follows(mkdir("spatQC"))
+@files(load_mudatas)
+def spatialQC(outfile):
+    file_name = os.path.basename(outfile)
+    sample_id = file_name.rstrip(".h5mu")
+    outfile_qc = os.path.join("spatQC",(sample_id + "_qc.h5mu"))
+    cmd = """
+    python %(py_path)s/run_scanpyQC_spatial.py
+    --sample_id %(sample_id)s
+    --output_file %(outfile_qc)s     
+
     """
+    cmd += " > logs/spatQC_%(sample_id)s.log"
+    # print(cmd)
+    job_kwargs["job_threads"] = PARAMS['resources_threads_medium']
+    P.run(cmd, **job_kwargs)
+
+
     
 
     
