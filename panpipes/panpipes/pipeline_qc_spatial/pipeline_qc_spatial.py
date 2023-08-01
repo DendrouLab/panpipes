@@ -107,9 +107,7 @@ def load_mudatas(sample_id, outfile,
     P.run(cmd, **job_kwargs)
 
 # in this workflow we qc each ST independently
-# 
-# concat happens 
-# so add the optional concat here
+# we need to use optional concatenation
 
 @follows(mkdir("spatQC"))
 @files(load_mudatas)
@@ -130,5 +128,26 @@ def spatialQC(outfile):
 
 
     
+#----- end
+
+@follows(spatialQC)
+def full():
+    """
+    All cgat pipelines should end with a full() function which updates,
+    if needed, all branches of the pipeline.
+    The @follows statement should ensure that all functions are covered,
+    either directly or as prerequisites.
+    """
+    pass
+
+
+def main(argv=None):
+    if argv is None:
+        argv = sys.argv
+    P.main(argv)
+
+
+if __name__ == "__main__":
+    sys.exit(P.main(sys.argv))
 
     
