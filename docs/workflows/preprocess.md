@@ -11,7 +11,7 @@ Steps:
    ``panpipes preprocess config``
 2. edit the pipeline.yml file
 
-   -  The filtering options are dynamic depending on your qc_mm inputs. This is described full here
+   -  The filtering options are dynamic depending on your qc_mm inputs. This is described [here]
   
       
    -  There are lots of options for normalisation explained in the
@@ -24,11 +24,10 @@ The h5mu outputted from ``preprocess`` is filtered and normalised, and
 for rna highly variable genes are computed.
 
 
-Configuration to reproduce preprint outputs:
+Example YAML:
 --------------------------------------------
-.. literalinclude:: pipeline_preprocess_preprint.yml
-   :language: YAML
-
+```{literalinclude} pipeline_preprocess_preprint.yml
+```
 
 
 

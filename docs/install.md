@@ -3,11 +3,11 @@
 
 
 
-##### Step 1 create environment
+## Step 1 create environment
 
-#### Option 1: create conda environment
+### Option 1: create conda environment
 (Recommended)
-similarly to what suggested in https://www.biostars.org/p/498049/ we create a conda environment with R and python
+similarly to what is suggested in [https://www.biostars.org/p/498049/](https://www.biostars.org/p/498049/) we create a conda environment with R and python
 
 ```
 conda config --add channels conda-forge
@@ -21,16 +21,11 @@ now we activate the environment
 conda activate pipeline_env
 ```
 
+### Option 2: python venv environment:
 
-#### Option 2: Python Virutal environment:
-
-
-It is advisable to run everything in a virtual environment either pip or conda.
-
-Using pip venv
 Navigate to where you want to create your virtual environment  and follow the steps below to create a pip virtual environment
-```
 
+```
 python3 -m venv --prompt=panpipes python3-venv-panpipes/
 # This will create a panpipes/venv folder
 ```
@@ -43,7 +38,7 @@ source python3-venv-panpipes/bin/activate
 
 
 
-##### Step 2 Download and install this repo
+## Step 2 Download and install this repo
 If you have not already set up SSH keys for github first follow these [instructions](https://github.com/DendrouLab/panpipes/blob/main/docs/set_up_ssh_keys_for_github.md): 
 
 
@@ -70,7 +65,7 @@ conda install -c conda-forge time
 ```
 The pipelines are now installed as a local python package.
 
-### Step 3 installing R requirements
+## Step 3 installing R requirements
 The pipelines uses R for some ggplot visualisations and the interoperability components. 
 
 If you are using a venv virtual environment,  the pipeline will call a local R installation, so make sure R is installed and install the required packages with the command we provide below.
@@ -98,7 +93,7 @@ panpipes --help
 A list of available pipelines should appear!
 
 
-### Step 4 pipeline configuration (for SGE or SLURM clusters)
+## Step 4 pipeline configuration (for SGE or SLURM clusters)
 *Note: You won't need this for a local installation of panpipes.*
 
 Create a yml file for the cgat core pipeline software to read

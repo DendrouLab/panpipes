@@ -1,31 +1,50 @@
 
-Inputs to Multimodal QC pipeline
+Panpipes sample submission file
 ===========================
 
-For multimodal QC (qc_mm) the minimum required columns are
+The multimodal QC pipeline (qc_mm) requires a sample submission file which it uses to ingest the data into the pipeline. This is a tab-separated file with a minimum of 3 required columns, and one sample per row.
+
+The minimum required columns are
 
 sample_id | gex_path | gex_filetype  
 ----------|----------|-------------
 
 
-If you want to analyse other modalities, add columns to the input file
+
+If you want to analyse other modalities, add additional columns to the input file
 
 - adt_path/adt_filetype
 - atac_path/atac_filetype
 - tcr_path/tcr_filetype
 - bcr_path/bcr_filetype
 
-See [Supported input filetypes](##Supported-input-filetypes) to see the options for the {X}_filetype columns
+**sample id**: Each row must have a unique sample ID. 
 
-example at `resources/sample_file_qc_mm.txt`
+**{X}_paths**: If giving a cellranger path, give the path folder containing all the cellranger outputs, known as the `outs` folder. Otherwise path should be the complete path to the file. If you have cellranger outputs which have gex and adt within the same files, specify the same path in gex_path and adt_path
 
-If giving a cellranger path, give the path folder containing all the cellranger outputs. Otherwise path should be the complete path to the file. 
+**{X}_filetype**: The "filetype" column tells panpipe how to read in the data. Panpipes supports a range of inputs. See the [supported input filetypes](#supported-input-filetypes) below to see the options for the {X}_filetype columns
 
-If you have cellranger outputs which have gex and adt within the same files, specify the same path in gex_path and adt_path
+
+
+## Sample metadata
 
 To include sample level metadata, you can add additional columns to the submission file
-e.g Tissue and Diagnoisis columns in `resources/sample_file_qc_mm.txt`
+e.g Tissue and Diagnosis columns in [sample_file_qc_mm.txt](sample_file_qc_mm)
 You will also need to list which additional metadata columns you want to include in your data object in the pipeline.yml for qc_mm.
+
+## Example sample submission file
+
+
+| sample_id | gex_path                           | gex_filetype | adt_path                            | adt_filetype | tissue | diagnosis |
+|-----------|------------------------------------|--------------|-------------------------------------|--------------|--------|-----------|
+| Sample1   | Sample1_gex.csv                    | csv_matrix   | Sample1_adt.csv                     | csv_matrix   | pbmc   | healthy   |
+| Sample2   | cellranger_count/Sample2_GEX/outs/ | cellranger   | cellranger_count/Sample2_CITE/outs/ | cellranger   | pbmc   | diseased  |
+
+
+Download this file: [sample_file_qc_mm.txt](sample_file_qc_mm.txt)
+
+View other examples on sample submission files on our [github page](https://github.com/DendrouLab/panpipes/tree/main/panpipes/resources)
+
 
 ## Additional file inputs for ATAC data
 Include additional files from the cellranger outputs under the following three columns:
@@ -33,7 +52,7 @@ Include additional files from the cellranger outputs under the following three c
 - peak_annotation_file
 - per_barcode_metrics_file
 
-## Supported input filetypes:
+## Supported input filetypes
 
 For each modality per sample, specify the value in the key column in the X_filetype columns
 
@@ -51,11 +70,10 @@ tcr/bcr     |tracer| data from [TraCeR](https://github.com/Teichlab/tracer) furt
 tcr/bcr     |bracer| data from [BraCeR](https://github.com/Teichlab/bracer) further [details](https://scverse.org/scirpy/latest/generated/scirpy.io.read_bracer.html)
 tcr/bcr     |airr  | airr formatted tsv further [details](https://scverse.org/scirpy/latest/generated/scirpy.io.read_airr.html#scirpy.io.read_airr)
 
-For repertoire (tcr/bcr) inputs, panpipes uses the scirpy io functions https://scverse.org/scirpy/latest/api.html 
-Review their documentation for more specific details about inputs.
+For repertoire (tcr/bcr) inputs, panpipes uses the scirpy (v.0.12.0) functions [scirpy]https://scverse.org/scirpy/latest/api.html. Review their documentation for more specific details about inputs.
 
 
-# Combining data sets.
+## Combining data sets.
 Note that if you are combining multiple datasets from different sources the final anndata object will only contain the intersection of the genes
 from all the data sets. For example if the mitochondrial genes have been excluded from one of the inputs, they will be excluded from the final data set.
 In this case it might be wise to run qc separately on each dataset, and them merge them together to create on h5ad file to use as input for

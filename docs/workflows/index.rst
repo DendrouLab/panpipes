@@ -1,3 +1,6 @@
+Workflows
+===========
+
 .. toctree::
     :maxdepth: 1
 

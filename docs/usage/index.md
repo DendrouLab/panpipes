@@ -1,7 +1,7 @@
 Usage guidelines
 ================
 
-See  {doc}`installation <install>` for installation instructions
+See  [installation](../install) for installation instructions
 
 
 General principles for running pipelines
@@ -40,9 +40,16 @@ this you can run any task in the `show full` list such as:
 
     panpipes qc_mm make plot_tenx_metrics
 
-## Pipeline components
 
-{doc}`workflows<workflows/index>`
 
-- {doc}`Multimodal QC<workflows/qc>`
-- {doc}`Preprocess QC<workflows/preprocess>`
+Creating a [sample submission file](setup_for_qc_mm) for the QC pipeline.
+
+```{toctree}
+:maxdepth: 1
+
+setup_for_qc_mm
+gene_list_format
+filter_dict_instructions
+different_entry_points
+
+```

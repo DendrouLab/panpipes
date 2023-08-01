@@ -2,9 +2,9 @@ QC
 ==
 
 1.  Generate sample submission file as described in
-    `../setup_for_qc_mm`{.interpreted-text role="doc"}
+    [Inputs to Multimodal QC pipeline](../setup_for_qc_mm)
 2.  Generate qc genelists as described in
-    `../gene_list_format`{.interpreted-text role="doc"}
+    [Gene list format](../gene_list_format)
 3.  For adt assay - generate the protein metadata file
     [example]((https://github.com/DendrouLab/panpipes/blob/main/resources/protein_metadata_w_iso.md)).
     This file is integrated into the mdata\['prot'\].var slot.

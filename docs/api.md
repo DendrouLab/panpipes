@@ -1,5 +1,0 @@
-API
-===
-
-.. automodule:: panpipes
-

@@ -30,7 +30,7 @@ Available pipelines:
 5. :doc:`workflows/refmap` : transfer scvi-tools models from published data to your data
 6. :doc:`workflows/vis` : visualise metrics from other pipelines in context of experiment metadata
 
-Check out the :doc:`installation<install>` and :doc:`usage guidelines<usage>` page for further information.
+Check out the :doc:`installation<install>` and :doc:`usage guidelines<usage/index>` page for further information.
 
 
 Contents
@@ -39,11 +39,10 @@ Contents
 .. toctree::
    :maxdepth: 1
 
-   usage
-   workflows/index
-   tutorials
    install
-   api
+   usage/index
+   workflows/index
+   tutorials/index
    release_notes
    contributors
    references
