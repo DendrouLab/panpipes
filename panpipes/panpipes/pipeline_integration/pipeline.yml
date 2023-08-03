@@ -20,7 +20,7 @@ condaenv:
 # allows for tweaking which queues jobs get submitted to, 
 # in case there is a special queue for long jobs or you have access to a gpu-specific queue
 # the default queue should be specified in your .cgat.yml file
-# leave as is if you do not want to use the alternative queues
+# leave blank if you do not want to use the alternative queues
 queues:
   long: 
   gpu:  
@@ -152,6 +152,8 @@ prot:
 atac:
   # True or false depending on whether you want to run batch correction
   run: False
+  # which dimensionality reduction to expect, LSI or PCA
+  dimred: PCA 
   # what method(s) to use to run batch correction, you can specify multiple 
   # (comma-seprated string, no spaces)
   # choices: harmony,bbknn,combat
@@ -365,9 +367,12 @@ plotqc:
 # ----------------
 # Make final object
 # ----------------
-## Final choices: Leave blank until you have reviewed the results from running
+# Final choices: Leave blank until you have reviewed the results from running
 # panpipes integration make full
-# choose the parameters to integrate into the final anndata object
+# This step will produce a mudata object with one layer per modality with 
+# one correction per modality and one multimodal layer.
+# Choose the integration results you want to merge in the final object
+# For unimodal integration: to pick the uncorrected version use "no_correction"
 # then run
 # panpipes integration make merge_integration
 final_obj:
@@ -380,8 +385,6 @@ final_obj:
   atac:
     include: False
     bc_choice: harmony
-    n_neighbors:
-    umap_min_dist:
   multimodal:
     include: True
     bc_choice: totalvi

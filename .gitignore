@@ -3,3 +3,7 @@ panpipes/__pycache__
 build/
 panpipes.egg-info
 *.pyc
+.history
+panpipes/.DS_Store
+.DS_Store
+

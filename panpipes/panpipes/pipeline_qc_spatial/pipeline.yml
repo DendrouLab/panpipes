@@ -1,12 +1,10 @@
 # ----------------------- #
-# QC pipeline DendrouLab
+# Spatial QC pipeline 
 # ----------------------- #
-# written by Charlotte Rich-Griffin, Fabiola Curion
+# written by Fabiola Curion, Sarah Ouloguem
 
 # This pipeline needs a sample metadata file (see resources for an example)
 # will run :
-#   summary plots of 10x metrics
-#   scrublet scores
 #   scanpy QC
 #   summary QC plots
 
@@ -54,7 +52,9 @@ submission_file:
 # which metadata cols from the submission file do you want to include in the anndata object
 # as a comma-separated string e.g. batch,disease,sex
 metadatacols: 
-
+#@@@@@@@@@@@@@@@
+#NOTE check this if useful
+#@@@@@@@@@@@@@@@
 # which concat join to you want to perform on your mudata objects, recommended inner
 # see https://anndata.readthedocs.io/en/latest/concatenation.html#inner-and-outer-joins for details
 concat_join_type: inner
@@ -63,15 +63,13 @@ concat_join_type: inner
 #---------------------------------------
 # Modalities in the project
 #---------------------------------------
-# the qc scripts are independent and modalities are processed following this order. Set to True to abilitate modality(ies). 
+# 
+# Set spatialT to True to abilitate reading. 
 # Leave empty (None) or False to signal this modality is not in the experiment.
 
 modalities:
-  rna: False
-  prot: False
-  bcr: False
-  tcr: False
-  atac: False
+  spatialT: True
+
 
 #---------------------------------------
 # Integrating barcode level data e.g. 
