@@ -38,11 +38,11 @@ unfiltered_obj:
 output_logged_mudata:
 
 modalities:
-  rna:  False
+  rna:  True
   prot: False
   rep: False
   atac: False
-  spatialT: True
+  #spatialT: True
 
 # Filtering
 # --------------------------
@@ -131,13 +131,13 @@ filtering:
     var:    
       nucleosome_signal:
   #------------------------------------------------------
-  spatial:
+ # spatial:
   #------------------------------------------------------ 
-    obs:
-      min:
-        n_genes_by_counts: 
-      max:
-        total_counts: 
+  #  obs:
+   #   min:
+    #    n_genes_by_counts:
+     # max:
+      #  total_counts:
 
 # Intersecting barcodes
 # ----------------------
@@ -170,7 +170,7 @@ plotqc:
   prot_metrics: total_counts,log1p_total_counts,n_adt_by_counts,pct_counts_isotype
   atac_metrics: 
   rep_metrics:
-  spatialT_metrics: total_counts
+ # spatialT_metrics: total_counts
 
 
 
@@ -295,32 +295,32 @@ atac:
 # Spatial transcriptomics preprocessing
 # Normalization + HVG selection + PCA
 # --------------------------
-spatialT:
+#spatialT:
   # how to perform normalization and HVG selection:
-  norm_hvg_flavour: seurat # ['seurat', 'squidpy']
+#  norm_hvg_flavour: seurat # ['seurat', 'squidpy']
   # 'seurat': HVG selection and normalization by analytic Pearson residuals
   # 'squidpy': HVG selection and normalization using the standard scanpy functions (sc.pp.normalize_total(),sc.pp.log1p(), sc.pp.highly_variable_genes())
 
   # !the following parameters are only for the case norm_hvg_flavour == squidpy:
-  squidpy_hvg_flavour: seurat #['seurat','cellranger','seurat_v3'], leave blank to use default ('seurat'), flavour for the sc.pp.highly_variable_genes() function
-  min_mean:  # leave blank to use default (0.05), parameter in sc.pp.highly_variable_genes()
-  max_mean:  # leave blank to use default (1.5), parameter in sc.pp.highly_variable_genes()
-  min_disp: # leave blank to use default (0.5), parameter in sc.pp.highly_variable_genes()
+#  squidpy_hvg_flavour: seurat #['seurat','cellranger','seurat_v3'], leave blank to use default ('seurat'), flavour for the sc.pp.highly_variable_genes() function
+#  min_mean:  # leave blank to use default (0.05), parameter in sc.pp.highly_variable_genes()
+#  max_mean:  # leave blank to use default (1.5), parameter in sc.pp.highly_variable_genes()
+#  min_disp: # leave blank to use default (0.5), parameter in sc.pp.highly_variable_genes()
 
   # !the following parameters are only for the case norm_hvg_flavour == seurat:
-  theta: #leave blank to use default (100), the negative binomial overdispersion parameter for Pearson residuals
-  clip: #leave blank to use default (None)
+#  theta: #leave blank to use default (100), the negative binomial overdispersion parameter for Pearson residuals
+#  clip: #leave blank to use default (None)
   # 'clip' can be specified as:
   #    None: residuals are clipped to the interval [-sqrt(n_obs), sqrt(n_obs)]
   #    a float value: if float c specified: clipped to the interval [-c, c]
   #    np.Inf: no clipping
 
   #! parameters for both cases norm_hvg_flavour = "seurat" and "squidpy"
-  n_top_genes: 2000 # Default is 2000, Mandatory for norm_hvg_flavour = "seurat" and squidpy_hvg_flavor: "seurat_v3"
-  filter_by_hvg: False # leave blank to use default (False); if True, subset the data to highly-variable genes after finding them
-  hvg_batch_key:  #leave blank to use default (None); if specified, highly-variable genes are selected within each batch separately and merged
+#  n_top_genes: 2000 # Default is 2000, Mandatory for norm_hvg_flavour = "seurat" and squidpy_hvg_flavor: "seurat_v3"
+#  filter_by_hvg: False # leave blank to use default (False); if True, subset the data to highly-variable genes after finding them
+#  hvg_batch_key:  #leave blank to use default (None); if specified, highly-variable genes are selected within each batch separately and merged
 
-  n_pcs: 50 #leave blank to use default (50); how many PCs to compute with sc.pp.PCA()
+#  n_pcs: 50 #leave blank to use default (50); how many PCs to compute with sc.pp.PCA()
 
 
 
