@@ -18,7 +18,7 @@ For Protein assay, the data are normalised either by centralised-log-ratio or by
 For the ATAC assay ....
 
 
-## Steps:
+## Steps to run:
 
 
 1. In a new folder, generate config file for integration,
@@ -36,10 +36,7 @@ The h5mu outputted from ``preprocess`` is filtered and normalised, and
 for rna highly variable genes are computed.
 
 
-Example YAML:
---------------------------------------------
-```{literalinclude} pipeline_preprocess_preprint.yml
-```
+## Expected structure of MuData object
+The ideal way to run `panpipes qc_mm` is to use the output mudata file from `panpipes preprocess`, as this will make sure the MuData object has correctly names layers and slots. 
 
-
-
+The bare minimum MuData object required is raw data in the X slot of each modality and a sample_id column in each slot of the obs, and the outer obs.

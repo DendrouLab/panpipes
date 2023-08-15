@@ -5,4 +5,3 @@ References
    *Panpipes: a pipeline for multiomic single-cell data analysis*,
    `biorXiv <https://www.biorxiv.org/content/10.1101/2023.03.11.532085v1>`__.
 
-..
