@@ -9,6 +9,7 @@ import scanpy as sc
 import pandas as pd
 import matplotlib as plt
 import muon as mu
+import numpy as np
 
 import os
 import argparse
@@ -164,12 +165,12 @@ else:
 if args.max_epochs_reference is None: 
     max_epochs_reference = None
 else: 
-    max_epochs_reference = float(args.max_epochs_reference)
+    max_epochs_reference = int(args.max_epochs_reference)
     
 if args.max_epochs_st is None: 
     max_epochs_st = None
 else: 
-    max_epochs_st= float(args.max_epochs_st)
+    max_epochs_st= int(args.max_epochs_st)
 
 
 
@@ -235,13 +236,15 @@ if "means_per_cluster_mu_fg" in adata_sc.varm.keys():
 else:
     inf_aver = adata_sc.var[[f"means_per_cluster_mu_fg_{i}" for i in adata_sc.uns["mod"]["factor_names"]]].copy()
 inf_aver.columns = adata_sc.uns["mod"]["factor_names"]
-inf_aver.to_csv(figdir + "inf_aver.csv")
+inf_aver.to_csv("Cell2Loc_inf_aver.csv")
 
 # plot QC 
 model_ref.plot_QC()
 plt.pyplot.savefig(figdir + "/QC_reference.png")
 
 # save model and update mudata 
+#mdata_singlecell.update()
+mdata_singlecell.mod["rna"] = adata_sc
 mdata_singlecell.update()
 if save_models is True:
     model_ref.save("Reference_model", overwrite=True)
@@ -270,15 +273,20 @@ adata_st = model_spatial.export_posterior(adata_st)
 model_spatial.plot_QC()
 plt.pyplot.savefig(figdir + "/QC_spatial_mapping.png")
 
+
+#plot output
+adata_st.obs[adata_st.uns["mod"]["factor_names"]] = adata_st.obsm["q05_cell_abundance_w_sf"]
+sc.pl.spatial(adata_st,color=adata_st.uns["mod"]["factor_names"], show = False, save = "_Cell2Loc_q05_cell_abundance_w_sf.png") 
+
+
 # save model and update mudata 
+#mdata_spatial.update()
+mdata_spatial.mod["spatial"] = adata_st
 mdata_spatial.update()
 if save_models is True: 
     model_spatial.save("Spatial_mapping_model", overwrite=True)
- 
-    
-    
-# 5. Plot output     
-    
+
+
     
 #6. save mudatas 
 mdata_singlecell.write("./Cell2Loc_screference_output.h5mu")
