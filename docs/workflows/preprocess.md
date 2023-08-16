@@ -39,4 +39,4 @@ for rna highly variable genes are computed.
 ## Expected structure of MuData object
 The ideal way to run `panpipes qc_mm` is to use the output mudata file from `panpipes preprocess`, as this will make sure the MuData object has correctly names layers and slots. 
 
-The bare minimum MuData object required is raw data in the X slot of each modality and a sample_id column in each slot of the obs, and the outer obs.
+The bare minimum MuData object required is raw data in the X slot of each modality and a sample_id column the .obs slot of each of each modality, and the common (outer) obs.
