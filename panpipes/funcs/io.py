@@ -140,6 +140,9 @@ def gen_load_anndata_jobs(caf, load_raw=False, mode_dictionary = {}, load_prot_f
               atac_path, atac_filetype, \
               fragments_file, per_barcode_metrics_file, peak_annotation_file, \
               cell_mtd_path
+        
+
+# --------------------------
 # def gen_load_anndata_jobs(caf, load_raw=False, mode_dictionary = {}, load_prot_from_raw=False):
 #     """
 #     Generate a load_adatas job for each line in submission.txt
@@ -277,10 +280,10 @@ def gen_load_anndata_jobs(caf, load_raw=False, mode_dictionary = {}, load_prot_f
 # it was originally yielding in this order
 # yield gex_path, outfile, \
 #              sample_id, \
-#              gex_filetype,  \
-
-
+#              gex_filetype,  \ 
+#-----------------------------
 # create a separate generator for spatial data
+
 
 def gen_load_spatial_jobs(caf, mode_dictionary = {}, load_raw=False):
     """
