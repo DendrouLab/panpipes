@@ -33,13 +33,13 @@ job_kwargs = {}
 if PARAMS['condaenv'] is not None:
     job_kwargs["job_condaenv"] =PARAMS['condaenv']
 
-
+print(PARAMS)
 #------------------------------------------------------------------------------------------------
 ## Create a dictionary of modalities
 #------------------------------------------------------------------------------------------------
 mode_dictionary = PARAMS["modalities"]
 #{'spatialT': True}
-
+print(mode_dictionary)
 #------------------------------------------------------------------------------------------------
 # setup dirs
 #------------------------------------------------------------------------------------------------
@@ -60,20 +60,14 @@ def unfilt_file():
     sprefix = PARAMS['sample_prefix']
     unfilt_file = sprefix + "_unfilt.h5mu"
     return unfilt_file
-
-
-
+print("very merry")
 def gen_load_spatial_anndata_jobs():
     caf = pd.read_csv(PARAMS['submission_file'], sep='\t')
-    #check with cellranger
-    return gen_load_spatial_jobs(caf, load_raw=False, 
-                                 mode_dictionary=PARAMS["modalities"])
-
-    
-
+    return gen_load_spatial_jobs(caf,mode_dictionary=PARAMS["modalities"])
+   
+print("now this")
 @follows(mkdir("logs"))
 @follows(mkdir("tmp"))
-@active_if(PARAMS["use_existing_h5mu"] is False)
 @files(gen_load_spatial_anndata_jobs)
 def load_mudatas(sample_id, outfile, 
                  spatial_path, 

@@ -280,7 +280,7 @@ def gen_load_anndata_jobs(caf, load_raw=False, mode_dictionary = {}, load_prot_f
 #              gex_filetype,  \
 
 # create a separate generator for spatial data
-def gen_load_spatial_jobs(caf, load_raw=False, mode_dictionary = {}, load_prot_from_raw=False):
+def gen_load_spatial_jobs(caf, mode_dictionary = {}):
     """
     Generate a load_adatas job for each line in submission.txt
     """
@@ -310,7 +310,7 @@ def gen_load_spatial_jobs(caf, load_raw=False, mode_dictionary = {}, load_prot_f
             elif caf['spatial_filetype'][nn]=="cellranger":
                 # @@@@temporary here 
                 # check file formats
-                spatial_path, spatial_filetype = update_cellranger_col(caf['spatial_path'][nn], raw=load_prot_from_raw)
+                spatial_path, spatial_filetype = update_cellranger_col(caf['spatial_path'][nn])
         else:
             spatial_path= None
             spatial_filetype = None
