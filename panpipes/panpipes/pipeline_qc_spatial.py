@@ -60,17 +60,20 @@ def unfilt_file():
     sprefix = PARAMS['sample_prefix']
     unfilt_file = sprefix + "_unfilt.h5mu"
     return unfilt_file
-print("very merry")
+
+
 def gen_load_spatial_anndata_jobs():
+    print(PARAMS['submission_file'])
     caf = pd.read_csv(PARAMS['submission_file'], sep='\t')
+    print(gen_load_spatial_jobs(caf,mode_dictionary=PARAMS["modalities"]))
     return gen_load_spatial_jobs(caf,mode_dictionary=PARAMS["modalities"])
    
-print("now this")
+
 @follows(mkdir("logs"))
 @follows(mkdir("tmp"))
 @files(gen_load_spatial_anndata_jobs)
-def load_mudatas(sample_id, outfile, 
-                 spatial_path, 
+def load_mudatas(spatial_path, outfile, 
+                 sample_id,
                  spatial_filetype, 
                  spatial_counts, 
                  spatial_metadata, 
@@ -79,7 +82,13 @@ def load_mudatas(sample_id, outfile,
     path_dict = {'spatialT':spatial_path}
                  
     print(path_dict)
-    
+    print('sample_id = %s' % str(sample_id))
+    print('outfile = %s' % str(outfile))
+    print('spatial_filetype = %s' % str(spatial_filetype))
+    print('spatial_counts = %s' % str(spatial_counts))
+    print('spatial_metadata = %s' % str(spatial_metadata))
+    print('spatial_transformation = %s' % str(spatial_transformation))
+
     modality_dict = {k:True if path_dict[k] is not None else False for k,v in PARAMS['modalities'].items() }
     print(modality_dict)
     
@@ -89,14 +98,14 @@ def load_mudatas(sample_id, outfile,
         --sample_id %(sample_id)s
         --output_file %(outfile)s 
         --spatial_filetype %(spatial_filetype)s
-        --spatial_infile %(spatial_infile)s
+        --spatial_infile %(spatial_path)s
         --spatial_counts %(spatial_counts)s
         --spatial_metadata %(spatial_metadata)s 
         --spatial_transformation %(spatial_transformation)s
 
         """
     cmd += " > logs/make_mudatas_%(sample_id)s.log"
-    # print(cmd)
+    print(cmd)
     job_kwargs["job_threads"] = PARAMS['resources_threads_medium']
     P.run(cmd, **job_kwargs)
 
