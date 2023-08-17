@@ -62,7 +62,7 @@ parser.set_defaults(verbose=True)
 args, opt = parser.parse_known_args()
 L.info(args)
 
-
+L.info("starting the code now")
 # unimodal mu (check if all the modalities)
 if isinstance(args.mode_dictionary, dict):
     mode_dictionary = args.mode_dictionary
@@ -71,11 +71,7 @@ else:
 #{'spatialT': True}
 
 permf = [key for key, value in mode_dictionary.items() if value == True]
-all_files = {"rna": [args.rna_infile, args.rna_filetype], #remove other modalities at the end
-            "prot": [args.prot_infile, args.prot_filetype], 
-            "atac": [args.atac_infile, args.atac_filetype], 
-            "tcr":[args.tcr_filtered_contigs, args.tcr_filetype],
-            "bcr":[args.bcr_filtered_contigs, args.bcr_filetype],
+all_files = {
             "spatialT":[args.spatial_infile, #path, mandatory for squidpy
                         args.spatial_filetype, #needed for the load_adata_in function to call one of vizgen,visium
                         args.spatial_counts, #name of the counts file, mandatory for squidpy
