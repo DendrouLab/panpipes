@@ -7,7 +7,7 @@ import re
 from cgatcore import pipeline as P
 import pandas as pd
 import cgatcore.iotools as IOTools
-from panpipes.funcs.io import check_submission_file, gen_load_anndata_jobs
+from panpipes.funcs.io import gen_load_spatial_jobs
 # from scpipelines.funcs.processing import intersection
 import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
@@ -63,10 +63,10 @@ def unfilt_file():
 
 
 
-def gen_load_filtered_anndata_jobs():
+def gen_load_spatial_anndata_jobs():
     caf = pd.read_csv(PARAMS['submission_file'], sep='\t')
     #check with cellranger
-    return gen_load_anndata_jobs(caf, load_raw=False, 
+    return gen_load_spatial_jobs(caf, load_raw=False, 
                                  mode_dictionary=PARAMS["modalities"])
 
     
@@ -74,7 +74,7 @@ def gen_load_filtered_anndata_jobs():
 @follows(mkdir("logs"))
 @follows(mkdir("tmp"))
 @active_if(PARAMS["use_existing_h5mu"] is False)
-@files(gen_load_filtered_anndata_jobs)
+@files(gen_load_spatial_anndata_jobs)
 def load_mudatas(sample_id, outfile, 
                  spatial_path, 
                  spatial_filetype, 
