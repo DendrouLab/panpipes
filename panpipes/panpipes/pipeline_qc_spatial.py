@@ -60,17 +60,22 @@ def unfilt_file():
     sprefix = PARAMS['sample_prefix']
     unfilt_file = sprefix + "_unfilt.h5mu"
     return unfilt_file
-print("very merry")
+
 def gen_load_spatial_anndata_jobs():
     caf = pd.read_csv(PARAMS['submission_file'], sep='\t')
-    return gen_load_spatial_jobs(caf,mode_dictionary=PARAMS["modalities"])
-   
+    return gen_load_spatial_jobs(caf,mode_dictionary=PARAMS["modalities"],load_raw=True)
+
+caf = pd.read_csv(PARAMS['submission_file'], sep='\t')
+tt=gen_load_spatial_jobs(caf,mode_dictionary=PARAMS["modalities"],load_raw=True)
+for item in tt:
+    print(item)
+       
 print("now this")
 @follows(mkdir("logs"))
 @follows(mkdir("tmp"))
 @files(gen_load_spatial_anndata_jobs)
-def load_mudatas(sample_id, outfile, 
-                 spatial_path, 
+def load_mudatas(spatial_path, outfile, 
+                 sample_id, 
                  spatial_filetype, 
                  spatial_counts, 
                  spatial_metadata, 

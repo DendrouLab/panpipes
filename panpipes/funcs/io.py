@@ -280,9 +280,9 @@ def gen_load_anndata_jobs(caf, load_raw=False, mode_dictionary = {}, load_prot_f
 #              gex_filetype,  \
 
 # create a separate generator for spatial data
-def gen_load_spatial_jobs(caf, mode_dictionary = {}):
+def gen_load_spatial_jobs(caf, mode_dictionary = {},load_raw=False):
     """
-    Generate a load_adatas job for each line in submission.txt
+    Generate a load_spatial job for each line in submission.txt
     """
     for nn in range(0, caf.shape[0]):
         if "spatial_path" in caf.columns and mode_dictionary["spatialT"]:
@@ -329,8 +329,12 @@ def gen_load_spatial_jobs(caf, mode_dictionary = {}):
         else:
             outfile = outfile + ".h5mu"
         sample_id = caf['sample_id'][nn]
-        yield sample_id, outfile, \
-              spatial_path, spatial_filetype, spatial_counts, spatial_metadata, spatial_transformation
+        yield spatial_path, outfile, \
+                sample_id, \
+                spatial_filetype, \
+                spatial_counts, \
+                spatial_metadata, \
+                spatial_transformation
 # ###############################
 def read_anndata(
     fname: Optional[str] = None,
