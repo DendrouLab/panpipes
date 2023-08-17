@@ -281,9 +281,10 @@ def gen_load_anndata_jobs(caf, load_raw=False, mode_dictionary = {}, load_prot_f
 
 
 # create a separate generator for spatial data
+
 def gen_load_spatial_jobs(caf, mode_dictionary = {}, load_raw=False):
     """
-    Generate a load_adatas job for each line in submission.txt
+    Generate a load_spatial job for each line in submission.txt
     """
     for nn in range(0, caf.shape[0]):
         if "spatial_path" in caf.columns and mode_dictionary["spatialT"]:

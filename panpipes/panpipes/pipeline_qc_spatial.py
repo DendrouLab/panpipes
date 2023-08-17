@@ -61,13 +61,13 @@ def unfilt_file():
     unfilt_file = sprefix + "_unfilt.h5mu"
     return unfilt_file
 
-
 def gen_load_spatial_anndata_jobs():
     print(PARAMS['submission_file'])
     caf = pd.read_csv(PARAMS['submission_file'], sep='\t')
     print(gen_load_spatial_jobs(caf,mode_dictionary=PARAMS["modalities"]))
     return gen_load_spatial_jobs(caf,mode_dictionary=PARAMS["modalities"])
    
+
 
 @follows(mkdir("logs"))
 @follows(mkdir("tmp"))
