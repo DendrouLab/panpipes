@@ -69,7 +69,7 @@ pip install --editable .
 
 The pipelines are now installed as a local python package.
 
-### Step 3 Setting PYTONPATH 
+### Step 3 Setting PYTHONPATH 
 on the BMRC, the path to packages for loaded python SciPy-bundle supercedes the python venv python. This affects the numba package version, with the module numpy version being much older than the one panpipes depends on ("numpy>=1.22.4").
 So we need to make sure that after activating the python venv, the `PYTHONPATH` has the path to the venv python packages as the first path. to do this do the following:
 
