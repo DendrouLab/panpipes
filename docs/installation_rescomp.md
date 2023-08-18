@@ -20,7 +20,7 @@ You can choose different versions of Python and R but the GCCcore that they use 
 
 
 
-##### Step 1 - create virutal environment:
+### Step 1 - create virutal environment:
 
 It is advisable to run everything in a virtual environment either pip or conda.
 
@@ -50,7 +50,7 @@ source python3-venv-panpipes/bin/activate
 ```
 
 
-##### Step 2 Download and install this repo
+### Step 2 Download and install this repo
 If you have not already set up SSH keys for github first follow these [instructions](https://github.com/DendrouLab/panpipes/docs/set_up_ssh_keys_for_github.md): 
 
 
@@ -69,7 +69,7 @@ pip install --editable .
 
 The pipelines are now installed as a local python package.
 
-##### Step 3 Setting PYTONPATH 
+### Step 3 Setting PYTONPATH 
 on the BMRC, the path to packages for loaded python SciPy-bundle supercedes the python venv python. This affects the numba package version, with the module numpy version being much older than the one panpipes depends on ("numpy>=1.22.4").
 So we need to make sure that after activating the python venv, the `PYTHONPATH` has the path to the venv python packages as the first path. to do this do the following:
 
