@@ -27,8 +27,8 @@ formatter = logging.Formatter('%(asctime)s: %(levelname)s - %(message)s')
 log_handler.setFormatter(formatter)
 L.addHandler(log_handler)
 
-from panpipes.funcs.io import check_filetype, load_mdata_from_multiple_files, update_intersecting_feature_names, read_yaml
-from panpipes.funcs.processing import check_for_bool, add_var_mtd, update_var_index, intersection, intersect_obs_by_mod
+from panpipes.funcs.io import check_filetype, read_yaml
+
 
 parser = argparse.ArgumentParser()
 #parser.add_argument('--mode_dictionary',default=mode_dictionary,type=json.loads)
@@ -80,14 +80,41 @@ all_files = {
 #subset to the modalities we want from permf (in this case only spatial)
 all_files = {nm: x  for (nm, x) in all_files.items() if nm in permf}
 
-[check_filetype(x[0], x[1]) for x in all_files.values()]
+#[check_filetype(x[0], x[1]) for x in all_files.values()]
 # read the spatial data with one of the functions inside
 # load_mdata_from_multiple_files
 #     |
 #      -------->load_adata_in
 # this function creates ONE mudata per row of the CAF file 
 # and saves it with sample_id.h5mu in tmp/ 
-  
+
+
+def create_soft_link(source_path, target_path):
+    try:
+        os.symlink(source_path, target_path)
+        print(f"Soft link created: {target_path}")
+    except FileExistsError:
+        print(f"Soft link already exists: {target_path}")
+    except Exception as e:
+        print(f"An error occurred while creating soft link: {e}")
+
+def check_dir_transform(infile_path, transform_file):
+    images_path = os.path.join(infile_path, "images")
+    if not os.path.exists(images_path):
+        os.makedirs(images_path)
+        print(f"Directory '{images_path}' created.")
+    target_path = os.path.join(images_path, os.path.basename(transform_file))
+    tocheck_orig= os.path.join(infile_path,transform_file)
+    if os.path.exists(target_path):
+        print("File already exists in 'images' directory.")
+    elif os.path.islink(tocheck_orig):
+        original_path = os.path.realpath(tocheck_orig)
+        create_soft_link(original_path, target_path)
+    else:
+        create_soft_link(os.path.abspath(transform_file), target_path)
+
+
+
 if args.spatial_filetype=="vizgen":
     adata = sq.read.vizgen(path = args.spatial_infile, #path, mandatory for squidpy
                         counts_file=args.spatial_counts, #name of the counts file, mandatory for squidpy

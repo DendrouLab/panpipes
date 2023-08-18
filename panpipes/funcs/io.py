@@ -425,7 +425,7 @@ def check_filetype(path, filetype):
             "10X_h5": ".h5",
             "hdf": ".h5",
             "cellranger_vdj": r".json|.csv",
-            "vizgen": "vizgen" #suboptimal for now but roll with it
+            "vizgen": r".txt|.csv|.tsv" #suboptimal for now but roll with it
         }
         if filetype not in ftype_checks.keys():
             sys.exit("unknown filetype %s, please specify one of: %s" % filetype, ftype_checks.keys().join(", "))
