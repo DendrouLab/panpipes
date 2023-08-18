@@ -69,6 +69,16 @@ pip install --editable .
 
 The pipelines are now installed as a local python package.
 
+##### Step 3 Setting PYTONPATH 
+on the BMRC, the path to packages for loaded python SciPy-bundle supercedes the python venv python. This affects the numba package version, with the module numba version being much older than the one panpipes uses ( numba >
+So we need to make sure that after activating the python venv, the `PYTHONPATH` has the path to the venv python packages as the first path. to do this do the following:
+
+```
+path_to_virtual_env=/well/${project}/users/${user}/python3-venv-panpipes
+source ${path_to_virtual_env}/bin/activate
+export PYTHONPATH=${path_to_virtual_env}/lib/python3.9/site-packages:$PYTHONPATH
+```
+
 ### Step 3 installing R requirements
 The pipelines use R (mostly for ggplot visualisations). 
 
