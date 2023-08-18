@@ -1,7 +1,7 @@
 
-## Rescomp specific advice
+## BMRC cluster specific advice
 Created: 2020-09-21 CRG
-Last edited: 2023-03-29 (updated for slurm)
+Last edited: 2023-08-18 (updated for slurm)
 
 
 ### modules to use
@@ -69,8 +69,8 @@ pip install --editable .
 
 The pipelines are now installed as a local python package.
 
-### Step 3 Setting PYTHONPATH 
-on the BMRC, the path to packages for loaded python SciPy-bundle supercedes the python venv python. This affects the numba package version, with the module numpy version being much older than the one panpipes depends on ("numpy>=1.22.4").
+### Step 3 Modifying PYTHONPATH 
+on the BMRC, the path to packages for loaded python SciPy-bundle supercedes the python venv python. This affects the numpy package version being used when the venv is activated, with the module numpy version being much older than the one panpipes depends on ("numpy>=1.22.4"). Not doing this might lead to numpy relatad errors while running the various panpipes workflows downstream.
 So we need to make sure that after activating the python venv, the `PYTHONPATH` has the path to the venv python packages as the first path. to do this do the following:
 
 ```
@@ -78,6 +78,7 @@ path_to_virtual_env=/well/${project}/users/${user}/python3-venv-panpipes
 source ${path_to_virtual_env}/bin/activate
 export PYTHONPATH=${path_to_virtual_env}/lib/python3.9/site-packages:$PYTHONPATH
 ```
+One can check if we have the correct numpy version by doing `pip list` after setting the PYTHONPATH this way to be sure.
 
 ### Step 4 installing R requirements
 The pipelines use R (mostly for ggplot visualisations). 
