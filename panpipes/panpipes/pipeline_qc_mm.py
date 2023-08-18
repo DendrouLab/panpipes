@@ -117,7 +117,7 @@ def load_mudatas(rna_path, outfile,
         --output_file %(outfile)s 
     """
     
-    cmd += " --use_muon True"
+    cmd += " --use_muon True" #this is still here?
     if rna_path is not None and pd.notna(rna_path):
         cmd += " --rna_infile %(rna_path)s"
         cmd += " --rna_filetype %(rna_filetype)s"

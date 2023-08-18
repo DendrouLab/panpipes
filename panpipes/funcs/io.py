@@ -43,29 +43,24 @@ def update_cellranger_col(path,  raw=False, method="count", sample_id=""):
     return path, filetype
 
 
-
 def gen_load_anndata_jobs(caf, load_raw=False, mode_dictionary = {}, load_prot_from_raw=False):
     """
     Generate a load_adatas job for each line in submission.txt
     """
     for nn in range(0, caf.shape[0]):
-        if ('gex_path' in caf.columns and mode_dictionary["rna"]):
-            if pd.isna(caf['gex_path'][nn]):
-                    gex_path= None
-                    gex_filetype=None
-            elif caf['gex_filetype'][nn]=="cellranger" and mode_dictionary["rna"]:
-                gex_path, gex_filetype = update_cellranger_col(caf['gex_path'][nn], raw=load_raw, method="count")
-            elif caf['gex_filetype'][nn]=="cellranger_multi" and mode_dictionary["rna"]:
-                gex_path, gex_filetype = update_cellranger_col(caf['gex_path'][nn], raw=load_raw, method="multi", 
-                                                                sample_id=caf['sample_id'][nn])
-            else:
-                gex_path, gex_filetype = caf[['gex_path', "gex_filetype"]].iloc[nn]
-                if load_raw:
-                    gex_path = re.sub("filtered", "raw", gex_path)
-            # manage the adt path
-        else: 
-            gex_path = None
-            gex_filetype = None
+        if pd.isna(caf['gex_path'][nn]):
+                gex_path= None
+                gex_filetype=None
+        elif caf['gex_filetype'][nn]=="cellranger" and mode_dictionary["rna"]:
+            gex_path, gex_filetype = update_cellranger_col(caf['gex_path'][nn], raw=load_raw, method="count")
+        elif caf['gex_filetype'][nn]=="cellranger_multi" and mode_dictionary["rna"]:
+            gex_path, gex_filetype = update_cellranger_col(caf['gex_path'][nn], raw=load_raw, method="multi", 
+                                                            sample_id=caf['sample_id'][nn])
+        else:
+            gex_path, gex_filetype = caf[['gex_path', "gex_filetype"]].iloc[nn]
+            if load_raw:
+                gex_path = re.sub("filtered", "raw", gex_path)
+        # manage the adt paths
         if ('adt_path' in caf.columns and mode_dictionary["prot"]):
             # check if its the same as the gex path (data in the same file)
             if pd.isna(caf['adt_path'][nn]):
@@ -124,6 +119,177 @@ def gen_load_anndata_jobs(caf, load_raw=False, mode_dictionary = {}, load_prot_f
             fragments_file = None
             peak_annotation_file = None
             per_barcode_metrics_file = None
+            
+        if 'barcode_mtd_path' in caf.columns:
+            cell_mtd_path = caf['barcode_mtd_path'][nn]
+        else:
+            cell_mtd_path = None
+        # create the output file 
+        outfile = "./tmp/" + caf['sample_id'][nn]
+        if load_raw:
+            outfile = outfile + "_raw.h5mu"
+        else:
+            outfile = outfile + ".h5mu"
+        sample_id = caf['sample_id'][nn]
+        yield gex_path, outfile, \
+              sample_id, \
+              gex_filetype,  \
+              adt_path, adt_filetype, \
+              tcr_path, tcr_filetype,  \
+              bcr_path, bcr_filetype, \
+              atac_path, atac_filetype, \
+              fragments_file, per_barcode_metrics_file, peak_annotation_file, \
+              cell_mtd_path
+        
+
+# --------------------------
+# def gen_load_anndata_jobs(caf, load_raw=False, mode_dictionary = {}, load_prot_from_raw=False):
+#     """
+#     Generate a load_adatas job for each line in submission.txt
+#     """
+#     for nn in range(0, caf.shape[0]):
+#         if ('gex_path' in caf.columns and mode_dictionary["rna"]):
+#             if pd.isna(caf['gex_path'][nn]):
+#                     gex_path= None
+#                     gex_filetype=None
+#             elif caf['gex_filetype'][nn]=="cellranger" and mode_dictionary["rna"]:
+#                 gex_path, gex_filetype = update_cellranger_col(caf['gex_path'][nn], raw=load_raw, method="count")
+#             elif caf['gex_filetype'][nn]=="cellranger_multi" and mode_dictionary["rna"]:
+#                 gex_path, gex_filetype = update_cellranger_col(caf['gex_path'][nn], raw=load_raw, method="multi", 
+#                                                                 sample_id=caf['sample_id'][nn])
+#             else:
+#                 gex_path, gex_filetype = caf[['gex_path', "gex_filetype"]].iloc[nn]
+#                 if load_raw:
+#                     gex_path = re.sub("filtered", "raw", gex_path)
+#             # manage the adt path
+#         else: 
+#             gex_path = None
+#             gex_filetype = None
+#         if ('adt_path' in caf.columns and mode_dictionary["prot"]):
+#             # check if its the same as the gex path (data in the same file)
+#             if pd.isna(caf['adt_path'][nn]):
+#                 adt_path= None
+#                 adt_filetype=None
+#             elif caf['adt_path'][nn] == caf['gex_path'][nn]:
+#                 adt_path, adt_filetype = gex_path, gex_filetype
+#             elif caf['adt_filetype'][nn]=="cellranger":
+#                 # we might want to load the raw here because we want to then subset by good gex barcodes, 
+#                 # this is why the load_prot_from_raw argument exists
+#                 adt_path, adt_filetype = update_cellranger_col(caf['adt_path'][nn], raw=load_prot_from_raw)
+#             elif caf['adt_filetype'][nn]=="cellranger_multi":
+#                 # celranger multi has the same prot and gex barcodes
+#                 adt_path, adt_filetype = update_cellranger_col(caf['adt_path'][nn], raw=load_raw, method="multi", 
+#                                                                 sample_id=caf['sample_id'][nn])
+#             else:
+#                 adt_path, adt_filetype = caf[['adt_path', "adt_filetype"]].iloc[nn]
+#                 if load_prot_from_raw or load_raw:
+#                     adt_path = re.sub("filtered", "raw", adt_path)
+#         else:
+#             adt_path= None
+#             adt_filetype=None
+#         # load tcr_path
+#         if 'tcr_path' in caf.columns and mode_dictionary["tcr"] and pd.notna(caf['tcr_path'][nn]):
+#             tcr_path = caf['tcr_path'][nn]
+#             tcr_filetype = caf['tcr_filetype'][nn]
+#         else:
+#             tcr_path= None
+#             tcr_filetype=None
+#         if 'bcr_path' in caf.columns and mode_dictionary["bcr"] and pd.notna(caf['bcr_path'][nn]):
+#             bcr_path = caf['bcr_path'][nn]
+#             bcr_filetype = caf['bcr_filetype'][nn]
+#         else:
+#             bcr_path= None
+#             bcr_filetype=None
+#         if 'atac_path' in caf.columns and mode_dictionary["atac"]:
+#             if caf.shape[0] > 1:
+#                 sys.exit("You can only submit one atac/multiome file at a time. To aggregate, see cellranger aggr.")
+#             atac_path = caf['atac_path'][nn]
+#             atac_filetype = caf['atac_filetype'][nn]
+#             if 'fragments_file' in caf.columns and pd.notna(caf['fragments_file'][nn]):
+#                 fragments_file = caf['fragments_file'][nn]
+#             else:
+#                 fragments_file = None
+#             if 'per_barcode_metrics_file' in caf.columns and pd.notna(caf['per_barcode_metrics_file'][nn]):
+#                 per_barcode_metrics_file = caf['per_barcode_metrics_file'][nn]
+#             else:
+#                 per_barcode_metrics_file = None
+#             if 'peak_annotation_file' in caf.columns and pd.notna(caf['peak_annotation_file'][nn]):    
+#                 peak_annotation_file = caf['peak_annotation_file'][nn]
+#             else:
+#                 peak_annotation_file = None
+#         else:
+#             atac_path= None
+#             atac_filetype=None
+#             fragments_file = None
+#             peak_annotation_file = None
+#             per_barcode_metrics_file = None
+#         if "spatial_path" in caf.columns and mode_dictionary["spatialT"]:
+#             if pd.isna(caf["spatial_path"][nn]):
+#                 spatial_path= None
+#                 spatial_filetype = None
+#             else:
+#                 spatial_path = caf["spatial_path"][nn]
+#             if caf['spatial_filetype'][nn]=="vizgen":
+#                 spatial_filetype = caf['spatial_filetype'][nn]
+#                 #path, counts and metadata are mandatory
+#                 if pd.notna(caf["spatial_counts"][nn]):
+#                     spatial_counts= caf["spatial_counts"][nn]
+#                 else:
+#                     spatial_counts = None
+#                 if pd.notna(caf["spatial_metadata"][nn]):
+#                     spatial_metadata = caf["spatial_metadata"][nn]
+#                 else: 
+#                     spatial_metadata = None
+#                 #transformation is optional
+#                 if pd.notna(caf["spatial_transformation"][nn]):
+#                     spatial_transformation = caf["spatial_transformation"][nn]
+#                 else:
+#                     spatial_transformation = None
+#             elif caf['spatial_filetype'][nn]=="cellranger":
+#                 # @@@@temporary here 
+#                 # check file formats
+#                 spatial_path, spatial_filetype = update_cellranger_col(caf['spatial_path'][nn], raw=load_prot_from_raw)
+#         else:
+#             spatial_path= None
+#             spatial_filetype = None
+#             spatial_counts = None
+#             spatial_metadata = None
+#             spatial_transformation = None
+            
+#         if 'barcode_mtd_path' in caf.columns:
+#             cell_mtd_path = caf['barcode_mtd_path'][nn]
+#         else:
+#             cell_mtd_path = None
+#         # create the output file 
+#         outfile = "./tmp/" + caf['sample_id'][nn]
+#         if load_raw:
+#             outfile = outfile + "_raw.h5mu"
+#         else:
+#             outfile = outfile + ".h5mu"
+#         sample_id = caf['sample_id'][nn]
+#         yield sample_id, outfile, \
+#               gex_path, \
+#               gex_filetype,  \
+#               adt_path, adt_filetype, \
+#               tcr_path, tcr_filetype,  \
+#               bcr_path, bcr_filetype, \
+#               atac_path, atac_filetype, \
+#               fragments_file, per_barcode_metrics_file, peak_annotation_file, \
+#               cell_mtd_path, \
+#               spatial_path, spatial_filetype, spatial_counts, spatial_metadata, spatial_transformation
+# it was originally yielding in this order
+# yield gex_path, outfile, \
+#              sample_id, \
+#              gex_filetype,  \ 
+#-----------------------------
+# create a separate generator for spatial data
+
+
+def gen_load_spatial_jobs(caf, mode_dictionary = {}, load_raw=False):
+    """
+    Generate a load_spatial job for each line in submission.txt
+    """
+    for nn in range(0, caf.shape[0]):
         if "spatial_path" in caf.columns and mode_dictionary["spatialT"]:
             if pd.isna(caf["spatial_path"][nn]):
                 spatial_path= None
@@ -149,7 +315,7 @@ def gen_load_anndata_jobs(caf, load_raw=False, mode_dictionary = {}, load_prot_f
             elif caf['spatial_filetype'][nn]=="cellranger":
                 # @@@@temporary here 
                 # check file formats
-                spatial_path, spatial_filetype = update_cellranger_col(caf['spatial_path'][nn], raw=load_prot_from_raw)
+                spatial_path, spatial_filetype = update_cellranger_col(caf['spatial_path'][nn])
         else:
             spatial_path= None
             spatial_filetype = None
@@ -158,7 +324,7 @@ def gen_load_anndata_jobs(caf, load_raw=False, mode_dictionary = {}, load_prot_f
             spatial_transformation = None
             
         if 'barcode_mtd_path' in caf.columns:
-            cell_mtd_path = caf['barcode_mtd_path'][nn]
+            cell_mtd_path = caf['barcode_mtd_path'][nn] #not yielding this right now!
         else:
             cell_mtd_path = None
         # create the output file 
@@ -168,20 +334,10 @@ def gen_load_anndata_jobs(caf, load_raw=False, mode_dictionary = {}, load_prot_f
         else:
             outfile = outfile + ".h5mu"
         sample_id = caf['sample_id'][nn]
-        yield sample_id, outfile, \
-              gex_path, \
-              gex_filetype,  \
-              adt_path, adt_filetype, \
-              tcr_path, tcr_filetype,  \
-              bcr_path, bcr_filetype, \
-              atac_path, atac_filetype, \
-              fragments_file, per_barcode_metrics_file, peak_annotation_file, \
-              cell_mtd_path, \
-              spatial_path, spatial_filetype, spatial_counts, spatial_metadata, spatial_transformation
-# it was originally yielding in this order
-# yield gex_path, outfile, \
-#              sample_id, \
-#              gex_filetype,  \
+        yield spatial_path,  outfile, \
+              sample_id, spatial_filetype, spatial_counts, spatial_metadata, spatial_transformation
+
+
 def read_anndata(
     fname: Optional[str] = None,
     use_muon: Optional[bool] = False, 
@@ -269,7 +425,7 @@ def check_filetype(path, filetype):
             "10X_h5": ".h5",
             "hdf": ".h5",
             "cellranger_vdj": r".json|.csv",
-            "vizgen": "vizgen" #suboptimal for now but roll with it
+            "vizgen": r".txt|.csv|.tsv" #suboptimal for now but roll with it
         }
         if filetype not in ftype_checks.keys():
             sys.exit("unknown filetype %s, please specify one of: %s" % filetype, ftype_checks.keys().join(", "))
@@ -353,6 +509,14 @@ def scp_read_10x_mtx(filename: PathLike, library_keep=None, *args, **kwargs) -> 
             :, list(map(lambda x: x == library_keep, adata.var["feature_types"]))
         ].copy()
     return adata
+
+#----------------
+# temp loading functions for spatial data
+# load_Spatial_in
+# load_spatial_from_multiple_files
+# ->>>how to write?
+#----------------
+
 
 
 
