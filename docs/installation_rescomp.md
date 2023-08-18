@@ -70,7 +70,7 @@ pip install --editable .
 The pipelines are now installed as a local python package.
 
 ##### Step 3 Setting PYTONPATH 
-on the BMRC, the path to packages for loaded python SciPy-bundle supercedes the python venv python. This affects the numba package version, with the module numba version being much older than the one panpipes uses ( numba >
+on the BMRC, the path to packages for loaded python SciPy-bundle supercedes the python venv python. This affects the numba package version, with the module numpy version being much older than the one panpipes depends on ("numpy>=1.22.4").
 So we need to make sure that after activating the python venv, the `PYTHONPATH` has the path to the venv python packages as the first path. to do this do the following:
 
 ```
@@ -79,7 +79,7 @@ source ${path_to_virtual_env}/bin/activate
 export PYTHONPATH=${path_to_virtual_env}/lib/python3.9/site-packages:$PYTHONPATH
 ```
 
-### Step 3 installing R requirements
+### Step 4 installing R requirements
 The pipelines use R (mostly for ggplot visualisations). 
 
 If you are using a venv virtual environment,  the pipeline will call a local R installation, so make sure R is installed and install the required packages with the following command
@@ -102,7 +102,7 @@ Details on how to use R on the server:
 https://www.medsci.ox.ac.uk/divisional-services/support-services-1/bmrc/r-and-rstudio-on-the-bmrc-cluster
 
 
-### Step 4 pipeline configuration (for SGE or SLURM)
+### Step 5 pipeline configuration (for SGE or SLURM)
 
 Create a yml file for the cgat core pipeline software to read using:
 
