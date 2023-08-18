@@ -112,22 +112,41 @@ def load_mudatas(spatial_path, outfile,
 # in this workflow we qc each ST independently
 # we need to use optional concatenation
 
-@follows(mkdir("spatQC"))
-@files(load_mudatas)
-def spatialQC(outfile):
-    file_name = os.path.basename(outfile)
-    sample_id = file_name.rstrip(".h5mu")
-    outfile_qc = os.path.join("spatQC",(sample_id + "_qc.h5mu"))
-    cmd = """
-    python %(py_path)s/run_scanpyQC_spatial.py
-    --sample_id %(sample_id)s
-    --output_file %(outfile_qc)s     
 
-    """
-    cmd += " > logs/spatQC_%(sample_id)s.log"
-    # print(cmd)
+@follows(load_mudatas)
+@originate(unfilt_file())
+def spatialQC(unfilt_file):
+    resources_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "resources")
+    sample_prefix = PARAMS["sample_prefix"]
+    cmd = """
+            python %(py_path)s/run_scanpyQC_spatial.py
+              --sampleprefix %(sample_prefix)s
+              --input_anndata %(unfilt_file)s
+              --outfile %(unfilt_file)s
+              --figdir ./figures
+              """
+    if PARAMS['ccgenes'] is not None:
+        if PARAMS['ccgenes'] == "default":
+            ccgenesfile = resources_path + "/cell_cycle_genes.tsv"
+        else:
+            ccgenesfile = PARAMS['ccgenes']
+        cmd += " --ccgenes %(ccgenesfile)s"
+    if PARAMS['custom_genes_file'] is not None:
+        if PARAMS['custom_genes_file'] == "default":
+            customgenesfile = resources_path + "/qc_genelist_1.0.csv"
+        else:
+            customgenesfile = PARAMS['custom_genes_file']
+        cmd += " --customgenesfile %(customgenesfile)s"
+    if PARAMS['score_genes'] is not None:
+        cmd += " --score_genes %(score_genes)s"
+    if PARAMS['calc_proportions'] is not None:
+        cmd += " --calc_proportions %(calc_proportions)s"
+
+
+    cmd += " > logs/spatialQC_%(sample_id)s.log"
     job_kwargs["job_threads"] = PARAMS['resources_threads_medium']
     P.run(cmd, **job_kwargs)
+
 
 
     
