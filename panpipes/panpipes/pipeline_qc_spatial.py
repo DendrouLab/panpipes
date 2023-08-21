@@ -118,6 +118,7 @@ def load_mudatas(spatial_path, outfile,
 
 
 @follows(load_mudatas)
+@follows(mkdir("qc.data"))
 @transform(load_mudatas,
            regex("./tmp/(.*)_raw.h5(.*)"), 
            r"./logs/spatialQC_\1.log")
@@ -129,7 +130,7 @@ def spatialQC(infile,log_file):
             python %(py_path)s/run_scanpyQC_spatial.py
               --sampleprefix %(sample_prefix)s
               --input_anndata %(infile)s
-              --outfile %(outfile)s
+              --outfile ./qqc.data/%(outfile)s
               --figdir ./figures
               """
     if PARAMS['ccgenes'] is not None:
