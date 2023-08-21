@@ -334,7 +334,7 @@ def gen_load_spatial_jobs(caf, mode_dictionary = {}, load_raw=True):
         # create the output file 
         outfile = "./tmp/" + caf['sample_id'][nn]
         if load_raw:
-            outfile = outfile + "_unfilt.h5mu" #differently from what done in other mods (RNA,PROT), we call the raw== unfiltered
+            outfile = outfile + "_unfilt.h5mu" #differently from what done in other mods (RNA,PROT), we call the raw== unfiltered, we'll think about background and raw.h5 later
         else:
             outfile = outfile + ".h5mu"
         sample_id = caf['sample_id'][nn]

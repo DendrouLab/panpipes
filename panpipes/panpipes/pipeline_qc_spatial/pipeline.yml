@@ -44,16 +44,6 @@ sample_prefix: "test"
 # Example at resources/sample_file_qc_spatial.txt
 submission_file: 
 
-# which metadata cols from the submission file do you want to include in the anndata object
-# as a comma-separated string e.g. batch,disease,sex
-metadatacols: 
-#@@@@@@@@@@@@@@@
-#NOTE check this if useful
-#@@@@@@@@@@@@@@@
-# which concat join to you want to perform on your mudata objects, recommended inner
-# see https://anndata.readthedocs.io/en/latest/concatenation.html#inner-and-outer-joins for details
-concat_join_type: inner
-
 
 #---------------------------------------
 # Modalities in the project
@@ -63,7 +53,7 @@ concat_join_type: inner
 # Leave empty (None) or False to signal this modality is not in the experiment.
 
 modalities:
-  spatialT: True
+  spatial: True
 
 
 
