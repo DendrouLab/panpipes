@@ -46,12 +46,14 @@ else:
 def gen_filter_jobs():
     input_paths=glob.glob(os.path.join(input_dir,"*unfilt.h5mu"))
     for infile_path in input_paths:
-        outfile = infile_path.replace("unfilt","filtered").replace("qc.data","filtered.data") 
+        file_name = os.path.basename(infile_path)
+        outfile = file_name.replace("unfilt","filtered")
         yield infile_path, outfile
     
 
 @mkdir("logs")
 @mkdir("figures")
+@mkdir("tables")
 @mkdir("filtered.data")
 @files(gen_filter_jobs)
 def filter_mudata(infile_path,outfile):
@@ -63,7 +65,7 @@ def filter_mudata(infile_path,outfile):
         cmd = """
         python %(py_path)s/run_filter_spatial.py
         --input_mudata %(infile_path)s
-        --output_mudata %(outfile)s
+        --output_mudata filtered.data/%(outfile)s
         --filter_dict "%(filter_dict)s"
         """
         if PARAMS['filtering_keep_barcodes'] is not None:

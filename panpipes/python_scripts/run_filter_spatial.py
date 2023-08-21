@@ -4,7 +4,7 @@ import pandas as pd
 import re
 import muon as mu
 from anndata import AnnData
-
+import os
 # import scpipelines.funcs as scp
 from panpipes.funcs.processing import intersect_obs_by_mod, remove_unused_categories
 from panpipes.funcs.io import write_obs, read_yaml, dictionary_stripper
@@ -159,8 +159,8 @@ remove_unused_categories(mdata.obs)
 assert test_matching_df_ignore_cat(mdata.obs, orig_obs)  
 
 # write out obs
-output_prefix = re.sub(".h5mu", "", args.output_mudata)
-write_obs(mdata, output_prefix=output_prefix, output_suffix="_filtered_cell_metadata.tsv")
+output_prefix = re.sub(".h5mu", "", os.path.basename(args.output_mudata))
+write_obs(mdata, output_prefix=os.path.join("tables/",output_prefix), output_suffix="_filtered_cell_metadata.tsv")
 
 # write out the per sample_id cell numbers 
 cell_counts_dict={}
@@ -171,7 +171,7 @@ cell_counts = pd.concat(cell_counts_dict).reset_index().rename(
     columns={"level_0": "modality", "level_1": "sample_id"})
 
 L.info("cell_counts\n%s" %cell_counts)
-cell_counts.to_csv(output_prefix + "_cell_counts.csv", index=None)
+cell_counts.to_csv("tables/" + output_prefix + "_cell_counts.csv", index=None)
 
 
 mdata.update()
