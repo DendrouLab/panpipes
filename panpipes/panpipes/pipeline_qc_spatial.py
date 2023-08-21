@@ -118,15 +118,18 @@ def load_mudatas(spatial_path, outfile,
 
 
 @follows(load_mudatas)
-@originate(unfilt_file())
-def spatialQC(unfilt_file):
+@transform(load_mudatas,
+           regex("./tmp/(.*)_raw.h5(.*)"), 
+           r"./logs/spatialQC_\1.log")
+#@originate(unfilt_file())
+def spatialQC(infile,log_file):
     resources_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "resources")
-    sample_prefix = PARAMS["sample_prefix"]
+    outfile = infile.replace("_raw","_unfilt")
     cmd = """
             python %(py_path)s/run_scanpyQC_spatial.py
               --sampleprefix %(sample_prefix)s
-              --input_anndata %(unfilt_file)s
-              --outfile %(unfilt_file)s
+              --input_anndata %(infile)s
+              --outfile %(outfile)s
               --figdir ./figures
               """
     if PARAMS['ccgenes'] is not None:
@@ -145,9 +148,8 @@ def spatialQC(unfilt_file):
         cmd += " --score_genes %(score_genes)s"
     if PARAMS['calc_proportions'] is not None:
         cmd += " --calc_proportions %(calc_proportions)s"
-
-
-    cmd += " > logs/spatialQC_%(sample_id)s.log"
+    cmd += " > %(log_file)s"
+    #cmd += " > logs/spatialQC_%(sample_id)s.log"
     job_kwargs["job_threads"] = PARAMS['resources_threads_medium']
     P.run(cmd, **job_kwargs)
 

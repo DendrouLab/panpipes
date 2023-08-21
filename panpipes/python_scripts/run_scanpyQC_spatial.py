@@ -28,7 +28,7 @@ parser.add_argument("--sampleprefix",
                     default="",
                     help="prefix to prepend when saving the metadata file")
 parser.add_argument("--input_anndata",
-                    default="adata_unfilt.h5ad",
+                    default="adata_raw.h5ad",
                     help="")
 parser.add_argument("--outfile",
                     default="adata_unfilt.h5ad",
@@ -72,7 +72,10 @@ L.info("reading in data")
 mdata = mu.read(args.input_anndata)
 spatial = mdata['spatial']
 
-
+L.info("spatial data is")
+print(spatial)
+L.info("sample id")
+print(spatial.obs["sample_id"])
 
 qc_vars = []
 
@@ -137,7 +140,7 @@ if args.ccgenes is not None:
 
 
 L.info("saving obs in a metadata tsv file")
-write_obs(mdata, output_prefix=args.sampleprefix, output_suffix="_cell_metadata.tsv")
+write_obs(mdata, output_prefix=args.sampleprefix, output_suffix="_cell_metadata.tsv") #check this function writes one metadata for each sample input
 L.info("saving mudata")
 mdata.write(args.outfile)
 
