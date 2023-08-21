@@ -103,7 +103,7 @@ else:
 
 # NORMALIZE
 
-if args.binarize:
+if args.binarize is True:
     L.info("binarizing peak count matrix")
     ac.pp.binarize(atac)    
 

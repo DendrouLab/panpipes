@@ -30,9 +30,9 @@ preprocessed_file = PARAMS['preprocessed_file']
 
 @originate("logs/setup_dirs.sentinel")
 def set_up_dirs(log_file):
-    os.mkdir("logs")
-    os.mkdir("tmp")
-    os.mkdir("batch_correction")
+    os.makedirs("logs", exist_ok=True)
+    os.makedirs("tmp", exist_ok=True)
+    os.makedirs("batch_correction", exist_ok=True)
     if PARAMS['rna']['run']:
         os.makedirs("figures/rna")
     if PARAMS['prot']['run']:
@@ -441,6 +441,11 @@ def run_no_batch_umap_atac(outfile):
         cmd += " --neighbors_n_pcs %s"  % neighbor_params['npcs']
     if neighbor_params['k'] is not None:
         cmd += " --neighbors_k %s" % neighbor_params['k']
+    atac_dimred = PARAMS['atac']['dimred']
+    if PARAMS['atac']['dimred'] is not None:
+        cmd += " --dimred %s" % atac_dimred
+    else:
+        cmd += " --dimred PCA"
     cmd += " > logs/atac_no_correct.log"
     
     if PARAMS['queues_long'] is not None:
@@ -478,6 +483,11 @@ def run_harmony_atac( outfile):
         cmd += " --neighbors_n_pcs %s"  % neighbor_params['npcs']
     if neighbor_params['k'] is not None:
         cmd += " --neighbors_k %s" % neighbor_params['k']
+    atac_dimred = PARAMS['atac']['dimred']
+    if PARAMS['atac']['dimred'] is not None:
+        cmd += " --dimred %s" % atac_dimred
+    else:
+        cmd += " --dimred PCA"
     cmd += " > logs/atac_harmony.log " 
      #job arguments
     
@@ -503,6 +513,8 @@ def run_bbknn_atac(outfile):
         cmd += " --neighbors_within_batch %i" % PARAMS['atac']['bbknn']['neighbors_within_batch']
     if PARAMS['atac']['neighbors']['npcs'] is not None:
         cmd += " --neighbors_n_pcs %s" % PARAMS['atac']['neighbors']['npcs']
+    #Forcing bbknn to run on PCA in case of atac
+    cmd += " --dimred PCA"
     cmd += " > logs/atac_bbknn.log "
     if PARAMS['queues_long'] is not None:
         job_kwargs["job_queue"] = PARAMS['queues_long']
@@ -708,7 +720,10 @@ def run_multimodal_integration():
          regex(r"(.*)/(.*)"), 
           r'batch_correction/combined_umaps.tsv')
 def collate_integration_outputs(infiles,outfile):
-    infiles_string = ','.join(infiles)
+    #infiles_string = ','.join(infiles)
+    contents = glob.glob("batch_correction/*.csv")
+    union = list(set(infiles) | set(contents))
+    infiles_string = ','.join(union)
     batch_dict =  "batch_correction/batch_dict.yml"
     cell_mtd_file = sprefix + "_cell_mtd.csv"
     cmd = """python %(py_path)s/run_collate_mtd_files.py 

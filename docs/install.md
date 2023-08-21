@@ -50,7 +50,7 @@ If you have not already set up SSH keys for github first follow these [instructi
 ```
 git clone https://github.com/DendrouLab/panpipes
 cd panpipes
-pip install .
+pip install -e .
 ```
 
 
@@ -77,7 +77,7 @@ If you are using a venv virtual environment,  the pipeline will call a local R i
 
 If using conda, install the following R packages along with their binaries using conda
 ```
-conda install -c conda-forge r-tidyverse r-optparse r-ggforce r-ggraph r-xtable r-hdf5r
+conda install -c conda-forge r-tidyverse r-optparse r-ggforce r-ggraph r-xtable r-hdf5r r-devtools
 ```
 
 We provide an Rscript with the additional few R packages needed, please remember to customize the CRAN mirror selection in the first line of the script (or remove the line if you have already specified a CRAN mirror in your `.Rprofile`)
