@@ -56,6 +56,8 @@ def gen_filter_jobs():
 @files(gen_filter_jobs)
 def filter_mudata(infile_path,outfile):
     print('processing file = %s' % str(infile_path))
+    log_file = os.path.basename(outfile)
+    log_file= "filtering."+log_file.replace("filtered.h5mu","") + ".log"
     if PARAMS['filtering_run']:
         filter_dict = dictionary_stripper(PARAMS['filtering'])
         cmd = """
@@ -66,7 +68,7 @@ def filter_mudata(infile_path,outfile):
         """
         if PARAMS['filtering_keep_barcodes'] is not None:
             cmd += " --keep_barcodes %(filtering_keep_barcodes)s"
-        cmd += " > logs/filtering.log "
+        cmd += " > logs/%(log_file)s "
         job_kwargs["job_threads"] = PARAMS['resources_threads_low']
         P.run(cmd, **job_kwargs)
     else:
