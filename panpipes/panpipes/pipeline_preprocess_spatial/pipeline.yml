@@ -21,8 +21,15 @@ condaenv:
 # ------------------
 ## 1. Specify input
 # ------------------
+# this pipeline expects to find input mudatas (one per spatial slide) in a directory, for example:
+# tree ../qc.data
+# ../qc.data
+# ├── Human_LN_alt_unfilt.h5mu
+# ├── Human_LN_unfilt.h5mu
+# └── Human_heart_unfilt.h5mu
 
-sample_prefix: sample1 
+input_dir: ../qc.data/
+sample_prefix: 
 unfiltered_obj: /path/to/mudata/test.h5mu
 # if running this on prefiltered data then
 #1. set unfiltered obj (above) to blank
@@ -31,7 +38,7 @@ unfiltered_obj: /path/to/mudata/test.h5mu
 #4. set filtering run: to False below.
 
 modalities:
-  spatialT: True
+  spatial: True
 
 
 # --------------
@@ -114,7 +121,7 @@ plotqc:
   # not mandatory, can be left empty
   grouping_var:
   # use these continuous variables to plot gradients and distributions
-  spatialT_metrics: total_counts,n_genes_by_counts
+  spatial_metrics: total_counts,n_genes_by_counts
 
 
 # -----------------------------------------
@@ -122,7 +129,7 @@ plotqc:
 # Normalization + HVG selection + PCA
 # -----------------------------------------
 
-spatialT:
+spatial:
   # how to perform normalization and HVG selection:
   norm_hvg_flavour: seurat # ['seurat', 'squidpy']
   # 'seurat': HVG selection and normalization by analytic Pearson residuals
