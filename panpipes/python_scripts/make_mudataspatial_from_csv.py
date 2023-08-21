@@ -72,7 +72,7 @@ else:
 
 permf = [key for key, value in mode_dictionary.items() if value == True]
 all_files = {
-            "spatialT":[args.spatial_infile, #path, mandatory for squidpy
+            "spatial":[args.spatial_infile, #path, mandatory for squidpy
                         args.spatial_filetype, #needed for the load_adata_in function to call one of vizgen,visium
                         args.spatial_counts, #name of the counts file, mandatory for squidpy
                         args.spatial_metadata, #name of the metadata file, mandatory for squidpy
@@ -130,7 +130,7 @@ elif args.spatial_filetype =="visium":
 L.info("adata is now: %s" % adata)
 L.info("creating mudata")
 
-mdata = MuData({"spatialT": adata})
+mdata = MuData({"spatial": adata})
 
 
 #---------------

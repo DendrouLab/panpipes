@@ -223,7 +223,7 @@ def gen_load_anndata_jobs(caf, load_raw=False, mode_dictionary = {}, load_prot_f
 #             fragments_file = None
 #             peak_annotation_file = None
 #             per_barcode_metrics_file = None
-#         if "spatial_path" in caf.columns and mode_dictionary["spatialT"]:
+#         if "spatial_path" in caf.columns and mode_dictionary["spatial"]:
 #             if pd.isna(caf["spatial_path"][nn]):
 #                 spatial_path= None
 #                 spatial_filetype = None
@@ -285,18 +285,20 @@ def gen_load_anndata_jobs(caf, load_raw=False, mode_dictionary = {}, load_prot_f
 # create a separate generator for spatial data
 
 
-def gen_load_spatial_jobs(caf, mode_dictionary = {}, load_raw=False):
+def gen_load_spatial_jobs(caf, mode_dictionary = {}, load_raw=True):
     """
     Generate a load_spatial job for each line in submission.txt
     """
     for nn in range(0, caf.shape[0]):
-        if "spatial_path" in caf.columns and mode_dictionary["spatialT"]:
+        if "spatial_path" in caf.columns and mode_dictionary["spatial"]:
             if pd.isna(caf["spatial_path"][nn]):
                 spatial_path= None
                 spatial_filetype = None
             else:
                 spatial_path = caf["spatial_path"][nn]
             if caf['spatial_filetype'][nn]=="vizgen":
+                spatial_metadata= None
+                spatial_transformation = None
                 spatial_filetype = caf['spatial_filetype'][nn]
                 #path, counts and metadata are mandatory
                 if pd.notna(caf["spatial_counts"][nn]):
@@ -312,10 +314,12 @@ def gen_load_spatial_jobs(caf, mode_dictionary = {}, load_raw=False):
                     spatial_transformation = caf["spatial_transformation"][nn]
                 else:
                     spatial_transformation = None
-            elif caf['spatial_filetype'][nn]=="cellranger":
-                # @@@@temporary here 
-                # check file formats
-                spatial_path, spatial_filetype = update_cellranger_col(caf['spatial_path'][nn])
+            elif caf['spatial_filetype'][nn]=="spaceranger":
+                spatial_filetype = caf['spatial_filetype'][nn]
+                if pd.notna(caf["spatial_counts"][nn]):
+                    spatial_counts= caf["spatial_counts"][nn]
+                else:
+                    spatial_counts = None  
         else:
             spatial_path= None
             spatial_filetype = None
@@ -330,7 +334,7 @@ def gen_load_spatial_jobs(caf, mode_dictionary = {}, load_raw=False):
         # create the output file 
         outfile = "./tmp/" + caf['sample_id'][nn]
         if load_raw:
-            outfile = outfile + "_raw.h5mu"
+            outfile = outfile + "_unfilt.h5mu" #differently from what done in other mods (RNA,PROT), we call the raw== unfiltered
         else:
             outfile = outfile + ".h5mu"
         sample_id = caf['sample_id'][nn]
@@ -633,7 +637,7 @@ def load_mdata_from_multiple_files(all_files_dict):
     """
     # convert names to match mudata conventions
     # mudata_conventional_names={"GEX":"rna", "ADT":"prot", "TCR":"tcr", 
-    # "BCR":"bcr", "ATAC": "atac", "SPATIALT":"spatialT"}
+    # "BCR":"bcr", "ATAC": "atac", "spatial":"spatial"}
     # all_files_dict = {mudata_conventional_names[nm]: x  for (nm, x) in all_files_dict.items()}
     logging.debug(all_files_dict.keys())
     # load in separate anndata for each expected modality
@@ -656,7 +660,7 @@ def load_mdata_from_multiple_files(all_files_dict):
             extra_args["gex_only"] = False
             extra_args['library'] = "Peaks"
             extra_args['extended'] = False
-        if nm == "spatialT":
+        if nm == "spatial":
             extra_args["gex_only"] = True # check this for techs other than merfish and visium H&E
             #extra_args["counts_file"] =
             extra_args['extended'] = False

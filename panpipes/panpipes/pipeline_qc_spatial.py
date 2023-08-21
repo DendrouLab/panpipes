@@ -38,7 +38,7 @@ print(PARAMS)
 ## Create a dictionary of modalities
 #------------------------------------------------------------------------------------------------
 mode_dictionary = PARAMS["modalities"]
-#{'spatialT': True}
+#{'spatial': True}
 print(mode_dictionary)
 #------------------------------------------------------------------------------------------------
 # setup dirs
@@ -79,16 +79,18 @@ def load_mudatas(spatial_path, outfile,
                  spatial_metadata, 
                  spatial_transformation):
     
-    path_dict = {'spatialT':spatial_path}
+    path_dict = {'spatial':spatial_path}
                  
     print(path_dict)
     print('sample_id = %s' % str(sample_id))
     print('outfile = %s' % str(outfile))
     print('spatial_filetype = %s' % str(spatial_filetype))
     print('spatial_counts = %s' % str(spatial_counts))
-    print('spatial_metadata = %s' % str(spatial_metadata))
-    print('spatial_transformation = %s' % str(spatial_transformation))
-
+    if spatial_filetype == "vizgen":
+        print('spatial_metadata = %s' % str(spatial_metadata))
+        print('spatial_transformation = %s' % str(spatial_transformation))
+    else:
+        print("spaceranger")
     modality_dict = {k:True if path_dict[k] is not None else False for k,v in PARAMS['modalities'].items() }
     print(modality_dict)
     
@@ -100,9 +102,11 @@ def load_mudatas(spatial_path, outfile,
         --spatial_filetype %(spatial_filetype)s
         --spatial_infile %(spatial_path)s
         --spatial_counts %(spatial_counts)s
+    """
+    if spatial_filetype == "vizgen":
+        cmd += """
         --spatial_metadata %(spatial_metadata)s 
         --spatial_transformation %(spatial_transformation)s
-
         """
     cmd += " > logs/make_mudatas_%(sample_id)s.log"
     print(cmd)
