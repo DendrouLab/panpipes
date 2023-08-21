@@ -1,7 +1,7 @@
 
-## Rescomp specific advice
+## BMRC cluster specific advice
 Created: 2020-09-21 CRG
-Last edited: 2023-03-29 (updated for slurm)
+Last edited: 2023-08-18 (updated for slurm)
 
 
 ### modules to use
@@ -20,7 +20,7 @@ You can choose different versions of Python and R but the GCCcore that they use 
 
 
 
-##### Step 1 - create virutal environment:
+### Step 1 - create virutal environment:
 
 It is advisable to run everything in a virtual environment either pip or conda.
 
@@ -50,7 +50,7 @@ source python3-venv-panpipes/bin/activate
 ```
 
 
-##### Step 2 Download and install this repo
+### Step 2 Download and install this repo
 If you have not already set up SSH keys for github first follow these [instructions](https://github.com/DendrouLab/panpipes/docs/set_up_ssh_keys_for_github.md): 
 
 
@@ -69,7 +69,18 @@ pip install --editable .
 
 The pipelines are now installed as a local python package.
 
-### Step 3 installing R requirements
+### Step 3 Modifying PYTHONPATH 
+on the BMRC, the path to packages for loaded python SciPy-bundle supercedes the python venv python. This affects the numpy package version being used when the venv is activated, with the module numpy version being much older than the one panpipes depends on ("numpy>=1.22.4"). Not doing this might lead to numpy relatad errors while running the various panpipes workflows downstream.
+So we need to make sure that after activating the python venv, the `PYTHONPATH` has the path to the venv python packages as the first path. to do this do the following:
+
+```
+path_to_virtual_env=/well/${project}/users/${user}/python3-venv-panpipes
+source ${path_to_virtual_env}/bin/activate
+export PYTHONPATH=${path_to_virtual_env}/lib/python3.9/site-packages:$PYTHONPATH
+```
+One can check if we have the correct numpy version by doing `pip list` after setting the PYTHONPATH this way to be sure.
+
+### Step 4 installing R requirements
 The pipelines use R (mostly for ggplot visualisations). 
 
 If you are using a venv virtual environment,  the pipeline will call a local R installation, so make sure R is installed and install the required packages with the following command
@@ -92,7 +103,7 @@ Details on how to use R on the server:
 https://www.medsci.ox.ac.uk/divisional-services/support-services-1/bmrc/r-and-rstudio-on-the-bmrc-cluster
 
 
-### Step 4 pipeline configuration (for SGE or SLURM)
+### Step 5 pipeline configuration (for SGE or SLURM)
 
 Create a yml file for the cgat core pipeline software to read using:
 
