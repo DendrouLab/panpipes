@@ -90,7 +90,7 @@ def load_mudatas(spatial_path, outfile,
         print('spatial_metadata = %s' % str(spatial_metadata))
         print('spatial_transformation = %s' % str(spatial_transformation))
     else:
-        print("spaceranger")
+        print("visium")
     modality_dict = {k:True if path_dict[k] is not None else False for k,v in PARAMS['modalities'].items() }
     print(modality_dict)
     

@@ -312,7 +312,7 @@ def gen_load_spatial_jobs(caf, mode_dictionary = {}, load_raw=True):
                     spatial_transformation = caf["spatial_transformation"][nn]
                 else:
                     spatial_transformation = None
-            elif caf['spatial_filetype'][nn]=="spaceranger":
+            elif caf['spatial_filetype'][nn]=="visium":
                 spatial_metadata= None
                 spatial_transformation = None
                 spatial_filetype = caf['spatial_filetype'][nn]
