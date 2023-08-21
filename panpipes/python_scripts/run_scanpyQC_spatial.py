@@ -136,11 +136,20 @@ if args.ccgenes is not None:
     L.info("calculating CC scores")
     sc.tl.score_genes_cell_cycle(spatial, s_genes=sgenes, g2m_genes=g2mgenes)
 
+# Aug 2023: we now need to update the mdata object to pick the calc proportion outputs made on 
+# spatial = mdata['spatial']
+print(spatial.obs.columns)
+print(mdata.obs.columns)
 
+mdata.update()
 
+single_id = os.path.basename(str(args.input_anndata))
+single_id.replace("_raw.h5mu","")
+L.info("updated metadata")
+print(mdata.obs.columns)
 
 L.info("saving obs in a metadata tsv file")
-write_obs(mdata, output_prefix=args.sampleprefix, output_suffix="_cell_metadata.tsv") #check this function writes one metadata for each sample input
+write_obs(mdata, output_prefix=(args.sampleprefix +"."+ single_id), output_suffix="_cell_metadata.tsv") #check this function writes one metadata for each sample input
 L.info("saving mudata")
 mdata.write(args.outfile)
 
