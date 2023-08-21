@@ -1,7 +1,7 @@
 
 [project]
 name = "panpipes"
-version = "0.2.0"
+version = "0.2.0a"
 authors = [
     {name = "Charlotte Rich-Griffin"},
     {name = "Fabiola Curion"}
@@ -31,9 +31,9 @@ requires-python = ">= 3.8"
 dependencies = [
     "anndata>=0.8.0",
     "apsw", 
-    "bbknn", 
+    "bbknn>=1.6.0", 
     "cgatcore", 
-    "drmaa", 
+    "drmaa==0.7.9", 
     "gevent",
     "harmonypy", 
     "leidenalg", 
@@ -55,7 +55,7 @@ dependencies = [
     "scanpy>=1.9.1", 
     "seaborn",
     "scikit-misc", 
-    "scirpy",
+    "scirpy==0.12.2",
     "scrublet", 
     "scvi-tools>=0.16.3",
     "sqlalchemy"
