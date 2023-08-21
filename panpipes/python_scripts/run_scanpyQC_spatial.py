@@ -118,7 +118,7 @@ if args.customgenesfile is not None:
             L.info("no genes to calc scores for")    
         
     else:
-        sys.exit("the path of the custom genes file does not exit")
+        sys.exit("the path of the custom genes file does not exist")
 
         
         
