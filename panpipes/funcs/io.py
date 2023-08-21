@@ -297,8 +297,6 @@ def gen_load_spatial_jobs(caf, mode_dictionary = {}, load_raw=True):
             else:
                 spatial_path = caf["spatial_path"][nn]
             if caf['spatial_filetype'][nn]=="vizgen":
-                spatial_metadata= None
-                spatial_transformation = None
                 spatial_filetype = caf['spatial_filetype'][nn]
                 #path, counts and metadata are mandatory
                 if pd.notna(caf["spatial_counts"][nn]):
@@ -315,6 +313,8 @@ def gen_load_spatial_jobs(caf, mode_dictionary = {}, load_raw=True):
                 else:
                     spatial_transformation = None
             elif caf['spatial_filetype'][nn]=="spaceranger":
+                spatial_metadata= None
+                spatial_transformation = None
                 spatial_filetype = caf['spatial_filetype'][nn]
                 if pd.notna(caf["spatial_counts"][nn]):
                     spatial_counts= caf["spatial_counts"][nn]
