@@ -157,20 +157,7 @@ def spatial_preprocess(filt_file,log_file):
     job_kwargs["job_threads"] = PARAMS['resources_threads_high']
     P.run(cmd, **job_kwargs)
 
-
-
-
 @follows(filter_mudata, postfilterplot_spatial, spatial_preprocess)
-def full():
-    """
-    All cgat pipelines should end with a full() function which updates,
-    if needed, all branches of the pipeline.
-    The @follows statement should ensure that all functions are covered,
-    either directly or as prerequisites.
-    """
-    pass
-
-
 @originate("cleanup_done.txt")
 def cleanup(file):
     # remove any ctmp fails
@@ -183,6 +170,17 @@ def cleanup(file):
     #P.run("rm -r tmp", without_cluster=True)
     # delete empty dirs
     P.run("find ./ -empty -type d -delete", without_cluster=True)
+
+
+@follows(cleanup)
+def full():
+    """
+    All cgat pipelines should end with a full() function which updates,
+    if needed, all branches of the pipeline.
+    The @follows statement should ensure that all functions are covered,
+    either directly or as prerequisites.
+    """
+    pass
 
 def main(argv=None):
     if argv is None:
