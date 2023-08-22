@@ -61,7 +61,7 @@ spatial = mdata.mod['spatial']
 
 
 # convert string to list of strings
-qc_metrics = list(args.spatialT_qc_metrics.split(","))
+qc_metrics = list(args.spatial_qc_metrics.split(","))
 group_var = list(args.grouping_var.split(","))
 
 
