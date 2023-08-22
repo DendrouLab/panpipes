@@ -191,7 +191,7 @@ if 'rna' in mdata.mod.keys():
     plt.savefig(os.path.join(args.figpath,"scatter_bg_fg_rna_nGene_rna_nUMI.png"),transparent=False)
     if 'prot' in mdata.mod.keys():
         if n_samples_rna != n_samples_prot:
-            L.info("n_samples are not equal in rna and prot")
+            L.info("n_samples are not equal in rna and prot,taking intrsect for mdata and mdata_bg")
             mu.pp.intersect_obs(mdata_bg)
             mu.pp.intersect_obs(mdata)
             pnp.pl.scatter_fg_vs_bg(mdata, mdata_bg,x="prot:log1p_total_counts", y="rna:log1p_n_genes_by_counts", facet_row=args.channel_col)
@@ -201,7 +201,7 @@ if 'rna' in mdata.mod.keys():
             plt.subplots_adjust(right=0.7)
             plt.savefig(os.path.join(args.figpath,"scatter_bg_fg_rna_nUMI_prot_nUMI.png"),transparent=False)
         else:
-            L.info("n_samples are equal in rna and prot, taking intrsect for mdata and mdata_bg")
+            L.info("n_samples are equal in rna and prot")
             pnp.pl.scatter_fg_vs_bg(mdata, mdata_bg,x="prot:log1p_total_counts", y="rna:log1p_n_genes_by_counts", facet_row=args.channel_col)
             plt.subplots_adjust(right=0.7)
             plt.savefig(os.path.join(args.figpath, "scatter_bg_fg_prot_nUMI_rna_nGene.png"),transparent=False)
