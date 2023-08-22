@@ -62,6 +62,8 @@ spatial = mdata.mod['spatial']
 input_data = os.path.basename(args.input_mudata)
 pattern = r"_filtered.h5(.*)"
 match = re.search(pattern, input_data)
+if match is None:
+    match = re.search(r"_unfilt.h5(.*)", input_data)
 sprefix = input_data[:match.start()]
 
 # convert string to list of strings
@@ -103,7 +105,7 @@ for metric in qc_metrics:
                     sc.pl.violin(spatial, keys = metric,groupby = group, xlabel = group + ", "+ metric+ " in .obs",
                             save = "_obs_" + metric+ "_" + group+ "."+sprefix +".png", show = False)
             #plot spatial 
-            sc.pl.spatial(spatial, color = metric, save = "_spatial_" + metric + "."+sprefix +".png", show = False)
+            sc.pl.embedding(spatial,basis="spatial", color = metric, save = "_spatial_" + metric + "."+sprefix +".png", show = False)
 
     #check if in adata.var: 
     if metric in spatial.var.columns:

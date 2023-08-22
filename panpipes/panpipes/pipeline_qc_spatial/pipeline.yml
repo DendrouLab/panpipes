@@ -100,6 +100,7 @@ score_genes: MarkersNeutro #comma-separated without spaces, which groups in the 
 # sample_id is the name of each spatial slide and it will always be used to plot. 
 # use additional covariates to plot the QC metrics over multiple samples 
 # (but we're not sure about the interpretation of these!)
-plotqc_grouping_var: sample_id
-plotqc_metrics: pct_counts_mt,pct_counts_rp,pct_counts_hb,pct_counts_ig
+plotqc:
+  grouping_var: sample_id
+  spatial_metrics: total_counts,n_genes_by_counts
 

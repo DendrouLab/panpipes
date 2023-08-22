@@ -9,6 +9,7 @@ import warnings
 from muon._atac.tools import add_peak_annotation, locate_fragments
 import squidpy as sq
 from mudata import MuData
+import os
 """
 this script copies the make_adata_from_csv.py that creates
 ONE MUDATA PER SAMPLE, with in each ONE LAYER per modality
@@ -121,6 +122,7 @@ if args.spatial_filetype=="vizgen":
                         meta_file = args.spatial_metadata, #name of the metadata file, mandatory for squidpy
                         transformation_file=args.spatial_transformation,
                         library_id = str(args.sample_id)) #this also has kwargs for read_10x_h5 but keep simple
+    adata.uns["spatial"][str(args.sample_id)]["scalefactors"]["transformation_matrix"].columns = adata.uns["spatial"][str(args.sample_id)]["scalefactors"]["transformation_matrix"].columns.astype(str)
 elif args.spatial_filetype =="visium":
     adata = sq.read.visium(path = args.spatial_infile, #path, mandatory for squidpy
                         counts_file=args.spatial_counts, #name of the counts file, mandatory for squidpy

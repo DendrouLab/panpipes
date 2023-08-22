@@ -125,7 +125,9 @@ if args.customgenesfile is not None:
         
 # Calculate QC metrics 
 L.info("calculating QC metrics")
-sc.pp.calculate_qc_metrics(spatial, qc_vars=qc_vars, inplace=True)
+percent_top = [50, 100, 200, 500] #default
+percent_top = [x for x in percent_top if x <= spatial.n_vars]
+sc.pp.calculate_qc_metrics(spatial, qc_vars=qc_vars, percent_top=percent_top, inplace=True)
 
 
 # Calculate cc scores 

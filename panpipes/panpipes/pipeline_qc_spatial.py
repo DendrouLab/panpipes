@@ -117,6 +117,7 @@ def load_mudatas(spatial_path, outfile,
 # we need to use optional concatenation
 
 
+
 @follows(load_mudatas)
 @follows(mkdir("qc.data"))
 @transform(load_mudatas,
@@ -126,11 +127,12 @@ def load_mudatas(spatial_path, outfile,
 def spatialQC(infile,log_file):
     resources_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "resources")
     outfile = infile.replace("_raw","_unfilt")
+    outfile = outfile.replace("tmp", "qc.data")
     cmd = """
             python %(py_path)s/run_scanpyQC_spatial.py
               --sampleprefix %(sample_prefix)s
               --input_anndata %(infile)s
-              --outfile ./qqc.data/%(outfile)s
+              --outfile %(outfile)s
               --figdir ./figures
               """
     if PARAMS['ccgenes'] is not None:
@@ -155,11 +157,39 @@ def spatialQC(infile,log_file):
     P.run(cmd, **job_kwargs)
 
 
+def run_plotqc_query(pqc_dict):
+    # avoid deleting from PARAMS
+    pqc = pqc_dict.copy()
+    del pqc['grouping_var']
+    return any([x != None for x in pqc.values()])
+
+
+@follows(spatialQC)
+@active_if(run_plotqc_query(PARAMS['plotqc']))
+@transform(load_mudatas,
+           regex("./tmp/(.*)_raw.h5(.*)"),
+           r"./logs/qcplot.\1.log")
+def plotQC_spatial(unfilt_file,log_file):
+    unfilt_file = unfilt_file.replace("_raw","_unfilt")
+    unfilt_file = unfilt_file.replace("tmp", "qc.data")
+    cmd = """
+            python %(py_path)s/plot_qc_spatial.py
+             --input_mudata %(unfilt_file)s
+             --figdir ./figures/spatial
+            """
+#--output_mudata ./filtered_data/%(filt_file)s
+    if PARAMS['plotqc']['grouping_var'] is not None:
+        cmd += " --grouping_var %(plotqc_grouping_var)s"
+    if PARAMS['plotqc']['spatial_metrics'] is not None:
+        cmd += " --spatial_qc_metrics %(plotqc_spatial_metrics)s"
+    cmd += " > %(log_file)s "
+    job_kwargs["job_threads"] = PARAMS['resources_threads_low']
+    P.run(cmd, **job_kwargs)
 
     
 #----- end
 
-@follows(spatialQC)
+@follows(plotQC_spatial)
 def full():
     """
     All cgat pipelines should end with a full() function which updates,
