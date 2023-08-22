@@ -48,6 +48,7 @@ def gen_filter_jobs():
     for infile_path in input_paths:
         file_name = os.path.basename(infile_path)
         outfile = file_name.replace("unfilt","filtered")
+        outfile = os.path.join("./filtered.data/",outfile)
         yield infile_path, outfile
     
 
@@ -65,7 +66,7 @@ def filter_mudata(infile_path,outfile):
         cmd = """
         python %(py_path)s/run_filter_spatial.py
         --input_mudata %(infile_path)s
-        --output_mudata filtered.data/%(outfile)s
+        --output_mudata %(outfile)s
         --filter_dict "%(filter_dict)s"
         """
         if PARAMS['filtering_keep_barcodes'] is not None:
@@ -91,16 +92,18 @@ def run_plotqc_query(pqc_dict):
 @active_if(mode_dictionary['spatial'] is True)
 @active_if(PARAMS['filtering_run'])
 @active_if(run_plotqc_query(PARAMS['plotqc']))
-@follows(filter_mudata)
-@originate("logs/postfilterplot_spatial.log" , PARAMS['mudata_file'])
-def postfilterplot_spatial(log_file, filt_file):
+@transform(filter_mudata,
+           regex("./filtered.data/(.*)_filtered.h5(.*)"), 
+           r"./logs/postfilterplot.\1.log")
+def postfilterplot_spatial(filt_file,log_file):
+    print(filt_file)    
+    print(log_file)
     cmd = """
             python %(py_path)s/plot_qc_spatial.py
              --input_mudata %(filt_file)s
-             --output_mudata %(filt_file)s
              --figdir ./figures/spatial
             """
-
+#--output_mudata ./filtered_data/%(filt_file)s
     if PARAMS['plotqc']['grouping_var'] is not None:
         cmd += " --grouping_var %(plotqc_grouping_var)s"
     if PARAMS['plotqc']['spatial_metrics'] is not None:
