@@ -1,7 +1,7 @@
 
 # Inputs to QC_MM pipeline
 
-For qc_mm the minimum required columns are
+For ingest the minimum required columns are
 
 sample_id | gex_path | gex_filetype  
 ----------|----------|-------------
@@ -16,15 +16,15 @@ If you want to analyse other modalities, add columns to the input file
 
 See [Supported input filetypes](##Supported-input-filetypes) to see the options for the {X}_filetype columns
 
-example at `resources/sample_file_qc_mm.txt`
+example at `resources/sample_file_ingest.txt`
 
 If giving a cellranger path, give the path folder containing all the cellranger outputs. Otherwise path should be the complete path to the file. 
 
 If you have cellranger outputs which have gex and adt within the same files, specify the same path in gex_path and adt_path
 
 To include sample level metadata, you can add additional columns to the submission file
-e.g Tissue and Diagnoisis columns in `resources/sample_file_qc_mm.txt`
-You will also need to list which additional metadata columns you want to include in your data object in the pipeline.yml for qc_mm.
+e.g Tissue and Diagnoisis columns in `resources/sample_file_ingest.txt`
+You will also need to list which additional metadata columns you want to include in your data object in the pipeline.yml for ingest.
 
 ## Additional file inputs for ATAC data
 Include additional files from the cellranger outputs under the following three columns:
