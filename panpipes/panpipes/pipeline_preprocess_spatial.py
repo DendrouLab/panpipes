@@ -112,20 +112,20 @@ def postfilterplot_spatial(filt_file,log_file):
     job_kwargs["job_threads"] = PARAMS['resources_threads_low']
     P.run(cmd, **job_kwargs)
 
-
-
-
-
 @active_if(mode_dictionary['spatial'] is True)
-@follows(filter_mudata)
-@originate("logs/preprocess_spatial.log", PARAMS['mudata_file'])
-def spatial_preprocess(log_file, filt_file):
+@transform(filter_mudata,
+           regex("./filtered.data/(.*)_filtered.h5(.*)"), 
+           r"./logs/st_preprocess.\1.log")
+def spatial_preprocess(filt_file,log_file):
     if os.path.exists("figures/spatial") is False:
         os.mkdir("figures/spatial")
+    if os.path.exists("./tmp") is False:
+        os.mkdir("./tmp")
+    write_output = os.path.join("./tmp/",os.path.basename(filt_file))
     cmd = """
         python %(py_path)s/run_preprocess_spatial.py
         --input_mudata %(filt_file)s
-        --output_mudata %(filt_file)s
+        --output_mudata %(write_output)s
         --figdir ./figures/spatial
         """
     if PARAMS['spatial_norm_hvg_flavour'] is not None:
@@ -170,6 +170,19 @@ def full():
     """
     pass
 
+
+@originate("cleanup_done.txt")
+def cleanup(file):
+    # remove any ctmp fails
+    P.run("rm ctmp*", without_cluster=True)
+    #remove filtered folder to overwrite files
+    P.run("rm -r filtered.data", without_cluster=True)
+    #change tmp to filterd data
+    P.run("mv tmp/ filtered.data", without_cluster=True)
+    # remove tmp dir
+    #P.run("rm -r tmp", without_cluster=True)
+    # delete empty dirs
+    P.run("find ./ -empty -type d -delete", without_cluster=True)
 
 def main(argv=None):
     if argv is None:

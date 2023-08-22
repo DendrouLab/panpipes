@@ -13,6 +13,7 @@ import os
 import argparse
 import sys
 import logging
+import re
 
 L = logging.getLogger()
 L.setLevel(logging.INFO)
@@ -78,7 +79,7 @@ parser.add_argument("--n_pcs",
 args, opt = parser.parse_known_args()
 
 L.info("running with args:")
-L.debug(args)
+L.info(args)
 
 figdir = args.figdir
 
@@ -90,6 +91,11 @@ sc.set_figure_params(scanpy=True, fontsize=14, dpi=300, facecolor='white', figsi
 
 mdata = mu.read(args.input_mudata)
 spatial = mdata.mod['spatial']
+
+input_data = os.path.basename(args.input_mudata)
+pattern = r"_filtered.h5(.*)"
+match = re.search(pattern, input_data)
+sprefix = input_data[:match.start()]
 
 
 # check if raw data is available
@@ -121,7 +127,7 @@ if args.norm_hvg_flavour == "squidpy":
                                     min_disp=float(args.min_disp), subset=args.filter_by_hvg, batch_key=args.hvg_batch_key)
     spatial.layers["lognorm"] = spatial.X.copy()
     # plot HVGs:
-    sc.pl.highly_variable_genes(spatial, show=False, save="_genes_highlyvar.png")
+    sc.pl.highly_variable_genes(spatial, show=False, save="_genes_highlyvar" + "."+ sprefix+ ".png")
 
 elif args.norm_hvg_flavour == "seurat":
     if args.clip is None:
@@ -151,8 +157,8 @@ if "highly_variable" in spatial.var:
 
 #PCA
 sc.pp.pca(spatial, n_comps=int(args.n_pcs), svd_solver='arpack', random_state=0)
-sc.pl.pca(spatial, save = "_vars.png")
-sc.pl.pca_variance_ratio(spatial, log=True, n_pcs=int(args.n_pcs), save=".png")
+sc.pl.pca(spatial, save = "_vars" + "."+ sprefix+".png")
+sc.pl.pca_variance_ratio(spatial, log=True, n_pcs=int(args.n_pcs), save=+ "."+ sprefix+".png")
 
 
         
