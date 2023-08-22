@@ -34,7 +34,7 @@ parser.add_argument("--figdir",
                     default="./figures/",
                     help="path to save the figures to")
 
-parser.add_argument("--spatialT_qc_metrics",
+parser.add_argument("--spatial_qc_metrics",
                     default="None",
                     help="metrics to plot")
 parser.add_argument("--grouping_var",
