@@ -12,7 +12,7 @@ import os
 import argparse
 import sys
 import logging
-
+import re 
 L = logging.getLogger()
 L.setLevel(logging.INFO)
 log_handler = logging.StreamHandler(sys.stdout)
@@ -46,7 +46,7 @@ parser.add_argument("--grouping_var",
 args, opt = parser.parse_known_args()
 
 L.info("running with args:")
-L.debug(args)
+L.info(args)
 
 figdir = args.figdir
 
@@ -59,6 +59,10 @@ sc.set_figure_params(scanpy=True, fontsize=14, dpi=300, facecolor='white', figsi
 mdata = mu.read(args.input_mudata)
 spatial = mdata.mod['spatial']
 
+input_data = os.path.basename(args.input_mudata)
+pattern = r"_filtered.h5(.*)"
+match = re.search(pattern, input_data)
+sprefix = input_data[:match.start()]
 
 # convert string to list of strings
 qc_metrics = list(args.spatial_qc_metrics.split(","))
@@ -92,14 +96,14 @@ for metric in qc_metrics:
         else:
             if group_var is None: 
                 sc.pl.violin(spatial, keys = metric, xlabel = metric+ " in .obs",
-                            save = "_obs_" + metric+ "_" +  ".png", show = False)
+                            save =  "_obs_" + metric+ "_" + "."+sprefix + ".png", show = False)
             
             else: #plot violin for each group
                 for group in group_var: 
                     sc.pl.violin(spatial, keys = metric,groupby = group, xlabel = group + ", "+ metric+ " in .obs",
-                            save = "_obs_" + metric+ "_" + group+ ".png", show = False)
+                            save = "_obs_" + metric+ "_" + group+ "."+sprefix +".png", show = False)
             #plot spatial 
-            sc.pl.spatial(spatial, color = metric, save = "_spatial_" + metric + ".png", show = False)
+            sc.pl.spatial(spatial, color = metric, save = "_spatial_" + metric + "."+sprefix +".png", show = False)
 
     #check if in adata.var: 
     if metric in spatial.var.columns:
@@ -113,7 +117,7 @@ for metric in qc_metrics:
                     orient='vertical', 
                 )
             ax.set(xlabel=metric+ " in .var" )
-            ax.figure.savefig(figdir + "/" + "violin_var_" + metric+".png")
+            ax.figure.savefig(figdir + "/" +"violin_var_" + metric + "."+sprefix +".png")
 
 
             
