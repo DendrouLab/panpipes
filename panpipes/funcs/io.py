@@ -7,7 +7,7 @@ import sys
 import h5py
 from typing import Optional, Literal
 from scanpy import read_10x_mtx, read_10x_h5, read_h5ad, read_text, read_csv, read_hdf
-import squidpy as sq
+
 import muon as mu
 import logging
 import scirpy as ir 
