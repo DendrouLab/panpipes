@@ -158,7 +158,7 @@ if "highly_variable" in spatial.var:
 #PCA
 sc.pp.pca(spatial, n_comps=int(args.n_pcs), svd_solver='arpack', random_state=0)
 sc.pl.pca(spatial, save = "_vars" + "."+ sprefix+".png")
-sc.pl.pca_variance_ratio(spatial, log=True, n_pcs=int(args.n_pcs), save=+ "."+ sprefix+".png")
+sc.pl.pca_variance_ratio(spatial, log=True, n_pcs=int(args.n_pcs), save= "."+ sprefix+".png")
 
 
         
