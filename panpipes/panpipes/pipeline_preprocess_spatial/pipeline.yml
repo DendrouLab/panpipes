@@ -30,7 +30,7 @@ condaenv:
 
 input_dir: ../qc.data/
 sample_prefix: 
-unfiltered_obj: /path/to/mudata/test.h5mu
+
 # if running this on prefiltered data then
 #1. set unfiltered obj (above) to blank
 #2. rename your filtered file to match, the format PARAMS['sample_prefix'] + '.h5mu'
