@@ -14,7 +14,7 @@ from panpipes.funcs.scmethods import run_neighbors_method_choice, X_is_raw
 import sys
 import logging
 L = logging.getLogger()
-L.setLevel(logging.INFO)
+L.setLevel(logging.DEBUG)
 log_handler = logging.StreamHandler(sys.stdout)
 formatter = logging.Formatter('%(asctime)s: %(levelname)s - %(message)s')
 log_handler.setFormatter(formatter)
@@ -90,6 +90,7 @@ for x in wnn_params_bc.keys():
     else: 
         dict_graph[x]["obsm"] = None
 
+L.debug(dict_graph)
 for kmod in dict_graph.keys():
     L.info(kmod)
     pkmod=params['multimodal']['WNN']['knn'][kmod]
@@ -104,12 +105,19 @@ for kmod in dict_graph.keys():
                         L.info("reading precomputed connectivities for bbknn")
                         adata = mu.read(dict_graph[kmod]["anndata"])
                         tmp.mod[kmod].obsp = adata.obsp.copy()
+                        tmp.mod[kmod].obsm[dict_graph[kmod]["obsm"]] = adata.obsm[dict_graph[kmod]["obsm"]].copy()
                         tmp.mod[kmod].uns["neighbors"]= adata.uns["neighbors"].copy()
+                        tmp.update()
             else:
                 if dict_graph[kmod]["anndata"] is not None:
                     L.info("provided mdata doesn't have the desired obsm. reading the batch corrected data from another stored object")
                     adata = mu.read(dict_graph[kmod]["anndata"])
+                    L.debug(kmod + "object")
+                    L.debug(adata)
                     tmp.mod[kmod].obsm[dict_graph[kmod]["obsm"]] = adata.obsm[dict_graph[kmod]["obsm"]].copy()
+                    tmp.mod[kmod].obsp = adata.obsp.copy()
+                    tmp.mod[kmod].uns['neighbors'] = adata.uns['neighbors'].copy()
+                    tmp.update()
                     repuse = dict_graph[kmod]["obsm"] 
                 else:
                     L.info("could not find the desired obsm and the anndata slot is empty, will calculate on the flight")
@@ -132,6 +140,9 @@ for kmod in dict_graph.keys():
         else:
             L.info("Using %s" %(dict_graph[kmod]["obsm"]))            
 
+L.debug(tmp)
+tmp.update()
+L.debug(tmp)
 L.info("Now running WNN")
 
 mu.pp.neighbors(tmp, 
