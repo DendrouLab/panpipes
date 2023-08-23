@@ -87,6 +87,7 @@ if params['multimodal']['mofa']['modalities'] is not None:
 else:
     L.warning("""you specified no modalities, so i will default to all available
                 this may be a problem if you have repertoire in here""")
+    removed_mods = None
     tmp = mdata.copy()  
 
 print(tmp.mod.keys())
