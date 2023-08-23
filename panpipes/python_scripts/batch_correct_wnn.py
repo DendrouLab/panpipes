@@ -14,7 +14,7 @@ from panpipes.funcs.scmethods import run_neighbors_method_choice, X_is_raw
 import sys
 import logging
 L = logging.getLogger()
-L.setLevel(logging.DEBUG)
+L.setLevel(logging.INFO)
 log_handler = logging.StreamHandler(sys.stdout)
 formatter = logging.Formatter('%(asctime)s: %(levelname)s - %(message)s')
 log_handler.setFormatter(formatter)
