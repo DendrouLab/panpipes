@@ -29,6 +29,33 @@ L.info(args)
 cell_meta_df = pd.read_csv(args.cell_meta_df, index_col=0)
 batch_dict = read_yaml(args.integration_dict)
 umaps = pd.read_csv(args.combined_umaps_df, sep="\t", index_col=0)
+L.info("fixing the batch_keys dictionary")
+for k in batch_dict.keys():
+    v=batch_dict[k]
+    if k =="multimodal":
+        mk = []
+        exc = []
+        for v2 in v:
+            if v2 in cell_meta_df.columns:
+                mk.append(v2)
+            else:
+                exc.append(v2)
+                for k in batch_dict.keys():
+                    if k!="multimodal":
+                       tmp=[k + ":" +e for e in exc] #add the prepending modality
+                       for t in tmp:
+                           if t in cell_meta_df.columns:
+                               mk.append(t)
+        v = mk
+        batch_dict[k] = v
+    else:
+        v =[k + ":" +v1 if k!="multimodal" else v1 for v1 in v  ] #add the prepending modality
+        batch_dict[k] = v
+    if len(v) > 1:
+        mod_meta_df= cell_meta_df[v].dropna()
+        cell_meta_df[str(k)+ ":bc_batch"] = mod_meta_df.apply(lambda x: '|'.join(x), axis=1)
+        batch_dict[k].append(k+ ":bc_batch")
+    L.info("batch keys %s" %(batch_dict[k]))
 
 
 for md in batch_dict.keys():

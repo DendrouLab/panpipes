@@ -14,7 +14,7 @@ doi: https://doi.org/10.1101/2023.03.11.532085
 These pipelines use cgat-core pipeline software
 
 Available pipelines:
-1. "qc_mm" : for the ingestion of data and computation of QC metrics' 
+1. "ingest" : for the ingestion of data and computation of QC metrics' 
 2. "preprocess" : for filtering and normalising of each modality
 3. "integration" : integrate and batch correction using  single and multimodal methods
 4. "clustering" : cell clustering on single modalities
@@ -41,7 +41,7 @@ Navigate to the directory where you want to run your analysis (this should not b
 ```
 mkdir data_dir/
 cd data_dir/
-panpipes qc_mm config
+panpipes ingest config
 ```
 This will produce two files, `pipeline.log` and `pipeline.yml`
 
@@ -49,13 +49,13 @@ Edit `pipeline.yml` as appropriate for your data, following the instructions wit
 
 Then check which jobs will run with the command
 ```
-panpipes qc_mm show full
+panpipes ingest show full
 ```
 The output of this will show a list of tasks that will be run as part of the pipeline.
 
 To run use the command
 ```
-panpipes qc_mm make full
+panpipes ingest make full
 ```
 
 
@@ -63,7 +63,7 @@ Occasionally you might want to run tasks individually (e.g. to assess outputs be
 In order to do this you can run any task in the `show full` list such as:
 
 ```
-panpipes qc_mm make plot_tenx_metrics
+panpipes ingest make plot_tenx_metrics
 ```
 
 
@@ -73,25 +73,25 @@ Run each of pipeline qc, integration and clustering in separate folders.
 ### QC 
 
 1. Generate sample submission file 
-    - [more details on creating the submission file](https://github.com/DendrouLab/panpipes/blob/main/docs/setup_for_qc_mm.md)
+    - [more details on creating the submission file](https://github.com/DendrouLab/panpipes/blob/main/docs/setup_for_ingest.md)
 2. Generate qc genelists 
     - [more details](https://github.com/DendrouLab/panpipes/blob/main/docs/gene_list_format.md)
 3. For adt assay - generate the protein metadata file [example]((https://github.com/DendrouLab/panpipes/blob/main/resources/protein_metadata_w_iso.md)). This file is integrated into the mdata['prot'].var slot.
-4. Generate config file (`panpipes qc_mm config`) 
+4. Generate config file (`panpipes ingest config`) 
 5. Edit the pipeline.yml file for your dataset
     - this is explained step by step within the pipeline.yml file
-6. Run complete qc pipeline with `panpipes qc_mm make full `
+6. Run complete qc pipeline with `panpipes ingest make full `
 7. Use outputs to decide filtering thresholds. 
     - **Note that the actual filtering occurs in the first step of Preprocess pipeline**
     - TODO: create doc to explain the pipeline outputs 
 
 
-The h5mu file outputted from `qc_mm` contains concatenated raw counts from all samples in the submission file, plus qc metrics are computed, and these qc metrics are visualised in a variety of plots to aid the user to determine data quality and filtering thresholds.
+The h5mu file outputted from `ingest` contains concatenated raw counts from all samples in the submission file, plus qc metrics are computed, and these qc metrics are visualised in a variety of plots to aid the user to determine data quality and filtering thresholds.
 
 ### Preprocess
 1. In a new folder, generate config file for integration, `panpipes preprocess config` 
 2. edit the pipeline.yml file 
-    - The filtering options are dynamic depending on your qc_mm inputs [more details here](https://github.com/DendrouLab/panpipes/blob/main/docs/filter_dict_instructions.md)
+    - The filtering options are dynamic depending on your ingest inputs [more details here](https://github.com/DendrouLab/panpipes/blob/main/docs/filter_dict_instructions.md)
     - There are lots of options for normalisation explained in the pipeline.yml
 2. Run complete preprocess pipeline with `panpipes preprocess make full `
 

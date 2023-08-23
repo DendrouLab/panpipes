@@ -95,43 +95,44 @@ for kmod in dict_graph.keys():
     pkmod=params['multimodal']['WNN']['knn'][kmod]
     if dict_graph[kmod]["obsm"] is not None:
         if dict_graph[kmod]["obsm"] not in tmp.mod[kmod].obsm.keys():
-            if dict_graph[kmod]["anndata"] is not None:
-                L.info("provided mdata doesn't have the desired obsm. reading the batch corrected data from another stored object")
-                
-                if dict_graph[kmod]["obsm"] == "X_bbknn":
-                    if len(tmp.mod[kmod].obsp.keys()) > 0 and "neighbors" in tmp.mod[kmod].uns.keys() : 
-                        L.info("i found a populated obsp slot and I assume it's bbknn")
-                    else:
-                        adata = mu.read(dict_graph[kmod]["anndata"])
+            L.info("provided mdata doesn't have the desired obsm, just checking if it's bbknn you want.")
+            if dict_graph[kmod]["obsm"] == "X_bbknn":
+                if len(tmp.mod[kmod].obsp.keys()) > 0 and "neighbors" in tmp.mod[kmod].uns.keys() : 
+                     L.info("i found a populated obsp slot and I assume it's bbknn")
+                else:
+                    if dict_graph[kmod]["anndata"] is not None:
                         L.info("reading precomputed connectivities for bbknn")
+                        adata = mu.read(dict_graph[kmod]["anndata"])
                         tmp.mod[kmod].obsp = adata.obsp.copy()
                         tmp.mod[kmod].uns["neighbors"]= adata.uns["neighbors"].copy()
-                else:
+            else:
+                if dict_graph[kmod]["anndata"] is not None:
+                    L.info("provided mdata doesn't have the desired obsm. reading the batch corrected data from another stored object")
                     adata = mu.read(dict_graph[kmod]["anndata"])
                     tmp.mod[kmod].obsm[dict_graph[kmod]["obsm"]] = adata.obsm[dict_graph[kmod]["obsm"]].copy()
-            repuse = dict_graph[kmod]["obsm"] 
-    else:
-        repuse = "X_pca"
-        if repuse not in tmp.mod[kmod].obsm.keys():
-            if "X_LSI" in tmp.mod[kmod].obsm.keys():
-                repuse = "X_LSI"
-            else:
-                L.info("falling back on %s" %(repuse) )
-        if int(pkmod['npcs']) == 0:
-            repuse = None
+                    repuse = dict_graph[kmod]["obsm"] 
+                else:
+                    L.info("could not find the desired obsm and the anndata slot is empty, will calculate on the flight")
+                    if kmod =="atac" & "X_lsi" in tmp.mod[kmod].obsm.keys():
+                        repuse = "X_lsi"
+                    else:
+                        repuse = "X_pca"
+                    L.info("falling back on %s" %(repuse) )
             
-    L.info("calculating neighbours")
-    if repuse != "X_bbknn":
-        run_neighbors_method_choice(tmp.mod[kmod], 
-                method=pkmod['method'], 
-                n_neighbors=int(pkmod['k']), 
-                n_pcs=min(int(pkmod['npcs']), mdata.var.shape[0]-1), #this should be the # rows of var, not obs
-                metric=pkmod['metric'], 
-                #does this throw an error if no PCA for any single mod is stored?
-                use_rep=repuse,
-                nthreads=max([threads_available, 6]))
-        
-L.info("running WNN")
+                    L.info("calculating neighbours")
+                    if repuse != "X_bbknn":
+                        run_neighbors_method_choice(tmp.mod[kmod], 
+                            method=pkmod['method'], 
+                            n_neighbors=int(pkmod['k']), 
+                            n_pcs=min(int(pkmod['npcs']), mdata.var.shape[0]-1), #this should be the # rows of var, not obs
+                            metric=pkmod['metric'], 
+                            #does this throw an error if no PCA for any single mod is stored?
+                            use_rep=repuse,
+                            nthreads=max([threads_available, 6]))
+        else:
+            L.info("Using %s" %(dict_graph[kmod]["obsm"]))            
+
+L.info("Now running WNN")
 
 mu.pp.neighbors(tmp, 
                 n_neighbors= int(args.n_neighbors),

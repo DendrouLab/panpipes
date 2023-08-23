@@ -1,6 +1,6 @@
 # Gene list formats
 
-In the qc_mm and vis pipelines, the user can provide custom genelists in order to compute gene list scores and to visualise
+In the ingest and vis pipelines, the user can provide custom genelists in order to compute gene list scores and to visualise
 
 
 All [^1] gene lists provided to the pipeline should be in a 3 columns format, where the column headers are mod, feature and group. The gorup column is used to distinguish different gene groups.
@@ -15,7 +15,7 @@ The genes are not pre-determined within panpipes in order to maximise flexibilit
 [^1] the one exception to this is how cellcycle genes are included, this will change in a future version of panpipes [resources/cell_cycle_genes.csv](https://github.com/DendrouLab/panpipes/blob/master/resources/cell_cycle_genes.csv)
 
 ## QC_mm gene list inputs
-qc_mm pipeline.yml excerpt:
+ingest pipeline.yml excerpt:
 ```
 custom_genes_file: path/to/resources/qc_genelist_1.0.csv
 calc_proportions: hb,mt,rp
