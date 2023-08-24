@@ -76,8 +76,8 @@ def filter_mudata(infile_path,outfile):
         P.run(cmd, **job_kwargs)
     else:
         try:
-            f = open(outfile)
-            f.close(outfile)
+            f = open(infile_path)
+            f.close(infile_path)
         except IOError:
             print("filter is not set to True, but there is no %s file" % outfile)
             sys.exit(1)
@@ -98,9 +98,11 @@ def run_plotqc_query(pqc_dict):
 def postfilterplot_spatial(filt_file,log_file):
     print(filt_file)    
     print(log_file)
+    spatial_filetype = PARAMS["assay"]
     cmd = """
             python %(py_path)s/plot_qc_spatial.py
              --input_mudata %(filt_file)s
+             --spatial_filetype %(spatial_filetype)s
              --figdir ./figures/spatial
             """
 #--output_mudata ./filtered_data/%(filt_file)s

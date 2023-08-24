@@ -39,7 +39,9 @@ sample_prefix:
 
 modalities:
   spatial: True
-
+# specify which spatial transcriptomics assay it's used. one of "visium" or "vizgen"
+# if left blank we'll default to "visium"
+assay:
 
 # --------------
 ## 2. Filtering
