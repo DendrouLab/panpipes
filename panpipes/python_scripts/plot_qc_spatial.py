@@ -5,9 +5,9 @@ import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
 import scanpy as sc
+import matplotlib.pyplot as plt
 import seaborn as sns
 import muon as mu
-
 import os
 import argparse
 import sys
@@ -33,7 +33,9 @@ parser.add_argument("--input_mudata",
 parser.add_argument("--figdir",
                     default="./figures/",
                     help="path to save the figures to")
-
+parser.add_argument("--spatial_filetype",
+                    default="",
+                    help="")
 parser.add_argument("--spatial_qc_metrics",
                     default="None",
                     help="metrics to plot")
@@ -121,6 +123,43 @@ for metric in qc_metrics:
             ax.set(xlabel=metric+ " in .var" )
             ax.figure.savefig(figdir + "/" +"violin_var_" + metric + "."+sprefix +".png")
 
+
+
+if args.spatial_filetype == "vizgen":
+    fig, axs = plt.subplots(1, 4, figsize=(15, 4))
+
+    axs[0].set_title("Total transcripts per cell")
+    sns.histplot(
+        spatial.obs["total_counts"],
+        kde=False,
+        ax=axs[0],
+    )
+
+    axs[1].set_title("Unique transcripts per cell")
+    sns.histplot(
+        spatial.obs["n_genes_by_counts"],
+        kde=False,
+        ax=axs[1],
+    )
+
+    axs[2].set_title("Transcripts per FOV")
+    sns.histplot(
+        spatial.obs.groupby("fov").sum()["total_counts"],
+        kde=False,
+        ax=axs[2],
+    )
+
+    axs[3].set_title("Volume of segmented cells")
+    sns.histplot(
+        spatial.obs["volume"],
+        kde=False,
+        ax=axs[3],
+    )
+
+    plt.tight_layout()  # Ensures proper spacing between subplots
+    #plt.savefig("merfish_histo.png", dpi=300)
+    plt.savefig(figdir + "/histograms."+sprefix +".png", dpi=300)  # Adjust dpi as needed
+    plt.close()  # Close the figure to free up memory
 
             
 

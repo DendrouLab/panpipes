@@ -128,10 +128,15 @@ def spatialQC(infile,log_file):
     resources_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "resources")
     outfile = infile.replace("_raw","_unfilt")
     outfile = outfile.replace("tmp", "qc.data")
+    spatial_filetype = PARAMS["assay"]
+    if spatial_filetype is None:
+        spatial_filetype = "visium"
+    print(spatial_filetype)
     cmd = """
             python %(py_path)s/run_scanpyQC_spatial.py
               --sampleprefix %(sample_prefix)s
               --input_anndata %(infile)s
+              --spatial_filetype %(spatial_filetype)s
               --outfile %(outfile)s
               --figdir ./figures
               """
@@ -166,15 +171,17 @@ def run_plotqc_query(pqc_dict):
 
 @follows(spatialQC)
 @active_if(run_plotqc_query(PARAMS['plotqc']))
-@transform(load_mudatas,
+@transform(load_mudatas, #spatialQC
            regex("./tmp/(.*)_raw.h5(.*)"),
            r"./logs/qcplot.\1.log")
 def plotQC_spatial(unfilt_file,log_file):
     unfilt_file = unfilt_file.replace("_raw","_unfilt")
     unfilt_file = unfilt_file.replace("tmp", "qc.data")
+    spatial_filetype = PARAMS["assay"]
     cmd = """
             python %(py_path)s/plot_qc_spatial.py
              --input_mudata %(unfilt_file)s
+             --spatial_filetype %(spatial_filetype)s
              --figdir ./figures/spatial
             """
 #--output_mudata ./filtered_data/%(filt_file)s

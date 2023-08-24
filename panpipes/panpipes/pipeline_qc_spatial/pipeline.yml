@@ -49,13 +49,14 @@ submission_file:
 # Modalities in the project
 #---------------------------------------
 # 
-# Set spatialT to True to abilitate reading. 
+# Set spatial to True to abilitate reading. 
 # Leave empty (None) or False to signal this modality is not in the experiment.
 
 modalities:
   spatial: True
-
-
+# specify which spatial transcriptomics assay it's used. one of "visium" or "vizgen"
+# if left blank we'll default to "visium"
+assay:
 
 # ------------------------------------------------------------------------------------------------
 # QC options

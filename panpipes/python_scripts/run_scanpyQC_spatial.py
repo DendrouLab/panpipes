@@ -30,6 +30,9 @@ parser.add_argument("--sampleprefix",
 parser.add_argument("--input_anndata",
                     default="adata_raw.h5ad",
                     help="")
+parser.add_argument("--spatial_filetype",
+                    default="",
+                    help="")
 parser.add_argument("--outfile",
                     default="adata_unfilt.h5ad",
                     help="")
@@ -129,6 +132,8 @@ percent_top = [50, 100, 200, 500] #default
 percent_top = [x for x in percent_top if x <= spatial.n_vars]
 sc.pp.calculate_qc_metrics(spatial, qc_vars=qc_vars, percent_top=percent_top, inplace=True)
 
+if args.spatial_filetype == "vizgen":
+    spatial.obsm["blank_genes"].to_numpy().sum() / spatial.var["total_counts"].sum() * 100
 
 # Calculate cc scores 
 if args.ccgenes is not None:
