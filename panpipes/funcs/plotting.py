@@ -16,6 +16,25 @@ use('Agg')
 plt.ioff()
 
 
+def cell2loc_plot_history(model,fig_path, iter_start=0, iter_end=-1, ax=None):
+# Adapted from: https://github.com/BayraktarLab/cell2location/blob/master/cell2location/models/base/_pyro_mixin.py#L407
+    if ax is None:
+        ax = plt.gca()
+    if iter_end == -1:
+        iter_end = len(model.history_["elbo_train"])
+
+    ax.plot(
+        np.array(model.history_["elbo_train"].index[iter_start:iter_end]),
+        np.array(model.history_["elbo_train"].values.flatten())[iter_start:iter_end],
+        label="train",
+    )
+    ax.legend()
+    ax.set_xlim(0, len(model.history_["elbo_train"]))
+    ax.set_xlabel("Training epochs")
+    ax.set_ylabel("-ELBO loss")
+    plt.tight_layout()
+    plt.savefig(fig_path)
+
 
 def cell2loc_plot_QC_reconstr(model, fig_path, summary_name: str = "means", use_n_obs: int = 1000):
 # Adapted from: https://github.com/BayraktarLab/cell2location/blob/master/cell2location/models/base/_pyro_mixin.py#L544

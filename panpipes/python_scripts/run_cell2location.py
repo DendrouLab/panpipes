@@ -17,6 +17,7 @@ import logging
 
 from panpipes.funcs.plotting import cell2loc_plot_QC_reference
 from panpipes.funcs.plotting import cell2loc_plot_QC_reconstr
+from panpipes.funcs.plotting import cell2loc_plot_history
 
 
 L = logging.getLogger()
@@ -231,8 +232,7 @@ model_ref = c2l.models.RegressionModel(adata_sc)
 model_ref.train(max_epochs=max_epochs_reference)
 
 # plot elbo
-model_ref.plot_history()
-plt.pyplot.savefig(figdir + "/ELBO_reference.png")
+cell2loc_plot_history(model_ref, figdir + "/ELBO_reference_model.png")
 
 # export results
 adata_sc = model_ref.export_posterior(adata_sc)
@@ -270,11 +270,9 @@ model_spatial = c2l.models.Cell2location(adata = adata_st, cell_state_df=inf_ave
 model_spatial.train(max_epochs=max_epochs_st)
 
 #plot elbo
-model_spatial.plot_history()
-plt.pyplot.savefig(figdir + "/ELBO_spatial_mapping.png")
+cell2loc_plot_history(model_spatial, figdir + "/ELBO_spatial_model.png")
 #extract posterior
 adata_st = model_spatial.export_posterior(adata_st)
-
 #plot QC
 cell2loc_plot_QC_reconstr(model_spatial, figdir + "/QC_spatial_reconstruction_accuracy.png")
 
