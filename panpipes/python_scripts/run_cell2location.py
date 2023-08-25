@@ -9,7 +9,6 @@ import scanpy as sc
 import pandas as pd
 import matplotlib as plt
 import muon as mu
-import numpy as np
 
 import os
 import argparse
@@ -188,15 +187,17 @@ adata_sc = mdata_singlecell.mod['rna']
 if args.gene_list != "None": # read in csv and subset both anndatas 
     reduced_gene_set = pd.read_csv(args.gene_list, header = 0)
     reduced_gene_set.columns = ["HVGs"]
-    adata_sc.var["selected_gene"] = adata_sc.var.index.isin(reduced_gene_set["HVFs"])
-    adata_st.var["selected_gene"] = adata_st.var.index.isin(reduced_gene_set["HVFs"])
-    if np.sum(adata_sc.var.selected_gene) != np.sum(adata_st.var.selected_gene):
-        L.error("Not all genes of the gene list are present in the reference as well as in the ST data. Please provide a gene list where all genes are present in both, reference and ST.")
-        sys.exit("Not all genes of the gene list are present in the reference as well as in the ST data. Please provide a gene list where all genes are present in both, reference and ST.")
+    adata_sc.var["selected_gene"] = adata_sc.var.index.isin(reduced_gene_set["HVGs"])
+    adata_st.var["selected_gene"] = adata_st.var.index.isin(reduced_gene_set["HVGs"])
     adata_sc = adata_sc[:, adata_sc.var["selected_gene"]]
     adata_st = adata_st[:, adata_st.var["selected_gene"]]
+    # check whether all genes are present in both, spatial & reference
+    if set(adata_st.var.index) != set(adata_sc.var.index):
+        L.error(
+            "Not all genes of the gene list %s are present in the reference as well as in the ST data. Please provide a gene list where all genes are present in both, reference and ST.", args.gene_list)
+        sys.exit(
+            "Not all genes of the gene list are present in the reference as well as in the ST data. Please provide a gene list where all genes are present in both, reference and ST.")
 
-    
 else: # perform feature selection according to cell2loc 
     if remove_mt is True: 
         adata_st.var["MT_gene"] = [gene.startswith("MT-") for gene in adata_st.var.index]
