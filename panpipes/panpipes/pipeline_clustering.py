@@ -1,10 +1,6 @@
 """
 CGAT pipeline for clustering single cell data with Scanpy.
-# ASSUMED INPUT: 2 anndata objects, one containing all the data logn normalised but unscaled.
-# the second containing scaled data and subset by highly variable genes.
-# dimension reduction such as PCA or equivalent from harmobny or scanorama
-# must have has been computed and saved within object
-
+# ASSUMED INPUT: mudata with normalized and scaled data in the relevant layers
 # This pipeline is designed to follow on from pipeline_integration.py
 
 """
