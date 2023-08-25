@@ -18,6 +18,7 @@ import logging
 from panpipes.funcs.plotting import cell2loc_plot_QC_reference
 from panpipes.funcs.plotting import cell2loc_plot_QC_reconstr
 from panpipes.funcs.plotting import cell2loc_plot_history
+from panpipes.funcs.scmethods import cell2loc_filter_genes
 
 
 L = logging.getLogger()
@@ -212,10 +213,11 @@ else: # perform feature selection according to cell2loc
     shared_features = [feature for feature in adata_st.var_names if feature in adata_sc.var_names]
     adata_sc = adata_sc[:, shared_features]
     adata_st = adata_st[:, shared_features]
-    # select features 
-    selected = c2l.utils.filtering.filter_genes(adata_sc,  cell_count_cutoff=float(args.cell_count_cutoff), 
-                                                cell_percentage_cutoff2=float(args.cell_percentage_cutoff2),
+    # select features
+    selected = cell2loc_filter_genes(adata_sc, figdir + "/gene_filter.png", cell_count_cutoff=float(args.cell_count_cutoff),
+                                               cell_percentage_cutoff2=float(args.cell_percentage_cutoff2),
                                                 nonz_mean_cutoff=float(args.nonz_mean_cutoff))
+
     adata_sc = adata_sc[:, selected]
     adata_st = adata_st[:, selected]
 
@@ -246,8 +248,7 @@ inf_aver.to_csv("Cell2Loc_inf_aver.csv")
 # plot QC
 cell2loc_plot_QC_reference(model_ref, figdir + "/QC_reference_reconstruction_accuracy.png", figdir + "/QC_reference_expression signatures_vs_avg_expression.png")
 
-# save model and update mudata 
-#mdata_singlecell.update()
+# save model and update mudata
 mdata_singlecell.mod["rna"] = adata_sc
 mdata_singlecell.update()
 if save_models is True:
@@ -282,8 +283,7 @@ adata_st.obs[adata_st.uns["mod"]["factor_names"]] = adata_st.obsm["q05_cell_abun
 sc.pl.spatial(adata_st,color=adata_st.uns["mod"]["factor_names"], show = False, save = "_Cell2Loc_q05_cell_abundance_w_sf.png") 
 
 
-# save model and update mudata 
-#mdata_spatial.update()
+# save model and update mudata
 mdata_spatial.mod["spatial"] = adata_st
 mdata_spatial.update()
 if save_models is True: 
