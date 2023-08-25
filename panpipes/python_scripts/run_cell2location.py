@@ -15,6 +15,10 @@ import argparse
 import sys
 import logging
 
+from panpipes.funcs.plotting import cell2loc_plot_QC_reference
+from panpipes.funcs.plotting import cell2loc_plot_QC_reconstr
+
+
 L = logging.getLogger()
 L.setLevel(logging.INFO)
 log_handler = logging.StreamHandler(sys.stdout)
@@ -239,9 +243,8 @@ else:
 inf_aver.columns = adata_sc.uns["mod"]["factor_names"]
 inf_aver.to_csv("Cell2Loc_inf_aver.csv")
 
-# plot QC 
-model_ref.plot_QC()
-plt.pyplot.savefig(figdir + "/QC_reference.png")
+# plot QC
+cell2loc_plot_QC_reference(model_ref, figdir + "/QC_reference_reconstruction_accuracy.png", figdir + "/QC_reference_expression signatures_vs_avg_expression.png")
 
 # save model and update mudata 
 #mdata_singlecell.update()
@@ -271,8 +274,9 @@ model_spatial.plot_history()
 plt.pyplot.savefig(figdir + "/ELBO_spatial_mapping.png")
 #extract posterior
 adata_st = model_spatial.export_posterior(adata_st)
-model_spatial.plot_QC()
-plt.pyplot.savefig(figdir + "/QC_spatial_mapping.png")
+
+#plot QC
+cell2loc_plot_QC_reconstr(model_spatial, figdir + "/QC_spatial_reconstruction_accuracy.png")
 
 
 #plot output
