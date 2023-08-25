@@ -2,13 +2,8 @@ from ruffus import *
 import sys
 import os
 from cgatcore import pipeline as P
-import pandas as pd
-import cgatcore.iotools as IOTools
-import re
-from itertools import chain
 import glob
-import warnings
-import logging
+
 
 PARAMS = P.get_parameters(
     ["%s/pipeline.yml" % os.path.splitext(__file__)[0],
@@ -24,18 +19,40 @@ if PARAMS['condaenv'] is not None:
     job_kwargs["job_condaenv"] = PARAMS['condaenv']
 
 
+
+if (PARAMS["input_spatial"] is not None) and (not os.path.exists(PARAMS["input_spatial"])):
+    sys.exit("Spatial input directory doesn't exist or cannot be found")
+
+
+
+def gen_filter_jobs():
+    input_paths_spatial=glob.glob(os.path.join(PARAMS["input_spatial"],"*.h5mu"))
+    input_singlecell = PARAMS["input_singlecell"]
+    for input_spatial in input_paths_spatial:
+        sample_prefix = os.path.basename(input_spatial)
+        sample_prefix = sample_prefix.replace(".h5mu","")
+        outfile_spatial = "cell2location.output/" + sample_prefix + "/Cell2Loc_spatial_output.h5mu"
+        yield input_spatial, outfile_spatial, sample_prefix, input_singlecell
+
+
+
 @mkdir("logs")
 @mkdir("figures")
 @active_if(PARAMS['Cell2Location_run'] is True)
-#@originate(PARAMS['input_spatial'], PARAMS['input_singlecell'])
-def run_cell2location():
-    input_spatial = PARAMS["input_spatial"]
-    input_singlecell = PARAMS["input_singlecell"]
+@mkdir("figures/Cell2Location")
+@mkdir("cell2location.output")
+@files(gen_filter_jobs)
+def run_cell2location(input_spatial, outfile_spatial, sample_prefix, input_singlecell):
+
+    figdir = "./figures/Cell2Location/" + sample_prefix
+    output_dir = "./cell2location.output/" + sample_prefix
+    log_file = "Cell2Location_" + sample_prefix + ".log"
     cmd = """
         python %(py_path)s/run_cell2location.py
         --input_spatial %(input_spatial)s
         --input_singlecell %(input_singlecell)s
-        --figdir ./figures/Cell2Location
+        --figdir %(figdir)s
+        --output_dir %(output_dir)s
               """
     
     # feature selection paramaters
@@ -83,9 +100,11 @@ def run_cell2location():
     if PARAMS['Cell2Location_save_models'] is not None:
         cmd += " --save_models %(Cell2Location_save_models)s"
     
-    cmd += " > logs/deconvolution.log "
+    cmd += " > logs/%(log_file)s "
     job_kwargs["job_threads"] = PARAMS['resources_threads_low']
     P.run(cmd, **job_kwargs)
+
+
 
 
 @follows(run_cell2location)

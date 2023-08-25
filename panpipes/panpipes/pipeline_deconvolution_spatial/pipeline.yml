@@ -23,7 +23,9 @@ condaenv:
 # ----------------------
 # Specify input 
 # ----------------------
-input_spatial:  # path to mudata of spatial data, spatial data expected to be saved in mudata.mod["spatial"]
+
+input_spatial:  # path to folder containing one or multiple mudatas of spatial data; in the mudatas, the spatial data is expected to be saved in mudata.mod["spatial"]
+# for each spatial mudata, deconvolution is run with "input_singlecell" (see below) as a reference
 input_singlecell: # path to mudata of reference single-cell data, reference data expected to be saved in mudata.mod["rna"]
 
 
@@ -41,7 +43,7 @@ Cell2Location:
   # Reduced feature set can either be given  a) via a csv file of genes or b) feature selection will be performed à la Cell2Location, i.e. via the function: cell2location.utils.filtering.filter_genes()
   
   #  a) path to a csv file containing a reduced feature set
-  gene_list: # header in the csv is expected in the first row! 
+  gene_list: #a header in the csv is expected in the first row
   
   # b) parameters for Cell2Loc feature selection, leave empty to use defaults
   # whether to remove mitochondrial genes before feature selection 

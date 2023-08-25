@@ -7,7 +7,6 @@ warnings.simplefilter(action='ignore', category=FutureWarning)
 import cell2location as c2l
 import scanpy as sc
 import pandas as pd
-import matplotlib as plt
 import muon as mu
 
 import os
@@ -40,7 +39,10 @@ parser.add_argument("--input_spatial",
 parser.add_argument("--input_singlecell",
                     help="path to mudata of single-cell reference data")
 parser.add_argument("--figdir",
-                    default="./figures/",
+                    default="./figures/Cell2Location",
+                    help="path to save the figures to")
+parser.add_argument("--output_dir",
+                    default="./cell2location.output",
                     help="path to save the figures to")
 parser.add_argument("--save_models",
                     default=False,
@@ -111,20 +113,20 @@ parser.add_argument("--max_epochs_st",
                     help="")  
 
 
-
-
 args, opt = parser.parse_known_args()
 
 L.info("running with args:")
 L.debug(args)
 
 figdir = args.figdir
-
 if not os.path.exists(figdir):
     os.mkdir(figdir)
-
 sc.settings.figdir = figdir
 sc.set_figure_params(scanpy=True, fontsize=14, dpi=300, facecolor='white', figsize=(5,5))
+
+output_dir = args.output_dir
+if not os.path.exists(output_dir):
+    os.mkdir(output_dir)
 
 
 if args.N_cells_per_location is None: 
@@ -137,12 +139,12 @@ if args.detection_alpha is None:
     
 if (args.save_models is False) or (args.save_models == "False"): 
     save_models = False
-elif args.save_models == "True":
+else:
     save_models = True
       
 if (args.remove_mt is True) or (args.remove_mt == "True"): 
     remove_mt = True
-elif args.remove_mt == "False":
+else:
     remove_mt = False
 
 
@@ -179,7 +181,8 @@ else:
 
 
 
-#1. read in the data 
+
+#1. read in the data
 #spatial: 
 mdata_spatial = mu.read(args.input_spatial)
 adata_st = mdata_spatial.mod['spatial']
@@ -189,8 +192,8 @@ adata_sc = mdata_singlecell.mod['rna']
 
 
 
-#2. Perform gene selection: 
-if args.gene_list != "None": # read in csv and subset both anndatas 
+#2. Perform gene selection:
+if args.gene_list != "None": # read in csv and subset both anndatas
     reduced_gene_set = pd.read_csv(args.gene_list, header = 0)
     reduced_gene_set.columns = ["HVGs"]
     adata_sc.var["selected_gene"] = adata_sc.var.index.isin(reduced_gene_set["HVGs"])
@@ -204,7 +207,7 @@ if args.gene_list != "None": # read in csv and subset both anndatas
         sys.exit(
             "Not all genes of the gene list are present in the reference as well as in the ST data. Please provide a gene list where all genes are present in both, reference and ST.")
 
-else: # perform feature selection according to cell2loc 
+else: # perform feature selection according to cell2loc
     if remove_mt is True: 
         adata_st.var["MT_gene"] = [gene.startswith("MT-") for gene in adata_st.var.index]
         adata_st.obsm["MT"] = adata_st[:, adata_st.var["MT_gene"].values].X.toarray()
@@ -243,7 +246,7 @@ if "means_per_cluster_mu_fg" in adata_sc.varm.keys():
 else:
     inf_aver = adata_sc.var[[f"means_per_cluster_mu_fg_{i}" for i in adata_sc.uns["mod"]["factor_names"]]].copy()
 inf_aver.columns = adata_sc.uns["mod"]["factor_names"]
-inf_aver.to_csv("Cell2Loc_inf_aver.csv")
+inf_aver.to_csv(output_dir+"/Cell2Loc_inf_aver.csv")
 
 # plot QC
 cell2loc_plot_QC_reference(model_ref, figdir + "/QC_reference_reconstruction_accuracy.png", figdir + "/QC_reference_expression signatures_vs_avg_expression.png")
@@ -252,7 +255,7 @@ cell2loc_plot_QC_reference(model_ref, figdir + "/QC_reference_reconstruction_acc
 mdata_singlecell.mod["rna"] = adata_sc
 mdata_singlecell.update()
 if save_models is True:
-    model_ref.save("Reference_model", overwrite=True)
+    model_ref.save(output_dir +"/Reference_model", overwrite=True)
 
 
        
@@ -287,13 +290,12 @@ sc.pl.spatial(adata_st,color=adata_st.uns["mod"]["factor_names"], show = False, 
 mdata_spatial.mod["spatial"] = adata_st
 mdata_spatial.update()
 if save_models is True: 
-    model_spatial.save("Spatial_mapping_model", overwrite=True)
+    model_spatial.save(output_dir+"/Spatial_mapping_model", overwrite=True)
 
 
-    
 #6. save mudatas 
-mdata_singlecell.write("./Cell2Loc_screference_output.h5mu")
-mdata_spatial.write("./Cell2Loc_spatial_output.h5mu")
+mdata_singlecell.write(output_dir+"/Cell2Loc_screference_output.h5mu")
+mdata_spatial.write(output_dir+"/Cell2Loc_spatial_output.h5mu")
 
 
 L.info("Done")
