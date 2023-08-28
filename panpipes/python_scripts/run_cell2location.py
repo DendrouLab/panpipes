@@ -7,14 +7,18 @@ warnings.simplefilter(action='ignore', category=FutureWarning)
 import cell2location as c2l
 import scanpy as sc
 import pandas as pd
-import matplotlib as plt
 import muon as mu
-import numpy as np
 
 import os
 import argparse
 import sys
 import logging
+
+from panpipes.funcs.plotting import cell2loc_plot_QC_reference
+from panpipes.funcs.plotting import cell2loc_plot_QC_reconstr
+from panpipes.funcs.plotting import cell2loc_plot_history
+from panpipes.funcs.scmethods import cell2loc_filter_genes
+
 
 L = logging.getLogger()
 L.setLevel(logging.INFO)
@@ -35,7 +39,10 @@ parser.add_argument("--input_spatial",
 parser.add_argument("--input_singlecell",
                     help="path to mudata of single-cell reference data")
 parser.add_argument("--figdir",
-                    default="./figures/",
+                    default="./figures/Cell2Location",
+                    help="path to save the figures to")
+parser.add_argument("--output_dir",
+                    default="./cell2location.output",
                     help="path to save the figures to")
 parser.add_argument("--save_models",
                     default=False,
@@ -106,20 +113,20 @@ parser.add_argument("--max_epochs_st",
                     help="")  
 
 
-
-
 args, opt = parser.parse_known_args()
 
 L.info("running with args:")
 L.debug(args)
 
 figdir = args.figdir
-
 if not os.path.exists(figdir):
     os.mkdir(figdir)
-
 sc.settings.figdir = figdir
 sc.set_figure_params(scanpy=True, fontsize=14, dpi=300, facecolor='white', figsize=(5,5))
+
+output_dir = args.output_dir
+if not os.path.exists(output_dir):
+    os.mkdir(output_dir)
 
 
 if args.N_cells_per_location is None: 
@@ -132,12 +139,12 @@ if args.detection_alpha is None:
     
 if (args.save_models is False) or (args.save_models == "False"): 
     save_models = False
-elif args.save_models == "True":
+else:
     save_models = True
       
 if (args.remove_mt is True) or (args.remove_mt == "True"): 
     remove_mt = True
-elif args.remove_mt == "False":
+else:
     remove_mt = False
 
 
@@ -174,7 +181,8 @@ else:
 
 
 
-#1. read in the data 
+
+#1. read in the data
 #spatial: 
 mdata_spatial = mu.read(args.input_spatial)
 adata_st = mdata_spatial.mod['spatial']
@@ -184,20 +192,22 @@ adata_sc = mdata_singlecell.mod['rna']
 
 
 
-#2. Perform gene selection: 
-if args.gene_list != "None": # read in csv and subset both anndatas 
+#2. Perform gene selection:
+if args.gene_list != "None": # read in csv and subset both anndatas
     reduced_gene_set = pd.read_csv(args.gene_list, header = 0)
     reduced_gene_set.columns = ["HVGs"]
-    adata_sc.var["selected_gene"] = adata_sc.var.index.isin(reduced_gene_set["HVFs"])
-    adata_st.var["selected_gene"] = adata_st.var.index.isin(reduced_gene_set["HVFs"])
-    if np.sum(adata_sc.var.selected_gene) != np.sum(adata_st.var.selected_gene):
-        L.error("Not all genes of the gene list are present in the reference as well as in the ST data. Please provide a gene list where all genes are present in both, reference and ST.")
-        sys.exit("Not all genes of the gene list are present in the reference as well as in the ST data. Please provide a gene list where all genes are present in both, reference and ST.")
+    adata_sc.var["selected_gene"] = adata_sc.var.index.isin(reduced_gene_set["HVGs"])
+    adata_st.var["selected_gene"] = adata_st.var.index.isin(reduced_gene_set["HVGs"])
     adata_sc = adata_sc[:, adata_sc.var["selected_gene"]]
     adata_st = adata_st[:, adata_st.var["selected_gene"]]
+    # check whether all genes are present in both, spatial & reference
+    if set(adata_st.var.index) != set(adata_sc.var.index):
+        L.error(
+            "Not all genes of the gene list %s are present in the reference as well as in the ST data. Please provide a gene list where all genes are present in both, reference and ST.", args.gene_list)
+        sys.exit(
+            "Not all genes of the gene list are present in the reference as well as in the ST data. Please provide a gene list where all genes are present in both, reference and ST.")
 
-    
-else: # perform feature selection according to cell2loc 
+else: # perform feature selection according to cell2loc
     if remove_mt is True: 
         adata_st.var["MT_gene"] = [gene.startswith("MT-") for gene in adata_st.var.index]
         adata_st.obsm["MT"] = adata_st[:, adata_st.var["MT_gene"].values].X.toarray()
@@ -206,10 +216,11 @@ else: # perform feature selection according to cell2loc
     shared_features = [feature for feature in adata_st.var_names if feature in adata_sc.var_names]
     adata_sc = adata_sc[:, shared_features]
     adata_st = adata_st[:, shared_features]
-    # select features 
-    selected = c2l.utils.filtering.filter_genes(adata_sc,  cell_count_cutoff=float(args.cell_count_cutoff), 
-                                                cell_percentage_cutoff2=float(args.cell_percentage_cutoff2),
+    # select features
+    selected = cell2loc_filter_genes(adata_sc, figdir + "/gene_filter.png", cell_count_cutoff=float(args.cell_count_cutoff),
+                                               cell_percentage_cutoff2=float(args.cell_percentage_cutoff2),
                                                 nonz_mean_cutoff=float(args.nonz_mean_cutoff))
+
     adata_sc = adata_sc[:, selected]
     adata_st = adata_st[:, selected]
 
@@ -226,8 +237,7 @@ model_ref = c2l.models.RegressionModel(adata_sc)
 model_ref.train(max_epochs=max_epochs_reference)
 
 # plot elbo
-model_ref.plot_history()
-plt.pyplot.savefig(figdir + "/ELBO_reference.png")
+cell2loc_plot_history(model_ref, figdir + "/ELBO_reference_model.png")
 
 # export results
 adata_sc = model_ref.export_posterior(adata_sc)
@@ -236,18 +246,16 @@ if "means_per_cluster_mu_fg" in adata_sc.varm.keys():
 else:
     inf_aver = adata_sc.var[[f"means_per_cluster_mu_fg_{i}" for i in adata_sc.uns["mod"]["factor_names"]]].copy()
 inf_aver.columns = adata_sc.uns["mod"]["factor_names"]
-inf_aver.to_csv("Cell2Loc_inf_aver.csv")
+inf_aver.to_csv(output_dir+"/Cell2Loc_inf_aver.csv")
 
-# plot QC 
-model_ref.plot_QC()
-plt.pyplot.savefig(figdir + "/QC_reference.png")
+# plot QC
+cell2loc_plot_QC_reference(model_ref, figdir + "/QC_reference_reconstruction_accuracy.png", figdir + "/QC_reference_expression signatures_vs_avg_expression.png")
 
-# save model and update mudata 
-#mdata_singlecell.update()
+# save model and update mudata
 mdata_singlecell.mod["rna"] = adata_sc
 mdata_singlecell.update()
 if save_models is True:
-    model_ref.save("Reference_model", overwrite=True)
+    model_ref.save(output_dir +"/Reference_model", overwrite=True)
 
 
        
@@ -266,12 +274,11 @@ model_spatial = c2l.models.Cell2location(adata = adata_st, cell_state_df=inf_ave
 model_spatial.train(max_epochs=max_epochs_st)
 
 #plot elbo
-model_spatial.plot_history()
-plt.pyplot.savefig(figdir + "/ELBO_spatial_mapping.png")
+cell2loc_plot_history(model_spatial, figdir + "/ELBO_spatial_model.png")
 #extract posterior
 adata_st = model_spatial.export_posterior(adata_st)
-model_spatial.plot_QC()
-plt.pyplot.savefig(figdir + "/QC_spatial_mapping.png")
+#plot QC
+cell2loc_plot_QC_reconstr(model_spatial, figdir + "/QC_spatial_reconstruction_accuracy.png")
 
 
 #plot output
@@ -279,18 +286,16 @@ adata_st.obs[adata_st.uns["mod"]["factor_names"]] = adata_st.obsm["q05_cell_abun
 sc.pl.spatial(adata_st,color=adata_st.uns["mod"]["factor_names"], show = False, save = "_Cell2Loc_q05_cell_abundance_w_sf.png") 
 
 
-# save model and update mudata 
-#mdata_spatial.update()
+# save model and update mudata
 mdata_spatial.mod["spatial"] = adata_st
 mdata_spatial.update()
 if save_models is True: 
-    model_spatial.save("Spatial_mapping_model", overwrite=True)
+    model_spatial.save(output_dir+"/Spatial_mapping_model", overwrite=True)
 
 
-    
 #6. save mudatas 
-mdata_singlecell.write("./Cell2Loc_screference_output.h5mu")
-mdata_spatial.write("./Cell2Loc_spatial_output.h5mu")
+mdata_singlecell.write(output_dir+"/Cell2Loc_screference_output.h5mu")
+mdata_spatial.write(output_dir+"/Cell2Loc_spatial_output.h5mu")
 
 
 L.info("Done")
