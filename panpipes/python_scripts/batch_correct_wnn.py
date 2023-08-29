@@ -122,11 +122,12 @@ for kmod in dict_graph.keys():
                     repuse = dict_graph[kmod]["obsm"] 
                 else:
                     L.info("could not find the desired obsm and the anndata slot is empty, will calculate on the flight")
-                    if kmod =="atac" & "X_lsi" in tmp.mod[kmod].obsm.keys():
-                        repuse = "X_lsi"
-                    else:
-                        repuse = "X_pca"
-                    L.info("falling back on %s" %(repuse) )
+                    if kmod =="atac":
+                        if "X_lsi" in tmp.mod[kmod].obsm.keys():
+                            repuse = "X_lsi"
+                        else:
+                            repuse = "X_pca"
+                        L.info("falling back on %s" %(repuse) )
             
                     L.info("calculating neighbours")
                     if repuse != "X_bbknn":
@@ -142,22 +143,24 @@ for kmod in dict_graph.keys():
             L.info("Using %s" %(dict_graph[kmod]["obsm"]))            
     else:
         L.info("could not find the desired obsm and the anndata slot is empty, will calculate on the flight")
-        if kmod =="atac" & "X_lsi" in tmp.mod[kmod].obsm.keys():
-            repuse = "X_lsi"
-        else:
-            repuse = "X_pca"
-        L.info("falling back on %s" %(repuse) )
+        repuse ="X_pca"
+        if kmod =="atac":
+            if "X_lsi" in tmp.mod[kmod].obsm.keys():
+                repuse = "X_lsi"
+            else:
+                repuse = "X_pca"
+            L.info("falling back on %s" %(repuse) )
 
         L.info("calculating neighbours")
-        if repuse != "X_bbknn":
-            run_neighbors_method_choice(tmp.mod[kmod], 
-                method=pkmod['method'], 
-                n_neighbors=int(pkmod['k']), 
-                n_pcs=min(int(pkmod['npcs']), mdata.var.shape[0]-1), #this should be the # rows of var, not obs
-                metric=pkmod['metric'], 
-                #does this throw an error if no PCA for any single mod is stored?
-                use_rep=repuse,
-                nthreads=max([threads_available, 6]))
+        
+        run_neighbors_method_choice(tmp.mod[kmod], 
+            method=pkmod['method'], 
+            n_neighbors=int(pkmod['k']), 
+            n_pcs=min(int(pkmod['npcs']), mdata.var.shape[0]-1), #this should be the # rows of var, not obs
+            metric=pkmod['metric'], 
+            #does this throw an error if no PCA for any single mod is stored?
+            use_rep=repuse,
+            nthreads=max([threads_available, 6]))
 
 L.debug(tmp)
 tmp.update()
