@@ -236,7 +236,7 @@ prot:
   clr_margin: 1
 
   # DSB parameters:
-   # you must specify the path to the background h5mu created in pipeline qc_mm in order to run dsb.
+   # you must specify the path to the background h5mu created in pipeline ingest in order to run dsb.
   background_obj:
  # quantile clipping, even with normalisation, 
   # some cells get extreme outliers which can be clipped as discussed https://github.com/niaid/dsb

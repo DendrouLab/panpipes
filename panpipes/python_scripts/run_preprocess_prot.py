@@ -55,7 +55,7 @@ parser.add_argument("--save_mudata_path",
               
 
 args, opt = parser.parse_known_args()
-# args = argparse.Namespace(filtered_mudata='test.h5mu', bg_mudata='/well/cartography/users/zsj686/non_cart_projects/005-multimodal_scpipelines/qc_mm/test_raw.h5mu', channel_col=None, normalisation_methods='clr,dsb', clr_margin='0', quantile_clipping='True', figpath='./figures/adt', save_mtx=False, save_mudata_path='test.h5mu')
+# args = argparse.Namespace(filtered_mudata='test.h5mu', bg_mudata='/well/cartography/users/zsj686/non_cart_projects/005-multimodal_scpipelines/ingest/test_raw.h5mu', channel_col=None, normalisation_methods='clr,dsb', clr_margin='0', quantile_clipping='True', figpath='./figures/adt', save_mtx=False, save_mudata_path='test.h5mu')
 save_mtx=pnp.pp.check_for_bool(args.save_mtx)
 
 norm_methods = args.normalisation_methods.split(',')

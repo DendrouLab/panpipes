@@ -90,6 +90,7 @@ for x in wnn_params_bc.keys():
     else: 
         dict_graph[x]["obsm"] = None
 
+L.debug(dict_graph)
 
 for kmod in dict_graph.keys():
     L.info(kmod)
@@ -105,12 +106,19 @@ for kmod in dict_graph.keys():
                         L.info("reading precomputed connectivities for bbknn")
                         adata = mu.read(dict_graph[kmod]["anndata"])
                         tmp.mod[kmod].obsp = adata.obsp.copy()
+                        tmp.mod[kmod].obsm[dict_graph[kmod]["obsm"]] = adata.obsm[dict_graph[kmod]["obsm"]].copy()
                         tmp.mod[kmod].uns["neighbors"]= adata.uns["neighbors"].copy()
+                        tmp.update()
             else:
                 if dict_graph[kmod]["anndata"] is not None:
                     L.info("provided mdata doesn't have the desired obsm. reading the batch corrected data from another stored object")
                     adata = mu.read(dict_graph[kmod]["anndata"])
+                    L.debug(kmod + "object")
+                    L.debug(adata)
                     tmp.mod[kmod].obsm[dict_graph[kmod]["obsm"]] = adata.obsm[dict_graph[kmod]["obsm"]].copy()
+                    tmp.mod[kmod].obsp = adata.obsp.copy()
+                    tmp.mod[kmod].uns['neighbors'] = adata.uns['neighbors'].copy()
+                    tmp.update()
                     repuse = dict_graph[kmod]["obsm"] 
                 else:
                     L.info("could not find the desired obsm and the anndata slot is empty, will calculate on the flight")
@@ -151,6 +159,9 @@ for kmod in dict_graph.keys():
                 use_rep=repuse,
                 nthreads=max([threads_available, 6]))
 
+L.debug(tmp)
+tmp.update()
+L.debug(tmp)
 L.info("Now running WNN")
 
 mu.pp.neighbors(tmp, 

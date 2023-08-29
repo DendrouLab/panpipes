@@ -32,23 +32,28 @@ def findTopFeatures_pseudo_signac(adata, min_cutoff):
         "tc[x]": "tc" followed by a minimum total count, e.g. tc100 will set features with total counts > 100 as highly variable
         "NULL": All features are assigned as highly variable
         "NA": Highly variable features won't be changed
-    :return: percentile rank of each feature stored in "adata.var["percentile"], highly variable features stored in adata.var["highly_variable"].
+    :return: Percentile rank of each feature stored in "adata.var["percentile"], highly variable features stored in adata.var["highly_variable"].
+    "total_counts" and "n_cells_by_counts" also saved, if not present.
     Filtering is done according to the "min_cutoff" parameter. If min_cutoff == NA, adata.var["highly_variable"] won't be changed
     """
+    if "total_counts" not in adata.var:
+        adata.var["total_counts"] = np.ravel(adata.layers["raw_counts"].sum(axis=0))
+    if "n_cells_by_counts" not in adata.var:
+        if issparse(adata.layers["raw_counts"]):
+            adata.var["n_cells_by_counts"] = adata.layers["raw_counts"].getnnz(axis=0)
+        else:
+            adata.var["n_cells_by_counts"] = np.count_nonzero(adata.layers["raw_counts"], axis=0)
+
 
     if "percentile" not in adata.var:
         # fit ecdf
         ecdf = ECDF(adata.var["total_counts"])
-        extracted = adata.var[["gene_ids", "total_counts"]]
+        extracted = adata.var[["total_counts"]]
         extracted = extracted.sort_values("total_counts", ascending=False)
         # add decreasingly ordered percentiles to dataframe:
         extracted["percentile"] = -np.sort(-ecdf.y)[:-1]  # last percentile always corresponds to the percentile of -Inf
-        # merge extracted with adata.var by "gene_ids", i.e. feature name
-        extracted = pd.merge(adata.var, extracted.drop("total_counts", axis=1), on="gene_ids")
-        # add row names
-        extracted.index = adata.var["gene_ids"]
-        extracted.index.name = None
-        adata.var = extracted
+        # merge with adata.var
+        adata.var = pd.merge(adata.var, extracted.drop("total_counts", axis=1), left_index=True, right_index=True)
 
     if min_cutoff.startswith("q"):  # quantile filtering
         min_cutoff = int(min_cutoff[1:]) / 100

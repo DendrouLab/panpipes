@@ -30,7 +30,7 @@ def main(argv=None):
     paths = [path, relpath]
     if len(argv) == 1 or argv[1] == "--help" or argv[1] == "-h":
         print("The list of available workflows are:\n")
-        pipelines_list = ['1. "qc_mm" : for the ingestion of data and computation of QC metrics' , 
+        pipelines_list = ['1. "ingest" : for the ingestion of data and computation of QC metrics' , 
                           '2. "preprocess" : for filtering and normalising of each modality',
                           '3. "integration" : integrate and batch correction using  single and multimodal methods', 
                           '4. "clustering" : cell clustering on single modalities', 
