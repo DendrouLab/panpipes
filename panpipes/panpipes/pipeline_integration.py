@@ -208,7 +208,7 @@ def run_scanorama(outfile):
         cmd += " --neighbors_k %s" % neighbor_params['k']
     cmd += " > logs/rna_scanorama.log " 
     #job arguments
-    job_kwargs={}
+    
     if PARAMS['queues_long'] is not None:
         job_kwargs["job_queue"] = job_queue=PARAMS['queues_long']
     job_kwargs["job_threads"] = PARAMS['resources_threads_high']
