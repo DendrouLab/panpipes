@@ -35,6 +35,10 @@ modality: rna
 # does your query data have a batch effect, what column?
 # transform_batch term is only used in totalvi?
 query_batch:
+# does your query have a celltype annotation you want to use to compare to
+# the transferred label?
+# leave empty if not
+query_celltype: 
 #----------------------
 # scvi tools params
 #----------------------
@@ -51,13 +55,15 @@ totalvi:
   - path_to_totalvi2
 impute_proteins: True
 transform_batch:
-# if you did not run scanvi, and you want to simply map query onto reference, 
-# path_to_scvi will be used to initialize scanvi for label transfer.
-# if you have an initialized scanvi model instead, add it here
+# Specify the full path to the model, i.e. Path/to/scanvi/model.pt
+# if not running the method, remove the dummy - path_to_xxx and leave blank
 scvi:
   - path_to_scvi
 scanvi: 
   - path_to_scanvi 
+# for scvi and totalvi, if the reference model has a trained random forest classifier, use to
+# classify cells in the query
+run_randomforest: False
 
 
 

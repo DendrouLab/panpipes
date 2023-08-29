@@ -77,55 +77,33 @@ def run_refmap_scvi(infile, outfile, log_file, ref_architecture ):
     --query_data %(query)s
     --reference_path %(infile)s
     --reference_architecture  %(ref_architecture)s
-
     --neighbors_n_pcs %(neighbors_npcs)s
     --neighbors_method %(neighbors_method)s
     --neighbors_k %(neighbors_k)s
     --neighbors_metric %(neighbors_metric)s
     """
+    if PARAMS['query_celltype'] is not None:
+        cmd += " --query_celltype %(query_celltype)s"
     if PARAMS['transform_batch']:
         cmd += " --transform_batch %(query_batch)s"
     if PARAMS['reference_data'] is not None:
         cmd += " --adata_reference %(reference_data)s "
     if ref_architecture == "totalvi":
        cmd += "  --impute_proteins %(impute_proteins)s"
+    if PARAMS['run_randomforest'] is not None:
+        cmd += " --predict_rf %(run_randomforest)s"
+       
     cmd += " > %(log_file)s"
     job_kwargs["job_threads"] = PARAMS['resources_threads_low']
     P.run(cmd, **job_kwargs)
 
-
-
-# ------------------------------
-# refmap Seurat wnn
-# ------------------------------
-
-@follows(set_up_dirs)
-@originate("logs/refmap_wnn.log")
-def run_refmap_wnn(outfile):
-    cmd = """
-        Rscript %(r_path)s/refmap_wnn.R
-            --reference_path %(wnn)s
-            --query_path %(query_path)s 
-          """  
-    if PARAMS["wnn_mapping_normalization"] is not None:
-        cmd +=" --wnn_mapping_normalization %s" % PARAMS["wnn_mapping_normalization"]
-    if PARAMS["normalize"]:
-        cmd +=" --normalize TRUE"
-    else:
-        cmd +=" --normalize FALSE"
-
-
-    job_kwargs["job_threads"] = PARAMS['resources_threads_low']
-    
-    P.run(cmd, **job_kwargs)
-   
 #-------------------------------
 # collate umaps here (actually not done)
 #-------------------------------
 
 # this COLLATE job will become the big final collate job across all possible combinations you may have run
 
-@collate([run_refmap_scvi, run_refmap_wnn], #multimodal
+@collate([run_refmap_scvi], #multimodal
          regex(r"refmap/(.*)"), # this does nothing
           r'refmap/combined_umaps.tsv')
 def plot_umaps(infiles,outfile):

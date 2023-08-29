@@ -30,7 +30,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--query_data',
                     default='adata_scaled.h5ad',
                     help='path to query data. can be a raw 10x dataset or a preprocessed anndata/mudata')
-parser.add_argument('--query_celltype',default='celltype',
+parser.add_argument('--query_celltype',default=None,
                     help='if query has already a column with cell labeling in obs. Default to "celltype" ')
 parser.add_argument('--adata_reference',
                     default='adata_.h5ad',
@@ -56,7 +56,6 @@ parser.add_argument('--neighbors_k', default=30,
                     help="neighbors k")
 parser.add_argument('--neighbors_metric',default="euclidean",
                     help="neighbor metric, e.g. euclidean or cosine")
-
 
 args, opt = parser.parse_known_args()
 sc.settings.figdir = "figures/"
@@ -161,7 +160,7 @@ if reference_architecture=="scanvi":
     adata_query.obsm["X_scANVI"] = vae_q.get_latent_representation()
     adata_query.obs["predictions"] = vae_q.predict()
     if args.query_celltype is not None:
-        L.info("Query has celltypes in column %i, i will plot what predictions look like from scanvi model" % args.query_celltype)
+        L.info("Query has celltypes in column %s, i will plot what predictions look like from scanvi model" % args.query_celltype)
         df = adata_query.obs.groupby([str(args.query_celltype), "predictions"]).size().unstack(fill_value=0)
         norm_df = df / df.sum(axis=0)
 
@@ -171,6 +170,7 @@ if reference_architecture=="scanvi":
         _ = plt.yticks(np.arange(0.5, len(df.index), 1), df.index)
         plt.xlabel("Predicted")
         plt.ylabel("Observed")
+        plt.tight_layout()
         file_name = "SCANVI_predicted_vs_observed_labels_query_data"
         plt.savefig(os.path.join("figures/", file_name + ".png"))
         
@@ -279,6 +279,7 @@ if reference_architecture=="totalvi":
             _ = plt.yticks(np.arange(0.5, len(df.index), 1), df.index)
             plt.xlabel("Predicted")
             plt.ylabel("Observed")
+            plt.tight_layout()
             file_name = "totalvi_predicted_vs_observed_labels_query_data"
             plt.savefig(os.path.join("figures/", file_name + ".png"))
         
@@ -352,7 +353,7 @@ file_name= "umap_" + model_name + "_" + latent_choice
 
 fig = sc.pl.embedding(adata_full, basis = "umap",color=["is_reference"],
          show=False, return_fig=True)
-
+fig.tight_layout()
 fig.savefig(os.path.join("figures/", file_name + ".png"))
 
 umap = pd.DataFrame(adata_full.obsm['X_umap'], adata_full.obs.index)
