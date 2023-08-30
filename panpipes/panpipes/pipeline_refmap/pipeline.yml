@@ -39,6 +39,9 @@ query_batch:
 # the transferred label?
 # leave empty if not
 query_celltype: 
+# does your query have a covariat annotation you want to use to calculate
+# scib metrics on? leave empty if not
+query_covariates:
 #----------------------
 # scvi tools params
 #----------------------
@@ -54,6 +57,7 @@ totalvi:
   - path_to_totalvi1
   - path_to_totalvi2
 impute_proteins: True
+#specific to totalvi
 transform_batch:
 # Specify the full path to the model, i.e. Path/to/scanvi/model.pt
 # if not running the method, remove the dummy - path_to_xxx and leave blank
@@ -99,26 +103,6 @@ neighbors:
     metric: euclidean
     # scanpy | hnsw (from scvelo)
     method: scanpy
-
-#----------------------
-# wnn seurat params
-#----------------------
-
-wnn: path_to_wnn_h5
-# instead to a path to a model, in wnn you have to provide a path to a seurat or mudata/anndata object with wnn integration precomputed
-wnn_mapping_normalization: SCTransform, LogNormalize
-# specify normalization to use for query data, same used to build reference wnn.
-normalize: False
-# if RNA is pre-normalized specify method above and set normalize to False
-# provide here a dictionary of the columns or assays you want to predict as defined here
-# https://satijalab.org/seurat/reference/transferdata
-# for the param refdata ( https://satijalab.org/seurat/reference/transferdata#:~:text=(%0A%20%20anchorset%2C-,refdata,-%2C%0A%20%20reference%20%3D%20NULL)
-# if multiple lines are specified these will be supplied as list.
-# write as the example that follows [column_or_data_to_create_in_query]:[name_of_data_in_reference]
-refdata:
-  celltype.l1 : celltype.l1
-  celltype.l2 : celltype.l2
-  predicted_ADT : ADT
 
 
 

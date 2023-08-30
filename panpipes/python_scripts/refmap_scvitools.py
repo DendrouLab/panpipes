@@ -359,7 +359,7 @@ fig.savefig(os.path.join("figures/", file_name + ".png"))
 umap = pd.DataFrame(adata_full.obsm['X_umap'], adata_full.obs.index)
 
 umap.to_csv(os.path.join("refmap/", file_name + ".csv") )
-file_name= "query_to_reference_" + model_name + "_" + latent_choice + ".h5mu" #change this to mudata
+file_name= "query_to_reference_" + model_name + "_" + latent_choice + ".h5mu" 
 
 mdata_save = MuData({"rna":adata_full})
 

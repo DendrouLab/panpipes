@@ -84,8 +84,12 @@ def run_refmap_scvi(infile, outfile, log_file, ref_architecture ):
     """
     if PARAMS['query_celltype'] is not None:
         cmd += " --query_celltype %(query_celltype)s"
-    if PARAMS['transform_batch']:
-        cmd += " --transform_batch %(query_batch)s"
+    if PARAMS['query_batch'] is None:
+        if ref_architecture=="totalvi":
+            if PARAMS['transform_batch'] is not None:
+                cmd += " --transform_batch %(transform_batch)s"
+    else:
+        cmd += " --transform_batch %(query_batch)s"    #what do we need this for in the Q2R rna
     if PARAMS['reference_data'] is not None:
         cmd += " --adata_reference %(reference_data)s "
     if ref_architecture == "totalvi":
@@ -97,30 +101,44 @@ def run_refmap_scvi(infile, outfile, log_file, ref_architecture ):
     job_kwargs["job_threads"] = PARAMS['resources_threads_low']
     P.run(cmd, **job_kwargs)
 
-#-------------------------------
-# collate umaps here (actually not done)
-#-------------------------------
 
-# this COLLATE job will become the big final collate job across all possible combinations you may have run
+##TODO remove this collate job cause plotting is now in the script
+# @collate([run_refmap_scvi], #multimodal
+#          regex(r"refmap/(.*)"), # this does nothing
+#           r'refmap/combined_umaps.tsv')
+# def plot_umaps(infiles,outfile):
+#     infiles_string = ','.join(infiles)
+#     cell_mtd_file = "cell_mtd.csv"
+#     cmd = """python %(py_path)s/refmap_plot_umaps.py 
+#     --input_mudata %(query)s
+#     --input_umap_files %(infiles_string)s 
+#     --output_combined_umaps_tsv %(outfile)s
+#     """ 
+#     cmd += " > logs/collate_outputs.log "
+#     job_kwargs["job_threads"] = PARAMS['resources_threads_low']
+#     P.run(cmd, **job_kwargs)  
 
-@collate([run_refmap_scvi], #multimodal
-         regex(r"refmap/(.*)"), # this does nothing
-          r'refmap/combined_umaps.tsv')
-def plot_umaps(infiles,outfile):
-    infiles_string = ','.join(infiles)
-    cell_mtd_file = "cell_mtd.csv"
-    cmd = """python %(py_path)s/refmap_plot_umaps.py 
-    --input_mudata %(query)s
-    --input_umap_files %(infiles_string)s 
-    --output_combined_umaps_tsv %(outfile)s
-    """ 
-    cmd += " > logs/collate_outputs.log "
-    job_kwargs["job_threads"] = PARAMS['resources_threads_low']
+@transform(run_refmap_scvi,
+           regex(r"refmap/umap_(.*).csv"),
+           r'logs/refmapscib_\1.log')
+def run_scib_refmap(infile,logfile):
+    str_use = os.path.splitext(os.path.basename(infile).replace("umap_", "").replace(".csv", ""))[0]
+    mudata_input= "query_to_reference_" + str_use + ".h5mu"
+    repuse = "X_"+ str_use.split("_")[-1]    
+    cmd="""
+    python %(py_path)s/refmap_scib.py
+    --query ./refmap/%(mudata_input)s
+    --repuse %(repuse)s
+    --covariate %(query_celltype)s
+    --outdir ./refmap/ > %(logfile)s
+    """
+    if PARAMS["query_batch"] is not None:
+        cmd += " --batch_key %(query_batch)s" 
+    job_kwargs["job_threads"] = PARAMS['resources_threads_medium']
     P.run(cmd, **job_kwargs)  
 
 
-
-@follows(run_refmap_scvi)
+@follows(run_scib_refmap)
 def full():
     """
     All cgat pipelines should end with a full() function which updates,
