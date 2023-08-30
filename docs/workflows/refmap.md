@@ -1,8 +1,9 @@
 Reference Mapping (refmap)
 ======
 
-The reference mapping pipeline `panpipes refmap` implements scvi-tools reference mapping tools `scvi`, `totalvi` and `scanvi`, and the Muon implementation of `wnn`.
-For the scvi-tools methods, you can supply an anndata/mudata containing RNA data, or the simply the saved model data from a previous run. You can even use an scvi model created previously by `panpipes integration`.
+The reference mapping pipeline `panpipes refmap` implements scvi-tools reference mapping tools `scvi`, `totalvi` and `scanvi`.
+You can supply an query anndata/mudata containing RNA, and the reference model `path_to_model\model.pt`. Since reference and query have to work from the same subset of genes, you can also supply the reference anndata/mudata containing RNA or RNA+PROT (for `totalvi`) so the genes selection can be unified and the resulting plots include the reference cells together with the query. 
+Note that you can even use a reference scvi model created previously by `panpipes integration`.
 
 Steps:
 ------
