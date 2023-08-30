@@ -120,7 +120,7 @@ def plot_umaps(infiles,outfile):
 
 
 
-@follows(plot_umaps)
+@follows(run_refmap_scvi)
 def full():
     """
     All cgat pipelines should end with a full() function which updates,
