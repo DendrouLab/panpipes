@@ -1,0 +1,74 @@
+{% set name = "panpipes" %}
+{% set version = "0.2.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://files.pythonhosted.org/packages/d2/da/eaf918b5ab029d41f39316bfafa17b8ad86ccca0c5ae365a7885dd470614/panpipes-0.2.0.tar.gz
+  sha256: 68b2f3de4a5ab5a69c5cdab7e8d0f3fca9c96cb24c8d09a62b0602398cbc08a5
+
+build:
+  entry_points:
+    - panpipes = panpipes:entry.main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv
+  number: 0
+
+requirements:
+  host:
+    - python >=3.8
+    - setuptools >=43.0.0
+    - wheel
+    - pip
+  run:
+    - python >=3.8
+    - anndata >=0.8.0
+    - apsw
+    - bbknn ==1.6.0
+    - cgatcore
+    - drmaa
+    - gevent
+    - harmonypy
+    - leidenalg
+    - louvain
+    - matplotlib-base
+    - mofapy2
+    - mudata >=0.2.1
+    - muon
+    - numpy >=1.22.4
+    - packaging
+    - pandas >=1.0
+    - paramiko
+    - pep8
+    - pysam
+    - pytest
+    - pyyaml
+    - ruffus
+    - scanorama
+    - scanpy >=1.9.1
+    - seaborn
+    - scikit-misc
+    - scirpy
+    - scrublet
+    - scvi-tools >=0.16.3
+    - sqlalchemy
+
+test:
+  imports:
+    - panpipes
+  commands:
+    - pip check
+    - panpipes --help
+  requires:
+    - pip
+
+about:
+  summary: Panpipes - multimodal single cell pipelines
+  license: BSD-3-Clause
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - crichgriffin
