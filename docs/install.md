@@ -22,6 +22,7 @@ We recommend running panpipes within a virtual environment to maintain reproduci
 ### Option 1: create conda environment (Recommended)
 
 We create a conda environment with R and python
+Panpipes has a lot of dependencies, so you may want to consider [`mamba`](https://mamba.readthedocs.io/en/latest/index.html) instead of `conda for installation.
 
 ```
 conda config --add channels conda-forge
