@@ -4,3 +4,4 @@ build/
 panpipes.egg-info
 *.pyc
 .history
+*.code-workspace
