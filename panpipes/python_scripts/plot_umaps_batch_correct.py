@@ -114,6 +114,7 @@ for mod in umaps_df['mod'].unique():
         g = (g.map(sns.scatterplot, "umap_1", "umap_2", col, s=pointsize, linewidth=0))
         g.add_legend() 
         g.savefig(os.path.join(args.fig_dir, mod, "umap_method_" + str(col) + ".png"))
+        g.savefig(os.path.join(args.fig_dir, mod, "umap_method_" + str(col) + ".pdf"))
         fig, ax = batch_scatter_two_var(plt_df, "method", col, palette_choice=palette_choice)
         if fig is not None:
             fig.savefig(os.path.join(args.fig_dir, mod,  "umap_method_facet_" + str(col) + ".png"), dpi=300)
@@ -175,6 +176,7 @@ for mod in umaps_df['mod'].unique():
                         g = (g.map(sns.scatterplot, "umap_1", "umap_2", qc, s=pointsize, linewidth=0))
                         g.add_legend() 
                         g.savefig(os.path.join(args.fig_dir, mod, "umap_method_" + qc + ".png"), dpi = 300)
+                        g.savefig(os.path.join(args.fig_dir, mod, "umap_method_" + qc + ".pdf"))
                         plt.clf()
                     else:
                         L.info('skipping plot as too many categorys %s' % qc )

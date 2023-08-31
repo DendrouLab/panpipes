@@ -29,8 +29,8 @@ L.info(args)
 cell_meta_df = pd.read_csv(args.cell_meta_df, index_col=0)
 batch_dict = read_yaml(args.integration_dict)
 umaps = pd.read_csv(args.combined_umaps_df, sep="\t", index_col=0)
-L.info("fixing the batch_keys dictionary")
-for k in batch_dict.keys():
+#L.info("fixing the batch_keys dictionary")
+""" for k in batch_dict.keys():
     v=batch_dict[k]
     if k =="multimodal":
         mk = []
@@ -56,7 +56,7 @@ for k in batch_dict.keys():
         cell_meta_df[str(k)+ ":bc_batch"] = mod_meta_df.apply(lambda x: "|".join(str(x)), axis=1)
         batch_dict[k].append(k+ ":bc_batch")
     L.info("batch keys %s" %(batch_dict[k]))
-
+ """
 
 for md in batch_dict.keys():
     L.info("Running lisi on modality: %s" % md)
