@@ -195,3 +195,8 @@ resources:
 condaenv: /path/to/env
 ```
 
+On some machines, you may find that `panpipes` is not picking up the correct conda env even if launching the command from a shell where this environment is active. 
+This is normal conda behaviour and documented [here](https://github.com/conda/conda/issues/9392#issuecomment-1291041085). 
+To let the pipeline pick up the right enviornment, run `conda config --set auto_activate_base false`
+
+(or add `auto_activate_base: false` to your .condarc file)
