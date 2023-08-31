@@ -3,10 +3,10 @@ QC
 
 ## Pipeline steps for all modalities:
 
-Panpipes qc_mm loads and concatenates data from a variety of [filetype inputs](../usage/setup_for_qc_mm).
+Panpipes `ingestion` loads and concatenates data from a variety of [filetype inputs](../usage/setup_for_qc_mm).
 Panpipes creates a mudata object containing the data in assays called 'rna', 'prot', 'atac', and 'rep'. See the [mudata documentation](https://mudata.readthedocs.io/en/latest/) for more details on interactively accessing these data.
 
-Feature names will be force to be unique. This means that protein assay names will be prefixed with 'prot_'
+Feature names will be forced to be unique. This means that protein assay names will be prefixed with 'prot_'
 
 Then qc metrics are computed using [scanpy.pp.calculated_qc_metrics](https://scanpy.readthedocs.io/en/stable/generated/scanpy.pp.calculate_qc_metrics.html). Total counts per cell and total features per cell, are computed as standard, but the gene scores are completely customisable as described in the [gene list format page](../usage/gene_list_format). These metrics are plotted as violin plots, and scatters.
 
@@ -37,8 +37,12 @@ isotype_n_pass: 2
 
 
 ### ATAC QC steps
-- Per cell QC metrics computed
+QC for atac includes some modality specific metrics computation, namely:
 - TSS (transcription start site) enrichment is computed with [mu.atac.tl.tss_enrichment](https://muon.readthedocs.io/en/latest/api/generated/muon.atac.tl.tss_enrichment.html)
+- Percent fragments in peaks 
+- Number of mitochondrial reads per cell
+Please note that differently from what happens with other modalities,  `panpipes ingest` expects one multiome sample at the time, since concatenating different peak-callings may result in unwanted artefacts. Please check the cellranger documentation on how to aggregate multiple atac runs before using panpipes.
+  
 
 ### Repertoire (Rep) QC Steps
 - Using the [scirpy](https://scirpy.scverse.org/en/stable/index.html) library (v.0.12.0), the chains are qc'd with [scirpy.tl.chain_qc](https://scirpy.scverse.org/en/stable/generated/scirpy.tl.chain_qc.html)
@@ -62,16 +66,16 @@ There is an additional optional `assess_background` step, if the raw data (inclu
 3.  For adt assay - generate the protein metadata file
     [example]((https://github.com/DendrouLab/panpipes/blob/main/resources/protein_metadata_w_iso.md)).
     This file is integrated into the mdata\['prot'\].var slot.
-4.  Generate config file (`panpipes qc_mm config`)
+4.  Generate config file (`panpipes ingestion config`)
 5.  Edit the pipeline.yml file for your dataset
     -   this is explained step by step within the pipeline.yml file
-6.  Run complete qc pipeline with `panpipes qc_mm make full`
+6.  Run complete qc pipeline with `panpipes ingestion make full`
 7.  Use outputs to decide filtering thresholds.
     -   **Note that the actual filtering occurs in the first step of
         Preprocess pipeline**
     -   TODO: create doc to explain the pipeline outputs
 
-The h5mu file outputted from `qc_mm` contains concatenated raw counts
+The h5mu file outputted from `ingestion` contains concatenated raw counts
 from all samples in the submission file, plus qc metrics are computed,
 and these qc metrics are visualised in a variety of plots to aid the
 user to determine data quality and filtering thresholds.
