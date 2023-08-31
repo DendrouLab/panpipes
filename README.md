@@ -1,11 +1,11 @@
 # Panpipes - multimodal single cell pipelines 
 
 Created and Maintained by Charlotte Rich-Griffin and Fabiola Curion  
-Additional contributors: Devika Agarwal and Tom Thomas 
+Additional contributors: Sarah Ouologuem, Devika Agarwal and Tom Thomas 
 
 See our [preprint](https://www.biorxiv.org/content/10.1101/2023.03.11.532085v1):  
 Panpipes: a pipeline for multiomic single-cell data analysis  
-Charlotte Rich-Griffin, Fabiola Curion, Tom Thomas, Devika Agarwal, Fabian J. Theis, Calliope A. Dendrou.  
+Charlotte Rich-Griffin*, Fabiola Curion*, Tom Thomas, Devika Agarwal, Fabian J. Theis, Calliope A. Dendrou.  
 bioRxiv 2023.03.11.532085;  
 doi: https://doi.org/10.1101/2023.03.11.532085
 
@@ -20,7 +20,9 @@ Available pipelines:
 4. "clustering" : cell clustering on single modalities
 5. "refmap" : transfer scvi-tools models from published data to your data
 6. "vis" : visualise metrics from other pipelines in context of experiment metadata
-
+7. "qc_spatial": for the ingestion of Spatial Transcriptomics data (vizgen, visium) and computation of QC metrics
+8. "preprocess_spatial" : for filtering and normalising of ST data
+9. "deconvolution": for the cell type deconvolution of ST slides
 
 
 # Installation and configuration

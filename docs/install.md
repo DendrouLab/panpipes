@@ -157,7 +157,10 @@ Please note that if you specify the conda environment in the workflows configura
 
 
 
-If no environment is specified, the default behaviour of the pipeline is to inherit environment variables from the node where the pipeline is run. However there have been reported issues on SLURM clusters where this was not the default behaviour. In those instances we recommend to add the conda environment param in the .cgat.yml file or in each of the pipeline.yml independently.
+If no environment is specified, the default behaviour of the pipeline is to inherit environment variables from the node where the pipeline is run. However there have been reported issues on SLURM clusters where this was not the default behaviour. 
+
+
+We recommend to add the conda environment param in the .cgat.yml file or in each of the pipeline.yml independently.
 
 i.e. :
 
