@@ -155,9 +155,14 @@ If using conda environments, you can use one single big environment (the instruc
 The environment (s) should be specified in the .cgat.yml global configuration file or in each of the single workflows pipeline.yml configuration files and it will be picked up by the pipeline as the default environment. 
 Please note that if you specify the conda environment in the workflows configuration file this will be the first choice to run the pipeline. 
 
+On some machines, you may find that `panpipes` is not picking up the correct conda env even if launching the command from a shell where this environment is active. 
+This is normal conda behaviour and documented [here](https://github.com/conda/conda/issues/9392#issuecomment-1291041085). 
+To let the pipeline pick up the right enviornment, run `conda config --set auto_activate_base false`
+
+(or add `auto_activate_base: false` to your .condarc file)
 
 
-If no environment is specified, the default behaviour of the pipeline is to inherit environment variables from the node where the pipeline is run. However there have been reported issues on SLURM clusters where this was not the default behaviour. In those instances we recommend to add the conda environment param in the .cgat.yml file or in each of the pipeline.yml independently.
+We recommend to add the conda environment param in the .cgat.yml file or in each of the pipeline.yml independently.
 
 i.e. :
 
