@@ -20,7 +20,7 @@ neighbors:
 ```
 - generate UMAPS with different minimum distance parameters
 - calculate leiden or louvain clustering, at a range of resolutions, saving them as csv and in the MuData object.
-- visualise clustering on UMAPs and as a [clustree diagram](https://lazappi.github.io/clustree/articles/clustree.html)
+- visualise clustering on UMAPs and as a [clustree diagram](https://lazappi.github.io/clustree/articles/clustree.html). Note that it is important to specify more than 1 resolution for clustree to work.
 - identify top marker genes for each cluster at each clustering resolution, using [`scanpy.tl.rank_genes_groups`](https://scanpy.readthedocs.io/en/stable/generated/scanpy.tl.rank_genes_groups.html) saved as csvs. 
 
 

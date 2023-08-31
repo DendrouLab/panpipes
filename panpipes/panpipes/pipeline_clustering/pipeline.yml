@@ -108,6 +108,7 @@ umap:
 # ---------------------------------------
 # parameters for clustering
 # ---------------------------------------
+# For clustree to work you must specify more than one resolution.
 clusterspecs:
   rna:
     resolutions:
