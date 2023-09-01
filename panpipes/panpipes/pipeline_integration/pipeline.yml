@@ -385,8 +385,6 @@ final_obj:
   atac:
     include: False
     bc_choice: harmony
-    n_neighbors:
-    umap_min_dist:
   multimodal:
     include: True
     bc_choice: totalvi
