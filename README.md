@@ -31,4 +31,3 @@ See [installation instructions here](https://panpipes-pipelines.readthedocs.io/e
 
 Oxford BMRC Rescomp users find additional advice in [docs/installation_rescomp](https://github.com/DendrouLab/panpipes/blob/main/docs/installation_rescomp.md)
 
-
