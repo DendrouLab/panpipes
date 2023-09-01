@@ -1,17 +1,18 @@
 # ----------------------- #
 # QC pipeline DendrouLab
 # ----------------------- #
-# written by Charlotte Rich-Griffin, Thom Tomas, Fabiola Curion
-# maintained by Charlotte Rich-Griffin
-# needs a sample metadata file (see resources for an example)
+# written by Charlotte Rich-Griffin, Fabiola Curion
+
+# This pipeline needs a sample metadata file (see resources for an example)
 # will run :
 #   summary plots of 10x metrics
 #   scrublet scores
 #   scanpy QC
 #   summary QC plots
 
-# Followed by integration pipeline and clustering pipeline. This pipeline does not perform any filtering,
-# this happens as the first stpe in the integration pipeline. See pipeline_integration.yml for details
+# Followed by preprocess pipeline. 
+# The ingest pipeline does not perform any filtering of cells or genes.
+# Filtering happens as the first stpe in the preprocess pipeline. See pipeline_preprocess for details
 
 # Note that if you are combining mutliple datasets from different source the final anndata object will only contain the intersect of the genes
 # from all the data sets. For example if the mitochondrial genes have been excluded from one of the inputs, they will be excluded from the final data set.
@@ -45,7 +46,7 @@ sample_prefix: "test"
 use_existing_h5mu: False
 
 # submission_file format:
-# For qc_mm the required columns are
+# For ingest the required columns are
 # sample_id  rna_path  rna_filetype  (prot_path  prot_filetype tcr_path  tcr_filetype etc.)
 # Example at resources/sample_file_mm.txt
 submission_file: 
@@ -88,7 +89,7 @@ barcode_mtd:
 #---------------------------------------
 # Loading adt data - additional options
 #---------------------------------------
-# As default the qc_mm will choose the first column of the cellranger features.tsv.gz
+# As default the ingest will choose the first column of the cellranger features.tsv.gz
 # To merge extra information about the antibodies e.g. whether they are hashing antibodies or isotypes,
 # Create a table with the first column equivalent to the first column of cellrangers features.tsv.gz
 # and specify it below (save as txt file)
@@ -167,7 +168,7 @@ ccgenes: default
 # It's often practical to rely on known gene lists, for a series of tasks, like evaluating % of mitochondrial genes or
 # ribosomal genes, or excluding IGG genes from HVG selection. We collect useful gene lists in a file, resources/custom_gene_lists_v1.tsv, 
 # and define "actions" on them as follows:
-# (for pipeline_qc_mm.py)
+# (for pipeline_ingest.py)
 # calc_proportions: calculate proportion of reads mapping to X genes over total number of reads, per cell
 # score_genes: using scanpy.score_genes function, 
 # (for pipeline_integration.py)
@@ -227,7 +228,7 @@ isotype_n_pass: 2
 # i.e. the 10X channel. 
 # this is usually the sample_id column (otherwise leave the next parameter blank)
 channel_col: sample_id
-# It is important to note that in qc_mm the per channel normalised adt scores are not saved in the mudata object
+# It is important to note that in ingest the per channel normalised adt scores are not saved in the mudata object
 #  this is because if you perform feature normalisation (clr normalisation margin 0 or dsb normalisation), 
 #  on subsets of cells then the normalised values cannot be simply concatenated. 
 # The ADT normalisation is rerun pn the complete object in the preprocess pipeline 

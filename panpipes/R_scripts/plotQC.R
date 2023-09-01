@@ -103,14 +103,25 @@ data_plot = read.delim(opt$cell_metadata)
 # define source facet for all plots
 if (!is.null(opt$groupingvar)){
   source_facet <- strsplit(opt$groupingvar,",")[[1]]
-  source_fact <- source_facet[source_facet %in% colnames(data_plot)] 
+  check_excl <- source_facet[!source_facet %in% colnames(data_plot)] 
+  keep_source <- NULL
+  for (cc in check_excl){
+    for (mod in c("rna","prot","atac","rep")){
+      id <- paste(mod,cc,sep=".")
+      if(id %in% colnames(data_plot)){
+        keep_source <- c(keep_source,id)
+      }
+    }
+  }
+
+  source_facet <- source_facet[source_facet %in% colnames(data_plot)]
+  source_facet <- unique(c(source_facet, keep_source) )
   if(length(source_facet)>0){
-    print("Plotting with")
+    print("Facet plotting with")
+    # add sample_id as a minimum requirement if it's not there already
+    source_facet = unique(c("sample_id", source_facet))
     print(source_facet)
   }
-  # add sample_id as a minimum requirement if it's not there already
-  source_facet = unique(c("sample_id", source_facet))
-  
 }else{
   stop("i don't have the minimum variable _sampleid_ to facet on, will stop here")
 }
@@ -146,9 +157,12 @@ if (!is.null(opt$rna_qc_metrics)) {
 }
 qcmetrics <- qcmetrics[qcmetrics %in% colnames(rna_data_plot)]
 uniq_sample_id <- nrow(unique(rna_data_plot["sample_id"]))
+rna_source_facet <- gsub("^rna\\.", "",grep("^rna.", source_facet, value = TRUE))
+rna_source_facet <- unique(c(rna_source_facet, source_facet[!grepl("^rna.", source_facet)]))
+rna_source_facet <- rna_source_facet[rna_source_facet %in% colnames(rna_data_plot)]
 for (qc in qcmetrics){
   print(qc)
-  for (sc in source_facet){
+  for (sc in rna_source_facet){ #add gsub temp here
     print(sc)
     g <- do_violin_plot(rna_data_plot, qc, sc)
     if (uniq_sample_id  > 50){width=12}else{width=6}
@@ -157,7 +171,7 @@ for (qc in qcmetrics){
   }
 }
 
-for (sc in source_facet){
+for (sc in rna_source_facet){
   uniq_source <- nrow(unique(rna_data_plot[sc]))
   if(uniq_source >6){
     ncols=6
@@ -202,7 +216,10 @@ if(!is.null(opt$prot_qc_metrics)){
   qcmetrics <- strsplit(opt$prot_qc_metrics,",")[[1]]
   prot_data_plot <- data_plot[,grep("^prot\\.",colnames(data_plot))]
   colnames(prot_data_plot) <- gsub("^prot\\.", "", colnames(prot_data_plot))
-  
+  prot_source_facet <- gsub("^prot\\.", "",grep("^prot.", source_facet, value = TRUE))
+  prot_source_facet <- unique(c(prot_source_facet, source_facet[!grepl("^prot.", source_facet)]))
+  prot_source_facet <- prot_source_facet[prot_source_facet %in% colnames(prot_data_plot)]
+
   outpath = file.path(run, "prot")
   if (!dir.exists(outpath)) { 
     dir.create(outpath)
@@ -213,7 +230,7 @@ if(!is.null(opt$prot_qc_metrics)){
   qcmetrics <- qcmetrics[qcmetrics %in% colnames(prot_data_plot)]
   for (qc in qcmetrics){
     print(qc)
-    for (sc in source_facet){
+    for (sc in prot_source_facet){
       g <- do_violin_plot(prot_data_plot, qc, sc)
       if (uniq_sample_id  > 50){width=12}else{width=6}
       ggsave(g, filename=file.path(outpath, paste0("violin_", sc, "_prot-", qc,".png")), type="cairo", width= width, height=6)
@@ -227,7 +244,7 @@ if(!is.null(opt$prot_qc_metrics)){
   # - prot:total_counts vs prot:pct_isotype_counts
   
   
-  for (sc in source_facet){
+  for (sc in prot_source_facet){
     uniq_source <- nrow(unique(prot_data_plot[sc]))
     if(uniq_source >6){
       ncols=6
@@ -273,7 +290,11 @@ if(!is.null(opt$atac_qc_metrics)){
   message("Atac plots")
   atac_data_plot <- data_plot[,grep("^atac\\.",colnames(data_plot))]
   colnames(atac_data_plot) <- gsub("^atac\\.", "", colnames(atac_data_plot))
-  
+  atac_source_facet <- gsub("^atac\\.", "",grep("^atac.", source_facet, value = TRUE))
+  atac_source_facet <- unique(c(atac_source_facet, source_facet[!grepl("^atac.", source_facet)]))
+  atac_source_facet <- atac_source_facet[atac_source_facet %in% colnames(atac_data_plot)]
+
+
   outpath = file.path(run, "atac")
   if (!dir.exists(outpath)) dir.create(outpath)
   
@@ -283,7 +304,7 @@ if(!is.null(opt$atac_qc_metrics)){
   qcmetrics <- qcmetrics[qcmetrics %in% colnames(atac_data_plot)]
   for (qc in qcmetrics){
     print(qc)
-    for (sc in source_facet){
+    for (sc in atac_source_facet){
       g <- do_violin_plot(atac_data_plot, qc, sc)
       if (uniq_sample_id  > 50){width=12}else{width=6}
       ggsave(g, filename=file.path(outpath, paste0("violin_", sc, "_atac-", qc,".png")), type="cairo", width= width, height=6)
@@ -302,6 +323,11 @@ if (!is.null(opt$rep_qc_metrics)) {
   colnames(rep_data_plot) <- gsub("^rep\\.", "", colnames(rep_data_plot))
   rep_data_plot = rep_data_plot %>% filter(sample_id!="")
   
+  rep_source_facet <- gsub("^rep\\.", "",grep("^rep.", source_facet, value = TRUE))
+  rep_source_facet <- unique(c(rep_source_facet, source_facet[!grepl("^rep.", source_facet)]))
+  rep_source_facet <- rep_source_facet[rep_source_facet %in% colnames(rep_data_plot)]
+
+  
   outpath = file.path(run, "rep")
   if (!dir.exists(outpath)) dir.create(outpath)
   
@@ -311,7 +337,7 @@ if (!is.null(opt$rep_qc_metrics)) {
   # check these qc metrics are in the file
   qcmetrics <- qcmetrics[qcmetrics %in% colnames(rep_data_plot)]
   for (qc in qcmetrics){
-    for (sc in source_facet){
+    for (sc in rep_source_facet){
       g <- do_bar_plot(rep_data_plot, qc, sc)
       if (uniq_sample_id  > 50){width=12}else{width=6}
         ggsave(g, filename=file.path(outpath, paste0("bar_", sc, "_rep-", qc,".png")), type="cairo", width= width, height=6)
@@ -333,8 +359,10 @@ if(!is.null(opt$prot_qc_metrics)){
 
   outpath = file.path(run, "rna_v_prot")
   if (!dir.exists(outpath)) dir.create(outpath)    
+  
 
   for (sc in source_facet){
+    
     message(sc)
     uniq_source <- nrow(unique(data_plot[sc]))
     if(uniq_source >6){
@@ -386,34 +414,34 @@ message ("saving some counts tables for references")
 if(opt$prefilter){
   if(all(c("pct_counts_mt", "pct_counts_hb", "n_genes_by_counts", "doublet_scores") %in% colnames(rna_data_plot))){
     f1 <- rna_data_plot %>% 
-      filter(pct_counts_mt<=20 & pct_counts_hb<=70 &n_genes_by_counts>=100 & doublet_scores<=0.25) %>%
-      group_by_at(.vars=c(source_facet)) %>%
-      group_by_at(.vars=c(source_facet)) %>%
+      dplyr::filter(pct_counts_mt<=20 & pct_counts_hb<=70 &n_genes_by_counts>=100 & doublet_scores<=0.25) %>%
+      group_by_at(.vars=c(rna_source_facet)) %>%
+      group_by_at(.vars=c(rna_source_facet)) %>%
       summarise(cell.count= n()) %>%
       group_by_at(.vars="sample_id") %>% 
       rename(cell.count_f1=cell.count) 
     
     f2 <- rna_data_plot %>% 
-      filter(pct_counts_mt<=10 & pct_counts_hb<=50 &n_genes_by_counts>=100 & doublet_scores<=0.25) %>%
-      group_by_at(.vars=c(source_facet)) %>%
+      dplyr::filter(pct_counts_mt<=10 & pct_counts_hb<=50 &n_genes_by_counts>=100 & doublet_scores<=0.25) %>%
+      group_by_at(.vars=c(rna_source_facet)) %>%
       summarise(cell.count= n()) %>% 
       group_by_at(.vars="sample_id") %>% 
       rename(cell.count_f2=cell.count) 
     
     f3 <- rna_data_plot %>% 
-      filter(pct_counts_mt<=5 & pct_counts_hb<=50 &n_genes_by_counts>=100 & n_genes_by_counts<=3000) %>%
-      group_by_at(.vars=c(source_facet)) %>%
+      dplyr::filter(pct_counts_mt<=5 & pct_counts_hb<=50 &n_genes_by_counts>=100 & n_genes_by_counts<=3000) %>%
+      group_by_at(.vars=c(rna_source_facet)) %>%
       summarise(cell.count= n()) %>% 
       group_by_at(.vars="sample_id") %>% 
       rename(cell.count_f3=cell.count) 
     
     baseline <- rna_data_plot %>% 
-      group_by_at(.vars=c(source_facet)) %>%
+      group_by_at(.vars=c(rna_source_facet)) %>%
       summarise(cell.count= n()) %>% 
       group_by_at(.vars="sample_id") %>% 
       rename(baseline.counts=cell.count)
     
-    info <- merge(merge(merge(f1,f2,by=source_facet,all=TRUE),f3, by=source_facet, all=TRUE), baseline, by=source_facet, all=T) %>%
+    info <- merge(merge(merge(f1,f2,by=rna_source_facet,all=TRUE),f3, by=rna_source_facet, all=TRUE), baseline, by=rna_source_facet, all=T) %>%
       mutate(percent_retain_f1 = 100*cell.count_f1/baseline.counts,
              percent_retain_f2 = 100*cell.count_f2/baseline.counts,
              percent_retain_f3 = 100*cell.count_f3/baseline.counts) 
@@ -454,7 +482,7 @@ if(opt$prefilter){
   message("producing files with final counts for cells after filtering")
   
   baseline <- rna_data_plot %>% 
-    group_by_at(.vars=c(source_facet)) %>% 
+    group_by_at(.vars=c(rna_source_facet)) %>% 
     summarise(cell.count= n()) %>% 
     group_by_at(.vars="sample_id") 
   

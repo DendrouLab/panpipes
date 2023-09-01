@@ -9,6 +9,15 @@ import pandas as pd
 import cgatcore.iotools as IOTools
 from panpipes.funcs.io import check_submission_file, gen_load_anndata_jobs
 # from scpipelines.funcs.processing import intersection
+import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
+warnings.filterwarnings("ignore", category=DeprecationWarning) 
+
+import warnings
+
+# warnings.simplefilter('ignore', category=NumbaDeprecationWarning)
+# warnings.simplefilter('ignore', category=NumbaPendingDeprecationWarning)
+
 import yaml
 
 

@@ -108,7 +108,6 @@ umap:
 # ---------------------------------------
 # parameters for clustering
 # ---------------------------------------
-# For clustree to work you must specify more than one resolution.
 clusterspecs:
   rna:
     resolutions:
@@ -181,7 +180,7 @@ markerspecs:
 
 
 # ---------------------------------------
-# plot specs are used to define which columns are used in the visualisations
+# plot specs are used to define which metadata columns are used in the visualisations
 # ---------------------------------------
 plotspecs:
   layers:
