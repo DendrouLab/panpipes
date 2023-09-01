@@ -52,6 +52,7 @@ Contents
    workflows/index
    tutorials/index
    release_notes
+   contribute_guidelines
    contributors
    references
 
