@@ -44,6 +44,8 @@ batch_dict = {k:v.split(',') for k,v in batch_dict.items() if v is not None}
 # format the column names correctly, and add any merge columns to the dataset
 for k in batch_dict.keys():
     v=batch_dict[k]
+    print(k)
+    print(v)
     if k =="multimodal":
         mk = []
         exc = []
@@ -59,6 +61,7 @@ for k in batch_dict.keys():
                 else:
                     exc.append(v2)    
         if len(exc)>0:
+            print(exc)
             tmp =[]
             for g in ["atac","rna","prot","rep"]:
                 for e in exc:
@@ -73,10 +76,36 @@ for k in batch_dict.keys():
         v =[k + ":" +v1 if k!="multimodal" else v1 for v1 in v  ] #add the prepending modality
         batch_dict[k] = v
     if len(v) > 1:
+        print(v)
         mod_meta_df= cell_meta_df[v].dropna()
-        cell_meta_df[str(k)+ ":bc_batch"] = mod_meta_df.apply(lambda x: '|'.join(x), axis=1)
-        batch_dict[k].append(k+ ":bc_batch")
+        # Create a list to store identical column pairs
+        identical_column_pairs = []
+
+        # Iterate through pairs of columns and check if they are identical
+        for i in range(len(v)):
+            for j in range(i + 1, len(v)):
+                col1 = v[i]
+                col2 = v[j]
+                
+                if mod_meta_df[col1].equals(mod_meta_df[col2]):
+                    identical_column_pairs.append((col1, col2))
+        if identical_column_pairs:
+            print("Identical column pairs:")
+            for col1, col2 in identical_column_pairs:
+                print(f"{col1} and {col2} are identical.")
+            batch_dict[k].append(col1)
+        else:
+            print("No identical columns found.")
+            cell_meta_df[str(k)+ ":bc_batch"] = mod_meta_df.apply(lambda x: '|'.join(x), axis=1)
+            batch_dict[k].append(k+ ":bc_batch")
     L.info("batch values %s" %(batch_dict[k]))
+
+for k in batch_dict.keys():
+    unique_values = list(set(batch_dict[k]))
+    batch_dict[k] = unique_values
+
+L.info("saving batch dictionary")
+print(batch_dict)
 
 cell_meta_df.to_csv(args.output_cell_metadata_csv)
 
