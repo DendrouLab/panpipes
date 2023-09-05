@@ -1,6 +1,7 @@
 # Pipeline pipeline_clustering_scanpy.py configuration file
 # ==============================================
 
+# ------------------------
 # compute resource options
 # ------------------------
 resources:
@@ -16,9 +17,10 @@ resources:
 # path to conda env, leave blank if running native or your cluster automatically inherits the login node environment
 condaenv:
 
+# --------------------------
 # Start
 # --------------------------
-# either one that exists already with
+
 sample_prefix: mdata
 scaled_obj: mdata_scaled.h5mu
 # full obj only applicable if you have filtered your sacled object by hvgs
@@ -39,12 +41,12 @@ multimodal:
   #WNN, mofa, totalVI # this will tell us where to look for 
   integration_method: 
 
-# batch_correction: harmony  # None, harmony, scanorama, bbknn or combat
+
 # ---------------------------------------
 # parameters for find neighbours
 # ---------------------------------------
-# find neighbour parameters
-#-----------------------------
+# 
+# -----------------------------
 # number of neighbors to use when calculating the graph for clustering and umap.
 neighbors:
   rna:
@@ -104,7 +106,7 @@ umap:
     mindist:
       - 0.5
 
-# UMAP reduced dimensions will be stored using the format 
+
 # ---------------------------------------
 # parameters for clustering
 # ---------------------------------------
@@ -131,7 +133,7 @@ clusterspecs:
 # ---------------------------------------
 # where pseudo_suerat is set to False 
 # we run https://scanpy.readthedocs.io/en/stable/generated/scanpy.tl.rank_genes_groups.html
-# where pseudo_seurat is set to True, we run an a python implementation of Seurat::FindMarkers (written by CRG) is used,
+# where pseudo_seurat is set to True, we run an a python implementation of Seurat::FindMarkers (written by CRG)
 
 markerspecs:
   rna:
