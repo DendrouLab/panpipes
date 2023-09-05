@@ -123,6 +123,12 @@ clusterspecs:
      - 0.6
      - 1 
     algorithm: leiden # (louvain or leiden)
+  atac:
+    resolutions:
+     - 0.2
+     - 0.6
+     - 1 
+    algorithm: leiden # (louvain or leiden)
   multimodal:
     resolutions:
       - 0.5
