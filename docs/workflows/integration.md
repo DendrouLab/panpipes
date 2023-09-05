@@ -20,7 +20,7 @@ The flowchart indicates which tools are available for each modality out of GEX (
 4.  Use pipeline outputs to decide on the best batch correction method
 5.  Edit the integration pipeline yml with your preferred batch
     correction
-6.  Run `panpipes integration make merge_batch_correction`
+6.  Run `panpipes integration make merge_correction`
 
 
 ## Expected structure of MuData object
