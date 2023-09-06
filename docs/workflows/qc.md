@@ -3,7 +3,7 @@ QC
 
 ## Pipeline steps for all modalities:
 
-Panpipes `ingestion` loads and concatenates data from a variety of [filetype inputs](../usage/setup_for_qc_mm).
+Panpipes `ingest` loads and concatenates data from a variety of [filetype inputs](../usage/setup_for_qc_mm).
 Panpipes creates a mudata object containing the data in assays called 'rna', 'prot', 'atac', and 'rep'. See the [mudata documentation](https://mudata.readthedocs.io/en/latest/) for more details on interactively accessing these data.
 
 Feature names will be forced to be unique. This means that protein assay names will be prefixed with 'prot_'
@@ -66,16 +66,16 @@ There is an additional optional `assess_background` step, if the raw data (inclu
 3.  For adt assay - generate the protein metadata file
     [example]((https://github.com/DendrouLab/panpipes/blob/main/resources/protein_metadata_w_iso.md)).
     This file is integrated into the mdata\['prot'\].var slot.
-4.  Generate config file (`panpipes ingestion config`)
+4.  Generate config file (`panpipes ingest config`)
 5.  Edit the pipeline.yml file for your dataset
     -   this is explained step by step within the pipeline.yml file
-6.  Run complete qc pipeline with `panpipes ingestion make full`
+6.  Run complete qc pipeline with `panpipes ingest make full`
 7.  Use outputs to decide filtering thresholds.
     -   **Note that the actual filtering occurs in the first step of
         Preprocess pipeline**
     -   TODO: create doc to explain the pipeline outputs
 
-The h5mu file outputted from `ingestion` contains concatenated raw counts
+The h5mu file outputted from `ingest` contains concatenated raw counts
 from all samples in the submission file, plus qc metrics are computed,
 and these qc metrics are visualised in a variety of plots to aid the
 user to determine data quality and filtering thresholds.
