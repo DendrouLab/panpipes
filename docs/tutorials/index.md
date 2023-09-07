@@ -6,6 +6,7 @@ Check out the following tutorials which take you through the running of a subset
 - [QC pipeline](https://panpipes-tutorials.readthedocs.io/en/latest/ingesting_data/Ingesting_data_with_panpipes.html)
 - [Preprocessing pipeline](https://panpipes-tutorials.readthedocs.io/en/latest/filtering_data/filtering_data_with_panpipes.html)
 - [Integration pipeline](https://panpipes-tutorials.readthedocs.io/en/latest/uni_multi_integration/Integrating_data_with_panpipes.html)
+- [Clustering pipeline](https://panpipes-tutorials.readthedocs.io/en/latest/clustering/clustering.html)
 
 Spatial analysis:
 
