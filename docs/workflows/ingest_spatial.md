@@ -3,7 +3,7 @@ Ingesting spatial data
 
 
 Similarly to the cell suspension workflow, panpipes `spatial_qc` ingests the spatial data from different inputs, namely `vizgen` or `visium` data.
-Multiple files can be supplied providing a sample_annotation tsv file. The [usage](../usage/setup_for_spatial_workflows.md) section contains  more information on input file formatting.
+Multiple files can be supplied providing a sample_annotation tsv file. The [usage](../usage/setup_for_spatial_workflows.md) section contains more information on input file formatting.
 
 ### Steps
 
