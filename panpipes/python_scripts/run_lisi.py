@@ -48,12 +48,12 @@ for k in batch_dict.keys():
                                mk.append(t)
         v = mk
         batch_dict[k] = v
-    else:
-        v =[k + ":" +v1 if k!="multimodal" else v1 for v1 in v  ] #add the prepending modality
-        batch_dict[k] = v
+   # else:
+   #     v =[k + ":" +v1 if k!="multimodal" else v1 for v1 in v  ] #add the prepending modality
+   #     batch_dict[k] = v
     if len(v) > 1:
         mod_meta_df= cell_meta_df[v].dropna()
-        cell_meta_df[str(k)+ ":bc_batch"] = mod_meta_df.apply(lambda x: '|'.join(x), axis=1)
+        cell_meta_df[str(k)+ ":bc_batch"] = mod_meta_df.apply(lambda x: "|".join(str(x)), axis=1)
         batch_dict[k].append(k+ ":bc_batch")
     L.info("batch keys %s" %(batch_dict[k]))
 

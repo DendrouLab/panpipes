@@ -90,6 +90,8 @@ for x in wnn_params_bc.keys():
     else: 
         dict_graph[x]["obsm"] = None
 
+L.debug(dict_graph)
+
 for kmod in dict_graph.keys():
     L.info(kmod)
     pkmod=params['multimodal']['WNN']['knn'][kmod]
@@ -104,20 +106,28 @@ for kmod in dict_graph.keys():
                         L.info("reading precomputed connectivities for bbknn")
                         adata = mu.read(dict_graph[kmod]["anndata"])
                         tmp.mod[kmod].obsp = adata.obsp.copy()
+                        tmp.mod[kmod].obsm[dict_graph[kmod]["obsm"]] = adata.obsm[dict_graph[kmod]["obsm"]].copy()
                         tmp.mod[kmod].uns["neighbors"]= adata.uns["neighbors"].copy()
+                        tmp.update()
             else:
                 if dict_graph[kmod]["anndata"] is not None:
                     L.info("provided mdata doesn't have the desired obsm. reading the batch corrected data from another stored object")
                     adata = mu.read(dict_graph[kmod]["anndata"])
+                    L.debug(kmod + "object")
+                    L.debug(adata)
                     tmp.mod[kmod].obsm[dict_graph[kmod]["obsm"]] = adata.obsm[dict_graph[kmod]["obsm"]].copy()
+                    tmp.mod[kmod].obsp = adata.obsp.copy()
+                    tmp.mod[kmod].uns['neighbors'] = adata.uns['neighbors'].copy()
+                    tmp.update()
                     repuse = dict_graph[kmod]["obsm"] 
                 else:
                     L.info("could not find the desired obsm and the anndata slot is empty, will calculate on the flight")
-                    if kmod =="atac" & "X_lsi" in tmp.mod[kmod].obsm.keys():
-                        repuse = "X_lsi"
-                    else:
-                        repuse = "X_pca"
-                    L.info("falling back on %s" %(repuse) )
+                    if kmod =="atac":
+                        if "X_lsi" in tmp.mod[kmod].obsm.keys():
+                            repuse = "X_lsi"
+                        else:
+                            repuse = "X_pca"
+                        L.info("falling back on %s" %(repuse) )
             
                     L.info("calculating neighbours")
                     if repuse != "X_bbknn":
@@ -131,7 +141,30 @@ for kmod in dict_graph.keys():
                             nthreads=max([threads_available, 6]))
         else:
             L.info("Using %s" %(dict_graph[kmod]["obsm"]))            
+    else:
+        L.info("could not find the desired obsm and the anndata slot is empty, will calculate on the flight")
+        repuse ="X_pca"
+        if kmod =="atac":
+            if "X_lsi" in tmp.mod[kmod].obsm.keys():
+                repuse = "X_lsi"
+            else:
+                repuse = "X_pca"
+            L.info("falling back on %s" %(repuse) )
 
+        L.info("calculating neighbours")
+        
+        run_neighbors_method_choice(tmp.mod[kmod], 
+            method=pkmod['method'], 
+            n_neighbors=int(pkmod['k']), 
+            n_pcs=min(int(pkmod['npcs']), mdata.var.shape[0]-1), #this should be the # rows of var, not obs
+            metric=pkmod['metric'], 
+            #does this throw an error if no PCA for any single mod is stored?
+            use_rep=repuse,
+            nthreads=max([threads_available, 6]))
+
+L.debug(tmp)
+tmp.update()
+L.debug(tmp)
 L.info("Now running WNN")
 
 mu.pp.neighbors(tmp, 
@@ -141,6 +174,7 @@ mu.pp.neighbors(tmp,
                 metric= args.metric,
                 low_memory= check_for_bool(args.low_memory),   
                 key_added='wnn')
+L.info("WNN finished now calculate umap")
 
 mu.tl.umap(tmp,min_dist=0.4, neighbors_key='wnn')
 #For taking use of mdata.obsp['connectivities'], it’s scanpy.tl.leiden() that should be used. not muon.tl.leiden

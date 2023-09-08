@@ -133,7 +133,7 @@ def downsample(log_file, filt_obj):
          --output_mudata %(filt_obj)s \
          --sampleprefix %(sample_prefix)s \
          --downsample_value %(downsample_n)s \
-         --batch_col %(downsample_col)s
+         --downsample_col %(downsample_col)s
          --intersect_mods %(downsample_mods)s
         """
         cmd += " > %(log_file)s  "
