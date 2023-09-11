@@ -13,6 +13,10 @@ if this is not already installed on your system install it with:
 apt-get install time
 ```
 
+Alternatively:
+```
+conda install time
+```
 
 ## Step 2: create virtual environment
 
