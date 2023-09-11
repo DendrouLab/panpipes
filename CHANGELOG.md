@@ -2,6 +2,13 @@
 
 ## [main]
 ### added
+
+### fixed
+
+### dependencies
+
+## v0.3.0
+### added
 - Spatial data analysis is now included in panpipes
     - panpipes qc_spatial
     - panpipes preprocess_spatial
