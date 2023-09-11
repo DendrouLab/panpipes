@@ -8,9 +8,10 @@
     - panpipes_deconvolution_spatials
 
 ### fixed
+- make sure columns from individual modalities that are not in the multimodal outer obs can be used to
 
 ### dependencies
-
+- additional dependencies: squidpy, cell2location, openpyxl
 
 # v 0.2.0
 - First public version of panpipes
