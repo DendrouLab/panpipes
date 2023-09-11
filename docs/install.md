@@ -59,6 +59,13 @@ Download and install panpipes
 pip install panpipes
 ```
 
+If you intend to use panpies for spatial analysis, instead install:
+```
+pip install 'panpipes[spatial]'
+```
+The extra `[spatial]` includes squidpy and cell2location packages.
+
+
 If you would prefer to use the most recent dev version, install from github
 ```
 git clone https://github.com/DendrouLab/panpipes
