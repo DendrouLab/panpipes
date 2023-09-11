@@ -661,10 +661,6 @@ def run_mofa(outfile):
     cmd += " > logs/multimodal_mofa.log "
     P.run(cmd, **job_kwargs)
 
-#To do
-# WNN can run on not batch corrected data or on the output of the steps above,
-# where we batch correct each knn 
-# how can this alternative be translated here in decorators?
 # Run WNN
 
 @follows(set_up_dirs)
