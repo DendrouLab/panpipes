@@ -59,13 +59,16 @@ dependencies = [
     "scirpy",
     "scrublet", 
     "scvi-tools>=0.16.3",
-    "sqlalchemy"
-]
+    "sqlalchemy"]
 
 [project.optional-dependencies]
 notebook = [
     "jupyter",
     "jupyterlab"
+]
+spatial = [
+    "squidpy",
+    "cell2location"
 ]
 
 # The following would provide a command line executable called `sample`

@@ -219,7 +219,6 @@ def plot_cluster_umaps(infile, log_file,):
     job_kwargs["job_threads"] = PARAMS['resources_threads_medium']
     P.run(cmd, jobs_limit=1, **job_kwargs)
 
-
 @transform(aggregate_clusters, regex("(.*)/all_res_clusters_list.txt.gz"),
             r'logs/\1_clustree.log',
             r'\1/figures/clustree.png', ) 
@@ -422,6 +421,15 @@ def marker_analysis(fname):
 
 
 @follows(cluster_analysis, marker_analysis )
+@originate("cleanup_done.txt")
+def cleanup(file):
+    # remove any ctmp fails
+    P.run("rm ctmp*", without_cluster=True)
+    # delete empty dirs
+    P.run("find ./ -empty -type d -delete", without_cluster=True)
+
+
+@follows(cleanup)
 def full():
     """
     All cgat pipelines should end with a full() function which updates,

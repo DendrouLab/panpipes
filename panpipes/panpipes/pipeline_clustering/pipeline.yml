@@ -34,6 +34,7 @@ modalities:
   rna: True 
   prot: True
   atac: False
+  spatial: False
 
 # if True, will look for WNN, or totalVI output
 multimodal:
@@ -85,6 +86,18 @@ neighbors:
     metric: euclidean
     # scanpy | hnsw (from scvelo)
     method: scanpy
+  spatial:
+    use_existing: False
+    # number of Principal Components to calculate for neighbours and umap:
+    dim_red: X_pca
+    #how many components to use for clustering
+    n_dim_red: 30
+    # number of neighbours
+    k: 30
+    # metric: euclidean | cosine
+    metric: euclidean
+    # scanpy | hnsw (from scvelo)
+    method: scanpy
 
 # ---------------------------------------
 # parameters for umap calculation
@@ -104,6 +117,10 @@ umap:
       - 0.5
   multimodal:
     mindist:
+      - 0.5
+  spatial:
+    mindist:
+      - 0.25
       - 0.5
 
 
@@ -133,6 +150,12 @@ clusterspecs:
     resolutions:
       - 0.5
       - 0.7
+    algorithm: leiden
+  spatial:
+    resolutions:
+     - 0.2
+     - 0.6
+     - 1 
     algorithm: leiden
 # ---------------------------------------
 # parameters for finding marker genes
@@ -185,7 +208,20 @@ markerspecs:
     minpct: 0.1
     threshuse: 0.25
 
-
+  spatial:
+    run: True
+    layer: norm_pearson_resid
+    # method options: [‘logreg’, ‘t-test’, ‘wilcoxon’, ‘t-test_overestim_var’]]
+    method: t-test_overestim_var
+    mincells: 10 # if a cluster contains less than n cells then do not bother doing marker analysis
+    # where pseudo_suerat is set to False 
+    # we run https://scanpy.readthedocs.io/en/stable/generated/scanpy.tl.rank_genes_groups.html
+    # where pseudo_seurat is set to True, we run an a python implementation of Seurat::FindMarkers (written by CRG) is used,
+    pseudo_seurat: False
+    # these next two settings do not matter unless pseudo_seurat is set to True,
+    # If applicable look at Seurat documentation for FindMarkers for details
+    minpct: 0.1
+    threshuse: 0.25
 
 # ---------------------------------------
 # plot specs are used to define which metadata columns are used in the visualisations
@@ -195,6 +231,7 @@ plotspecs:
     rna: logged_counts
     prot: clr
     atac: 
+    spatial: 
   top_n_markers: 10
 
 

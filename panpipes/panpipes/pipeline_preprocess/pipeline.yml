@@ -12,7 +12,7 @@ resources:
   # this must be enough memory to load text files and do plotting, requires much less memory than the other two
   threads_low: 1
 # path to conda env, leave blank if running native or your cluster automatically inherits the login node environment
-condaenv: /Users/fabiola.curion/Documents/devel/miniconda3/envs/pipeline_env
+condaenv:
 
 # allows for tweaking where the jobs get submitted, in case there is a special queue for long jobs or you have access to a gpu
 # leave as is if you do not want to use the alternative queues
@@ -23,8 +23,8 @@ condaenv: /Users/fabiola.curion/Documents/devel/miniconda3/envs/pipeline_env
 # either one that exists already with
 
 
-sample_prefix: teaseq
-unfiltered_obj: teaseq_unfilt.h5mu
+sample_prefix: 
+unfiltered_obj: 
 # if running this on prefiltered datat then
 #1. set unfiltered obj (above) to blank
 #2. rename your filtered file to match, the format PARAMS['sample_prefix'] + '.h5mu'
@@ -39,9 +39,10 @@ output_logged_mudata:
 
 modalities:
   rna:  True
-  prot: True
+  prot: False
   rep: False
-  atac: True
+  atac: False
+  #spatialT: True
 
 # Filtering
 # --------------------------
@@ -85,17 +86,19 @@ filtering:
     ## obs filtering: cell level filtering here
     obs:
       min:
-        n_genes_by_counts: 100 
+        n_genes_by_counts: 
       max:
+        total_counts: 
+        n_genes_by_counts: 
         # percent filtering: 
         # this should be a value between 0 and 100%. 
         # leave blank or set to 100 to avoid filtering for any of these param
-        pct_counts_mt: 40
-        pct_counts_rp: 100
+        pct_counts_mt: 
+        pct_counts_rp:
         # either one score for all samples e.g. 0.25, 
         # or a csv file with two columns sample_id, and cut off
         # less than
-        doublet_scores: 0.25
+        doublet_scores:
         #  if you wanted to be more precise i.e. apply a different srublet threshold per sample
         # you could add a new column to the mudata['rna'].obs with True False values, and list
         # that column under bool:, you can do this for any modality
@@ -103,9 +106,9 @@ filtering:
     ## var filtering: (feature) gene level filtering here
     var:
       min:
-        n_cells_by_counts: 1
+        n_cells_by_counts: 
       max:
-        total_counts: 
+        total_counts:
         n_cells_by_counts:
   #------------------------------------------------------
   prot:
@@ -124,15 +127,22 @@ filtering:
     ## obs filtering: cell level filtering here
     obs:  
       max:
-      total_counts: 2500
     ## var filtering: (feature) fragment level filtering here
     var:    
       nucleosome_signal:
+  #------------------------------------------------------
+ # spatial:
+  #------------------------------------------------------ 
+  #  obs:
+   #   min:
+    #    n_genes_by_counts:
+     # max:
+      #  total_counts:
 
 # Intersecting barcodes
 # ----------------------
-# set a comma separated list (no whitespaces) where you want to keep only the intersection of barcodes. e.g. rna,prot 
-intersect_mods: rna,prot,atac
+# set a comma separated list where you want to keep only the intersection of barcodes. e.g. rna,prot 
+intersect_mods: 
 
 
 # ------------
@@ -151,15 +161,18 @@ downsample_mods:
 # ------------
 ## plotting vars
 # ------------
-# all metrics should be inputted as a comma separated string e.g. a,b,c
+# all metrics should be inputted as a comma separated string without spaces e.g. a,b,c
 plotqc:
-  # use these categorical variables to plot/split by and count the cells
-  grouping_var: sample_id,orig.ident
-  # use these continuous variables to plot gradients and distributions
-  rna_metrics: pct_counts_mt,pct_counts_rp,pct_counts_hb,doublet_scores
-  prot_metrics: total_counts,log1p_total_counts,n_adt_by_counts
-  atac_metrics: total_counts
-  rep_metrics: 
+  # use these categorical variables to plot/split by
+  grouping_var: sample_id
+  # specify metrics in the metadata to plot:
+  rna_metrics: pct_counts_mt,pct_counts_rp,pct_counts_hb,pct_counts_ig,doublet_scores
+  prot_metrics: total_counts,log1p_total_counts,n_adt_by_counts,pct_counts_isotype
+  atac_metrics: 
+  rep_metrics:
+ # spatialT_metrics: total_counts
+
+
 
 
 # RNA Normalisation
@@ -170,15 +183,11 @@ plotqc:
 # If you specify n_top_genes, then the other paramteres are nulled.
 # details: https://scanpy.readthedocs.io/en/stable/api/scanpy.pp.highly_variable_genes.html
 hvg:
-  # there is a defaul exclusions file for immune cells in sc_pipelines/resources/exclude_genes_HLAIGTR_v1.txt
-  # examine this file, it has a first column with gene ids and the second column identifying the groups to
-  # which this genes belong. 
-  # This workflow will exclude the genes that you specify by their group name. when specifying "default", the workflows will
-  # remove from hvg the genes that in the file are flagged "exclude". You can customize the gene list and change the name of the gene group in
-  # the `exclude:` param accordingly.
-  exclude_file: 
-  exclude: # this is the variable that defines the genes to be excluded in the above file, leave empty if you're not excluding genes from HVG
-  flavor: seurat # "seurat", "cell_ranger", "seurat_v3"
+  # there is a defaul exclusions file for immune cells in panpipes/resources/exclude_genes_HLAIGTR_v1.txt
+  # examine this to see what format is expected, if you want to use this file set the parameter to "default
+  exclude_file: resources/qc_genelist_1.0.csv
+  exclude: exclude # this is the variable that defines the genes to be excluded in the above file
+  flavor: seurat_v3 # "seurat", "cell_ranger", "seurat_v3"
   # If batch key is specified, highly-variable genes are selected within each batch separately and merged. 
   # details: https://scanpy.readthedocs.io/en/stable/generated/scanpy.pp.highly_variable_genes.html#:~:text=or%20return%20them.-,batch_key,-%3A%20Optional%5B
   # If you want to use more than one obs column as a covariates, include it as covariate1,covariate2 (comma separated list)
@@ -192,7 +201,7 @@ hvg:
   filter: False
 
 # Regression variables, what do you want to regress out, leave blank if nothing
-# We recommend not regressing out unless you have good reason to.
+# I recommend not regressing out unless you have good reason to.
 regress_variables:
 
 # Scaling
@@ -222,7 +231,7 @@ prot:
   # more details in this vignette https://muon.readthedocs.io/en/latest/omics/citeseq.html
   # dsb https://muon.readthedocs.io/en/latest/api/generated/muon.prot.pp.dsb.html
   # clr https://muon.readthedocs.io/en/latest/api/generated/muon.prot.pp.clr.html
-  normalisation_methods: clr
+  normalisation_methods: clr,dsb
   # the normalised matrices are stored in layers called 'clr' and 'dsb', along with a layer called 'raw_counts' 
   # if you choose to run both then 'dsb' is stored in X as default.
   # In downstream visualisation, you can either specify the layer, or take the default.
@@ -233,7 +242,7 @@ prot:
   # CLR margin 0 is recommended for informative qc plots in this pipeline
   # 0 = normalise colwise (per feature)
   # 1 = normalise rowwise (per cell)
-  clr_margin: 1
+  clr_margin: 0
 
   # DSB parameters:
    # you must specify the path to the background h5mu created in pipeline ingest in order to run dsb.
@@ -246,7 +255,7 @@ prot:
   
   # which normalisation method to be store in the X slot. If you choose to run more than one normalisation method,
   # which one to you want to store in the X slot, if not specified 'dsb' is the default when run.
-  store_as_X: clr
+  store_as_X: 
 
   # do you want to save the prot normalised assay additionally as a txt file:
   save_norm_prot_mtx: False
@@ -260,7 +269,7 @@ atac:
 
   # highly variable feature selection:
   # HVF selection either with scanpy's pp.highly_variable_genes() function or a pseudo-FindTopFeatures() function of the signac package
-  feature_selection_flavour: scanpy  # "signac" or "scanpy"
+  feature_selection_flavour: signac  # "signac" or "scanpy"
   # parameters for HVF flavour == "scanpy", leave the below blank to use defaults
   min_mean:
   max_mean:
@@ -279,3 +288,5 @@ atac:
   # which dimension to exclude from further processing (sometimes useful to remove PC/LSI_1  if it's associated to tech factors)
   # leave blank to retain all 
   dim_remove: 1
+
+

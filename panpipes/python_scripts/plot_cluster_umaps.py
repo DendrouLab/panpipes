@@ -58,9 +58,34 @@ def main(adata,figdir):
         fig = sc.pl.embedding(adata, basis = ok,color=cluster_keys,
          show=False, return_fig=True, legend_loc='on data')
         for ax in fig.axes:
-            ax.set(xlabel="1", ylabel="2")
+            ax.set(xlabel="UMAP_1", ylabel="UMAP_2")
         fig.suptitle(ok, y=1.0)
         fig.savefig(os.path.join(figdir, ok +  "_clusters.png"))
+
+def plot_spatial(adata,figdir):
+    # get all possible umap coords
+    pattern="spatial(.*)"
+    obsm_keys = [x for x in adata.obsm.keys() if re.search(pattern, x)]
+    L.info("Umap keys founds %s" % obsm_keys)
+    # get all possible clustersclusters
+    pattern=re.compile(r'^leiden|^louvain') 
+    cluster_keys  = [x for x in adata.obs.columns if re.search(pattern, x)]
+    L.info("Cluster keys founds %s" % cluster_keys)
+    if len(obsm_keys) == 0  or len(cluster_keys) == 0:
+        return
+    
+    # make sure clusters are categories
+    for ck in cluster_keys:
+        adata.obs[ck] = adata.obs[ck].astype('category')
+    # plot all the umaps
+    for ok in obsm_keys:
+        fig = sc.pl.embedding(adata, basis = ok,color=cluster_keys,
+         show=False, return_fig=True, legend_loc='on data')
+        for ax in fig.axes:
+            ax.set(xlabel="spatial1", ylabel="spatial2")
+        fig.suptitle(ok, y=1.0)
+        fig.savefig(os.path.join(figdir, ok +  "_clusters.png"))
+
 
 L.debug("load data")
 mdata = read(args.infile)
@@ -83,6 +108,13 @@ if type(mdata) is MuData:
             figdir  = os.path.join(mod, "figures")
             if os.path.exists(figdir) is False:
                 os.makedirs(figdir)
-            main(mdata[mod], figdir)
+            if mod == "spatial": # added separate function for spatial
+                plot_spatial(mdata[mod], figdir)
+            else:
+                main(mdata[mod], figdir)
+
+
+
+
 
 L.info('done')
