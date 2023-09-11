@@ -54,6 +54,7 @@ dependencies = [
     "scanorama", 
     "scanpy>=1.9.1", 
     "seaborn",
+    "scib",
     "scikit-misc", 
     "scirpy",
     "scrublet", 
