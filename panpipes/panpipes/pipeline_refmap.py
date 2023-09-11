@@ -57,7 +57,11 @@ def gen_refmap_jobs():
             for infile in mod_list:
                 # this is creating output files based on the model folder name
                 out_prefix=os.path.basename(os.path.dirname(infile))
-                outfile = os.path.join('refmap', out_prefix + ".csv")
+                model_name = ''.join(e for e in out_prefix if e.isalnum())
+                latent_choice = "X_" + ref_architecture
+                file_name= "umap_" + model_name + "_" + latent_choice
+                outfile = os.path.join("./refmap/",(file_name + ".csv"))
+
                 log_file = os.path.join('logs/', out_prefix + ".log")
                 yield infile, outfile, log_file, ref_architecture
                 
@@ -72,6 +76,7 @@ def gen_refmap_jobs():
 @follows(set_up_dirs)
 @files(gen_refmap_jobs)
 def run_refmap_scvi(infile, outfile, log_file, ref_architecture ):
+    
     cmd = """
     python %(py_path)s/refmap_scvitools.py
     --query_data %(query)s
@@ -81,6 +86,7 @@ def run_refmap_scvi(infile, outfile, log_file, ref_architecture ):
     --neighbors_method %(neighbors_method)s
     --neighbors_k %(neighbors_k)s
     --neighbors_metric %(neighbors_metric)s
+    --outfile %(outfile)s
     """
     if PARAMS['query_celltype'] is not None:
         cmd += " --query_celltype %(query_celltype)s"
@@ -117,7 +123,7 @@ def run_refmap_scvi(infile, outfile, log_file, ref_architecture ):
 #     cmd += " > logs/collate_outputs.log "
 #     job_kwargs["job_threads"] = PARAMS['resources_threads_low']
 #     P.run(cmd, **job_kwargs)  
-
+@active_if(PARAMS["scib_run"])
 @transform(run_refmap_scvi,
            regex(r"refmap/umap_(.*).csv"),
            r'logs/refmapscib_\1.log')
@@ -129,11 +135,21 @@ def run_scib_refmap(infile,logfile):
     python %(py_path)s/refmap_scib.py
     --query ./refmap/%(mudata_input)s
     --repuse %(repuse)s
-    --covariate %(query_celltype)s
-    --outdir ./refmap/ > %(logfile)s
+    --outdir ./refmap/
     """
-    if PARAMS["query_batch"] is not None:
-        cmd += " --batch_key %(query_batch)s" 
+    if PARAMS["scib_batch_key"] is not None:
+        cmd += " --batch_key %(scib_batch_key)s"
+    else: 
+        if PARAMS["query_batch"] is not None:
+            cmd += " --batch_key %(query_batch)s" 
+    if PARAMS["scib_cluster_key"] is not None:
+        cmd += " --cluster_key %(scib_cluster_key)s" 
+    if PARAMS["scib_celltype_key"] is not None:
+        cmd += " --covariate %(scib_celltype_key)s"
+    else: 
+        if PARAMS['query_celltype'] is not None:
+            cmd += " --covariate %(query_celltype)s"
+    cmd += " > %(logfile)s"
     job_kwargs["job_threads"] = PARAMS['resources_threads_medium']
     P.run(cmd, **job_kwargs)  
 

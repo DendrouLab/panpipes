@@ -56,6 +56,8 @@ parser.add_argument('--neighbors_k', default=30,
                     help="neighbors k")
 parser.add_argument('--neighbors_metric',default="euclidean",
                     help="neighbor metric, e.g. euclidean or cosine")
+parser.add_argument('--outfile',default=None,
+                    help="file where to save umap")
 
 args, opt = parser.parse_known_args()
 sc.settings.figdir = "figures/"
@@ -142,9 +144,9 @@ if reference_architecture=="scvi":
     vae_q = scvi.model.SCVI.load_query_data(
     adata_query,
     reference_path)
-    latent_choice= "X_scVI"
+    latent_choice= "X_scvi"
     vae_q.train(max_epochs= max_epochs , plan_kwargs=train_kwargs)
-    adata_query.obsm["X_scVI"] = vae_q.get_latent_representation()
+    adata_query.obsm["X_scvi"] = vae_q.get_latent_representation()
     
 
 if reference_architecture=="scanvi":
@@ -154,10 +156,10 @@ if reference_architecture=="scanvi":
     vae_q = scvi.model.SCANVI.load_query_data( 
     adata_query,
     reference_path)
-    latent_choice= "X_scANVI"
+    latent_choice= "X_scanvi"
     #vae_q.train(**train_kwargs) this doesn't work anymore cause max_epochs is not recognised as part of the plan kwargs
     vae_q.train(max_epochs= max_epochs , plan_kwargs=train_kwargs)
-    adata_query.obsm["X_scANVI"] = vae_q.get_latent_representation()
+    adata_query.obsm["X_scanvi"] = vae_q.get_latent_representation()
     adata_query.obs["predictions"] = vae_q.predict()
     if args.query_celltype is not None:
         L.info("Query has celltypes in column %s, i will plot what predictions look like from scanvi model" % args.query_celltype)
@@ -350,6 +352,7 @@ model_name = ''.join(e for e in model_name if e.isalnum())
 
 
 file_name= "umap_" + model_name + "_" + latent_choice
+L.info ("filename is %s" % file_name )
 
 fig = sc.pl.embedding(adata_full, basis = "umap",color=["is_reference"],
          show=False, return_fig=True)

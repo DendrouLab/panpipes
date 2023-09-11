@@ -31,7 +31,10 @@ parser.add_argument('--covariate',
 parser.add_argument('--batch_key',
                     default=None,
                     help='the convariate in the query anndata/mudata you want to use to calculate the metrics')
-parser.add_argument('--output_dir', default=None,
+parser.add_argument('--cluster_key',
+                    default=None,
+                    help='string of column in query anndata/mudata containing cluster assignments you want to use to calculate the metrics (ARI/NMI)')
+parser.add_argument('--outdir', default=None,
                     help='directory to save the data to')
 
 args, opt = parser.parse_known_args()
@@ -40,15 +43,15 @@ L.info(args)
 
 
 if args.covariate is not None:
-    covariates_use = args.calc_proportions.split(",")
+    covariates_use = args.covariate.split(",")
     covariates_use = [a.strip() for a in covariates_use]
 else:
     sys.exit("i don't have covariates to calculate metrics on")
 
-mudata= mu.read(args.query)
+
 repuse = str(args.repuse)
 
-mdata = mu.read(args.query_data)
+mdata = mu.read(args.query)
 if type(mdata) is mu.MuData:
     if "rna" not in mdata.mod.keys():
         sys.exit("we only support querying using RNA but your mdata doesn't contain rna")
@@ -56,7 +59,6 @@ if type(mdata) is mu.MuData:
         input_adata = mdata["rna"].copy()
 del mdata
 
-gc()
 
 adata_query = input_adata[input_adata.obs['is_reference'] == 'Query'].copy()
 L.info("repuse is %s" %(repuse))
@@ -66,15 +68,21 @@ if repuse not in adata_query.obsm.keys():
 L.info("query is:")
 print(adata_query)
 
-L.info("Calculating scib metrics using covariates:")
+L.info("Calculating scib metrics using ground truth covariates:")
 print(covariates_use)
 
+if args.cluster_key is None:
+    cluster_key = "leiden_" + repuse 
+    L.info("you didn't specify cluster_key, so i'm using %s " % cluster_key)
+else:
+    cluster_key = str(args.cluster_key)
+    L.info("cluster_key used is: %s" %cluster_key)
 
 results = {}
 for labelk in covariates_use:
     m={"ASW_scaled":scib.metrics.silhouette(adata_query, labelk, repuse, metric='euclidean', scale=True),
-        "ARI":scib.metrics.ari(adata_query, labelk, "predictions"),
-        "NMI":scib.metrics.nmi(adata_query, labelk, "predictions"),
+        "ARI":scib.metrics.ari(adata_query, label_key=labelk, cluster_key=cluster_key), #predictions or leiden clustering
+        "NMI":scib.metrics.nmi(adata_query, label_key=labelk, cluster_key=cluster_key),
         "graph_connectivity":scib.metrics.graph_connectivity(adata_query, labelk)}    
     if args.batch_key is not None:
         m["clisi_graph_embed"]= scib.me.clisi_graph(adata_query, label_key=labelk, type_="knn", batch_key=str(args.batch_key))
@@ -87,4 +95,4 @@ file_name= os.path.splitext(os.path.basename(args.query).replace("query_to_refer
 file_out = os.path.join(args.outdir,("scib.query_"+ file_name+".csv"))
 
 #save file to txt
-pd.DataFrame.from_dict(results,orient='index').to_csv("scib_metrics_seuratvillaniQR_disease.tsv", sep="\t")
+pd.DataFrame.from_dict(results,orient='index').to_csv(file_out, sep="\t")

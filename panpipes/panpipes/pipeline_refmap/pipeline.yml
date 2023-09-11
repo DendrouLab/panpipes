@@ -104,6 +104,18 @@ neighbors:
     # scanpy | hnsw (from scvelo)
     method: scanpy
 
-
+#----------------------
+# Run scib metrics on query, specify params:
+#----------------------
+# see documentation for the metrics used at https://scib.readthedocs.io/en/latest/
+# running scib on query data after trasferring labels, where available (totalvi and scanvi), or using default leiden clustering after training the vae model (scvi)
+scib:
+  run: False
+  #used for ARI and NMI (if left empty will default to leiden clustering calculated on the new latent representation after reference mapping)
+  cluster_key: predictions
+  #used for clisi_graph_embed
+  batch_key:
+  #ground truth label (if left empty it will default to query_celltype specified above )
+  celltype_key: celltype
 
   
