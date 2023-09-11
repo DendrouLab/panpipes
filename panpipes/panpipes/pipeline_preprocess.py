@@ -98,28 +98,6 @@ def postfilterplot(log_file):
     P.run(cmd, **job_kwargs)
 
 
-'''
-@active_if(mode_dictionary['spatialT'] is True)
-@active_if(PARAMS['filtering_run'])
-@active_if(run_plotqc_query(PARAMS['plotqc']))
-@follows(filter_mudata)
-@originate("logs/postfilterplot_spatialT.log" , PARAMS['mudata_file'])
-def postfilterplot_spatialT(log_file, filt_file):
-    cmd = """
-            python %(py_path)s/plot_qc_spatialT.py
-             --input_mudata %(filt_file)s
-             --output_mudata %(filt_file)s
-             --figdir ./figures/spatialT
-            """
-
-    if PARAMS['plotqc']['grouping_var'] is not None:
-        cmd += " --grouping_var %(plotqc_grouping_var)s"
-    if PARAMS['plotqc']['spatialT_metrics'] is not None:
-        cmd += " --spatialT_qc_metrics %(plotqc_spatialT_metrics)s"
-    cmd += " > %(log_file)s "
-    job_kwargs["job_threads"] = PARAMS['resources_threads_low']
-    P.run(cmd, **job_kwargs)
-'''
 
 
 @active_if(PARAMS['downsample_n'] is not None)

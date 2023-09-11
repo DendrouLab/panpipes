@@ -183,7 +183,7 @@ plotqc:
 # If you specify n_top_genes, then the other paramteres are nulled.
 # details: https://scanpy.readthedocs.io/en/stable/api/scanpy.pp.highly_variable_genes.html
 hvg:
-  # there is a defaul exclusions file for immune cells in sc_pipelines/resources/exclude_genes_HLAIGTR_v1.txt
+  # there is a defaul exclusions file for immune cells in panpipes/resources/exclude_genes_HLAIGTR_v1.txt
   # examine this to see what format is expected, if you want to use this file set the parameter to "default
   exclude_file: resources/qc_genelist_1.0.csv
   exclude: exclude # this is the variable that defines the genes to be excluded in the above file
