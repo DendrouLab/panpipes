@@ -70,6 +70,10 @@ spatial = [
     "squidpy",
     "cell2location"
 ]
+pypi_upload = [
+    "twine",
+    "build"
+]
 
 # The following would provide a command line executable called `sample`
 # which executes the function `entry` from this package when invoked.
