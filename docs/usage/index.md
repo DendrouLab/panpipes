@@ -8,7 +8,7 @@ General principles for running pipelines
 ----------------------------------------
 
 Run the pipeline from the login node on your server, it will use in
-built the job submission system to submit jobs.
+built the job submission system to submit jobs. To prevent jobs being cancelled when you log out, we recommend using either the `nohup` command, or a terminal multiplexer such a [tmux](https://github.com/tmux/tmux/wiki) or [screen](https://www.gnu.org/software/screen/manual/screen.html).
 
 Navigate to the directory where you want to run your analysis (this
 should not be within the panpipes folder, or your virutal environment
