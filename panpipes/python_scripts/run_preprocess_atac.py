@@ -28,6 +28,7 @@ L.debug("testing logger works")
 
 from panpipes.funcs.scmethods import X_is_raw
 from panpipes.funcs.scmethods import findTopFeatures_pseudo_signac
+from panpipes.funcs.scmethods import lsi
 
 
 sc.settings.verbosity = 3
@@ -64,6 +65,9 @@ parser.add_argument("--min_disp",
 parser.add_argument("--dimred",
                     default="PCA",
                     help="which dimensionality red to use for atac")
+parser.add_argument("--n_comps",
+                    default=50,
+                    help="how many components to compute")
 parser.add_argument("--dim_remove",
                     default=None,
                     help="which dimensionality red components to remove")
@@ -132,9 +136,9 @@ else:
 #highly variable feature selection
 
 if args.feature_selection_flavour == "scanpy":
-	sc.pp.highly_variable_genes(atac, min_mean=float(args.min_mean), max_mean=float(args.max_mean), min_disp=float(args.min_disp))
+    sc.pp.highly_variable_genes(atac, min_mean=float(args.min_mean), max_mean=float(args.max_mean), min_disp=float(args.min_disp))
 elif args.feature_selection_flavour == "signac":
-	findTopFeatures_pseudo_signac(atac, args.min_cutoff)
+    findTopFeatures_pseudo_signac(atac, args.min_cutoff)
 else:
     L.warning("No highly variable feature selection was performed!")
 
@@ -150,9 +154,9 @@ if "highly_variable" in atac.var:
 if args.dimred == "PCA":
     sc.pp.scale(atac)
     atac.layers["scaled_counts"] = atac.X.copy()
-    sc.tl.pca(atac, n_comps=min(50,atac.var.shape[0]-1), svd_solver='arpack', random_state=0) 
+    sc.tl.pca(atac, n_comps=int(args.n_comps), svd_solver='arpack', random_state=0)
 if args.dimred == "LSI":
-    ac.tl.lsi(atac)
+    lsi(adata=atac, num_components=int(args.n_comps))
 
 if args.dim_remove is not None:
     dimrem=int(args.dim_remove)
