@@ -42,7 +42,6 @@ modalities:
   prot: False
   rep: False
   atac: False
-  #spatialT: True
 
 # Filtering
 # --------------------------
@@ -130,14 +129,6 @@ filtering:
     ## var filtering: (feature) fragment level filtering here
     var:    
       nucleosome_signal:
-  #------------------------------------------------------
- # spatial:
-  #------------------------------------------------------ 
-  #  obs:
-   #   min:
-    #    n_genes_by_counts:
-     # max:
-      #  total_counts:
 
 # Intersecting barcodes
 # ----------------------
@@ -170,7 +161,6 @@ plotqc:
   prot_metrics: total_counts,log1p_total_counts,n_adt_by_counts,pct_counts_isotype
   atac_metrics: 
   rep_metrics:
- # spatialT_metrics: total_counts
 
 
 
@@ -264,16 +254,17 @@ prot:
 # --------------------------
 atac:
   binarize: False
-  normalize: TFIDF
-  TFIDF_flavour: signac
+  normalize: TFIDF # "log1p" or "TFIDF"
+  # if normalize = "TFIDF", else leave blank:
+  TFIDF_flavour: signac # "signac", "logTF" or "logIDF"
 
   # highly variable feature selection:
   # HVF selection either with scanpy's pp.highly_variable_genes() function or a pseudo-FindTopFeatures() function of the signac package
   feature_selection_flavour: signac  # "signac" or "scanpy"
   # parameters for HVF flavour == "scanpy", leave the below blank to use defaults
-  min_mean:
-  max_mean:
-  min_disp:
+  min_mean: #default 0.05
+  max_mean: #default 1.5
+  min_disp: #default 0.5
   # parameter for HVF flavour == "signac"
   min_cutoff: q5
   # min_cutoff can be specified as follows:
@@ -285,6 +276,7 @@ atac:
 
   # which dimred to use
   dimred: LSI #PCA or LSI
+  n_comps: 50 # how many components to compute
   # which dimension to exclude from further processing (sometimes useful to remove PC/LSI_1  if it's associated to tech factors)
   # leave blank to retain all 
   dim_remove: 1
