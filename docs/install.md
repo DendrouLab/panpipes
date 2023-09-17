@@ -55,14 +55,8 @@ or
 apt-get install time
 ```
 
+You can install `panpipes` directly from `PyPi` with:
 
-
-
-
-
-
-
-Download and install panpipes
 ```
 pip install panpipes
 ```
@@ -74,11 +68,15 @@ pip install 'panpipes[spatial]'
 The extra `[spatial]` includes squidpy and cell2location packages.
 
 
+
+#### Nightly versions of panpipes.
+
 If you would prefer to use the most recent dev version, install from github
+
 ```
 git clone https://github.com/DendrouLab/panpipes
 cd panpipes
-pip install .
+pip install -e .
 ```
 
 ### Option 2: python venv environment:
@@ -96,16 +94,17 @@ activate the environment
 source python3-venv-panpipes/bin/activate
 ```
 
-
+As explained in the conda installation, you can install `panpipes` with:
 ```
 pip install panpipes
 ```
 
 If you would prefer to use the most recent dev version, install from github
+
 ```
 git clone https://github.com/DendrouLab/panpipes
 cd panpipes
-pip install .
+pip install -e .
 ```
 
 
@@ -122,6 +121,7 @@ Running with the option `--vanilla` or `--no-site-file` prevents R from reading 
 You can expect the installation of R libraries to take quite some time, this is not something related to `panpipes` but how R manages their libraries and dependencies!
 
 
+#### Check installation
 
 To check the installation was successful run the following line
 ```
@@ -131,10 +131,10 @@ A list of available pipelines should appear!
 
 
 You're all set to run `panpipes` on your local machine.
-If you want to configure it on a HPC server, jump to [step 3](#step-3-pipeline-configuration)
+If you want to configure it on a HPC server, jump to [step 2](#step-2-pipeline-configuration)
 
 
-## Step 3 pipeline configuration 
+## Step 2 pipeline configuration 
 
 (For SGE or SLURM clusters)
 *Note: You won't need this for a local installation of panpipes.*
