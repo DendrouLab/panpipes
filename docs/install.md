@@ -1,24 +1,7 @@
 
 # Installation of panpipes
 
-## Step 1
-Panpipes requires the unix package `time`, 
-you can check if it install ed with 
-```
-dpkg-query -W time
-```
-
-if this is not already installed on your system install it with: 
-```
-apt-get install time
-```
-
-Alternatively:
-```
-conda install time
-```
-
-## Step 2: create virtual environment
+## Step 1: create virtual environment
 
 We recommend running panpipes within a virtual environment to maintain reproducibility
 
@@ -53,6 +36,31 @@ Install R packages
 ```
 conda install -c conda-forge r-tidyverse r-optparse r-ggforce r-ggraph r-xtable r-hdf5r r-clustree
 ```
+
+Panpipes requires the unix package `time`, in conda you can install it with:
+
+You can check if it installed with 
+
+```
+dpkg-query -W time
+```
+if this is not already installed on your conda env with: 
+
+```
+conda install time
+```
+or
+
+```
+apt-get install time
+```
+
+
+
+
+
+
+
 
 Download and install panpipes
 ```
