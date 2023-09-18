@@ -120,7 +120,8 @@ mdata.update()
 mdata_bg.update()
 
 n_samples_rna=len(mdata['rna'].obs['sample_id'].unique())
-n_samples_prot=len(mdata['prot'].obs['sample_id'].unique())
+if "prot" in mdata.mod.keys():
+    n_samples_prot=len(mdata['prot'].obs['sample_id'].unique())
 
 # quantifying the top background features
 if os.path.exists(args.figpath) is False:
