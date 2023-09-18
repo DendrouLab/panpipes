@@ -119,7 +119,8 @@ if 'prot' in mdata.mod.keys():
 mdata.update()
 mdata_bg.update()
 
-n_samples_rna=len(mdata['rna'].obs['sample_id'].unique())
+if 'rna' in mdata.mod.keys():
+    n_samples_rna=len(mdata['rna'].obs['sample_id'].unique())
 if "prot" in mdata.mod.keys():
     n_samples_prot=len(mdata['prot'].obs['sample_id'].unique())
 
