@@ -1,3 +1,4 @@
+[![PyPI version](https://badge.fury.io/py/panpipes.svg)](https://badge.fury.io/py/panpipes)
 # Panpipes - multimodal single cell pipelines 
 
 Created and Maintained by Charlotte Rich-Griffin and Fabiola Curion  
