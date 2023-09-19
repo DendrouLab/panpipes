@@ -7,6 +7,9 @@
 
 ### dependencies
 
+## v0.3.1
+- set default matplotlib<=3.7.3 to avoid issue #104. 
+
 ## v0.3.0
 ### added
 - Spatial data analysis is now included in panpipes
