@@ -2,7 +2,7 @@ Gene list formats
 =================
 
 
-In the qc_mm and vis pipelines, the user can provide custom genelists
+In the ingestion and vis pipelines, the user can provide custom genelists
 in order to compute gene list scores and to visualise
 
 
@@ -18,11 +18,11 @@ flexibility as all organisms will require separate lists, but there are example 
 
 
 
-QC_mm gene list inputs
+Ingestion gene list inputs
 -----------------------
-In the QC_mm pipeline, panpipes can score gene lists based on the percent gene content (as is typically done for mitochondrial content), or score genes based on the average expression of a set of genes subtracted with the average expression of a reference set of genes.
+In the ingestion pipeline, panpipes can score gene lists based on the percent gene content (as is typically done for mitochondrial content), or score genes based on the average expression of a set of genes subtracted with the average expression of a reference set of genes.
 
-This is defined in the following section of the qc_mm pipeline.yml:
+This is defined in the following section of the ingestion pipeline.yml:
 
     custom_genes_file: path/to/resources/qc_genelist_1.0.csv
     calc_proportions: hb,mt,rp
