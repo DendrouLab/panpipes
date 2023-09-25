@@ -94,7 +94,7 @@ def get_all_unique_paths(pipe_df):
     all_paths = all_paths.drop_duplicates()
     # rename path_type to match cellranger terminolgy
     recode_dict = {'rna_path': "Gene Expression", 
-                   'adt_path': "Antibody Capture", 
+                   'prot_path': "Antibody Capture", 
                    'tcr_path': 'VDJ T', 
                    'bcr_path': 'VDJ B'}
     all_paths['path_type'] = all_paths['path_type'].replace(recode_dict)

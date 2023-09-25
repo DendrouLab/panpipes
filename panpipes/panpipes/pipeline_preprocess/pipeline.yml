@@ -167,7 +167,7 @@ plotqc:
   grouping_var: sample_id
   # specify metrics in the metadata to plot:
   rna_metrics: pct_counts_mt,pct_counts_rp,pct_counts_hb,pct_counts_ig,doublet_scores
-  prot_metrics: total_counts,log1p_total_counts,n_adt_by_counts,pct_counts_isotype
+  prot_metrics: total_counts,log1p_total_counts,n_prot_by_counts,pct_counts_isotype
   atac_metrics: 
   rep_metrics:
  # spatialT_metrics: total_counts
@@ -238,7 +238,7 @@ prot:
 
   # CLR parameters:
   # margin determines whether you normalise per cell (as you would RNA norm), 
-  # or by feature (recommended, due to the variable nature of adts). 
+  # or by feature (recommended, due to the variable nature of prot assays). 
   # CLR margin 0 is recommended for informative qc plots in this pipeline
   # 0 = normalise colwise (per feature)
   # 1 = normalise rowwise (per cell)
