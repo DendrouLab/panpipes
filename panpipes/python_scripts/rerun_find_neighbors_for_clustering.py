@@ -6,6 +6,7 @@ import scanpy as sc
 from muon import MuData, read
 from panpipes.funcs.scmethods import run_neighbors_method_choice
 from panpipes.funcs.io import read_yaml
+from panpipes.funcs.scmethods import lsi
 
 L = logging.getLogger()
 L.setLevel(logging.INFO)
@@ -53,6 +54,10 @@ for mod in neighbor_dict.keys():
         if (neighbor_dict[mod]['dim_red'] == "X_pca") and ("X_pca" not in adata.obsm.keys()):
             L.info("X_pca not found, computing it using default parameters")
             sc.tl.pca(adata)
+        if (neighbor_dict[mod]['dim_red'] == "X_lsi") and ("X_lsi" not in adata.obsm.keys()):
+            L.info("X_lsi not found, computing it using default parameters")
+            lsi(adata=adata, num_components=50)
+
         # run command
         opts = dict(method=neighbor_dict[mod]['method'],
                     n_neighbors=int(neighbor_dict[mod]['k']),
