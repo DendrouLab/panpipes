@@ -183,7 +183,7 @@ if 'prot' in mdata.mod.keys():
         plt.savefig(os.path.join(args.figpath,"barplot_background_" + args.channel_col + "_prot_top_expressed.png"))
 
 
-## QC for gex and protein fcomparing foreground and background
+## QC for rna and protein comparing foreground and background
 
 if 'rna' in mdata.mod.keys():
     pnp.pl.scatter_fg_vs_bg(mdata, mdata_bg,x="rna:log1p_n_genes_by_counts", y="rna:log1p_total_counts", facet_row=args.channel_col)
