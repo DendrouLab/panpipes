@@ -60,29 +60,29 @@ def gen_load_anndata_jobs(caf, load_raw=False, mode_dictionary = {}, load_prot_f
             rna_path, rna_filetype = caf[['rna_path', "rna_filetype"]].iloc[nn]
             if load_raw:
                 rna_path = re.sub("filtered", "raw", rna_path)
-        # manage the adt paths
-        if ('adt_path' in caf.columns and mode_dictionary["prot"]):
+        # manage the prot paths
+        if ('prot_path' in caf.columns and mode_dictionary["prot"]):
             # check if its the same as the rna path (data in the same file)
-            if pd.isna(caf['adt_path'][nn]):
-                adt_path= None
-                adt_filetype=None
-            elif caf['adt_path'][nn] == caf['rna_path'][nn]:
-                adt_path, adt_filetype = rna_path, rna_filetype
-            elif caf['adt_filetype'][nn]=="cellranger":
+            if pd.isna(caf['prot_path'][nn]):
+                prot_path= None
+                prot_filetype=None
+            elif caf['prot_path'][nn] == caf['rna_path'][nn]:
+                prot_path, prot_filetype = rna_path, rna_filetype
+            elif caf['prot_filetype'][nn]=="cellranger":
                 # we might want to load the raw here because we want to then subset by good gex (rna) barcodes, 
                 # this is why the load_prot_from_raw argument exists
-                adt_path, adt_filetype = update_cellranger_col(caf['adt_path'][nn], raw=load_prot_from_raw)
-            elif caf['adt_filetype'][nn]=="cellranger_multi":
+                prot_path, prot_filetype = update_cellranger_col(caf['prot_path'][nn], raw=load_prot_from_raw)
+            elif caf['prot_filetype'][nn]=="cellranger_multi":
                 # celranger multi has the same prot and gex (rna) barcodes
-                adt_path, adt_filetype = update_cellranger_col(caf['adt_path'][nn], raw=load_raw, method="multi", 
+                prot_path, prot_filetype = update_cellranger_col(caf['prot_path'][nn], raw=load_raw, method="multi", 
                                                                 sample_id=caf['sample_id'][nn])
             else:
-                adt_path, adt_filetype = caf[['adt_path', "adt_filetype"]].iloc[nn]
+                prot_path, prot_filetype = caf[['prot_path', "prot_filetype"]].iloc[nn]
                 if load_prot_from_raw or load_raw:
-                    adt_path = re.sub("filtered", "raw", adt_path)
+                    prot_path = re.sub("filtered", "raw", prot_path)
         else:
-            adt_path= None
-            adt_filetype=None
+            prot_path= None
+            prot_filetype=None
         # load tcr_path
         if 'tcr_path' in caf.columns and mode_dictionary["tcr"] and pd.notna(caf['tcr_path'][nn]):
             tcr_path = caf['tcr_path'][nn]
@@ -134,7 +134,7 @@ def gen_load_anndata_jobs(caf, load_raw=False, mode_dictionary = {}, load_prot_f
         yield rna_path, outfile, \
               sample_id, \
               rna_filetype,  \
-              adt_path, adt_filetype, \
+              prot_path, prot_filetype, \
               tcr_path, tcr_filetype,  \
               bcr_path, bcr_filetype, \
               atac_path, atac_filetype, \
@@ -486,7 +486,7 @@ def load_mdata_from_multiple_files(all_files_dict):
         and the values for each key is a list of file path and fie type
         e.g.  {"RNA": [filepath, "filetype"],
                "ADT: [file path, "filetype"]} 
-        Filetypes supported for RNA/adt: ["cellranger", "h5ad", "csv_matrix", "txt_matrix", "10X_h5"],
+        Filetypes supported for RNA/prot: ["cellranger", "h5ad", "csv_matrix", "txt_matrix", "10X_h5"],
         Filetypes supported for atac (multiome preferred is 10X_h5) ["10X_h5","cellranger","h5ad"]
         Filetypes supported for rep: ["cellranger_vdj", "airr", "tracer", "bracer"  ] 
         See scirpy documentation for more information of repertoire input formats 
@@ -579,8 +579,8 @@ def write_10x_counts(adata, path, layer=None):
         features = adata.var.reset_index().rename(columns={"index": "gene_symbols"})
     elif "gene_symbols" in adata.var.columns:
         features = adata.var.reset_index().rename(columns={"index": "gene_ids"})
-        if "adt_id" in features.columns:
-            features = features.drop(columns=['gene_symbols']).rename(columns={"adt_id" : "gene_symbols"})
+        if "prot_id" in features.columns:
+            features = features.drop(columns=['gene_symbols']).rename(columns={"prot_id" : "gene_symbols"})
     features = features[['gene_ids','gene_symbols', 'feature_types']] 
     features.to_csv(os.path.join(path, "features.tsv.gz"), sep='\t', index=None, header=None)
 
