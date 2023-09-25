@@ -62,7 +62,7 @@ def gen_load_anndata_jobs(caf, load_raw=False, mode_dictionary = {}, load_prot_f
                 rna_path = re.sub("filtered", "raw", rna_path)
         # manage the adt paths
         if ('adt_path' in caf.columns and mode_dictionary["prot"]):
-            # check if its the same as the gex path (data in the same file)
+            # check if its the same as the rna path (data in the same file)
             if pd.isna(caf['adt_path'][nn]):
                 adt_path= None
                 adt_filetype=None
