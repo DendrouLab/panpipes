@@ -413,7 +413,7 @@ def X_is_raw(adata):
 # run clr 
     
 
-def run_adt_normalise(mdata, 
+def run_prot_normalise(mdata, 
                       mdata_bg, 
                       method: Literal['dsb', 'clr'] = 'clr',
                       clr_margin: Literal[0, 1] = '0',
