@@ -178,7 +178,7 @@ if args.barcode_mtd_df is not None :
 
 L.debug(mdata.obs.columns)
 L.debug(mdata.obs.head())
-# update the protein variable to add in extra info like isotype and alternate name for adt
+# update the protein variable to add in extra info like isotype and alternate name for prot
 if args.protein_var_table is not None:
     try:
         df = pd.read_csv(args.protein_var_table, sep='\t', index_col=0)

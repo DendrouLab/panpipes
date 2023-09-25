@@ -147,7 +147,7 @@ if 'rna' in mdata.mod.keys():
 # quantifying the top background features
 ## Repeat for protein (if it exists)
 if 'prot' in mdata.mod.keys():
-    # this time we'll just use all the adts.
+    # this time we'll just use all the prot vars.
     top_genes = list(mdata_bg['prot'].var_names)
     bg_df = pnp.scmethods.get_mean_background_fraction(mdata_bg['prot'], top_background=top_genes, group_by=args.channel_col)
     if bg_df.shape[0] >1:
