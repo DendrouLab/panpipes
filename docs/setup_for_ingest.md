@@ -3,7 +3,7 @@
 
 For ingest the minimum required columns are
 
-sample_id | gex_path | gex_filetype  
+sample_id | rna_path | rna_filetype  
 ----------|----------|-------------
 
 
@@ -20,7 +20,7 @@ example at `resources/sample_file_ingest.txt`
 
 If giving a cellranger path, give the path folder containing all the cellranger outputs. Otherwise path should be the complete path to the file. 
 
-If you have cellranger outputs which have gex and adt within the same files, specify the same path in gex_path and adt_path
+If you have cellranger outputs which have rna and adt within the same files, specify the same path in rna_path and adt_path
 
 To include sample level metadata, you can add additional columns to the submission file
 e.g Tissue and Diagnoisis columns in `resources/sample_file_ingest.txt`
@@ -38,13 +38,13 @@ For each modality per sample, specify the value in the key column in the X_filet
 
 modality    |key       |description
 ------------|----------|----------
-gex/adt/atac|cellranger| the "outs" folder produced by **cellranger count**
-gex/adt/atac|cellranger_multi| the "outs" folder produced by **cellranger multi**
-gex/adt/atac|10X_h5   | outs/filtered_feature_bc_matrix.h5 produced by cellranger
-gex/adt/atac|hd5 | Read a generic .h5 (hdf5) file.
-gex/adt/atac|h5ad  | Anndata h5ad objects (one per sample)
-gex/adt/atac|txt_matrix  | tab-delimited file (one per sample)
-gex/adt/atac|csv_matrix  | comma-delimited file (one per sample)
+rna/adt/atac|cellranger| the "outs" folder produced by **cellranger count**
+rna/adt/atac|cellranger_multi| the "outs" folder produced by **cellranger multi**
+rna/adt/atac|10X_h5   | outs/filtered_feature_bc_matrix.h5 produced by cellranger
+rna/adt/atac|hd5 | Read a generic .h5 (hdf5) file.
+rna/adt/atac|h5ad  | Anndata h5ad objects (one per sample)
+rna/adt/atac|txt_matrix  | tab-delimited file (one per sample)
+rna/adt/atac|csv_matrix  | comma-delimited file (one per sample)
 tcr/bcr     |cellranger_vdj| Path to filtered_contig_annotations.csv, all_contig_annotations.csv or all_contig_annotations.json.  produced by **cellranger vdj** further [details](https://scverse.org/scirpy/latest/generated/scirpy.io.read_10x_vdj.html)
 tcr/bcr     |tracer| data from [TraCeR](https://github.com/Teichlab/tracer) further [details](https://scverse.org/scirpy/latest/generated/scirpy.io.read_tracer.html)
 tcr/bcr     |bracer| data from [BraCeR](https://github.com/Teichlab/bracer) further [details](https://scverse.org/scirpy/latest/generated/scirpy.io.read_bracer.html)
