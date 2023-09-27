@@ -44,7 +44,7 @@ multimodal:
 
 
 # ---------------------------------------
-# parameters for find neighbours
+# parameters for finding neighbours
 # ---------------------------------------
 # 
 # -----------------------------
@@ -79,9 +79,9 @@ neighbors:
   atac:
     use_existing: True
     # which representation in .obsm to use for nearest neighbors
-    # if dim_red=X_lsi/X_pca and X_lis/X_pca not in .obsm, will be computed with default parameters
+    # if dim_red=X_lsi/X_pca and X_lsi/X_pca not in .obsm, will be computed with default parameters
     dim_red: X_lsi
-    # if dim_red=X_lsi/X_pca and X_lis/X_pca not in .obsm, which dimension to remove
+    # if dim_red=X_lsi/X_pca and X_lsi/X_pca not in .obsm, which dimension to remove
     dim_remove: 1
     #how many components to use for clustering
     n_dim_red: 30
@@ -230,7 +230,7 @@ markerspecs:
     threshuse: 0.25
 
 # ---------------------------------------
-# plot specs are used to define which metadata columns are used in the visualisations
+# plot specs are used to define which metadata columns are used in the visualizations
 # ---------------------------------------
 plotspecs:
   layers:
