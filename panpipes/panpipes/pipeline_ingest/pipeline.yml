@@ -120,7 +120,7 @@ subset_prot_barcodes_to_rna: False
 plot_10X_metrics: True 
 kneeplot: False
 # ------------
-## Doublets on GEX - Scrublet
+## Doublets on RNA - Scrublet
 # ------------
 scr:
   run: True
@@ -155,7 +155,7 @@ scr:
   #if use_thr is True, this thr will be used to define doublets
 
 # ------------
-# GEX QC
+# RNA QC
 # ------------
 # this part of the pipeline allows to generate the QC parameters that will be used to 
 # evaluate inclusion/ exclusion criteria. Filtering of cells/genes happens in the following pipeline
