@@ -63,7 +63,7 @@ if(!is.null(opt$csvpaths)) {
     }
 
   }
-  # paths <- gsub("filtered_feature_bc_matrix","metrics_summary.csv",caf$gex_path)
+  # paths <- gsub("filtered_feature_bc_matrix","metrics_summary.csv",caf$rna_path)
   paths <- file.path(caf$rna_path, "metrics_summary.csv")
   
   # paths <- gsub("\\/$","", paths)
