@@ -181,7 +181,7 @@ custom_genes_file: resources/qc_genelist_1.0.csv
 calc_proportions: hb,mt,rp
 score_genes: MarkersNeutro
 
-
+# ------------
 # Plot RNA QC metrics
 # ------------
 # all metrics should be inputted as a comma separated string e.g. a,b,c
@@ -191,13 +191,12 @@ plotqc_grouping_var: sample_id
 plotqc_rna_metrics: doublet_scores,pct_counts_mt,pct_counts_rp,pct_counts_hb,pct_counts_ig
 
 
-
 # ------------
-# ADT qc - requires prot_path to be included in the submission file
+# Plot PROT QC metrics 
 # ------------
+# requires prot_path to be included in the submission file
 # all metrics should be inputted as a comma separated string e.g. a,b,c
 
-###  ADT QC metrics:
 # as standard the following metrics are calculated for prot data
 # per cell metrics:
 # total_counts,log1p_total_counts,n_prot_by_counts,log1p_n_prot_by_counts
@@ -205,10 +204,10 @@ plotqc_rna_metrics: doublet_scores,pct_counts_mt,pct_counts_rp,pct_counts_hb,pct
 # total_counts_isotype,pct_counts_isotype
 # choose which ones you want to plot here
 plotqc_prot_metrics: total_counts,log1p_total_counts,n_prot_by_counts,pct_counts_isotype
-
-# per antibody metrics
+# Since the protein antibody panels usually count fewer features than the RNA, it may be interesting to
+# visualize breakdowns of single proteins plots describing their count distribution and other qc options.
+# choose which ones you want to plot here, for example
 # n_cells_by_counts,mean_counts,log1p_mean_counts,pct_dropout_by_counts,total_counts,log1p_total_counts
-# choose which ones you want to plot here:
 plot_metrics_per_prot: total_counts,log1p_total_counts,n_cells_by_counts,mean_counts
 
 # isotype outliers: one way to determine which cells are very sticky is to work out which cells have the most isotype UMIs
@@ -218,7 +217,6 @@ plot_metrics_per_prot: total_counts,log1p_total_counts,n_cells_by_counts,mean_co
 identify_isotype_outliers: True
 isotype_upper_quantile: 90
 isotype_n_pass: 2
-# TODO: work out how to plot this.
 
 ### Investigate per channel antibody staining:
 # This can help determine any inconsistencies in staining per channel and other QC concerns.
@@ -263,11 +261,8 @@ quantile_clipping: True
 # from both rna and protein assays, 
 # see details for how to make sure your files are compatible in the assess background section below
 
-
-
-
 # ------------
-# ATAC qc 
+# Plot ATAC QC metrics 
 # ------------
 
 # we require initializing one csv file per aggregated ATAC/multiome experiment.
@@ -287,9 +282,8 @@ features_tss: #resources/features_tss_hg19.tsv
 # all metrics should be inputted as a comma separated string e.g. a,b,c
 plotqc_atac_metrics: n_genes_by_counts,total_counts,pct_fragments_in_peaks,atac_peak_region_fragments,atac_mitochondrial_reads,atac_TSS_fragments
 
-
 # ------------
-# Repertoire QC
+# Plot Repertoire QC metrics
 # ------------
 # Repertoire data will be stored in one modality called "rep", if you provide both TCR and BCR data then this will be merged, 
 # but various functions will be fun on TCR and BCR separately

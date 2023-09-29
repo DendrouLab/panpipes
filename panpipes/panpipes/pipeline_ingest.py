@@ -426,7 +426,7 @@ def run_scanpy_prot_qc(log_file, outfile, unfilt_file):
     else:
         cmd += " --channel_col sample_id"
     if PARAMS['prot_plotqc_metrics']:
-        cmd += " --per_cell_metrics %(prot_plotqc_metrics)s"
+        cmd += " --per_cell_metrics %(plotqc_prot_metrics)s"
     if PARAMS['plot_metrics_per_prot']:
         cmd += " --per_prot_metrics %(plot_metrics_per_prot)s"
     if PARAMS['identify_isotype_outliers']:
