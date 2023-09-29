@@ -94,7 +94,7 @@ else:
         mdata=mdatas[0]
         del temp
     elif 'prot' in temp.mod.keys() or 'rna' in temp.mod.keys():
-        ## IF GEX and ADT is ok to concatenate ----------
+        ## IF GEX and PROT is ok to concatenate ----------
         mdata = concat_mdatas(mdatas,
             batch_key="sample_id", 
             join_type=args.join_type)
