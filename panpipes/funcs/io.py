@@ -482,10 +482,10 @@ def load_mdata_from_multiple_files(all_files_dict):
     Parameters
     ----------
     all_files_dict: dict
-        dictionary containing one key per assay out of [RNA, ADT, TCR, BCR, ATAC]
+        dictionary containing one key per assay out of [RNA, PROT, TCR, BCR, ATAC]
         and the values for each key is a list of file path and fie type
         e.g.  {"RNA": [filepath, "filetype"],
-               "ADT: [file path, "filetype"]} 
+               "PROT: [file path, "filetype"]} 
         Filetypes supported for RNA/prot: ["cellranger", "h5ad", "csv_matrix", "txt_matrix", "10X_h5"],
         Filetypes supported for atac (multiome preferred is 10X_h5) ["10X_h5","cellranger","h5ad"]
         Filetypes supported for rep: ["cellranger_vdj", "airr", "tracer", "bracer"  ] 

@@ -157,7 +157,7 @@ if 'prot' in mdata.mod.keys():
             fig, ax = plt.subplots(nrows=2,ncols=1,figsize=(24,10), facecolor="white")
             sns.heatmap(bg_df.iloc[:,1:split_int], ax=ax[0])
             sns.heatmap(bg_df.iloc[:,split_int:len(top_genes)], ax=ax[1])
-            fig.suptitle("mean exprs (raw counts) of ADT in empty drops")  
+            fig.suptitle("mean exprs (raw counts) of PROT in empty drops")  
             fig.tight_layout()
         else:
             fig, ax = plt.subplots(figsize=(12,10), facecolor="white")
@@ -173,7 +173,7 @@ if 'prot' in mdata.mod.keys():
             pnp.plotting.adjust_x_axis(ax[0])
             sns.heatmap(plt_df.iloc[split_int:len(top_genes),:], ax=ax[1])
             pnp.plotting.adjust_x_axis(ax[1])
-            fig.suptitle("mean exprs (raw counts) of ADT in empty drops")  
+            fig.suptitle("mean exprs (raw counts) of PROT in empty drops")  
             fig.tight_layout()
         else:
             fig, ax= plt.subplots(figsize=(12,8))

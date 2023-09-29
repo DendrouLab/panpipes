@@ -161,7 +161,7 @@ plotqc:
   atac_metrics: total_counts
   rep_metrics: 
 
-
+# --------------------------------------------------------------------------------------------------------
 # RNA Normalisation
 # --------------------------------------------------------------------------------------------------------
 # hvg_flavour options include "seurat", "cell_ranger", "seurat_v3", default; "seurat"
@@ -213,8 +213,8 @@ pca:
   scree_n_pcs: 50
   color_by: sample_id
 
-
-# Protein (ADT) normalisation
+# --------------------------------------------------------------------------------------------------------
+# Protein (PROT) normalisation
 # --------------------------------------------------------------------------------------------------------
 prot:
   # comma separated string of normalisation options
@@ -250,9 +250,9 @@ prot:
 
   # do you want to save the prot normalised assay additionally as a txt file:
   save_norm_prot_mtx: False
-
+# --------------------------------------------------------------------------------------------------------
 # ATAC preprocessing and normalisation
-# --------------------------
+# --------------------------------------------------------------------------------------------------------
 atac:
   binarize: False
   normalize: TFIDF

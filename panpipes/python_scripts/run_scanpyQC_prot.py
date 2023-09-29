@@ -1,8 +1,8 @@
 '''
-scanpy QC script ADT
+scanpy QC script PROT
 order of QC:
-- GEX
-- ADT
+- RNA
+- PROT
 - Repertoire
 - ATAC
 '''
@@ -151,7 +151,7 @@ mdata.write(args.outfile)
 # values on a per channel basis 
 # IS this cause you need the pandas per channel to plot? YES
 
-# the rest of the script is concerned with Per ADT metrics instead of per cell. 
+# the rest of the script is concerned with Per PROT metrics instead of per cell. 
 # per cell metrics are plotted in plotqc.R
 
 

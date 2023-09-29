@@ -2,7 +2,7 @@
 scanpy QC script RNA
 order of QC:
 - RNA
-- ADT
+- PROT
 - Repertoire
 - ATAC
 '''

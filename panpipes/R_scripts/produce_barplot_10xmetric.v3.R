@@ -146,7 +146,7 @@ if(ncol(tag.mat)>0){
 }
 
 if(nrow(mat)==0){mat <- tag.mat}
-#modify this to deal with AB reads and rna reads, need to split the knee plotting in 2 if you want both rna and ADT knees in 2 different graphs
+#modify this to deal with AB reads and rna reads, need to split the knee plotting in 2 if you want both rna and PROT knees in 2 different graphs
 if(opt$kneeplot){
   print("plotting kneeplot")
   gsub("metrics_summary.csv","raw_feature_bc_matrix" , paths) ->normpath
@@ -205,6 +205,6 @@ if(opt$kneeplot){
 
 }
 
-# if ADT exists then repeat for ADT
+# if PROT exists then repeat for PROT
 
 message("finished pipeline")

@@ -1,8 +1,8 @@
 '''
-scanpy QC script GEX
+scanpy QC script RNA
 order of QC:
-- GEX
-- ADT
+- RNA
+- PROT
 - Repertoire
 - ATAC
 '''

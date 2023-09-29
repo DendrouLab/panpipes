@@ -229,7 +229,7 @@ channel_col: sample_id
 # It is important to note that in ingest the per channel normalised prot scores are not saved in the mudata object
 #  this is because if you perform feature normalisation (clr normalisation margin 0 or dsb normalisation), 
 #  on subsets of cells then the normalised values cannot be simply concatenated. 
-# The ADT normalisation is rerun pn the complete object in the preprocess pipeline 
+# The PROT normalisation is rerun pn the complete object in the preprocess pipeline 
 # (or you can run this pipeline with channel_col set as None)
 # it is important to note, if you choose to run the clr on a per channel basis, then it is not stored in the h5mu file.
 # if you want to save the per channel normalised values set the following to True:

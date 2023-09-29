@@ -16,13 +16,10 @@ condaenv:
 
 # allows for tweaking where the jobs get submitted, in case there is a special queue for long jobs or you have access to a gpu
 # leave as is if you do not want to use the alternative queues
-# also rescomp users need to request gpu access.
 
+# --------------------------
 # Start
 # --------------------------
-# either one that exists already with
-
-
 sample_prefix: 
 unfiltered_obj: 
 # if running this on prefiltered datat then
@@ -30,8 +27,6 @@ unfiltered_obj:
 #2. rename your filtered file to match, the format PARAMS['sample_prefix'] + '.h5mu'
 #3. put renamed file in the same folder as this yml.
 #4. set filtering run: to False below.
-
-#TO DO this needs to go i think it doesn't make sense to save this file.
 
 # leave empty if you don't want to save an intermediate muData with normalized expression 
 # stored in X for the RNA object
@@ -43,13 +38,14 @@ modalities:
   rep: False
   atac: False
   #spatialT: True
-
+# --------------------------------------------------------------------------------------------------------
 # Filtering
 # --------------------------
 # the filtering process in panpipes is sequential as it goes through the filtering dictionary.
 # for each modality, starting with rna, it will first filter on obs and then vars.
 # each modality has a dictionary in the following format. This is fully customisable to any
 # columns in the mudata.obs or var object.
+# To avoid being prescriptive with the covariates names, we allow to provide custom names.
 # When specifying a column name, make sure it exactly matches the column name in the h5mu object.
 # rna:
   # obs:
@@ -174,7 +170,7 @@ plotqc:
 
 
 
-
+# --------------------------------------------------------------------------------------------------------
 # RNA Normalisation
 # --------------------------------------------------------------------------------------------------------
 # hvg_flavour options include "seurat", "cell_ranger", "seurat_v3", default; "seurat"
@@ -222,8 +218,8 @@ pca:
   scree_n_pcs: 50
   color_by: sample_id
 
-
-# Protein (ADT) normalisation
+# --------------------------------------------------------------------------------------------------------
+# Protein (PROT) normalisation
 # --------------------------------------------------------------------------------------------------------
 prot:
   # comma separated string of normalisation options
@@ -259,9 +255,9 @@ prot:
 
   # do you want to save the prot normalised assay additionally as a txt file:
   save_norm_prot_mtx: False
-
+# --------------------------------------------------------------------------------------------------------
 # ATAC preprocessing and normalisation
-# --------------------------
+# --------------------------------------------------------------------------------------------------------
 atac:
   binarize: False
   normalize: TFIDF
