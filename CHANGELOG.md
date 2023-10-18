@@ -4,6 +4,8 @@
 ### added
 
 ### fixed
+- changed all instances of ADT into PROT
+- changed all instances of GEX to RNA
 
 ### dependencies
 
@@ -15,7 +17,7 @@
 - Spatial data analysis is now included in panpipes
     - panpipes qc_spatial
     - panpipes preprocess_spatial
-    - panpipes_deconvolution_spatials
+    - panpipes_deconvolution_spatial
 
 ### fixed
 - make sure columns from individual modalities that are not in the multimodal outer obs can be used to
