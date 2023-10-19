@@ -25,21 +25,21 @@ Check out the :doc:`installation<install>` and :doc:`usage guidelines<usage/inde
 Available pipelines for Multimodal Data:
 --------------------
 
-1. :doc:`workflows/qc` : for the ingestion of data and computation of QC metrics' 
-2. :doc:`workflows/preprocess` : for filtering and normalising of each modality
-3. :doc:`workflows/integration`: integrate and batch correction using  single and multimodal methods
+1. :doc:`workflows/qc` : for the ingestion of data and computation of QC metrics 
+2. :doc:`workflows/preprocess` : for filtering and normalizing each modality
+3. :doc:`workflows/integration`: integrate and batch correction using single and multimodal methods
 4. :doc:`workflows/clustering` : cell clustering on single modalities
 5. :doc:`workflows/refmap` : transfer scvi-tools models from published data to your data
-6. :doc:`workflows/vis` : visualise metrics from other pipelines in context of experiment metadata
+6. :doc:`workflows/vis` : visualize metrics from other pipelines in the context of experiment metadata
 
 
 Available Pipelines for Spatial Data:
 -----
 
-1. :doc:`workflows/ingest_spatial` :  for the ingestion of Spatial and RNA data and computation of QC metrics
-2. :doc:`workflows/preprocess_spatial`: for filtering and normalising spatial data
-3. :doc:`workflows/deconvolute_spatial` : for deconvoluting spatial data with `cell2location`
-4. :doc:`workflows/clustering_spatial` : for clustering spatial data
+1. :doc:`workflows/ingest_spatial` :  for the ingestion of spatial transcriptomics (ST) data (Vizgen, Visium) and computation of QC metrics
+2. :doc:`workflows/preprocess_spatial`: for filtering and normalizing ST data
+3. :doc:`workflows/deconvolute_spatial` : for the cell type deconvolution of ST slides
+4. :doc:`workflows/clustering_spatial` : for clustering ST data
 
 Contents
 --------
