@@ -8,7 +8,7 @@ Panpipes - multimodal single cell pipelines
 
 
 
-What is panpipes?
+What is Panpipes?
 -----------------
 
 
@@ -22,7 +22,7 @@ Check out the :doc:`installation<install>` and :doc:`usage guidelines<usage/inde
   :alt: flowchart overview of panpipes single cell pipelines
 
 
-Available pipelines for Multimodal Data:
+Available Pipelines for Multimodal Data:
 --------------------
 
 1. :doc:`workflows/qc` : for the ingestion of data and computation of QC metrics 
@@ -40,20 +40,5 @@ Available Pipelines for Spatial Data:
 2. :doc:`workflows/preprocess_spatial`: for filtering and normalizing ST data
 3. :doc:`workflows/deconvolute_spatial` : for the cell type deconvolution of ST slides
 4. :doc:`workflows/clustering_spatial` : for clustering ST data
-
-Contents
---------
-
-.. toctree::
-   :maxdepth: 1
-
-   install
-   usage/index
-   workflows/index
-   tutorials/index
-   release_notes
-   contribute_guidelines
-   contributors
-   references
 
 
