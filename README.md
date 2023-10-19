@@ -16,14 +16,14 @@ These pipelines use cgat-core pipeline software
 
 Available pipelines:
 1. "ingest" : for the ingestion of data and computation of QC metrics 
-2. "preprocess" : for filtering and normalizing of each modality
+2. "preprocess" : for filtering and normalizing each modality
 3. "integration" : integrate and batch correction using single and multimodal methods
 4. "clustering" : cell clustering on single modalities
 5. "refmap" : transfer scvi-tools models from published data to your data
 6. "vis" : visualize metrics from other pipelines in the context of experiment metadata
 7. "qc_spatial" : for the ingestion of spatial transcriptomics (ST) data (Vizgen, Visium) and computation of QC metrics
-8. "preprocess_spatial" : for filtering and normalizing of ST data
-9. "deconvolution" : for the cell type deconvolution of ST slides
+8. "preprocess_spatial" : for filtering and normalizing ST data
+9. "deconvolution_spatial" : for the cell type deconvolution of ST slides
 
 
 # Installation and configuration
