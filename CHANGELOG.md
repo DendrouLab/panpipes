@@ -2,7 +2,9 @@
 
 ## [main]
 ### added
-
+- merged PR #111:
+  - LSI in panpipes_preprocess is run on the highly variable features
+  - n_comp for LSI
 ### fixed
 
 ### dependencies
