@@ -6,6 +6,9 @@
 ### fixed
 - changed all instances of ADT into PROT
 - changed all instances of GEX to RNA
+- changed the params to fix plotting as mentioned in issue #41
+- typo in readme
+
 
 ### dependencies
 
