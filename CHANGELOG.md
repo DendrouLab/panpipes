@@ -4,7 +4,7 @@
 ### added
 
 ### fixed
-
+- changed typo in tutorial paths for clustering and deconvolution
 ### dependencies
 
 ## v0.3.1
