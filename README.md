@@ -12,10 +12,10 @@ doi: https://doi.org/10.1101/2023.03.11.532085
 
 
 # Introduction
-These pipelines use cgat-core pipeline software
+These workflows use cgat-core pipeline software
 
-Available pipelines:
-1. "ingest" : for the ingestion of data and computation of QC metrics' 
+Available workflows:
+1. "ingest" : for the ingestion of data and computation of QC metrics 
 2. "preprocess" : for filtering and normalising of each modality
 3. "integration" : integrate and batch correction using  single and multimodal methods
 4. "clustering" : cell clustering on single modalities
