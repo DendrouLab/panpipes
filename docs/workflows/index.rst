@@ -10,3 +10,4 @@ Workflows
     refmap
     clustering
     vis
+    ingest_spatial
