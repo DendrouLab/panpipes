@@ -35,7 +35,11 @@ def main(argv=None):
                           '3. "integration" : integrate and batch correction using  single and multimodal methods', 
                           '4. "clustering" : cell clustering on single modalities', 
                           '5. "refmap" : transfer scvi-tools models from published data to your data', 
-                          '6. "vis" : visualise metrics from other pipelines in context of experiment metadata']
+                          '6. "vis" : visualise metrics from other pipelines in context of experiment metadata',
+                          '7. "qc_spatial": for the ingestion and qc of spatial transcriptomic data',
+                          '8. "preprocess_spatial": to filter and normalize ST data',
+                          '9. "deconvolution_spatial": to run ST celltype deconvolution']
+
         print(*pipelines_list, sep="\n")
         return
     command = argv[1]
