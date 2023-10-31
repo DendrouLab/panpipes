@@ -60,6 +60,8 @@ def get_metrics_summary_path(path,sample_id=None):
     # use the path to cellranger count or vdj outputs as default
     if os.path.exists(os.path.join(path, 'metrics_summary.csv') ):
         outpath = os.path.join(path, 'metrics_summary.csv') 
+    elif os.path.exists(os.path.join(path, 'summary.csv') ):
+        outpath = os.path.join(path, 'summary.csv') 
     elif sample_id is not None and os.path.exists(os.path.join(path, 'per_sample_outs', sample_id, 'metrics_summary.csv') ):
         outpath = os.path.join(path, 'per_sample_outs', sample_id, 'metrics_summary.csv')
     elif sample_id is None and os.path.exists(os.path.join(path, 'per_sample_outs')):
@@ -96,7 +98,8 @@ def get_all_unique_paths(pipe_df):
     recode_dict = {'rna_path': "Gene Expression", 
                    'prot_path': "Antibody Capture", 
                    'tcr_path': 'VDJ T', 
-                   'bcr_path': 'VDJ B'}
+                   'bcr_path': 'VDJ B',
+                   'atac_path': 'ATAC' }
     all_paths['path_type'] = all_paths['path_type'].replace(recode_dict)
     return all_paths
 
