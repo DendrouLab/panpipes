@@ -17,33 +17,27 @@ PARAMS['py_path'] =  os.path.join(os.path.dirname(os.path.dirname(__file__)), 'p
 PARAMS['r_path'] = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'R_scripts')
 PARAMS['resources_path'] = os.path.join(os.path.dirname(os.path.dirname(__file__)), "resources")
 
-if  PARAMS['sample_prefix'] is not None:
-    PARAMS['mudata_file'] = PARAMS['sample_prefix'] + ".h5mu"
-else:
-    logging.warning("sample prefix is None, please use a string")
     
 job_kwargs = {}
 
 if PARAMS['condaenv'] is not None:
     job_kwargs["job_condaenv"] =PARAMS['condaenv']
    
-mode_dictionary = PARAMS["modalities"]
-
-if PARAMS["input_dir"] is not None:
-    input_dir= PARAMS["input_dir"]
-    if not os.path.exists(input_dir):
-        logging.warning("input directory doesn't exist, checking if files are in the default ../qc.data/ dir")
-        input_dir = "../qc.data"
-        if not os.path.exists(input_dir):
-            sys.exit("can't find input data")
-else:
-    input_dir = "../qc.data"
-    if not os.path.exists(input_dir):
-            sys.exit("can't find input data")
 
 
 
 def gen_filter_jobs():
+    if PARAMS["input_dir"] is not None:
+        input_dir= PARAMS["input_dir"]
+        if not os.path.exists(input_dir):
+            logging.warning("input directory doesn't exist, checking if files are in the default ../qc.data/ dir")
+            input_dir = "../qc.data"
+            if not os.path.exists(input_dir):
+                sys.exit("can't find input data")
+    else:
+        input_dir = "../qc.data"
+        if not os.path.exists(input_dir):
+                sys.exit("can't find input data")
     input_paths=glob.glob(os.path.join(input_dir,"*unfilt.h5mu"))
     for infile_path in input_paths:
         file_name = os.path.basename(infile_path)
@@ -61,26 +55,21 @@ def filter_mudata(infile_path,outfile):
     print('processing file = %s' % str(infile_path))
     log_file = os.path.basename(outfile)
     log_file= "filtering."+log_file.replace("filtered.h5mu","") + ".log"
-    if PARAMS['filtering_run']:
-        filter_dict = dictionary_stripper(PARAMS['filtering'])
-        cmd = """
+
+
+    filter_dict = dictionary_stripper(PARAMS['filtering'])
+    cmd = """
         python %(py_path)s/run_filter_spatial.py
         --input_mudata %(infile_path)s
         --output_mudata %(outfile)s
         --filter_dict "%(filter_dict)s"
         """
-        if PARAMS['filtering_keep_barcodes'] is not None:
-            cmd += " --keep_barcodes %(filtering_keep_barcodes)s"
-        cmd += " > logs/%(log_file)s "
-        job_kwargs["job_threads"] = PARAMS['resources_threads_low']
-        P.run(cmd, **job_kwargs)
-    else:
-        try:
-            f = open(infile_path)
-            f.close(infile_path)
-        except IOError:
-            print("filter is not set to True, but there is no %s file" % outfile)
-            sys.exit(1)
+    if PARAMS['filtering_keep_barcodes'] is not None:
+        cmd += " --keep_barcodes %(filtering_keep_barcodes)s"
+    cmd += " > logs/%(log_file)s "
+    job_kwargs["job_threads"] = PARAMS['resources_threads_low']
+    P.run(cmd, **job_kwargs)
+    
 
 
 def run_plotqc_query(pqc_dict):
@@ -89,9 +78,9 @@ def run_plotqc_query(pqc_dict):
     del pqc['grouping_var']
     return any([x != None for x in pqc.values()])
 
-@active_if(mode_dictionary['spatial'] is True)
-@active_if(PARAMS['filtering_run'])
+
 @active_if(run_plotqc_query(PARAMS['plotqc']))
+@active_if(PARAMS['filtering_run'])
 @transform(filter_mudata,
            regex("./filtered.data/(.*)_filtered.h5(.*)"), 
            r"./logs/postfilterplot.\1.log")
@@ -105,7 +94,6 @@ def postfilterplot_spatial(filt_file,log_file):
              --spatial_filetype %(spatial_filetype)s
              --figdir ./figures/spatial
             """
-#--output_mudata ./filtered_data/%(filt_file)s
     if PARAMS['plotqc']['grouping_var'] is not None:
         cmd += " --grouping_var %(plotqc_grouping_var)s"
     if PARAMS['plotqc']['spatial_metrics'] is not None:
@@ -114,7 +102,7 @@ def postfilterplot_spatial(filt_file,log_file):
     job_kwargs["job_threads"] = PARAMS['resources_threads_low']
     P.run(cmd, **job_kwargs)
 
-@active_if(mode_dictionary['spatial'] is True)
+
 @transform(filter_mudata,
            regex("./filtered.data/(.*)_filtered.h5(.*)"), 
            r"./logs/st_preprocess.\1.log")
