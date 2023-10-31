@@ -22,7 +22,7 @@ Check out the :doc:`installation<install>` and :doc:`usage guidelines<usage/inde
   :alt: flowchart overview of panpipes single cell pipelines
 
 
-Available Pipelines for Multimodal Data:
+Available workflows for multimodal data:
 --------------------
 
 1. :doc:`workflows/qc` : for the ingestion of data and computation of QC metrics 
@@ -33,7 +33,7 @@ Available Pipelines for Multimodal Data:
 6. :doc:`workflows/vis` : visualize metrics from other pipelines in the context of experiment metadata
 
 
-Available Pipelines for Spatial Data:
+Available workflows for spatial data:
 -----
 
 1. :doc:`workflows/ingest_spatial` :  for the ingestion of spatial transcriptomics (ST) data (Vizgen, Visium) and computation of QC metrics
