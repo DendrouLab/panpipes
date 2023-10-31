@@ -24,7 +24,7 @@ The 6 columns of the sample submission file are:
 **Note, that the columns, `sample_id`, `spatial_path`, `spatial_filetype`, and `spatial_counts` are required for both, `Visium` and `Vizgen` data. The `spatial_metadata`(required) and `spatial_transformation`(optional) columns are `Vizgen`-specific and should be left empty for `Visium` data.**
 
 
-####<u>Example submission file</u>:
+### <u>Example submission file</u>:
 
 
 | sample_id | spatial_path | spatial_filetype | spatial_counts                          | spatial_metadata                         | spatial_transformation |
