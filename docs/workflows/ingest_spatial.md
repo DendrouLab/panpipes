@@ -9,7 +9,7 @@ A primary difference to the cell suspension `ingestion` workflow is that we are 
 ### Steps
 
 - Data is ingested into `MuData` objects with the modality `spatial`. The workflow generates one MuData per dataset.
-    - Raw `MuData`s are saved into `./tmp`
+    - Raw `MuData` objects are saved into `./tmp`
 - QC metrics are computed using `scanpy` functionalities: 
     - Basic QC metrics are computed using `sc.pp.calculate_qc_metrics`
     - (Optional) Compute cell-cycle scores using `sc.tl.score_genes_cell_cycle`. For that, the [default gene list](../../panpipes/resources/cell_cycle_genes.tsv) can be used or a path to a tsv file can be specified. 
@@ -31,7 +31,7 @@ A primary difference to the cell suspension `ingestion` workflow is that we are 
 3.  Activate conda environment `conda activate pipeline_env`
 4.  Generate yaml and log file `panpipes qc_spatial config`
 5.  Edit the pipeline.yml file for your dataset
-6.  Run complete QC pipeline with `panpipes qc_spatial make full --local`
+6.  Run complete QC workflow with `panpipes qc_spatial make full --local`
 7.  Use outputs to decide filtering thresholds
     -   **Note that the actual filtering occurs in the first step of the `preprocess_spatial` workflow**
 
