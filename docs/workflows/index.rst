@@ -11,3 +11,4 @@ Workflows
     clustering
     vis
     ingest_spatial
+    preprocess_spatial
