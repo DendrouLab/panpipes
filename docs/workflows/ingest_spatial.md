@@ -2,7 +2,7 @@ Ingesting spatial data
 ========================
 
 
-Similar to the cell suspension workflow, Panpipes' `spatial_qc` ingests `Vizgen` and/or `Visium` data and saves the data into `MuData` objects. 
+Similar to the cell suspension workflow, `spatial_qc` ingests `Vizgen` and/or `Visium` data and saves the data into `MuData` objects. 
 A primary difference to the cell suspension `ingestion` workflow is that we are not concatenating the input data into a single matrix, but keeping the samples as separate `MuData` objects, each with a `spatial` layer. This ensures that the processing does not introduce any technical batch effect when tissue slides are very different in cell composition. In a future release, we will use [SpatialData](https://spatialdata.scverse.org/en/latest/tutorials/notebooks/notebooks.html) as a data format and framework to process multi-slides experiments.
  
 
@@ -30,7 +30,7 @@ A primary difference to the cell suspension `ingestion` workflow is that we are 
 2.  (Optional) Generate QC gene lists as described in [gene list format](../usage/gene_list_format.md)
 3.  Activate conda environment `conda activate pipeline_env`
 4.  Generate yaml and log file `panpipes qc_spatial config`
-5.  Edit the pipeline.yml file for your dataset
+5.  Specify the parameter setting in the pipeline.yml file
 6.  Run complete QC workflow with `panpipes qc_spatial make full --local`
 7.  Use outputs to decide filtering thresholds
     -   **Note that the actual filtering occurs in the first step of the `preprocess_spatial` workflow**
