@@ -19,7 +19,7 @@ For the reference and each spatial slide the following steps are run. **Note, th
 - (Optional) Reference model is saved in `./cell2location.output`
 - Spatial mapping model is fitted. Training history and QC plots are saved in the `./figures/Cell2Location` directory. Plots of the spatial embedding coloured by `q05_cell_abundance_w_sf` is also saved in `./figures/Cell2Location`.
 - (Optional) Spatial mapping model is saved in `./cell2location.output`
-- `MuData` objects of the spatial slide and the reference are saved in `./cell2location.output`. The `MuData` object of the spatial slide contains the estimated cell type abundances. 
+- `MuData` objects of the spatial slide and the reference are saved in `./cell2location.output`. The `MuData` object of the spatial slide contains the estimated cell type abundances.
 
 
 ## Steps to run
