@@ -1,13 +1,13 @@
 Preprocessing spatial data
 ==========================
 
-The `preprocess_spatial` workflow filters the data and preprocesses the data by normalization, HVG selection, and PCA computation. Multiple `MuData` objects can be filtered and preprocessed in one run. 
+The `preprocess_spatial` workflow filters the data and preprocesses the data by normalization, HVG selection, and PCA computation. Multiple `MuData` objects of the same assay (`Visium` or `Vizgen`) can be filtered and preprocessed in one run. 
 
 ## Steps
 
 
-- `MuData` object is filtered by the specified thresholds in the pipeline.yml.
-- Post-filter plotting is performed. Specified metrics in the pipeline.yml are plotted in violin and spatial embedding plots. Plots are saved into the `./figures/spatial` directory.
+- `MuData` object is filtered by the specified thresholds in the pipeline.yml.  Note, that the filtering step is **optional**. You can avoid filtering by setting the `run` parameter in the pipeline.yml under `filtering` to `False`.
+- Post-filter plotting is performed (only when data was filtered, i.e. `run: True`). Specified metrics in the pipeline.yml are plotted in violin and spatial embedding plots. Plots are saved into the `./figures/spatial` directory.
 - Data is normalized  and HVGs are selected. 
   Before normalization, raw counts are saved into `.layers["raw_counts"]`, if not present already. Normalized counts are saved into `.X` and `.layers["lognorm"]` or `.layers["norm_pearson_resid"]`, depending on the chosen normalization. HVGs are saved into `.var["highly_variable"]`.
 - PCA is computed and plotted. PCA plots are also saved into the `./figures/spatial` directory.
