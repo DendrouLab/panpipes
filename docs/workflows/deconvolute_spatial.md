@@ -12,7 +12,7 @@ For now, the workflow provides the possibility to run deconvolution using `Cell2
 For the reference and each spatial slide the following steps are run. **Note, that the same parameter setting is used for each slide.** 
 
 - Gene selection. There are two possibilities for the gene selection: 
-    - Genes of a user-provided feature set (csv-file) are used for deconvolution
+    - Genes of a user-provided feature set (csv-file) are used for deconvolution. All genes of that gene list need to be present in both, spatial slides and scRNA-Seq reference.
     - Feature selection performed according to Cell2Location, i.e. via the function: `cell2location.utils.filtering.filter_genes`
     - **Note**: if no csv-file is provided by the user, the workflow will run the feature selection via the function: `cell2location.utils.filtering.filter_genes`. Thus, gene selection is **not optional**.  
 - Regression/reference model is fitted and a plot of the training history as well as QC plots are saved in the `./figures/Cell2Location` directory. Additionally, a csv-file `Cell2Loc_inf_anver.csv` with the estimated expression of every gene in every cell type is saved in `./cell2location.output`.
@@ -29,6 +29,6 @@ For the reference and each spatial slide the following steps are run. **Note, th
 3.  Specify the parameter setting in the pipeline.yml file 
 4.  Run complete deconvolution workflow with `panpipes deconvolution_spatial make full --local`
 
-The [Deconvoluting spatial data using Cell2Location]() tutorial guides you through deconvolution workflow of `Panpipes` step by step. 
+The [Deconvoluting spatial data]() tutorial guides you through deconvolution workflow of `Panpipes` step by step. 
 
 
