@@ -42,3 +42,17 @@ Available workflows for spatial data:
 4. :doc:`workflows/clustering_spatial` : for clustering ST data
 
 
+Contents
+--------
+
+.. toctree::
+   :maxdepth: 1
+
+   install
+   usage/index
+   workflows/index
+   tutorials/index
+   release_notes
+   contribute_guidelines
+   contributors
+   references
