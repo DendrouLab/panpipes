@@ -48,6 +48,7 @@ Creating a [sample submission file](setup_for_qc_mm) for the QC pipeline.
 :maxdepth: 1
 
 setup_for_qc_mm
+setup_for_spatial_workflows
 gene_list_format
 filter_dict_instructions
 different_entry_points
