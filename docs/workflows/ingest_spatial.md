@@ -6,7 +6,7 @@ Similar to the cell suspension workflow, `spatial_qc` ingests `Vizgen` and/or `V
 A primary difference to the cell suspension `ingestion` workflow is that we are not concatenating the input data into a single matrix, but keeping the samples as separate `MuData` objects, each with a `spatial` layer. This ensures that the processing does not introduce any technical batch effect when tissue slides are very different in cell composition. In a future release, we will use [SpatialData](https://spatialdata.scverse.org/en/latest/tutorials/notebooks/notebooks.html) as a data format and framework to process multi-slides experiments.
  
 
-### Steps
+## Steps
 
 - Data is ingested into `MuData` objects with the modality `spatial`. The workflow generates one MuData per dataset.
     - Raw `MuData` objects are saved into `./tmp`
@@ -24,7 +24,7 @@ A primary difference to the cell suspension `ingestion` workflow is that we are 
 
 
 
-### Steps to run 
+## Steps to run 
 
 1.  Generate sample submission file. You can find more information about the generation [here](../usage/setup_for_spatial_workflows.md)
 2.  (Optional) Generate QC gene lists as described in [gene list format](../usage/gene_list_format.md)
@@ -36,6 +36,6 @@ A primary difference to the cell suspension `ingestion` workflow is that we are 
     -   **Note that the actual filtering occurs in the first step of the `preprocess_spatial` workflow**
 
 
-The [Ingesting 10X Visium data with Panpipes]() and [Ingesting MERFISH data with Panpipes]() tutorials guide you through the ingestion step by step. 
+The [Ingesting 10X Visium data with Panpipes](https://panpipes-tutorials.readthedocs.io/en/latest/ingesting_visium_data/Ingesting_visium_data_with_panpipes.html) and [Ingesting MERFISH data with Panpipes](https://panpipes-tutorials.readthedocs.io/en/latest/ingesting_merfish_data/Ingesting_merfish_data_with_panpipes.html) tutorials guide you through the ingestion step by step. 
 
 

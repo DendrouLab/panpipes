@@ -9,7 +9,7 @@ For now, the workflow provides the possibility to run deconvolution using `Cell2
 
 ## Steps
 ### Cell2Location 
-For the reference and each spatial slide the following steps are run. **Note, that the same parameter setting is used for each slide.** 
+For the reference and each spatial slide the following steps are run. **Note, that if multiple slides are deconvoluted in one run, the same parameter setting is used for each slide.** 
 
 - Gene selection. There are two possibilities for the gene selection: 
     - Genes of a user-provided feature set (csv-file) are used for deconvolution. All genes of that gene list need to be present in both, spatial slides and scRNA-Seq reference.
@@ -29,6 +29,6 @@ For the reference and each spatial slide the following steps are run. **Note, th
 3.  Specify the parameter setting in the pipeline.yml file 
 4.  Run complete deconvolution workflow with `panpipes deconvolution_spatial make full --local`
 
-The [Deconvoluting spatial data]() tutorial guides you through deconvolution workflow of `Panpipes` step by step. 
+The [Deconvoluting spatial data](https://panpipes-tutorials.readthedocs.io/en/latest/deconvolution/deconvoluting_spatial_data_with_panpipes.html) tutorial guides you through deconvolution workflow of `Panpipes` step by step. 
 
 

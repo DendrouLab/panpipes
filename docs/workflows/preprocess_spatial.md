@@ -22,4 +22,4 @@ If multiple `MuData` objects are provided, the following steps are run for each 
 3.  Specify the parameter setting in the pipeline.yml file 
 4.  Run complete preprocess workflow with `panpipes preprocess_spatial make full --local`
 
-The [Preprocessing spatial data]() tutorial guides you through the preprocessing step by step. 
+The [Preprocessing spatial data](https://panpipes-tutorials.readthedocs.io/en/latest/preprocess_spatial_data/preprocess_spatial_data_with_panpipes.html) tutorial guides you through the preprocessing step by step. 

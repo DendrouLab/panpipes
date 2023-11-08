@@ -29,7 +29,7 @@ This is defined in the following section of the ingestion pipeline.yml:
     score_genes: MarkersNeutro
 
 Example custom_genes_file:
-[resources/qc_genelist_1.0.csv](https://github.com/DendrouLab/panpipes/blob/master/resources/qc_genelist_1.0.csv).
+[resources/qc_genelist_1.0.csv](https://github.com/DendrouLab/panpipes/blob/main/panpipes/resources/qc_genelist_1.0.csv).
 
 Calc_proportions: compute
 what percentage of the gene counts in each barcode are associated to the
@@ -66,4 +66,4 @@ plotted, and a new file is saved per group.
 ##### Footnotes
 <a name="footnote1">1</a>:  the one exception to this is how cellcycle genes are included,
 this will change in a future version of panpipes
-[resources/cell_cycle_genes.csv](https://github.com/DendrouLab/panpipes/blob/master/resources/cell_cycle_genes.csv)
+[resources/cell_cycle_genes.csv](https://github.com/DendrouLab/panpipes/blob/main/panpipes/resources/cell_cycle_genes.tsv)
