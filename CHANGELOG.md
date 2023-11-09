@@ -6,7 +6,7 @@
   - LSI in panpipes_preprocess is run on the highly variable features
   - n_comp for LSI
 ### fixed
-
+- set default seaborn <=0.12.2 to avoid issue #104, #126
 ### dependencies
 
 ## v0.3.1
