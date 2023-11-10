@@ -1,6 +1,27 @@
 
 
 ## [main]
+
+### added
+
+### fixed
+
+### dependencies
+
+## v0.4.0
+Big Change! the submission files for the `ingest` workflow have now changed! we require the paths to the Gene expression (RNA/GEX) and Protein (ADT) to have the following headers.
+
+
+| sample_id | rna_path    | rna_filetype | prot_path    | prot_filetype |
+| --------- | ----------- | ------------ | ------------ | ------------- |
+| sampleX   | path/to/rna | 10X_h5       | path/to/prot | 10x_h5        |
+|           |             |              |              |               |
+
+
+See tutorials for examples of submission files.
+
+
+
 ### added
 - merged PR #111:
   - LSI in panpipes_preprocess is run on the highly variable features
