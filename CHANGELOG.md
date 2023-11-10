@@ -2,13 +2,16 @@
 
 ## [main]
 ### added
-
+- merged PR #111:
+  - LSI in panpipes_preprocess is run on the highly variable features
+  - n_comp for LSI
 ### fixed
+
 - changed all instances of ADT into PROT
 - changed all instances of GEX to RNA
 - changed the params to fix plotting as mentioned in issue #41
 - typo in readme
-
+- set default seaborn <=0.12.2 to avoid issue #104, #126
 
 ### dependencies
 
