@@ -103,7 +103,7 @@ def calc_sm_umaps(infile, outfile, mod, mindist, log_file):
             --min_dist %(mindist)s 
             """
     if mod is not None and mod != "multimodal":
-        # if this is not specified it will use gex default
+        # if this is not specified it will use rna default
         cmd += " --modality %(mod)s"
     elif mod=="multimodal":
         if PARAMS['multimodal_integration_method'].lower() == "wnn":
@@ -146,7 +146,7 @@ def calc_cluster(infile, outfile,  mod, res, alg, log_file):
             --algorithm %(alg)s
     """ 
     if mod is not None and mod != "multimodal":
-        # if this is not specified it will use gex default
+        # if this is not specified it will use rna default
         cmd += " --modality %(mod)s"
     elif mod=="multimodal":
         if PARAMS['multimodal_integration_method'].lower() == "wnn":
@@ -412,7 +412,7 @@ def marker_analysis(fname):
 #     if PARAMS['use_muon']:
 #         cmd += " --use_muon True"
 #     if PARAMS['modality']:
-#         # if this is not specified it will use gex default
+#         # if this is not specified it will use rna default
 #         cmd += " --modality %(modality)s"
 #     print(cmd)
 #     P.run(cmd, job_threads=PARAMS['resources_threads_medium'])

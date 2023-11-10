@@ -93,8 +93,8 @@ def get_all_unique_paths(pipe_df):
     all_paths.columns = ['sample_id', 'path_type', 'path']
     all_paths = all_paths.drop_duplicates()
     # rename path_type to match cellranger terminolgy
-    recode_dict = {'gex_path': "Gene Expression", 
-                   'adt_path': "Antibody Capture", 
+    recode_dict = {'rna_path': "Gene Expression", 
+                   'prot_path': "Antibody Capture", 
                    'tcr_path': 'VDJ T', 
                    'bcr_path': 'VDJ B'}
     all_paths['path_type'] = all_paths['path_type'].replace(recode_dict)
@@ -216,11 +216,11 @@ for idx, row in tenx_metrics_full[['library_type','metric_name']].drop_duplicate
 
 ## gene expression  extra plots -----------------------------
 
-gex_tenx_metrics = tenx_metrics_full[tenx_metrics_full['library_type'] == 'Gene Expression']
+rna_tenx_metrics = tenx_metrics_full[tenx_metrics_full['library_type'] == 'Gene Expression']
 
 # sequencing_saturaion plot scatter plot
 plot_metrics = ['Sequencing saturation', 'Mean reads per cell', 'Estimated number of cells', 'Number of reads', 'Median UMI counts per cell']
-plt_df = gex_tenx_metrics[gex_tenx_metrics.metric_name.isin(plot_metrics)]
+plt_df = rna_tenx_metrics[rna_tenx_metrics.metric_name.isin(plot_metrics)]
 plt_df = plt_df[['sample_id', 'metric_name', 'metric_value']]
 plt_tab = plt_df.pivot_table(index='sample_id', columns='metric_name', values='metric_value', aggfunc=sum)
 # sns.scatterplot(data=plt_tab, 

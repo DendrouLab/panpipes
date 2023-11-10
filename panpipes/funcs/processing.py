@@ -253,7 +253,7 @@ def merge_with_adata_obs(adata, df, on_col="sample_id", inplace=False):
         return new_df
 
 
-def add_var_mtd(prot, df, left_on="adt_id", right_on="adt_id"):
+def add_var_mtd(prot, df, left_on="prot_id", right_on="prot_id"):
     if not isinstance(prot, AnnData):
         raise TypeError("prot is not an AnnData object")
     if not isinstance(df, pd.DataFrame):
@@ -276,7 +276,7 @@ def add_var_mtd(prot, df, left_on="adt_id", right_on="adt_id"):
             prot.var.index = orig_index
             logging.debug(prot.var.head())
         else:
-            warnings.warn(UserWarning("prot.var is at risk of getting disrodered, not merging the df"))
+            warnings.warn(UserWarning("prot.var is at risk of getting disordered, not merging the df"))
     
 
 
