@@ -61,7 +61,9 @@ def get_metrics_summary_path(path,sample_id=None):
     # subset path to only go up to 'outs'
     if 'outs' not in path:
         print("you are parsing a cellranger output but your path to raw data doesn't end wth the outs folder")
-    path = check_path(path)
+        path = check_path(path)
+    else:
+        path = path.split("outs")[0] + "outs"
     outpath=None
     # use the path to cellranger count or vdj outputs as default
     if os.path.exists(os.path.join(path, 'metrics_summary.csv') ):
@@ -153,6 +155,9 @@ def parse_10x_cellranger_count(path_df, convert_df,  path_col='metrics_summary_p
         pd.DataFrame: 7 columns ['sample_id', 'category', 'library_type', 'grouped_by', 
         'group_name', metric_name', 'metric_value']
     """   
+    # subset to unique rows to save loading in duplicate data (works for count too)
+    path_df = path_df[['sample_id', path_col]].drop_duplicates()
+    
     # read and concat
     msums = pd.concat([pd.read_csv(f) for f in path_df[path_col]], 
                     keys=[(x, y) for x, y in zip(path_df['sample_id'], path_df['path_type'])], 
