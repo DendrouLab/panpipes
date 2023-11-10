@@ -32,3 +32,10 @@ See [installation instructions here](https://panpipes-pipelines.readthedocs.io/e
 
 Oxford BMRC Rescomp users find additional advice in [docs/installation_rescomp](https://github.com/DendrouLab/panpipes/blob/main/docs/installation_rescomp.md)
 
+# Releases
+
+`panpipes v0.4.0` is out [now](./CHANGELOG.md)! 
+
+The `ingest` workflow now expects different headers for the RNA and Protein modalities.
+Check the example [submission file](https://github.com/DendrouLab/panpipes/blob/main/docs/usage/sample_file_qc_mm.md) and the [documentation](https://panpipes-pipelines.readthedocs.io/en/latest/usage/setup_for_qc_mm.html) for more detailed instructions.
+
