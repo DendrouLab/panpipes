@@ -96,11 +96,14 @@ def gen_load_anndata_jobs(caf, load_raw=False, mode_dictionary = {}, load_prot_f
         else:
             bcr_path= None
             bcr_filetype=None
-        if 'atac_path' in caf.columns and mode_dictionary["atac"]:
+        if ('atac_path' in caf.columns and mode_dictionary["atac"]):
             if caf.shape[0] > 1:
                 sys.exit("You can only submit one atac/multiome file at a time. To aggregate, see cellranger aggr.")
-            atac_path = caf['atac_path'][nn]
-            atac_filetype = caf['atac_filetype'][nn]
+            if caf['atac_filetype'][nn]=="cellranger" :
+                atac_path, atac_filetype = update_cellranger_col(caf['atac_path'][nn], raw=load_raw, method="count")
+            else:
+                atac_path = caf['atac_path'][nn]
+                atac_filetype = caf['atac_filetype'][nn]
             if 'fragments_file' in caf.columns and pd.notna(caf['fragments_file'][nn]):
                 fragments_file = caf['fragments_file'][nn]
             else:
