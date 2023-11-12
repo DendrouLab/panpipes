@@ -14,3 +14,7 @@ Spatial analysis:
 - [Ingesting merfish spatial data](https://panpipes-tutorials.readthedocs.io/en/latest/ingesting_processing_merfish_data/merfish_analysis_with_panpipes.html)
 - [Preprocessing spatial data](https://panpipes-tutorials.readthedocs.io/en/latest/filtering_spatial_data/filtering_spatial_data_with_panpipes.html)
 - [Deconvoluting spatial data](https://panpipes-tutorials.readthedocs.io/en/latest/filtering_spatial_data/deconvoluting_spatial_data_with_panpipes.html)
+  
+Additional tutorials:
+
+- [Ingesting multiome from cellranger outputs](https://panpipes-tutorials.readthedocs.io/en/latest/ingesting_multiome/ingesting_mome.html)
