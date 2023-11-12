@@ -155,12 +155,11 @@ def parse_10x_cellranger_count(path_df, convert_df,  path_col='metrics_summary_p
         pd.DataFrame: 7 columns ['sample_id', 'category', 'library_type', 'grouped_by', 
         'group_name', metric_name', 'metric_value']
     """   
-    # subset to unique rows to save loading in duplicate data (works for count too)
-    path_df = path_df[['sample_id', path_col]].drop_duplicates()
     
     # read and concat
     msums = pd.concat([pd.read_csv(f) for f in path_df[path_col]], 
-                    keys=[(x, y) for x, y in zip(path_df['sample_id'], path_df['path_type'])], 
+                    keys=[(x, y) for x, y in zip(path_df['sample_id'], 
+                                                 path_df['path_type'])], #count
                     names=['sample_id','path_type'])
     msums = msums.stack().reset_index().drop(columns='level_2')
     # make the columns match the conversion df
@@ -241,23 +240,23 @@ plt_tab = plt_df.pivot_table(index='sample_id', columns='metric_name', values='m
 #                 x='Sequencing saturation', 
 #                 y='Number of reads', size='Mean reads per cell',sizes=(20, 200))
 
-
-f, ax = plt.subplots()
-points = ax.scatter(x=plt_tab['Sequencing saturation'], 
-            y=plt_tab['Number of reads'], 
-            c=plt_tab['Estimated number of cells'])
-# define labels
-plt.xlabel('Sequencing saturation')
-plt.ylabel('Number of reads')
-# define color bar
-cbar = f.colorbar(points)
-cbar.ax.get_yaxis().labelpad = 15
-cbar.ax.set_ylabel('Estimated # of cells', rotation=270)
-# put it on a grid
-plt.grid(axis='both', color='0.95')
-# save
-plt.savefig(os.path.join(args.figdir,'10x_sequencing_saturation_summary.png'))
-plt.clf()
+if 'Sequencing saturation' in plt_df.metric_name.unique(): 
+    f, ax = plt.subplots()
+    points = ax.scatter(x=plt_tab['Sequencing saturation'], 
+                y=plt_tab['Number of reads'], 
+                c=plt_tab['Estimated number of cells'])
+    # define labels
+    plt.xlabel('Sequencing saturation')
+    plt.ylabel('Number of reads')
+    # define color bar
+    cbar = f.colorbar(points)
+    cbar.ax.get_yaxis().labelpad = 15
+    cbar.ax.set_ylabel('Estimated # of cells', rotation=270)
+    # put it on a grid
+    plt.grid(axis='both', color='0.95')
+    # save
+    plt.savefig(os.path.join(args.figdir,'10x_sequencing_saturation_summary.png'))
+    plt.clf()
 
 # plot 2 -  cells vs UMI counts per cell
 
