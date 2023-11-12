@@ -53,50 +53,49 @@ Library	VDJ T	Physical library ID	Reads mapped to TRA	Reads Mapped to TRA
 Library	VDJ T	Physical library ID	Reads mapped to TRB	Reads Mapped to TRB
 Library	VDJ T	Physical library ID	Reads mapped to any V(D)J gene	Reads Mapped to Any V(D)J Gene
 Library	VDJ T	Physical library ID	Valid barcodes	Valid Barcodes
-Library	ATAC	Physical library ID	Genome	Genome
-Library	ATAC	Physical library ID	Pipeline version	Pipeline version
 Library	ATAC	Physical library ID	Estimated number of cells	Estimated number of cells
 Library	ATAC	Physical library ID	Feature linkages detected	Feature linkages detected
 Library	ATAC	Physical library ID	Linked genes	Linked genes
 Library	ATAC	Physical library ID	Linked peaks	Linked peaks
-Library	ATAC	Physical library ID	ATAC Confidently mapped read pairs	ATAC Confidently mapped read pairs
-Library	ATAC	Physical library ID	ATAC Fraction of genome in peaks	ATAC Fraction of genome in peaks
-Library	ATAC	Physical library ID	ATAC Fraction of high-quality fragments in cells	ATAC Fraction of high-quality fragments in cells
-Library	ATAC	Physical library ID	ATAC Fraction of high-quality fragments overlapping TSS	ATAC Fraction of high-quality fragments overlapping TSS
-Library	ATAC	Physical library ID	ATAC Fraction of high-quality fragments overlapping peaks	ATAC Fraction of high-quality fragments overlapping peaks
-Library	ATAC	Physical library ID	ATAC Fraction of transposition events in peaks in cells	ATAC Fraction of transposition events in peaks in cells
-Library	ATAC	Physical library ID	ATAC Mean raw read pairs per cell	ATAC Mean raw read pairs per cell
-Library	ATAC	Physical library ID	ATAC Median high-quality fragments per cell	ATAC Median high-quality fragments per cell
-Library	ATAC	Physical library ID	ATAC Non-nuclear read pairs	ATAC Non-nuclear read pairs
-Library	ATAC	Physical library ID	ATAC Number of peaks	ATAC Number of peaks
-Library	ATAC	Physical library ID	ATAC Percent duplicates	ATAC Percent duplicates
-Library	ATAC	Physical library ID	ATAC Q30 bases in barcode	ATAC Q30 bases in barcode
-Library	ATAC	Physical library ID	ATAC Q30 bases in read 1	ATAC Q30 bases in read 1
-Library	ATAC	Physical library ID	ATAC Q30 bases in read 2	ATAC Q30 bases in read 2
-Library	ATAC	Physical library ID	ATAC Q30 bases in sample index i1	ATAC Q30 bases in sample index i1
-Library	ATAC	Physical library ID	ATAC Sequenced read pairs	ATAC Sequenced read pairs
-Library	ATAC	Physical library ID	ATAC TSS enrichment score	ATAC TSS enrichment score
-Library	ATAC	Physical library ID	ATAC Unmapped read pairs	ATAC Unmapped read pairs
-Library	ATAC	Physical library ID	ATAC Valid barcodes	ATAC Valid barcodes
-Library	Gene Expression	Physical library ID	GEX Fraction of transcriptomic reads in cells	GEX Fraction of transcriptomic reads in cells
-Library	Gene Expression	Physical library ID	GEX Mean raw reads per cell	GEX Mean raw reads per cell
-Library	Gene Expression	Physical library ID	GEX Median UMI counts per cell	GEX Median UMI counts per cell
-Library	Gene Expression	Physical library ID	GEX Median genes per cell	GEX Median genes per cell
-Library	Gene Expression	Physical library ID	GEX Percent duplicates	GEX Percent duplicates
-Library	Gene Expression	Physical library ID	GEX Q30 bases in UMI	GEX Q30 bases in UMI
-Library	Gene Expression	Physical library ID	GEX Q30 bases in barcode	GEX Q30 bases in barcode
-Library	Gene Expression	Physical library ID	GEX Q30 bases in read 2	GEX Q30 bases in read 2
-Library	Gene Expression	Physical library ID	GEX Q30 bases in sample index i1	GEX Q30 bases in sample index i1
-Library	Gene Expression	Physical library ID	GEX Q30 bases in sample index i2	GEX Q30 bases in sample index i2
-Library	Gene Expression	Physical library ID	GEX Reads mapped antisense to gene	GEX Reads mapped antisense to gene
-Library	Gene Expression	Physical library ID	GEX Reads mapped confidently to exonic regions	GEX Reads mapped confidently to exonic regions
-Library	Gene Expression	Physical library ID	GEX Reads mapped confidently to genome	GEX Reads mapped confidently to genome
-Library	Gene Expression	Physical library ID	GEX Reads mapped confidently to intergenic regions	GEX Reads mapped confidently to intergenic regions
-Library	Gene Expression	Physical library ID	GEX Reads mapped confidently to intronic regions	GEX Reads mapped confidently to intronic regions
-Library	Gene Expression	Physical library ID	GEX Reads mapped confidently to transcriptome	GEX Reads mapped confidently to transcriptome
-Library	Gene Expression	Physical library ID	GEX Reads mapped to genome	GEX Reads mapped to genome
-Library	Gene Expression	Physical library ID	GEX Reads with TSO	GEX Reads with TSO
-Library	Gene Expression	Physical library ID	GEX Sequenced read pairs	GEX Sequenced read pairs
-Library	Gene Expression	Physical library ID	GEX Total genes detected	GEX Total genes detected
-Library	Gene Expression	Physical library ID	GEX Valid UMIs	GEX Valid UMIs
-Library	Gene Expression	Physical library ID	GEX Valid barcodes	GEX Valid barcodes
+Library	ATAC	Physical library ID	Confidently mapped read pairs	ATAC Confidently mapped read pairs
+Library	ATAC	Physical library ID	Fraction of genome in peaks	ATAC Fraction of genome in peaks
+Library	ATAC	Physical library ID	Fraction of high-quality fragments in cells	ATAC Fraction of high-quality fragments in cells
+Library	ATAC	Physical library ID	Fraction of high-quality fragments overlapping TSS	ATAC Fraction of high-quality fragments overlapping TSS
+Library	ATAC	Physical library ID	Fraction of high-quality fragments overlapping peaks	ATAC Fraction of high-quality fragments overlapping peaks
+Library	ATAC	Physical library ID	Fraction of transposition events in peaks in cells	ATAC Fraction of transposition events in peaks in cells
+Library	ATAC	Physical library ID	Mean raw read pairs per cell	ATAC Mean raw read pairs per cell
+Library	ATAC	Physical library ID	Median high-quality fragments per cell	ATAC Median high-quality fragments per cell
+Library	ATAC	Physical library ID	Non-nuclear read pairs	ATAC Non-nuclear read pairs
+Library	ATAC	Physical library ID	Number of peaks	ATAC Number of peaks
+Library	ATAC	Physical library ID	Percent duplicates	ATAC Percent duplicates
+Library	ATAC	Physical library ID	Q30 bases in barcode	ATAC Q30 bases in barcode
+Library	ATAC	Physical library ID	Q30 bases in read 1	ATAC Q30 bases in read 1
+Library	ATAC	Physical library ID	Q30 bases in read 2	ATAC Q30 bases in read 2
+Library	ATAC	Physical library ID	Q30 bases in sample index i1	ATAC Q30 bases in sample index i1
+Library	ATAC	Physical library ID	Sequenced read pairs	ATAC Sequenced read pairs
+Library	ATAC	Physical library ID	TSS enrichment score	ATAC TSS enrichment score
+Library	ATAC	Physical library ID	Unmapped read pairs	ATAC Unmapped read pairs
+Library	ATAC	Physical library ID	Valid barcodes	ATAC Valid barcodes
+Library	Gene Expression	Physical library ID	Estimated number of cells	Estimated number of cells
+Library	Gene Expression	Physical library ID	Fraction of transcriptomic reads in cells	GEX Fraction of transcriptomic reads in cells
+Library	Gene Expression	Physical library ID	Mean reads per cell	GEX Mean raw reads per cell
+Library	Gene Expression	Physical library ID	Median UMI counts per cell	GEX Median UMI counts per cell
+Library	Gene Expression	Physical library ID	Median genes per cell	GEX Median genes per cell
+Library	Gene Expression	Physical library ID	Percent duplicates	GEX Percent duplicates
+Library	Gene Expression	Physical library ID	Q30 bases in UMI	GEX Q30 bases in UMI
+Library	Gene Expression	Physical library ID	Q30 bases in barcode	GEX Q30 bases in barcode
+Library	Gene Expression	Physical library ID	Q30 bases in read 2	GEX Q30 bases in read 2
+Library	Gene Expression	Physical library ID	Q30 bases in sample index i1	GEX Q30 bases in sample index i1
+Library	Gene Expression	Physical library ID	Q30 bases in sample index i2	GEX Q30 bases in sample index i2
+Library	Gene Expression	Physical library ID	Reads mapped antisense to gene	GEX Reads mapped antisense to gene
+Library	Gene Expression	Physical library ID	Reads mapped confidently to exonic regions	GEX Reads mapped confidently to exonic regions
+Library	Gene Expression	Physical library ID	Reads mapped confidently to genome	GEX Reads mapped confidently to genome
+Library	Gene Expression	Physical library ID	Reads mapped confidently to intergenic regions	GEX Reads mapped confidently to intergenic regions
+Library	Gene Expression	Physical library ID	Reads mapped confidently to intronic regions	GEX Reads mapped confidently to intronic regions
+Library	Gene Expression	Physical library ID	Reads mapped confidently to transcriptome	GEX Reads mapped confidently to transcriptome
+Library	Gene Expression	Physical library ID	Reads mapped to genome	GEX Reads mapped to genome
+Library	Gene Expression	Physical library ID	Reads with TSO	GEX Reads with TSO
+Library	Gene Expression	Physical library ID	Sequenced read pairs	GEX Sequenced read pairs
+Library	Gene Expression	Physical library ID	Total genes detected	GEX Total genes detected
+Library	Gene Expression	Physical library ID	Valid UMIs	GEX Valid UMIs
+Library	Gene Expression	Physical library ID	Valid barcodes	GEX Valid barcodes
