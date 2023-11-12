@@ -3,9 +3,11 @@
 ## [main]
 
 ### added
+- added example multiome submission file 10X_h5
+- added example multiome submission file cellranger
 
 ### fixed
-
+- fix io to read cellranger outs folder for atac. 
 ### dependencies
 
 ## v0.4.0

@@ -1,13 +1,13 @@
 
 # Inputs to QC_MM pipeline
 
-For ingest the minimum required columns are
+To run the `ingest` workflow, the minimum required columns are:
 
 sample_id | rna_path | rna_filetype  
 ----------|----------|-------------
 
 
-If you want to analyse other modalities, add columns to the input file
+If you want to analyse other modalities, add columns to the input file and specify the relevant file path or filetype
 
 - prot_path/prot_filetype
 - atac_path/atac_filetype
@@ -16,11 +16,15 @@ If you want to analyse other modalities, add columns to the input file
 
 See [Supported input filetypes](##Supported-input-filetypes) to see the options for the {X}_filetype columns
 
-example at `resources/sample_file_ingest.txt`
+For examples of ingestion files, see example at `resources/sample_file_ingest.txt` and the other sample files included in the tutorials and the resources folder.
 
-If giving a cellranger path, give the path folder containing all the cellranger outputs. Otherwise path should be the complete path to the file. 
+**Please note:**  
+If you have cellranger outputs which have rna and prot (a Citeseq experiment) or rna and atac (a multiome experiment) within the same files, you have to specify the same path in rna_path and prot_/atac_path.
 
-If you have cellranger outputs which have rna and prot within the same files, specify the same path in rna_path and prot_path
+If using as input a cellranger output folder and {X}_filetype "cellranger", specify the path to the folder containing all the cellranger outputs. This is normally referred to as the "outs" folder, which includes multiple output files including h5 files, bam files and filtered_bc or raw_bc matrices folders. 
+The path should be specified until the outs folder `projectX_folder/data.dir/outs`. 
+For all the other inputs, including 10X h5 objects, the path should be the complete path to the file. 
+
 
 To include sample level metadata, you can add additional columns to the submission file
 e.g Tissue and Diagnoisis columns in `resources/sample_file_ingest.txt`
@@ -34,7 +38,7 @@ Include additional files from the cellranger outputs under the following three c
 
 ## Supported input filetypes:
 
-For each modality per sample, specify the value in the key column in the X_filetype columns
+For each modality per sample, we require you to specify the value in the key column in the X_filetype columns
 
 modality    |key       |description
 ------------|----------|----------
