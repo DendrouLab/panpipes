@@ -7,7 +7,10 @@
 - added example multiome submission file cellranger
 
 ### fixed
+
+- changed typo in tutorial paths for clustering and deconvolution
 - fix io to read cellranger outs folder for atac. 
+
 ### dependencies
 
 ## v0.4.0
@@ -35,6 +38,7 @@ See tutorials for examples of submission files.
 - changed the params to fix plotting as mentioned in issue #41
 - typo in readme
 - set default seaborn <=0.12.2 to avoid issue #104, #126
+
 
 ### dependencies
 
