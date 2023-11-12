@@ -44,7 +44,7 @@ parser.add_argument("--store_as_x",
                     default=None,
                     help="")   
 parser.add_argument("--figpath",
-                    default="./adt_figures",
+                    default="./prot_figures",
                     help="")  
 parser.add_argument("--save_mtx",
                     default=False,
@@ -55,7 +55,9 @@ parser.add_argument("--save_mudata_path",
               
 
 args, opt = parser.parse_known_args()
-# args = argparse.Namespace(filtered_mudata='test.h5mu', bg_mudata='/well/cartography/users/zsj686/non_cart_projects/005-multimodal_scpipelines/ingest/test_raw.h5mu', channel_col=None, normalisation_methods='clr,dsb', clr_margin='0', quantile_clipping='True', figpath='./figures/adt', save_mtx=False, save_mudata_path='test.h5mu')
+# args = argparse.Namespace(filtered_mudata='test.h5mu', 
+# bg_mudata='/well/cartography/users/zsj686/non_cart_projects/005-multimodal_scpipelines/ingest/test_raw.h5mu', 
+# channel_col=None, normalisation_methods='clr,dsb', clr_margin='0', quantile_clipping='True', figpath='./figures/prot', save_mtx=False, save_mudata_path='test.h5mu')
 save_mtx=pnp.pp.check_for_bool(args.save_mtx)
 
 norm_methods = args.normalisation_methods.split(',')
@@ -137,7 +139,7 @@ if args.channel_col is not None:
         if 'clr' in norm_methods:
             # make sure to start from raw counts
             mdata["prot"].X = mdata["prot"].layers["raw_counts"].copy()
-            pnp.scmethods.run_adt_normalise(mdata=mdata, mdata_bg=None,
+            pnp.scmethods.run_prot_normalise(mdata=mdata, mdata_bg=None,
                     method="clr",
                     clr_margin=int(args.clr_margin))
             L.info("saving ridgeplot")
@@ -148,7 +150,7 @@ if args.channel_col is not None:
                 plt.savefig(os.path.join(args.figpath, str(si) + "_clr_ridgeplot_isotypes.png"))
             # save out the data in what format?
             if save_mtx:
-                pnp.io.write_10x_counts(mdata["prot"], os.path.join("adt_clr" , str(si) ), layer="raw_counts")
+                pnp.io.write_10x_counts(mdata["prot"], os.path.join("prot_clr" , str(si) ), layer="raw_counts")
         # then run dsb
         if 'dsb' in norm_methods:
             mdata_bg = mdata_bg_per_sample[si]
@@ -161,7 +163,7 @@ if args.channel_col is not None:
             # plt.savefig(os.path.join(args.figpath, si + "_log10umi.png"))
             # run dsb
             # this stores a layer named after the method as well as overwriting X
-            pnp.scmethods.run_adt_normalise(mdata=mdata, 
+            pnp.scmethods.run_prot_normalise(mdata=mdata, 
                                             mdata_bg=mdata_bg,
                                             method="dsb", 
                                             isotypes=isotypes)
@@ -171,7 +173,7 @@ if args.channel_col is not None:
                 pnp.plotting.ridgeplot(mdata["prot"], features=isotypes, layer="dsb",  splitplot=1)
                 plt.savefig(os.path.join(args.figpath, str(si) + "_dsb_ridgeplot_isotypes.png"))
             if save_mtx:
-                pnp.io.write_10x_counts(mdata["prot"], os.path.join("adt_dsb" , str(si)), layer="raw_counts")
+                pnp.io.write_10x_counts(mdata["prot"], os.path.join("prot_dsb" , str(si)), layer="raw_counts")
 else:
     # run on all the data (not on a channel basis)
     # first run clr
@@ -184,7 +186,7 @@ else:
         all_mdata["prot"].X = all_mdata["prot"].layers["raw_counts"].copy()
         # run normalise
         # this stores a layer named after the method as well as overwriting X
-        pnp.scmethods.run_adt_normalise(mdata=all_mdata, 
+        pnp.scmethods.run_prot_normalise(mdata=all_mdata, 
                 mdata_bg=None,
                 method="clr",
                 clr_margin=int(args.clr_margin))
@@ -195,7 +197,7 @@ else:
             plt.savefig(os.path.join(args.figpath, "clr_ridgeplot_isotypes.png"))
         # save out the data in what format?
         if save_mtx:
-            pnp.io.write_10x_counts(all_mdata["prot"], os.path.join("adt_clr"), layer="clr")
+            pnp.io.write_10x_counts(all_mdata["prot"], os.path.join("prot_clr"), layer="clr")
     if 'dsb' in norm_methods:
         # make sure to start from raw counts
         all_mdata["prot"].X = all_mdata["prot"].layers["raw_counts"].copy()
@@ -205,7 +207,7 @@ else:
         mu.pl.histogram(all_mdata_bg["rna"], ["log10umi"], bins=50)
         plt.savefig(os.path.join(args.figpath, "all_log10umi.png"))
         # this stores a layer named after the method as well as overwriting X
-        pnp.scmethods.run_adt_normalise(mdata=all_mdata, 
+        pnp.scmethods.run_prot_normalise(mdata=all_mdata, 
                 mdata_bg=all_mdata_bg, 
                 method="dsb",
                 isotypes=isotypes) 
@@ -221,7 +223,7 @@ else:
             plt.savefig(os.path.join(args.figpath, "dsb_ridgeplot_isotypes.png"))
         # save out the data in what format?
         if save_mtx:
-            pnp.io.write_10x_counts(all_mdata["prot"], os.path.join("adt_dsb"), layer="dsb")
+            pnp.io.write_10x_counts(all_mdata["prot"], os.path.join("prot_dsb"), layer="dsb")
     
     if args.store_as_x is not None:
         all_mdata["prot"].X = all_mdata["prot"].layers[args.store_as_x]

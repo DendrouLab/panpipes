@@ -48,41 +48,41 @@ def gen_load_anndata_jobs(caf, load_raw=False, mode_dictionary = {}, load_prot_f
     Generate a load_adatas job for each line in submission.txt
     """
     for nn in range(0, caf.shape[0]):
-        if pd.isna(caf['gex_path'][nn]):
-                gex_path= None
-                gex_filetype=None
-        elif caf['gex_filetype'][nn]=="cellranger" and mode_dictionary["rna"]:
-            gex_path, gex_filetype = update_cellranger_col(caf['gex_path'][nn], raw=load_raw, method="count")
-        elif caf['gex_filetype'][nn]=="cellranger_multi" and mode_dictionary["rna"]:
-            gex_path, gex_filetype = update_cellranger_col(caf['gex_path'][nn], raw=load_raw, method="multi", 
+        if pd.isna(caf['rna_path'][nn]):
+                rna_path= None
+                rna_filetype=None
+        elif caf['rna_filetype'][nn]=="cellranger" and mode_dictionary["rna"]:
+            rna_path, rna_filetype = update_cellranger_col(caf['rna_path'][nn], raw=load_raw, method="count")
+        elif caf['rna_filetype'][nn]=="cellranger_multi" and mode_dictionary["rna"]:
+            rna_path, rna_filetype = update_cellranger_col(caf['rna_path'][nn], raw=load_raw, method="multi", 
                                                             sample_id=caf['sample_id'][nn])
         else:
-            gex_path, gex_filetype = caf[['gex_path', "gex_filetype"]].iloc[nn]
+            rna_path, rna_filetype = caf[['rna_path', "rna_filetype"]].iloc[nn]
             if load_raw:
-                gex_path = re.sub("filtered", "raw", gex_path)
-        # manage the adt paths
-        if ('adt_path' in caf.columns and mode_dictionary["prot"]):
-            # check if its the same as the gex path (data in the same file)
-            if pd.isna(caf['adt_path'][nn]):
-                adt_path= None
-                adt_filetype=None
-            elif caf['adt_path'][nn] == caf['gex_path'][nn]:
-                adt_path, adt_filetype = gex_path, gex_filetype
-            elif caf['adt_filetype'][nn]=="cellranger":
-                # we might want to load the raw here because we want to then subset by good gex barcodes, 
+                rna_path = re.sub("filtered", "raw", rna_path)
+        # manage the prot paths
+        if ('prot_path' in caf.columns and mode_dictionary["prot"]):
+            # check if its the same as the rna path (data in the same file)
+            if pd.isna(caf['prot_path'][nn]):
+                prot_path= None
+                prot_filetype=None
+            elif caf['prot_path'][nn] == caf['rna_path'][nn]:
+                prot_path, prot_filetype = rna_path, rna_filetype
+            elif caf['prot_filetype'][nn]=="cellranger":
+                # we might want to load the raw here because we want to then subset by good gex (rna) barcodes, 
                 # this is why the load_prot_from_raw argument exists
-                adt_path, adt_filetype = update_cellranger_col(caf['adt_path'][nn], raw=load_prot_from_raw)
-            elif caf['adt_filetype'][nn]=="cellranger_multi":
-                # celranger multi has the same prot and gex barcodes
-                adt_path, adt_filetype = update_cellranger_col(caf['adt_path'][nn], raw=load_raw, method="multi", 
+                prot_path, prot_filetype = update_cellranger_col(caf['prot_path'][nn], raw=load_prot_from_raw)
+            elif caf['prot_filetype'][nn]=="cellranger_multi":
+                # celranger multi has the same prot and gex (rna) barcodes
+                prot_path, prot_filetype = update_cellranger_col(caf['prot_path'][nn], raw=load_raw, method="multi", 
                                                                 sample_id=caf['sample_id'][nn])
             else:
-                adt_path, adt_filetype = caf[['adt_path', "adt_filetype"]].iloc[nn]
+                prot_path, prot_filetype = caf[['prot_path', "prot_filetype"]].iloc[nn]
                 if load_prot_from_raw or load_raw:
-                    adt_path = re.sub("filtered", "raw", adt_path)
+                    prot_path = re.sub("filtered", "raw", prot_path)
         else:
-            adt_path= None
-            adt_filetype=None
+            prot_path= None
+            prot_filetype=None
         # load tcr_path
         if 'tcr_path' in caf.columns and mode_dictionary["tcr"] and pd.notna(caf['tcr_path'][nn]):
             tcr_path = caf['tcr_path'][nn]
@@ -96,11 +96,14 @@ def gen_load_anndata_jobs(caf, load_raw=False, mode_dictionary = {}, load_prot_f
         else:
             bcr_path= None
             bcr_filetype=None
-        if 'atac_path' in caf.columns and mode_dictionary["atac"]:
+        if ('atac_path' in caf.columns and mode_dictionary["atac"]):
             if caf.shape[0] > 1:
                 sys.exit("You can only submit one atac/multiome file at a time. To aggregate, see cellranger aggr.")
-            atac_path = caf['atac_path'][nn]
-            atac_filetype = caf['atac_filetype'][nn]
+            if caf['atac_filetype'][nn]=="cellranger" :
+                atac_path, atac_filetype = update_cellranger_col(caf['atac_path'][nn], raw=load_raw, method="count")
+            else:
+                atac_path = caf['atac_path'][nn]
+                atac_filetype = caf['atac_filetype'][nn]
             if 'fragments_file' in caf.columns and pd.notna(caf['fragments_file'][nn]):
                 fragments_file = caf['fragments_file'][nn]
             else:
@@ -131,10 +134,10 @@ def gen_load_anndata_jobs(caf, load_raw=False, mode_dictionary = {}, load_prot_f
         else:
             outfile = outfile + ".h5mu"
         sample_id = caf['sample_id'][nn]
-        yield gex_path, outfile, \
+        yield rna_path, outfile, \
               sample_id, \
-              gex_filetype,  \
-              adt_path, adt_filetype, \
+              rna_filetype,  \
+              prot_path, prot_filetype, \
               tcr_path, tcr_filetype,  \
               bcr_path, bcr_filetype, \
               atac_path, atac_filetype, \
@@ -259,9 +262,9 @@ def write_obs(mdata, output_prefix="./", output_suffix="_filtered_cell_metadata.
 def check_submission_file(caf):
     if "filetype" in caf.columns or "path" in caf.columns:
         raise ValueError("you appear to be using the old notation for the sample submission file, \
-        please update to use gex_path instead of path and gex_filetype instead of filetype")
+        please update to use rna_path instead of path and rna_filetype instead of filetype")
     # check for required cols
-    req_cols = ['sample_id', 'gex_path', 'gex_filetype']
+    req_cols = ['sample_id', 'rna_path', 'rna_filetype']
     for rc in req_cols:
         if rc not in caf.columns:
             raise ValueError("required column %s missing from submission file" % rc)
@@ -363,7 +366,7 @@ def scp_read_10x_mtx(filename: PathLike, library_keep=None, *args, **kwargs) -> 
     expanded sc.read_10x_mtx to filter for the library 
     adapted from https://github.com/scverse/muon/blob/master/muon/_prot/io.py
     """
-    adata = read_10x_mtx(filename, gex_only=False, *args, **kwargs)
+    adata = read_10x_mtx(filename, gex_only=False, *args, **kwargs) #need to leave gex as this is scanpy's code
     logging.debug("filtering cellranger outputs to %s" % library_keep)
     if library_keep is not None:
         adata = adata[
@@ -482,20 +485,21 @@ def load_mdata_from_multiple_files(all_files_dict):
     Parameters
     ----------
     all_files_dict: dict
-        dictionary containing one key per assay out of [GEX, ADT, TCR, BCR, ATAC]
+        dictionary containing one key per assay out of [RNA, PROT, TCR, BCR, ATAC]
         and the values for each key is a list of file path and fie type
-        e.g.  {"GEX": [filepath, "filetype"],
-               "ADT: [file path, "filetype"]} 
-        Filetypes supported for gex/adt: ["cellranger", "h5ad", "csv_matrix", "txt_matrix", "10X_h5"],
+        e.g.  {"RNA": [filepath, "filetype"],
+               "PROT: [file path, "filetype"]} 
+        Filetypes supported for RNA/prot: ["cellranger", "h5ad", "csv_matrix", "txt_matrix", "10X_h5"],
         Filetypes supported for atac (multiome preferred is 10X_h5) ["10X_h5","cellranger","h5ad"]
         Filetypes supported for rep: ["cellranger_vdj", "airr", "tracer", "bracer"  ] 
         See scirpy documentation for more information of repertoire input formats 
         https://scverse.org/scirpy/latest/api.html#module-scirpy.io
     """
     # convert names to match mudata conventions
-    # mudata_conventional_names={"GEX":"rna", "ADT":"prot", "TCR":"tcr", 
-    # "BCR":"bcr", "ATAC": "atac", "spatial":"spatial"}
+    # mudata_conventional_names
+    # {"GEX":"rna", "ADT":"prot", "TCR":"tcr", "BCR":"bcr", "ATAC": "atac", "spatial":"spatial"}
     # all_files_dict = {mudata_conventional_names[nm]: x  for (nm, x) in all_files_dict.items()}
+    # note: scanpy's default function use gex_only as param so we need to leave that in
     logging.debug(all_files_dict.keys())
     # load in separate anndata for each expected modality
     data_dict = {}
@@ -578,8 +582,8 @@ def write_10x_counts(adata, path, layer=None):
         features = adata.var.reset_index().rename(columns={"index": "gene_symbols"})
     elif "gene_symbols" in adata.var.columns:
         features = adata.var.reset_index().rename(columns={"index": "gene_ids"})
-        if "adt_id" in features.columns:
-            features = features.drop(columns=['gene_symbols']).rename(columns={"adt_id" : "gene_symbols"})
+        if "prot_id" in features.columns:
+            features = features.drop(columns=['gene_symbols']).rename(columns={"prot_id" : "gene_symbols"})
     features = features[['gene_ids','gene_symbols', 'feature_types']] 
     features.to_csv(os.path.join(path, "features.tsv.gz"), sep='\t', index=None, header=None)
 

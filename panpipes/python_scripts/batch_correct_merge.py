@@ -38,7 +38,7 @@ base_object = args.preprocessed_mudata
 
 multi_mod = args.multimodal_correction_choice
 if multi_mod is not None:
-    base_object = "tmp/" + multi_mod + "_scaled_adata.h5mu"
+    base_object = "tmp/" + multi_mod.lower() + "_scaled_adata.h5mu"
 
 
     

@@ -1,7 +1,7 @@
 
 [project]
 name = "panpipes"
-version = "0.3.1"
+version = "0.4.0"
 authors = [
     {name = "Charlotte Rich-Griffin"},
     {name = "Fabiola Curion"}
@@ -54,7 +54,7 @@ dependencies = [
     "ruffus", 
     "scanorama", 
     "scanpy>=1.9.1", 
-    "seaborn",
+    "seaborn<=0.12.2",
     "scikit-misc", 
     "scirpy",
     "scrublet", 

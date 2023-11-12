@@ -42,6 +42,14 @@ args = parser.parse_args()
 
 L.info(args)
 
+def check_path(path):
+    if os.path.isfile(path):
+        return os.path.dirname(path)
+    elif os.path.isdir(path):
+        return path
+    else:
+        return f"{path} does not exist or is an unrecognized type."
+
 def get_metrics_summary_path(path,sample_id=None):
     """ infers the path to metrics_summary.csv based on what cellranger algorithm is used 
     and checks the file exists
@@ -52,14 +60,16 @@ def get_metrics_summary_path(path,sample_id=None):
     """    
     # subset path to only go up to 'outs'
     if 'outs' not in path:
-        print('the outs folder must be included in the path')
+        print("you are parsing a cellranger output but your path to raw data doesn't end wth the outs folder")
+        path = check_path(path)
     else:
-        # split to make sure that outs is at the end of the path
         path = path.split("outs")[0] + "outs"
     outpath=None
     # use the path to cellranger count or vdj outputs as default
     if os.path.exists(os.path.join(path, 'metrics_summary.csv') ):
         outpath = os.path.join(path, 'metrics_summary.csv') 
+    elif os.path.exists(os.path.join(path, 'summary.csv') ):
+        outpath = os.path.join(path, 'summary.csv') 
     elif sample_id is not None and os.path.exists(os.path.join(path, 'per_sample_outs', sample_id, 'metrics_summary.csv') ):
         outpath = os.path.join(path, 'per_sample_outs', sample_id, 'metrics_summary.csv')
     elif sample_id is None and os.path.exists(os.path.join(path, 'per_sample_outs')):
@@ -93,10 +103,11 @@ def get_all_unique_paths(pipe_df):
     all_paths.columns = ['sample_id', 'path_type', 'path']
     all_paths = all_paths.drop_duplicates()
     # rename path_type to match cellranger terminolgy
-    recode_dict = {'gex_path': "Gene Expression", 
-                   'adt_path': "Antibody Capture", 
+    recode_dict = {'rna_path': "Gene Expression", 
+                   'prot_path': "Antibody Capture", 
                    'tcr_path': 'VDJ T', 
-                   'bcr_path': 'VDJ B'}
+                   'bcr_path': 'VDJ B',
+                   'atac_path': 'ATAC' }
     all_paths['path_type'] = all_paths['path_type'].replace(recode_dict)
     return all_paths
 
@@ -144,9 +155,11 @@ def parse_10x_cellranger_count(path_df, convert_df,  path_col='metrics_summary_p
         pd.DataFrame: 7 columns ['sample_id', 'category', 'library_type', 'grouped_by', 
         'group_name', metric_name', 'metric_value']
     """   
+    
     # read and concat
     msums = pd.concat([pd.read_csv(f) for f in path_df[path_col]], 
-                    keys=[(x, y) for x, y in zip(path_df['sample_id'], path_df['path_type'])], 
+                    keys=[(x, y) for x, y in zip(path_df['sample_id'], 
+                                                 path_df['path_type'])], #count
                     names=['sample_id','path_type'])
     msums = msums.stack().reset_index().drop(columns='level_2')
     # make the columns match the conversion df
@@ -216,34 +229,34 @@ for idx, row in tenx_metrics_full[['library_type','metric_name']].drop_duplicate
 
 ## gene expression  extra plots -----------------------------
 
-gex_tenx_metrics = tenx_metrics_full[tenx_metrics_full['library_type'] == 'Gene Expression']
+rna_tenx_metrics = tenx_metrics_full[tenx_metrics_full['library_type'] == 'Gene Expression']
 
 # sequencing_saturaion plot scatter plot
 plot_metrics = ['Sequencing saturation', 'Mean reads per cell', 'Estimated number of cells', 'Number of reads', 'Median UMI counts per cell']
-plt_df = gex_tenx_metrics[gex_tenx_metrics.metric_name.isin(plot_metrics)]
+plt_df = rna_tenx_metrics[rna_tenx_metrics.metric_name.isin(plot_metrics)]
 plt_df = plt_df[['sample_id', 'metric_name', 'metric_value']]
 plt_tab = plt_df.pivot_table(index='sample_id', columns='metric_name', values='metric_value', aggfunc=sum)
 # sns.scatterplot(data=plt_tab, 
 #                 x='Sequencing saturation', 
 #                 y='Number of reads', size='Mean reads per cell',sizes=(20, 200))
 
-
-f, ax = plt.subplots()
-points = ax.scatter(x=plt_tab['Sequencing saturation'], 
-            y=plt_tab['Number of reads'], 
-            c=plt_tab['Estimated number of cells'])
-# define labels
-plt.xlabel('Sequencing saturation')
-plt.ylabel('Number of reads')
-# define color bar
-cbar = f.colorbar(points)
-cbar.ax.get_yaxis().labelpad = 15
-cbar.ax.set_ylabel('Estimated # of cells', rotation=270)
-# put it on a grid
-plt.grid(axis='both', color='0.95')
-# save
-plt.savefig(os.path.join(args.figdir,'10x_sequencing_saturation_summary.png'))
-plt.clf()
+if 'Sequencing saturation' in plt_df.metric_name.unique(): 
+    f, ax = plt.subplots()
+    points = ax.scatter(x=plt_tab['Sequencing saturation'], 
+                y=plt_tab['Number of reads'], 
+                c=plt_tab['Estimated number of cells'])
+    # define labels
+    plt.xlabel('Sequencing saturation')
+    plt.ylabel('Number of reads')
+    # define color bar
+    cbar = f.colorbar(points)
+    cbar.ax.get_yaxis().labelpad = 15
+    cbar.ax.set_ylabel('Estimated # of cells', rotation=270)
+    # put it on a grid
+    plt.grid(axis='both', color='0.95')
+    # save
+    plt.savefig(os.path.join(args.figdir,'10x_sequencing_saturation_summary.png'))
+    plt.clf()
 
 # plot 2 -  cells vs UMI counts per cell
 
