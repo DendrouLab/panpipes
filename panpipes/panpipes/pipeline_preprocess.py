@@ -111,7 +111,7 @@ def downsample(log_file, filt_obj):
          --output_mudata %(filt_obj)s \
          --sampleprefix %(sample_prefix)s \
          --downsample_value %(downsample_n)s \
-         --batch_col %(downsample_col)s
+         --downsample_col %(downsample_col)s
          --intersect_mods %(downsample_mods)s
         """
         cmd += " > %(log_file)s  "
@@ -232,17 +232,20 @@ def atac_preprocess(log_file, scaled_file):
         cmd += " --dimred %(atac_dimred)s"
     else:    
         cmd += " --dimred PCA"
+    if PARAMS['atac_n_comps'] is not None:
+        cmd += " --n_comps %(atac_n_comps)s"
     if PARAMS['atac_dim_remove'] is not None:
         cmd += " --dim_remove %(atac_dim_remove)s"
-
     if PARAMS['atac_feature_selection_flavour'] is not None:
         cmd += " --feature_selection_flavour %(atac_feature_selection_flavour)s"
-    if PARAMS['min_cutoff'] is not None:
+    if PARAMS['atac_min_cutoff'] is not None:
         cmd += " --min_cutoff %(atac_min_cutoff)s"
     
     cmd += " > %(log_file)s"
     job_kwargs["job_threads"] = PARAMS['resources_threads_high']
     P.run(cmd, **job_kwargs)
+
+
 
 # @active_if(mode_dictionary['rep'] is True)
 # @follows(atac_preprocess)

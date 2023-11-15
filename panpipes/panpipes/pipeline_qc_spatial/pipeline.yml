@@ -1,0 +1,107 @@
+# ----------------------- #
+# Spatial QC pipeline 
+# ----------------------- #
+# written by Fabiola Curion, Sarah Ouologuem
+
+# This pipeline needs a sample metadata file (see resources for an example)
+# will run :
+#   scanpy QC
+#   summary QC plots
+
+# Followed by preprocess pipeline. 
+# The qc_spatial pipeline does not perform any filtering of cells or genes.
+# Filtering happens as the first step in the preprocess pipeline. See pipeline_preprocess_spatial for details
+
+# Note that if you are combining mutliple datasets from different source the final anndata object will only contain the intersect of the genes
+# from all the data sets. For example if the mitochondrial genes have been excluded from one of the inputs, they will be excluded from the final data set.
+# In this case it might be wise to run qc separately on each dataset, and them merge them together to create on h5ad file to use as input for
+# integration pipeline.
+# ------------------------
+# compute resource options
+# ------------------------
+resources:
+  # Number of threads used for parallel jobs
+  # this must be enough memory to create to load all you input files and once and create the mudatafile
+  threads_high: 1
+  # this must be enough memory to load your mudata and do computationally light tasks
+  threads_medium: 1
+  # this must be enough memory to load text files and do plotting, requires much less memory than the other two
+  threads_low: 1
+# path to conda env, leave blank if running native or your cluster automatically inherits the login node environment
+condaenv:
+
+# ------------------------------------------------------------------------------------------------
+# Loading and concatenating data options
+# ------------------------------------------------------------------------------------------------
+# ------------------------
+# Project name and data format
+# ------------------------
+project: "test"
+sample_prefix: "test"
+# submission_file format:
+# For qc_spatial the required columns are
+# sample_id spatial_path spatial_filetype spatial_counts spatial_metadata spatial_transformation
+# Example at resources/sample_file_qc_spatial.txt
+submission_file: 
+
+
+#---------------------------------------
+# Modalities in the project
+#---------------------------------------
+# 
+# Set spatial to True to abilitate reading. 
+# Leave empty (None) or False to signal this modality is not in the experiment.
+
+modalities:
+  spatial: True
+# specify which spatial transcriptomics assay it's used. one of "visium" or "vizgen"
+# if left blank we'll default to "visium"
+assay:
+
+# ------------------------------------------------------------------------------------------------
+# QC options
+# ------------------------------------------------------------------------------------------------
+
+# -------------------------
+# Calculate QC metrics
+# -------------------------
+# this part of the pipeline allows to generate the QC metrics that will be used to 
+# evaluate inclusion/ exclusion criteria. Filtering of cells/genes happens in the pipeline pipeline_preprocess_spatial.py.
+# Basic QC metrics using scanpy.pp.calculate_qc_metrics() are in every case calulated 
+# Additional optional scores can be calculated for 1. cell cycle genes and 2. custom genes: 
+
+# 1. cell cycle scores (Optional)
+# leave options blank to avoid running, "default" (the data stored within the panpipes package) 
+# default file: panpipes/resources/cell_cycle_genes.tsv
+ccgenes: default # "default" or path to tsv file with columns "cc_phase" and "gene_name". "cc_phase" can either be "s" or "g2m". Information in tsv file used to run the function scanpy.tl.score_genes_cell_cycle()
+
+
+# 2. custom genes actions (Optional)
+# It's often practical to rely on known gene lists, for a series of tasks, like evaluating % of mitochondrial genes or
+# ribosomal genes, or excluding IGG genes from HVG selection. We collect useful gene lists in a file, panpipes/resources/custom_gene_lists_v1.tsv, 
+# and define "actions" on them as follows:
+# calc_proportions: calculate proportion of reads mapping to X genes over total number of reads, per cell
+# score_genes: using scanpy.score_genes() function, 
+
+# leave options blank to avoid running, "default" (the data stored within the panpipes package) 
+# default file: panpipes/resources/qc_genelist_1.0.csv
+custom_genes_file: default # "default" or path to csv file with columns "group" and "feature". 
+
+calc_proportions: hb,mt,rp #comma-separated without spaces, which groups in the custom_genes_file to calculate percentages for
+score_genes: MarkersNeutro #comma-separated without spaces, which groups in the custom_genes_file to run scanpy.score_genes() for
+
+
+
+# ---------------
+# Plot QC metrics
+# ---------------
+
+# all metrics should be inputted as a comma separated string without spaces e.g. a,b,c
+
+# sample_id is the name of each spatial slide and it will always be used to plot. 
+# use additional covariates to plot the QC metrics over multiple samples 
+# (but we're not sure about the interpretation of these!)
+plotqc:
+  grouping_var: sample_id
+  spatial_metrics: total_counts,n_genes_by_counts
+

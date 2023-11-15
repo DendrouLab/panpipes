@@ -104,6 +104,7 @@ neighbors:
     # scanpy | hnsw (from scvelo)
     method: scanpy
 
+
 #----------------------
 # Run scib metrics on query, specify params:
 #----------------------
@@ -117,5 +118,7 @@ scib:
   batch_key:
   #ground truth label (if left empty it will default to query_celltype specified above )
   celltype_key: celltype
+
+
 
   

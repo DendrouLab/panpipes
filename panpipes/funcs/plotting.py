@@ -8,9 +8,95 @@ import itertools
 import logging
 from matplotlib import use
 import muon as mu
+import matplotlib
+from scipy.sparse import issparse
+from scvi import REGISTRY_KEYS
 
 use('Agg')
 plt.ioff()
+
+
+def cell2loc_plot_history(model,fig_path, iter_start=0, iter_end=-1, ax=None):
+# Adapted from: https://github.com/BayraktarLab/cell2location/blob/master/cell2location/models/base/_pyro_mixin.py#L407
+    if ax is None:
+        ax = plt.gca()
+    if iter_end == -1:
+        iter_end = len(model.history_["elbo_train"])
+
+    ax.plot(
+        np.array(model.history_["elbo_train"].index[iter_start:iter_end]),
+        np.array(model.history_["elbo_train"].values.flatten())[iter_start:iter_end],
+        label="train",
+    )
+    ax.legend()
+    ax.set_xlim(0, len(model.history_["elbo_train"]))
+    ax.set_xlabel("Training epochs")
+    ax.set_ylabel("-ELBO loss")
+    plt.tight_layout()
+    plt.savefig(fig_path)
+
+
+def cell2loc_plot_QC_reconstr(model, fig_path, summary_name: str = "means", use_n_obs: int = 1000):
+# Adapted from: https://github.com/BayraktarLab/cell2location/blob/master/cell2location/models/base/_pyro_mixin.py#L544
+
+    if getattr(model, "samples", False) is False:
+        raise RuntimeError("self.samples is missing, please run self.export_posterior() first")
+    if use_n_obs is not None:
+        ind_x = np.random.choice(
+            model.adata_manager.adata.n_obs, np.min((use_n_obs, model.adata.n_obs)), replace=False
+        )
+    else:
+        ind_x = None
+
+    model.expected_nb_param = model.module.model.compute_expected(
+        model.samples[f"post_sample_{summary_name}"], model.adata_manager, ind_x=ind_x
+    )
+    x_data = model.adata_manager.get_from_registry(REGISTRY_KEYS.X_KEY)[ind_x, :]
+    if issparse(x_data):
+        x_data = np.asarray(x_data.toarray())
+    mu = model.expected_nb_param["mu"]
+    plt.hist2d(
+        np.log10(x_data.flatten() + 1),
+        np.log10(mu.flatten() + 1),
+        bins=50,
+        norm=matplotlib.colors.LogNorm(),
+    )
+    plt.gca().set_aspect("equal", adjustable="box")
+    plt.xlabel("Data, log10")
+    plt.ylabel("Posterior expected value, log10")
+    plt.title("Reconstruction accuracy")
+    plt.tight_layout()
+    plt.savefig(fig_path)
+
+
+def cell2loc_plot_QC_reference(reference_model,fig_path_reconstr, fig_path_expr,
+                               summary_name: str = "means",
+                               use_n_obs: int = 1000,
+                               scale_average_detection: bool = True,):
+# Adapted from: https://github.com/BayraktarLab/cell2location/blob/master/cell2location/models/reference/_reference_model.py#L265
+
+    # 1. plot reconstruction accuracy
+    cell2loc_plot_QC_reconstr(model=reference_model,fig_path=fig_path_reconstr, summary_name=summary_name, use_n_obs=use_n_obs)
+
+    # 2. plot estimated reference expression signatures (accounting for batch effect) compared to average expression in each cluster
+    inf_aver = reference_model.samples[f"post_sample_{summary_name}"]["per_cluster_mu_fg"].T
+    if scale_average_detection and ("detection_y_c" in list(reference_model.samples[f"post_sample_{summary_name}"].keys())):
+        inf_aver = inf_aver * reference_model.samples[f"post_sample_{summary_name}"]["detection_y_c"].mean()
+    aver = reference_model._compute_cluster_averages(key=REGISTRY_KEYS.LABELS_KEY)
+    aver = aver[reference_model.factor_names_]
+
+    plt.hist2d(
+        np.log10(aver.values.flatten() + 1),
+        np.log10(inf_aver.flatten() + 1),
+        bins=50,
+        norm=matplotlib.colors.LogNorm(),
+    )
+    plt.xlabel("Mean expression for every gene in every cluster")
+    plt.ylabel("Estimated expression for every gene in every cluster")
+    plt.savefig(fig_path_expr)
+
+
+
 
 def scatter_one(group_choice, col_choice, plot_df, axs=None, colour="#1f77b4", title=""):
     plot_df['plot_col'] = plot_df[col_choice]

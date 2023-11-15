@@ -87,20 +87,20 @@ barcode_mtd:
   metadatacols:  
 
 #---------------------------------------
-# Loading adt data - additional options
+# Loading prot data - additional options
 #---------------------------------------
 # As default the ingest will choose the first column of the cellranger features.tsv.gz
 # To merge extra information about the antibodies e.g. whether they are hashing antibodies or isotypes,
 # Create a table with the first column equivalent to the first column of cellrangers features.tsv.gz
 # and specify it below (save as txt file)
 protein_metadata_table: 
-# Make sure there are unique entries in this column for each adt.
+# Make sure there are unique entries in this column for each prot.
 # include a column called isotype (containing True or False) if you want to qc isotypes
 # include a column called hashing_ab (containing True or False) if your dataset contains hashing antibodies which you wish to split into a separate modality
 
 # If you want to update the mudata index with a column from protein_metadata_table, specify here
 # If there are overlaps with the rna gene symbols, then you might have trouble down the line
-# It is recommended to add something to make the labels unique e.g. "adt_CD4"
+# It is recommended to add something to make the labels unique e.g. "prot_CD4"
 index_col_choice: 
 
 # If providing separate prot and rna 10X outputs, then the pipeline will load the filtered rna 10X outputs and the raw prot 10X counts
@@ -120,7 +120,7 @@ subset_prot_barcodes_to_rna: False
 plot_10X_metrics: True 
 kneeplot: False
 # ------------
-## Doublets on GEX - Scrublet
+## Doublets on RNA - Scrublet
 # ------------
 scr:
   run: True
@@ -155,7 +155,7 @@ scr:
   #if use_thr is True, this thr will be used to define doublets
 
 # ------------
-# GEX QC
+# RNA QC
 # ------------
 # this part of the pipeline allows to generate the QC parameters that will be used to 
 # evaluate inclusion/ exclusion criteria. Filtering of cells/genes happens in the following pipeline
@@ -181,7 +181,7 @@ custom_genes_file: resources/qc_genelist_1.0.csv
 calc_proportions: hb,mt,rp
 score_genes: MarkersNeutro
 
-
+# ------------
 # Plot RNA QC metrics
 # ------------
 # all metrics should be inputted as a comma separated string e.g. a,b,c
@@ -191,25 +191,24 @@ plotqc_grouping_var: sample_id
 plotqc_rna_metrics: doublet_scores,pct_counts_mt,pct_counts_rp,pct_counts_hb,pct_counts_ig
 
 
-
 # ------------
-# ADT qc - requires prot_path to be included in the submission file
+# Plot PROT QC metrics 
 # ------------
+# requires prot_path to be included in the submission file
 # all metrics should be inputted as a comma separated string e.g. a,b,c
 
-###  ADT QC metrics:
 # as standard the following metrics are calculated for prot data
 # per cell metrics:
-# total_counts,log1p_total_counts,n_adt_by_counts,log1p_n_adt_by_counts
+# total_counts,log1p_total_counts,n_prot_by_counts,log1p_n_prot_by_counts
 # if isotypes can be detected then the following are calculated also:
 # total_counts_isotype,pct_counts_isotype
 # choose which ones you want to plot here
-plotqc_prot_metrics: total_counts,log1p_total_counts,n_adt_by_counts,pct_counts_isotype
-
-# per antibody metrics
+plotqc_prot_metrics: total_counts,log1p_total_counts,n_prot_by_counts,pct_counts_isotype
+# Since the protein antibody panels usually count fewer features than the RNA, it may be interesting to
+# visualize breakdowns of single proteins plots describing their count distribution and other qc options.
+# choose which ones you want to plot here, for example
 # n_cells_by_counts,mean_counts,log1p_mean_counts,pct_dropout_by_counts,total_counts,log1p_total_counts
-# choose which ones you want to plot here:
-prot_metrics_per_adt: total_counts,log1p_total_counts,n_cells_by_counts,mean_counts
+plot_metrics_per_prot: total_counts,log1p_total_counts,n_cells_by_counts,mean_counts
 
 # isotype outliers: one way to determine which cells are very sticky is to work out which cells have the most isotype UMIs
 # associated to them, to label a cell as an isotype outlier, it must meet or exceed the following crietria:
@@ -218,7 +217,6 @@ prot_metrics_per_adt: total_counts,log1p_total_counts,n_cells_by_counts,mean_cou
 identify_isotype_outliers: True
 isotype_upper_quantile: 90
 isotype_n_pass: 2
-# TODO: work out how to plot this.
 
 ### Investigate per channel antibody staining:
 # This can help determine any inconsistencies in staining per channel and other QC concerns.
@@ -228,10 +226,10 @@ isotype_n_pass: 2
 # i.e. the 10X channel. 
 # this is usually the sample_id column (otherwise leave the next parameter blank)
 channel_col: sample_id
-# It is important to note that in ingest the per channel normalised adt scores are not saved in the mudata object
+# It is important to note that in ingest the per channel normalised prot scores are not saved in the mudata object
 #  this is because if you perform feature normalisation (clr normalisation margin 0 or dsb normalisation), 
 #  on subsets of cells then the normalised values cannot be simply concatenated. 
-# The ADT normalisation is rerun pn the complete object in the preprocess pipeline 
+# The PROT normalisation is rerun pn the complete object in the preprocess pipeline 
 # (or you can run this pipeline with channel_col set as None)
 # it is important to note, if you choose to run the clr on a per channel basis, then it is not stored in the h5mu file.
 # if you want to save the per channel normalised values set the following to True:
@@ -246,7 +244,7 @@ normalisation_methods: clr
 
 # CLR parameters:
 # margin determines whether you normalise per cell (as you would RNA norm), 
-# or by feature (recommended, due to the variable nature of adts). 
+# or by feature (recommended, due to the variable nature of prot assays). 
 # CLR margin 0 is recommended for informative qc plots in this pipeline
 # 0 = normalise colwise (per feature)
 # 1 = normalise rowwise (per cell)
@@ -263,11 +261,8 @@ quantile_clipping: True
 # from both rna and protein assays, 
 # see details for how to make sure your files are compatible in the assess background section below
 
-
-
-
 # ------------
-# ATAC qc 
+# Plot ATAC QC metrics 
 # ------------
 
 # we require initializing one csv file per aggregated ATAC/multiome experiment.
@@ -287,9 +282,8 @@ features_tss: #resources/features_tss_hg19.tsv
 # all metrics should be inputted as a comma separated string e.g. a,b,c
 plotqc_atac_metrics: n_genes_by_counts,total_counts,pct_fragments_in_peaks,atac_peak_region_fragments,atac_mitochondrial_reads,atac_TSS_fragments
 
-
 # ------------
-# Repertoire QC
+# Plot Repertoire QC metrics
 # ------------
 # Repertoire data will be stored in one modality called "rep", if you provide both TCR and BCR data then this will be merged, 
 # but various functions will be fun on TCR and BCR separately

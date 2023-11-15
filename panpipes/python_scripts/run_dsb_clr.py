@@ -35,7 +35,7 @@ parser.add_argument("--quantile_clipping",
                     default=False,
                     help="")    
 parser.add_argument("--figpath",
-                    default="./adt_figures",
+                    default="./prot_figures",
                     help="")  
 parser.add_argument("--save_mtx",
                     default=False,
@@ -106,7 +106,7 @@ if args.channel_col is not None:
         if 'clr' in norm_methods:
             # make sure to start from raw counts
             mdata["prot"].X = mdata["prot"].layers["raw_counts"]
-            pnp.scmethods.run_adt_normalise(mdata=mdata, mdata_raw=None,
+            pnp.scmethods.run_prot_normalise(mdata=mdata, mdata_raw=None,
                     method="clr",
                     clr_margin=int(args.clr_margin))
             L.info("saving ridgeplot")
@@ -117,7 +117,7 @@ if args.channel_col is not None:
                 plt.savefig(os.path.join(args.figpath, si + "_clr_ridgeplot_isotypes.png"))
             # save out the data in what format?
             if save_mtx:
-                pnp.io.write_10x_counts(mdata["prot"], os.path.join("adt_clr" , si ), layer="raw_counts")
+                pnp.io.write_10x_counts(mdata["prot"], os.path.join("prot_clr" , si ), layer="raw_counts")
         # then run dsb
         if 'dsb' in norm_methods:
             mdata_raw = mdata_raw_per_sample[si]
@@ -129,7 +129,7 @@ if args.channel_col is not None:
             # mu.pl.histogram(mdata_raw["rna"], ["log10umi"], bins=50)
             # plt.savefig(os.path.join(args.figpath, si + "_log10umi.png"))
             # run dsb
-            pnp.scmethods.run_adt_normalise(mdata=mdata, 
+            pnp.scmethods.run_prot_normalise(mdata=mdata, 
                                             mdata_raw=mdata_raw,
                                             method="dsb", 
                                             isotypes=isotypes)
@@ -139,7 +139,7 @@ if args.channel_col is not None:
                 pnp.plotting.ridgeplot(mdata["prot"], features=isotypes, layer="dsb",  splitplot=1)
                 plt.savefig(os.path.join(args.figpath, si + "_dsb_ridgeplot_isotypes.png"))
             if save_mtx:
-                pnp.io.write_10x_counts(mdata["prot"], os.path.join("adt_dsb" , si), layer="raw_counts")
+                pnp.io.write_10x_counts(mdata["prot"], os.path.join("prot_dsb" , si), layer="raw_counts")
 else:
     # run on all the data (not on a channel basis)
     # first run clr
@@ -151,7 +151,7 @@ else:
         # make sure to start from raw counts
         all_mdata["prot"].X = all_mdata["prot"].layers["raw_counts"]
         # run normalise
-        pnp.scmethods.run_adt_normalise(mdata=all_mdata, 
+        pnp.scmethods.run_prot_normalise(mdata=all_mdata, 
                 mdata_raw=None,
                 method="clr",
                 clr_margin=int(args.clr_margin))
@@ -162,7 +162,7 @@ else:
             plt.savefig(os.path.join(args.figpath, "clr_ridgeplot_isotypes.png"))
         # save out the data in what format?
         if save_mtx:
-            pnp.io.write_10x_counts(all_mdata["prot"], os.path.join("adt_clr"), layer="clr")
+            pnp.io.write_10x_counts(all_mdata["prot"], os.path.join("prot_clr"), layer="clr")
     if 'dsb' in norm_methods:
         # make sure to start from raw counts
         all_mdata["prot"].X = all_mdata["prot"].layers["raw_counts"]
@@ -171,7 +171,7 @@ else:
         all_mdata_raw["rna"].obs["log10umi"] = np.array(np.log10(all_mdata_raw["rna"].X.sum(axis=1) + 1)).reshape(-1)
         mu.pl.histogram(all_mdata_raw["rna"], ["log10umi"], bins=50)
         plt.savefig(os.path.join(args.figpath, "all_log10umi.png"))
-        pnp.scmethods.run_adt_normalise(mdata=all_mdata, 
+        pnp.scmethods.run_prot_normalise(mdata=all_mdata, 
                 mdata_raw=all_mdata_raw, 
                 method="dsb",
                 isotypes=isotypes) 
@@ -187,7 +187,7 @@ else:
             plt.savefig(os.path.join(args.figpath, "dsb_ridgeplot_isotypes.png"))
         # save out the data in what format?
         if save_mtx:
-            pnp.io.write_10x_counts(all_mdata["prot"], os.path.join("adt_dsb"), layer="dsb")
+            pnp.io.write_10x_counts(all_mdata["prot"], os.path.join("prot_dsb"), layer="dsb")
 
     # run pca on dsb normalised (if dsb was run otherwise clr is in X)
     sc.tl.pca(all_mdata['prot'], n_comps=50, svd_solver='arpack', random_state=0) 

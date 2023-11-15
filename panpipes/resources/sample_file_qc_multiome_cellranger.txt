@@ -1,0 +1,2 @@
+sample_id	atac_path	atac_filetype	fragments_file	per_barcode_metrics_file	peak_annotation_file	tissue	diagnosis	rna_path	rna_filetype
+mome_granulocytes	data.dir/	cellranger	data.dir/atac_fragments.tsv.gz	data.dir/pbmc_granulocyte_sorted_10k_per_barcode_metrics.csv	data.dir/atac_peak_annotation.tsv	granulocytes	healthy	data.dir/	cellranger

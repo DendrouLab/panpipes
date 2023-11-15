@@ -1,7 +1,7 @@
 
 [project]
 name = "panpipes"
-version = "0.2.0"
+version = "0.4.0"
 authors = [
     {name = "Charlotte Rich-Griffin"},
     {name = "Fabiola Curion"}
@@ -38,11 +38,12 @@ dependencies = [
     "harmonypy", 
     "leidenalg", 
     "louvain",
-    "matplotlib",
+    "matplotlib<=3.7.3",
     "mofapy2",
     "mudata>=0.2.1",
     "muon",
     "numpy>=1.22.4", 
+    "openpyxl",
     "packaging", 
     "pandas>=1.0", 
     "paramiko", 
@@ -53,19 +54,26 @@ dependencies = [
     "ruffus", 
     "scanorama", 
     "scanpy>=1.9.1", 
-    "seaborn",
     "scib",
+    "seaborn<=0.12.2",
     "scikit-misc", 
     "scirpy",
     "scrublet", 
     "scvi-tools>=0.16.3",
-    "sqlalchemy"
-]
+    "sqlalchemy"]
 
 [project.optional-dependencies]
 notebook = [
     "jupyter",
     "jupyterlab"
+]
+spatial = [
+    "squidpy",
+    "cell2location"
+]
+pypi_upload = [
+    "twine",
+    "build"
 ]
 
 # The following would provide a command line executable called `sample`

@@ -85,6 +85,7 @@ kwargs={}
 # in case of more than 1 variable, create a fake column with combined information
 if args.integration_col_categorical is not None :
     columns = [x.strip() for x in args.integration_col_categorical.split(",")]
+    columns =[ x.replace("rna:","") for x in columns]
     if len(columns) > 1:
         L.info("using 2 columns to integrate on more variables")
         # bc_batch = "_".join(columns)
@@ -92,7 +93,7 @@ if args.integration_col_categorical is not None :
         # make sure that batch is a categorical
         rna.obs["bc_batch"] = rna.obs["bc_batch"].astype("category")
     else:
-        rna.obs['bc_batch'] = rna.obs[args.integration_col_categorical]
+        rna.obs['bc_batch'] = rna.obs[columns] #since it's one
         rna.obs["bc_batch"] = rna.obs["bc_batch"].astype("category")
     batch_categories = list(rna.obs['bc_batch'].unique())
     kwargs["batch_key"] = "bc_batch"
@@ -122,14 +123,14 @@ else:
     sc_raw = sc_raw[sc_raw.obs_names.isin(rna.obs_names),: ]
     rna.layers["counts"] = sc_raw.X.copy()
 
-# filter adt outliers 
-if params['multimodal']['totalvi']['filter_adt_outliers']:
-    # for this to work the user needs to (manually) make a column called adt_outliers
+# filter prot outliers 
+if params['multimodal']['totalvi']['filter_prot_outliers']:
+    # for this to work the user needs to (manually) make a column called prot_outliers
     # actually there is a thing in the qc pipe that calculates outliers, I don't like it very much though
-    if "adt_outliers" in mdata['prot'].columns:
-        mu.pp.filter_obs(mdata, "adt_outliers")
+    if "prot_outliers" in mdata['prot'].columns:
+        mu.pp.filter_obs(mdata, "prot_outliers")
     else:
-        raise ValueError("adt_outliers column not found in mdata['prot'].obs")
+        raise ValueError("prot_outliers column not found in mdata['prot'].obs")
 
 # exluding isotypes
 if 'isotype' in prot.var.columns:

@@ -1,8 +1,8 @@
 '''
-scanpy QC script ADT
+scanpy QC script PROT
 order of QC:
-- GEX
-- ADT
+- RNA
+- PROT
 - Repertoire
 - ATAC
 '''
@@ -64,7 +64,7 @@ parser.add_argument('--channel_col',
 parser.add_argument("--per_cell_metrics",
                     default=None,
                     help="")
-parser.add_argument("--per_adt_metrics",
+parser.add_argument("--per_prot_metrics",
                     default=None,
                     help="")
 
@@ -118,7 +118,7 @@ else:
 # if isotypes are found then include them in the caluclate qc metrics call.
 # this calculates standard metrics 
 sc.pp.calculate_qc_metrics(prot,
-                        var_type="adt",  
+                        var_type="prot",  
                         qc_vars=qc_vars, 
                         percent_top=None,log1p=True, inplace=True)
 
@@ -151,7 +151,7 @@ mdata.write(args.outfile)
 # values on a per channel basis 
 # IS this cause you need the pandas per channel to plot? YES
 
-# the rest of the script is concerned with Per ADT metrics instead of per cell. 
+# the rest of the script is concerned with Per PROT metrics instead of per cell. 
 # per cell metrics are plotted in plotqc.R
 
 
@@ -161,7 +161,7 @@ out = {}
 for si in prot.obs[channel_col].unique():
     L.info(si)
     obs_df, var_df = sc.pp.calculate_qc_metrics(prot[prot.obs[channel_col]==si],
-                            var_type="adt", 
+                            var_type="prot", 
                             qc_vars=qc_vars, 
                             percent_top=None,log1p=True, inplace=False)
     # store the var df for the metrics we care about in the dictionary.
@@ -170,24 +170,24 @@ for si in prot.obs[channel_col].unique():
     out[si][channel_col] = si
 
 # concatenate all the var_dfs, so we can summarise the per channel data in boxplots.
-var_dat = pd.concat(out).reset_index().rename(columns={'level_0':channel_col, 'level_1': "adt_id"})
-adt_id_col=var_dat.columns[1]
+var_dat = pd.concat(out).reset_index().rename(columns={'level_0':channel_col, 'level_1': "prot_id"})
+prot_id_col=var_dat.columns[1]
 
-if args.per_adt_metrics is not None:
-    per_adt_metrics = args.per_adt_metrics.split(",")
-    per_adt_metrics = [a.strip() for a in per_adt_metrics]
+if args.per_prot_metrics is not None:
+    per_prot_metrics = args.per_prot_metrics.split(",")
+    per_prot_metrics = [a.strip() for a in per_prot_metrics]
 
     # let's make some boxplot figures.
-    for qcp in per_adt_metrics:
+    for qcp in per_prot_metrics:
         fig, ax = plt.subplots(nrows=1,figsize=(24,6))
-        sns.boxplot(data=var_dat, x=adt_id_col, y=qcp, ax=ax)
+        sns.boxplot(data=var_dat, x=prot_id_col, y=qcp, ax=ax)
         adjust_x_axis(ax)
         fig.tight_layout()
         plt.savefig(os.path.join(figdir, "boxplot_" + channel_col + "_" + qcp + ".png"))
     plt.close()
 
     # write out the per channel metrics in a separate csv.
-    var_dat.to_csv(args.sampleprefix + "_adt_qc_metrics_per_" + channel_col + ".csv")
+    var_dat.to_csv(args.sampleprefix + "_prot_qc_metrics_per_" + channel_col + ".csv")
 
 L.info("Done")
 

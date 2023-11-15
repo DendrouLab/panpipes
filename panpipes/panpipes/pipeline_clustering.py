@@ -1,10 +1,6 @@
 """
 CGAT pipeline for clustering single cell data with Scanpy.
-# ASSUMED INPUT: 2 anndata objects, one containing all the data logn normalised but unscaled.
-# the second containing scaled data and subset by highly variable genes.
-# dimension reduction such as PCA or equivalent from harmobny or scanorama
-# must have has been computed and saved within object
-
+# ASSUMED INPUT: mudata with normalized and scaled data in the relevant layers
 # This pipeline is designed to follow on from pipeline_integration.py
 
 """
@@ -107,7 +103,7 @@ def calc_sm_umaps(infile, outfile, mod, mindist, log_file):
             --min_dist %(mindist)s 
             """
     if mod is not None and mod != "multimodal":
-        # if this is not specified it will use gex default
+        # if this is not specified it will use rna default
         cmd += " --modality %(mod)s"
     elif mod=="multimodal":
         if PARAMS['multimodal_integration_method'].lower() == "wnn":
@@ -150,7 +146,7 @@ def calc_cluster(infile, outfile,  mod, res, alg, log_file):
             --algorithm %(alg)s
     """ 
     if mod is not None and mod != "multimodal":
-        # if this is not specified it will use gex default
+        # if this is not specified it will use rna default
         cmd += " --modality %(mod)s"
     elif mod=="multimodal":
         if PARAMS['multimodal_integration_method'].lower() == "wnn":
@@ -222,7 +218,6 @@ def plot_cluster_umaps(infile, log_file,):
     cmd += " >> %(log_file)s"
     job_kwargs["job_threads"] = PARAMS['resources_threads_medium']
     P.run(cmd, jobs_limit=1, **job_kwargs)
-
 
 @transform(aggregate_clusters, regex("(.*)/all_res_clusters_list.txt.gz"),
             r'logs/\1_clustree.log',
@@ -417,7 +412,7 @@ def marker_analysis(fname):
 #     if PARAMS['use_muon']:
 #         cmd += " --use_muon True"
 #     if PARAMS['modality']:
-#         # if this is not specified it will use gex default
+#         # if this is not specified it will use rna default
 #         cmd += " --modality %(modality)s"
 #     print(cmd)
 #     P.run(cmd, job_threads=PARAMS['resources_threads_medium'])
@@ -426,6 +421,15 @@ def marker_analysis(fname):
 
 
 @follows(cluster_analysis, marker_analysis )
+@originate("cleanup_done.txt")
+def cleanup(file):
+    # remove any ctmp fails
+    P.run("rm ctmp*", without_cluster=True)
+    # delete empty dirs
+    P.run("find ./ -empty -type d -delete", without_cluster=True)
+
+
+@follows(cleanup)
 def full():
     """
     All cgat pipelines should end with a full() function which updates,

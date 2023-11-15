@@ -1,0 +1,163 @@
+# ==============================================
+# Preprocessing, spatial transcriptomics
+# ==============================================
+
+
+# compute resource options
+# ------------------------
+resources:
+  # Number of threads used for parallel jobs
+  # this must be enough memory to load your mudata and do computationally intensive tasks
+  threads_high: 2
+  # this must be enough memory to load your mudata and do computationally light tasks
+  threads_medium: 2
+  # this must be enough memory to load text files and do plotting, requires much less memory than the other two
+  threads_low: 1
+# path to conda env, leave blank if running native or your cluster automatically inherits the login node environment
+condaenv:
+
+
+
+# ------------------
+## 1. Specify input
+# ------------------
+# this pipeline expects to find input mudatas (one per spatial slide) in a directory, for example:
+# tree ../qc.data
+# ../qc.data
+# ├── Human_LN_alt_unfilt.h5mu
+# ├── Human_LN_unfilt.h5mu
+# └── Human_heart_unfilt.h5mu
+
+input_dir: ../qc.data/
+sample_prefix: 
+
+# if running this on prefiltered data then
+#1. set unfiltered obj (above) to blank
+#2. rename your filtered file to match, the format PARAMS['sample_prefix'] + '.h5mu'
+#3. put renamed file in the same folder as this yml.
+#4. set filtering run: to False below.
+
+modalities:
+  spatial: True
+# specify which spatial transcriptomics assay it's used. one of "visium" or "vizgen"
+# if left blank we'll default to "visium"
+assay:
+
+# --------------
+## 2. Filtering
+# --------------
+# the filtering process in panpipes is sequential as it goes through the filtering dictionary.
+# for each modality, starting with rna, it will first filter on obs and then vars.
+# each modality has a dictionary in the following format. This is fully customisable to any
+# columns in the mudata.obs or var object.
+# When specifying a column name, make sure it exactly matches the column name in the h5mu object.
+# rna:
+  # obs:
+    # min: <-- Any column for which you want to run a minimum filter, 
+     # n_genes_by_counts: 500 <--- i.e. each cell must have a minimum of 500 in the n_genes_by_counts column
+    # max: <-- Any column for which you want to run a maxiumum filter
+     # pct_counts_mt: 20 <-- i.e. each cell may have a maximum of 25 in the pct_counts_mt column
+                              # be careful with any columns named after gene sets. 
+                              # The column will be named based on the gene list input file, so if the mitochondrial genes are in group "mt" 
+                              # as in the example given in the resource file
+                              # then the column will be named "pct_counts_mt" .
+
+    # bool: 
+      # is_doublet: True  <--- if you have any boolean columns you want to filter on, then use this section of the modality dictionary
+                              # in this case any obs['is_doublet'] that are True will be retained in the dataset.
+# this format of
+# obs:
+  # min:
+  # max:
+  # bool
+# var:
+  # min:
+  # max:
+  # bool
+# can be applied to any modality by editing the filtering dictionary below. You are not restricted by the columns given as default.
+
+filtering:
+  run: True
+  # a file containing only barcodes you want to keep, leave blank if not applicable
+  keep_barcodes:
+  #------------------------------------------------------
+  spatial:
+  #------------------------------------------------------ 
+    obs:
+      min:
+        total_counts: 25000
+      max:
+        total_counts: 
+        n_genes_by_counts: 
+      # percent filtering: 
+        # this should be a value between 0 and 100%. 
+        # leave blank or set to 100 to avoid filtering for any of these param
+        pct_counts_mt: 
+        pct_counts_rp:
+        # either one score for all samples e.g. 0.25, 
+        # or a csv file with two columns sample_id, and cut off
+        # less than
+        doublet_scores:
+        #  if you wanted to be more precise i.e. apply a different srublet threshold per sample
+        # you could add a new column to the mudata['rna'].obs with True False values, and list
+        # that column under bool:, you can do this for any modality
+      bool: 
+  ## var filtering: (feature) gene level filtering here
+    var:
+      min:
+        n_cells_by_counts: 
+      max:
+        total_counts:
+        n_cells_by_counts:
+        
+
+
+# -------------------------
+## 3. Post-filter plotting
+# -------------------------
+
+# all metrics should be inputted as a comma separated string without spaces, e.g. a,b,c 
+# if metric in both, adata.obs and adata.var, then both are plotted 
+plotqc:
+  # use these categorical variables to plot/split by and count the cells
+  # not mandatory, can be left empty
+  grouping_var:
+  # use these continuous variables to plot gradients and distributions
+  spatial_metrics: total_counts,n_genes_by_counts
+
+
+# -----------------------------------------
+# 4. Spatial transcriptomics preprocessing
+# Normalization + HVG selection + PCA
+# -----------------------------------------
+
+spatial:
+  # how to perform normalization and HVG selection:
+  norm_hvg_flavour: seurat # ['seurat', 'squidpy']
+  # 'seurat': HVG selection and normalization by analytic Pearson residuals
+  # 'squidpy': HVG selection and normalization using the standard scanpy functions (sc.pp.normalize_total(),sc.pp.log1p(), sc.pp.highly_variable_genes())
+
+  # !the following parameters are only for the case norm_hvg_flavour == squidpy:
+  squidpy_hvg_flavour: #seurat #['seurat','cellranger','seurat_v3'], leave blank to use default ('seurat'), flavour for the sc.pp.highly_variable_genes() function
+  min_mean:  # leave blank to use default (0.05), parameter in sc.pp.highly_variable_genes()
+  max_mean:  # leave blank to use default (1.5), parameter in sc.pp.highly_variable_genes()
+  min_disp: # leave blank to use default (0.5), parameter in sc.pp.highly_variable_genes()
+
+  # !the following parameters are only for the case norm_hvg_flavour == seurat:
+  theta: #leave blank to use default (100), the negative binomial overdispersion parameter for Pearson residuals
+  clip: #leave blank to use default (None)
+  # 'clip' can be specified as:
+  #    None: residuals are clipped to the interval [-sqrt(n_obs), sqrt(n_obs)]
+  #    a float value: if float c specified: clipped to the interval [-c, c]
+  #    np.Inf: no clipping
+
+  #! parameters for both cases norm_hvg_flavour = "seurat" and "squidpy"
+  n_top_genes: 2000 # Default is None, Mandatory for norm_hvg_flavour = "seurat" and squidpy_hvg_flavor: "seurat_v3"
+  filter_by_hvg: False # leave blank to use default (False); if True, subset the data to highly-variable genes after finding them
+  hvg_batch_key: #leave blank to use default (None); if specified, highly-variable genes are selected within each batch separately and merged
+
+  n_pcs: 50 #leave blank to use default (50); how many PCs to compute with sc.pp.PCA()
+
+
+
+

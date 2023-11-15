@@ -19,6 +19,74 @@ from statsmodels.distributions.empirical_distribution import ECDF
 from .plotting import ridgeplot
 from .io import write_10x_counts
 from .processing import check_for_bool, which_ind
+import matplotlib
+import matplotlib.pyplot as plt
+
+
+def lsi(adata, num_components):
+    """
+    Runs LSI on adata.X and uses HVFs if adata.var["highly_variable"] is present. Otherwise, runs LSI on all features.
+
+    :param adata: anndata to run LSI on
+    :param num_components: number of components to compute
+    """
+
+    if "highly_variable" in adata.var.columns:
+        adata_hvfs = adata[:, adata.var["highly_variable"]]
+        mu.atac.tl.lsi(adata_hvfs, n_comps=num_components)
+        # save output to original anndata
+        adata.obsm["X_lsi"] = adata_hvfs.obsm['X_lsi']
+        adata.uns["lsi"] = adata_hvfs.uns['lsi']
+        adata.varm["LSI"] = np.zeros(shape=(adata.n_vars, adata_hvfs.varm["LSI"].shape[1]))
+        adata.varm["LSI"][adata.var["highly_variable"]] = adata_hvfs.varm['LSI']
+    else:
+        mu.atac.tl.lsi(adata, n_comps=num_components)
+
+
+def cell2loc_filter_genes(adata, fig_path, cell_count_cutoff=15, cell_percentage_cutoff2=0.05, nonz_mean_cutoff=1.12):
+# Adjusted from: https://github.com/BayraktarLab/cell2location/blob/master/cell2location/utils/filtering.py
+    adata.var["n_cells"] = np.array((adata.X > 0).sum(0)).flatten()
+    adata.var["nonz_mean"] = np.array(adata.X.sum(0)).flatten() / adata.var["n_cells"]
+
+    cell_count_cutoff = np.log10(cell_count_cutoff)
+    cell_count_cutoff2 = np.log10(adata.shape[0] * cell_percentage_cutoff2)
+    nonz_mean_cutoff = np.log10(nonz_mean_cutoff)
+
+    gene_selection = (np.array(np.log10(adata.var["n_cells"]) > cell_count_cutoff2)) | (
+        np.array(np.log10(adata.var["n_cells"]) > cell_count_cutoff)
+        & np.array(np.log10(adata.var["nonz_mean"]) > nonz_mean_cutoff)
+    )
+    gene_selection = adata.var_names[gene_selection]
+    adata_shape = adata[:, gene_selection].shape
+
+    fig, ax = plt.subplots()
+    ax.hist2d(
+        np.log10(adata.var["nonz_mean"]),
+        np.log10(adata.var["n_cells"]),
+        bins=100,
+        norm=matplotlib.colors.LogNorm(),
+        range=[[0, 0.5], [1, 4.5]],
+    )
+    ax.axvspan(0, nonz_mean_cutoff, ymin=0.0, ymax=(cell_count_cutoff2 - 1) / 3.5, color="darkorange", alpha=0.3)
+    ax.axvspan(
+        nonz_mean_cutoff,
+        np.max(np.log10(adata.var["nonz_mean"])),
+        ymin=0.0,
+        ymax=(cell_count_cutoff - 1) / 3.5,
+        color="darkorange",
+        alpha=0.3,
+    )
+    plt.vlines(nonz_mean_cutoff, cell_count_cutoff, cell_count_cutoff2, color="darkorange")
+    plt.hlines(cell_count_cutoff, nonz_mean_cutoff, 1, color="darkorange")
+    plt.hlines(cell_count_cutoff2, 0, nonz_mean_cutoff, color="darkorange")
+    plt.xlabel("Mean non-zero expression level of gene (log)")
+    plt.ylabel("Number of cells expressing gene (log)")
+    plt.title(f"Gene filter: {adata_shape[0]} cells x {adata_shape[1]} genes")
+    plt.savefig(fig_path)
+
+    return gene_selection
+
+
 
 
 def findTopFeatures_pseudo_signac(adata, min_cutoff):
@@ -364,7 +432,7 @@ def X_is_raw(adata):
 # run clr 
     
 
-def run_adt_normalise(mdata, 
+def run_prot_normalise(mdata, 
                       mdata_bg, 
                       method: Literal['dsb', 'clr'] = 'clr',
                       clr_margin: Literal[0, 1] = '0',
