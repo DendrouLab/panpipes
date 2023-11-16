@@ -30,18 +30,14 @@ query: path_to_dataset
 # we support raw10x formats, or preprocessed quality filtered mudata or anndata as input query
 modality: rna
 # if you supplied a mu data, specify the modality to be used
-# currently only RNA query supported
+# only RNA modality supported by current models!
 
 # does your query data have a batch effect, what column?
-# transform_batch term is only used in totalvi?
 query_batch:
 # does your query have a celltype annotation you want to use to compare to
 # the transferred label?
 # leave empty if not
 query_celltype: 
-# does your query have a covariat annotation you want to use to calculate
-# scib metrics on? leave empty if not
-query_covariates:
 #----------------------
 # scvi tools params
 #----------------------
@@ -50,7 +46,7 @@ query_covariates:
 # leave blank for no model specification
 
 # specify the reference anndata/mudata with RNA. you need this only if you want to calc umap on both reference and query data.
-# or leave blank and only provide model paths
+# otherwise leave blank and only provide model paths
 reference_data: path_to_mudata 
 # path to tovalvi saved model
 totalvi: 
@@ -69,14 +65,12 @@ scanvi:
 # classify cells in the query
 run_randomforest: False
 
-
-
 #----------------------
 # training params
 #----------------------
 
-# to reuse these params, (for example for WNN) please use anchors (&) and scalars (*) in the relevant place
-# i.e. &rna_neighbors will be called by *rna_neighbors where referenced
+# to reuse the same params in multiple locations, please use anchors (&) and scalars (*) in the relevant place
+# i.e. if specifying &rna_neighbors, the same params will be called by *rna_neighbors where referenced
 
 training_plan:
   totalvi: &totalvitraining 
@@ -114,7 +108,8 @@ scib:
   run: False
   #used for ARI and NMI (if left empty will default to leiden clustering calculated on the new latent representation after reference mapping)
   cluster_key: predictions
-  #used for clisi_graph_embed
+  # used for clisi_graph_embed (if left empty will default to query_batch specified above)
+  # if no batch is present the metrics will not be included in the results
   batch_key:
   #ground truth label (if left empty it will default to query_celltype specified above )
   celltype_key: celltype

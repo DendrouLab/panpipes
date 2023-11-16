@@ -221,7 +221,7 @@ if reference_architecture=="totalvi":
             if pname not in adata_query.obsm.keys():
                 X_df = pd.DataFrame(0, index=adata_ref.obs_names, columns=adata_ref.obsm[pname].columns)
 
-                adata_query.obsm["protein_counts"] = query.obsm["pro_exp"].copy()
+                adata_query.obsm["protein_counts"] = adata_query.obsm["pro_exp"].copy()
             
 
             for p in adata_ref.obsm[pname].columns:
