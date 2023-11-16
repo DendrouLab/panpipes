@@ -37,10 +37,10 @@ if PARAMS['scvi'] is not None:
 
 @originate("logs/setup_dirs.sentinel")
 def set_up_dirs(log_file):
-    os.mkdir("models")
-    os.mkdir("refmap")
-    os.mkdir("logs")
-    os.mkdir("figures")
+    os.mkdirs("models",exist_ok=True)
+    os.mkdirs("refmap",exist_ok=True)
+    os.mkdirs("logs",exist_ok=True)
+    os.mkdirs("figures",exist_ok=True)
     IOTools.touch_file(log_file)
     pass
 
