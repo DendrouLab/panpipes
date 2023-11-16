@@ -38,12 +38,6 @@ See tutorials for examples of submission files.
   - LSI in panpipes_preprocess is run on the highly variable features
   - n_comp for LSI
 ### fixed
-- typos & capitalization in the pipeline.yml files of `qc_spatial`, `preprocess_spatial`, and `deconvolution_spatial`
-- remove `assay` and `sample_prefix` parameters from the `qc_spatial` pipeline.yml 
-- remove `sample_prefix` and `modalities` parameters from the `preprocess_spatial` pipeline.yml
-- fixed error in `preprocess_spatial` when `filtering: run: False`
-    -> now able to run no filtering without needing to save the MuData in `filtered.data` before running the pipeline
-
 - changed all instances of ADT into PROT
 - changed all instances of GEX to RNA
 - changed the params to fix plotting as mentioned in issue #41
