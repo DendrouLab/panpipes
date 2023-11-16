@@ -32,20 +32,7 @@ condaenv:  # Path to conda env, leave blank if running native or your cluster au
 
 project: test
 # Submission_file format (example at resources/sample_file_qc_spatial.txt) :
-# For qc_spatial the required columns are:
-# sample_id spatial_path spatial_filetype spatial_counts spatial_metadata spatial_transformation
 submission_file: # Path to submission file
-
-
-#---------------------------------------
-# Modalities in the project
-#---------------------------------------
-# 
-# Set spatial to True to abilitate reading. 
-# Leave empty (None) or False to signal this modality is not in the experiment.
-
-modalities:
-  spatial: True
 
 
 

@@ -37,7 +37,7 @@ print(PARAMS)
 #------------------------------------------------------------------------------------------------
 ## Create a dictionary of modalities
 #------------------------------------------------------------------------------------------------
-mode_dictionary = PARAMS["modalities"]
+mode_dictionary = {'spatial': True} #PARAMS["modalities"]
 #{'spatial': True}
 print(mode_dictionary)
 #------------------------------------------------------------------------------------------------
@@ -60,10 +60,10 @@ def set_up_dirs(log_file):
 def gen_load_spatial_anndata_jobs():
     print(PARAMS['submission_file'])
     caf = pd.read_csv(PARAMS['submission_file'], sep='\t')
-    print(gen_load_spatial_jobs(caf,mode_dictionary=PARAMS["modalities"]))
+    print(gen_load_spatial_jobs(caf,mode_dictionary={'spatial': True}))
     global assays
     assays = {}
-    return gen_load_spatial_jobs(caf,mode_dictionary=PARAMS["modalities"])
+    return gen_load_spatial_jobs(caf,mode_dictionary={'spatial': True})
    
 
 
@@ -89,7 +89,7 @@ def load_mudatas(spatial_path, outfile,
         print('spatial_transformation = %s' % str(spatial_transformation))
     else:
         print("visium")
-    modality_dict = {k:True if path_dict[k] is not None else False for k,v in PARAMS['modalities'].items() }
+    modality_dict = {k:True if path_dict[k] is not None else False for k,v in {'spatial': True}.items() }
     print(modality_dict)
 
     assays[outfile] = spatial_filetype
