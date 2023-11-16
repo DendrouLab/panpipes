@@ -6,10 +6,12 @@
 - added example multiome submission file 10X_h5
 - added example multiome submission file cellranger
 
+
 ### fixed
 
 - changed typo in tutorial paths for clustering and deconvolution
 - fix io to read cellranger outs folder for atac. 
+- fixes to refmap workflow 
 
 ### dependencies
 
