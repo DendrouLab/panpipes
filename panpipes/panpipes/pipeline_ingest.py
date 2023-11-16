@@ -425,10 +425,10 @@ def run_scanpy_prot_qc(log_file, outfile, unfilt_file):
         cmd += " --channel_col %(channel_col)s"
     else:
         cmd += " --channel_col sample_id"
-    if PARAMS['prot_plotqc_metrics']:
-        cmd += " --per_cell_metrics %(prot_plotqc_metrics)s"
-    if PARAMS['prot_metrics_per_adt']:
-        cmd += " --per_adt_metrics %(prot_metrics_per_adt)s"
+    if PARAMS['plotqc_prot_metrics']:
+        cmd += " --per_cell_metrics %(plotqc_prot_metrics)s"
+    if PARAMS['plot_metrics_per_prot']:
+        cmd += " --per_prot_metrics %(plot_metrics_per_prot)s"
     if PARAMS['identify_isotype_outliers']:
         cmd += " --identify_isotype_outliers %(identify_isotype_outliers)s"
         cmd += " --isotype_upper_quantile %(isotype_upper_quantile)s"

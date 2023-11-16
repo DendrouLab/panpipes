@@ -1,8 +1,8 @@
 '''
-scanpy QC script GEX
+scanpy QC script RNA
 order of QC:
-- GEX
-- ADT
+- RNA
+- PROT
 - Repertoire
 - ATAC
 '''
@@ -62,7 +62,7 @@ parser.add_argument("--score_genes",
 
 args, opt = parser.parse_known_args()
 
-L.info("Running scanpy gex qc pipeline")
+L.info("Running scanpy rna qc pipeline")
 
 sc.settings.verbosity = 3
 

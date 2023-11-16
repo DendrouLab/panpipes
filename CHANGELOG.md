@@ -44,7 +44,6 @@ See tutorials for examples of submission files.
 - typo in readme
 - set default seaborn <=0.12.2 to avoid issue #104, #126
 
-
 ### dependencies
 
 ## v0.3.1

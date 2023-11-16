@@ -123,14 +123,14 @@ else:
     sc_raw = sc_raw[sc_raw.obs_names.isin(rna.obs_names),: ]
     rna.layers["counts"] = sc_raw.X.copy()
 
-# filter adt outliers 
-if params['multimodal']['totalvi']['filter_adt_outliers']:
-    # for this to work the user needs to (manually) make a column called adt_outliers
+# filter prot outliers 
+if params['multimodal']['totalvi']['filter_prot_outliers']:
+    # for this to work the user needs to (manually) make a column called prot_outliers
     # actually there is a thing in the qc pipe that calculates outliers, I don't like it very much though
-    if "adt_outliers" in mdata['prot'].columns:
-        mu.pp.filter_obs(mdata, "adt_outliers")
+    if "prot_outliers" in mdata['prot'].columns:
+        mu.pp.filter_obs(mdata, "prot_outliers")
     else:
-        raise ValueError("adt_outliers column not found in mdata['prot'].obs")
+        raise ValueError("prot_outliers column not found in mdata['prot'].obs")
 
 # exluding isotypes
 if 'isotype' in prot.var.columns:
