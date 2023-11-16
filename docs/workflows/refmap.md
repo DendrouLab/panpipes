@@ -12,6 +12,7 @@ Steps:
     `panpipes refmap config` and edit the pipeline.yml file.
 2.  Run complete refmap pipeline with `panpipes refmap make full`
 
+For a full tutorial on refmap please check the [tutorials](https://panpipes-pipelines.readthedocs.io/en/latest/tutorials/index.html) section.
 
 ## Expected structure of MuData object
 The ideal way to run `panpipes refmap` is to use the output mudata file from `panpipes preprocess`, as this will make sure the MuData object has correctly names layers and slots. 
