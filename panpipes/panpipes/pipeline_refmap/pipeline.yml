@@ -31,7 +31,6 @@ query: path_to_dataset
 modality: rna
 # if you supplied a mu data, specify the modality to be used
 # only RNA modality supported by current models!
-
 # does your query data have a batch effect, what column?
 query_batch:
 # does your query have a celltype annotation you want to use to compare to
@@ -53,7 +52,8 @@ totalvi:
   - path_to_totalvi1
   - path_to_totalvi2
 impute_proteins: True
-#specific to totalvi
+# transform_batch is a batch-covariate specific to totalvi, allows the model to use the batch information in the query to mitigate 
+# differences in protein sequencing depth
 transform_batch:
 # Specify the full path to the model, i.e. Path/to/scanvi/model.pt
 # if not running the method, remove the dummy - path_to_xxx and leave blank
