@@ -91,8 +91,10 @@ for labelk in covariates_use:
 
 file_name= os.path.splitext(os.path.basename(args.query).replace("query_to_reference_", "").replace(".h5mu", ""))[0]
 #"query_to_reference_" + model_name + "_" + latent_choice + ".h5mu"
-
+L.info("saving file output")
 file_out = os.path.join(args.outdir,("scib.query_"+ file_name+".csv"))
-
+print(file_out)
 #save file to txt
-pd.DataFrame.from_dict(results,orient='index').to_csv(file_out, sep="\t")
+pres = pd.DataFrame.from_dict(results,orient='index')
+pres.to_csv(file_out, sep="\t")
+L.info("Finished scib")
