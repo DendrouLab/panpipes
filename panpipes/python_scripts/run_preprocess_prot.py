@@ -77,7 +77,7 @@ norm_methods = args.normalisation_methods.split(',')
 
 L.info(args)
 
-# load filtered data - if use_umon is True this will return a mudata object, else returns an mudata object
+# load filtered data - if use_muon is True this will return a mudata object, else returns an mudata object
 
 L.info("reading filtered mudata object")
 try:
