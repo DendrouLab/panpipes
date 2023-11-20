@@ -10,6 +10,7 @@ See  [installation](../install) for installation instructions
 general_principles
 setup_for_qc_mm
 gene_list_format
+custom_genes_annotations
 filter_dict_instructions
 different_entry_points
 
