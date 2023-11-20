@@ -66,7 +66,7 @@ parser.add_argument('--scale', default=True, type=check_for_bool)
 parser.add_argument('--scale_max_value', default=None)
 # pca options
 parser.add_argument("--n_pcs", default=50)
-parser.add_argument("--solver", default="arpack")
+parser.add_argument("--pca_solver", default="arpack")
 parser.add_argument("--color_by", default="batch") 
 
 parser.set_defaults(verbose=True)
@@ -185,14 +185,6 @@ if filter_by_hvgs is True:
     genes['gene_name'] = adata.var.index
     genes.to_csv("filtered_genes.tsv", sep="\t", index=True)
  
-if args.output_logged_mudata is None:
-    args.output_logged_mudata = args.input_mudata
-
-if args.output_scaled_mudata == args.output_logged_mudata:
-    pass
-else:
-    mdata.write(args.output_logged_mudata)
-
 
 adata.layers['logged_counts'] = adata.X.copy()
 L.debug(adata.uns['log1p'])
@@ -217,18 +209,19 @@ L.debug(adata.uns['log1p'])
 # run pca
 L.info("running pca")
 
-sc.tl.pca(adata, n_comps=int(args.n_pcs), svd_solver='arpack', random_state=0) #given args above this should work
-# extract pca coordinates for plotting 
-pca_coords = pd.DataFrame(adata.obsm['X_pca'])
-# add in the rownames 
-pca_coords.index = adata.obs_names
-# save coordinates to file
-# (note this saves values values up to 6 significant figures, because why save 20 for a plot
-pca_fname = re.sub(".h5ad|.h5mu", "_pca.txt.gz", args.output_scaled_mudata)
-pca_coords.to_csv(pca_fname, sep='\t')
+if adata.var.shape[0] < int(args.n_pcs):
+    L.info("You have less features than number of PCs you intend to calculate"):
+    if args.pca_solver == 'auto':
+        n_pcs = adata.var.shape[0]
+        L.info("Setting n PCS to %i" % int(n_pcs)):
+    else:
+        n_pcs = adata.var.shape[0] - 1
+sc.tl.pca(adata, n_comps=n_pcs, 
+                svd_solver=args.pca_solver, 
+                random_state=0) 
 
 # do some plots!
-sc.pl.pca_variance_ratio(adata, log=True, n_pcs=int(args.n_pcs), save=".png")
+sc.pl.pca_variance_ratio(adata, log=True, n_pcs=n_pcs, save=".png")
 
 col_variables = args.color_by.split(",")
 # for cv in col_variables:
