@@ -43,7 +43,7 @@ proportion of reads mapping to the genes whose group is "mt"
 **score_genes:** using scanpy.tl.score_genes function, the average expression of a set of genes, subtracted of the average expression of a reference set of genes. First introduced in Satija et al. Nature Biotechnology (2015).
 
 (for pipeline_integration.py)
-**exclude:** exclude these genes from the HVG selection, if they are deemed HV.
+**exclude:** exclude these genes from the HVG selection, if they are deemed Highly Variable.
 **plot_markers:** plot these genes
 
 If left blank, these actions will not be performed (i.e. no calculation of % of mt genes per cell will be included in the ingestion of the data)
