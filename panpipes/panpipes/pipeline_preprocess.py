@@ -200,10 +200,12 @@ def prot_preprocess( log_file, scaled_file, ):
     if PARAMS['prot_save_norm_prot_mtx'] is True:
         cmd += " --save_mtx True"
     if PARAMS["prot_pca"] is True:
-        cmd += " --run_pca True"
-        cmd += " --n_pcs %(prot_n_pcs)s"
-        cmd += " --pca_solver %(prot_solver)s"
-        cmd += " --color_by %(prot_color_by)s"
+        cmd += """ 
+        --run_pca True
+        --n_pcs %(prot_n_pcs)s
+        --pca_solver %(prot_solver)s
+        --color_by %(prot_color_by)s
+        """
     cmd += " > %(log_file)s"
     job_kwargs["job_threads"] = PARAMS['resources_threads_high']
     P.run(cmd, **job_kwargs)
