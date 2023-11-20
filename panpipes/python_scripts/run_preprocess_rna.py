@@ -210,7 +210,7 @@ L.debug(adata.uns['log1p'])
 L.info("running pca")
 
 if adata.var.shape[0] < int(args.n_pcs):
-    L.info("You have less features than number of PCs you intend to calculate"):
+    L.info("You have less features than number of PCs you intend to calculate")
     if args.pca_solver == 'auto':
         n_pcs = adata.var.shape[0]
         L.info("Setting n PCS to %i" % int(n_pcs)):
