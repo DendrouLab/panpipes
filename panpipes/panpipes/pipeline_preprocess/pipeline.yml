@@ -165,15 +165,11 @@ plotqc:
 # --------------------------------------------------------------------------------------------------------
 # hvg_flavour options include "seurat", "cell_ranger", "seurat_v3", default; "seurat"
 # for dispersion based methods "seurat" and "cell_ranger", you can specify parameters: min_mean, max_mean, min_disp
-# for "seurat_v3" a different method is used, a you specify how many variavle genes to find.
-# If you specify n_top_genes, then the other paramteres are nulled.
+# for "seurat_v3" a different method is used, and you need to specify how many variable genes to find in n_top_genes
+# If you specify n_top_genes, then the other paramters are nulled.
 # details: https://scanpy.readthedocs.io/en/stable/api/scanpy.pp.highly_variable_genes.html
 hvg:
-  # there is a defaul exclusions file for immune cells in panpipes/resources/exclude_genes_HLAIGTR_v1.txt
-  # examine this to see what format is expected, if you want to use this file set the parameter to "default
-  exclude_file: resources/qc_genelist_1.0.csv
-  exclude: exclude # this is the variable that defines the genes to be excluded in the above file
-  flavor: seurat_v3 # "seurat", "cell_ranger", "seurat_v3"
+  flavor: seurat # "seurat", "cell_ranger", "seurat_v3"
   # If batch key is specified, highly-variable genes are selected within each batch separately and merged. 
   # details: https://scanpy.readthedocs.io/en/stable/generated/scanpy.pp.highly_variable_genes.html#:~:text=or%20return%20them.-,batch_key,-%3A%20Optional%5B
   # If you want to use more than one obs column as a covariates, include it as covariate1,covariate2 (comma separated list)
@@ -183,8 +179,15 @@ hvg:
   min_mean:
   max_mean:
   min_disp:
-  # if you want to filter the scaled object by hvgs (essential for large datasets) then set filter to True
-  filter: False
+  # It may be useful to exclude some genes from the HVG selection. 
+  # In the file resources/qc_genelist_1.0.csv, we include an example of genes that could be excluded when analysing immune cells, 
+  # Examine this file, it has a first column with gene ids and the second column identifying the groups to
+  # which this genes belong. 
+  # This workflow will exclude the genes that you specify by their group name. when specifying "default", the workflows will
+  # remove from hvg the genes that in the file are flagged "exclude". You can customize the gene list and change the name of the gene group in
+  # the `exclude:` param accordingly.
+  exclude_file: 
+  exclude: # this is the variable that defines the genes to be excluded in the above file, leave empty if you're not excluding genes from HVG
 
 # Regression variables, what do you want to regress out, leave blank if nothing
 # I recommend not regressing out unless you have good reason to.
