@@ -161,11 +161,14 @@ def rna_preprocess(adata_obj, log_file):
     else:
         cmd += " --scale False"
     if PARAMS['pca_scree_n_pcs'] is not None:
-        cmd += " --n_pcs %(pca_scree_n_pcs)s"
+        cmd += " --n_pcs %(pca_n_pcs)s"
+    if PARAMS['pca_solver'] is not None:
+        if PARAMS['pca_solver'] == "default":
+            cmd += " --pca_solver arpack"
+        else:
+            cmd += " --pca_solver %(pca_solver)s"
     if PARAMS['pca_color_by'] is not None:
         cmd += " --color_by %(pca_color_by)s"
-    if PARAMS['output_logged_mudata'] is not None:
-        cmd += " --output_logged_mudata %(unscaled_outfile)s"
     cmd += " > %(log_file)s "
     job_kwargs["job_threads"] = PARAMS['resources_threads_high']
     P.run(cmd, **job_kwargs)
