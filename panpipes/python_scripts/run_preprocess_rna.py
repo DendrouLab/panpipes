@@ -213,9 +213,11 @@ if adata.var.shape[0] < int(args.n_pcs):
     L.info("You have less features than number of PCs you intend to calculate")
     if args.pca_solver == 'auto':
         n_pcs = adata.var.shape[0]
-        L.info("Setting n PCS to %i" % int(n_pcs)):
+        L.info("Setting n PCS to %i" % int(n_pcs))
     else:
         n_pcs = adata.var.shape[0] - 1
+else:
+    n_pcs = int(args.n_pcs)
 sc.tl.pca(adata, n_comps=n_pcs, 
                 svd_solver=args.pca_solver, 
                 random_state=0) 
