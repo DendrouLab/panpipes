@@ -84,5 +84,12 @@ Users can create their own list, and need to specify the path to this new file i
 
 If left blank, the cellcycle score will not be calculated.
 
+## Final notes
+
+Be deliberate and informative with the choice of group names for any gene set use, since the .obs column generated as output will be named based on the group of the gene list input file. The columns added to the mudata object will be used for filtering in the `preprocess` workflow (see [filtering instructions](./filter_dict_instructions.md) ).
+
+If the mitochondrial genes are in group "mt" as in the example given in the resource file, then the column generated with the **calc_proportions** action and containing the percentage of MT genes will be named "pct_counts_mt".
+
+So specifying *pct_counts_mito* instead of *pct_counts_mt* will not filter the mudata based on mitochondrial %, because the workflow can't find the supplied column in the data.
 
 
