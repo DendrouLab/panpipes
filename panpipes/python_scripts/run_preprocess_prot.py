@@ -270,9 +270,9 @@ else:
         col_variables = args.color_by.split(",")
         col_variables = [a.strip() for a in col_variables]
 
-        col_variables = [a for a in all_mdata["prot"].obs.columns]
+        col_use = [var for var in col_variables if var in adata.obs.columns]
 
-        sc.pl.pca(all_mdata['prot'], color=col_variables, save = "_vars.png")
+        sc.pl.pca(all_mdata['prot'], color=col_use, save = "_vars.png")
         sc.pl.pca_loadings(all_mdata['prot'], components="1,2,3,4,5,6", save = ".png")
         sc.pl.pca_overview(all_mdata['prot'], save = ".png")
 
