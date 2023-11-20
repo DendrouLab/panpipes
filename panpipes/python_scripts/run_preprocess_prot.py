@@ -61,7 +61,9 @@ parser.add_argument("--n_pcs",
 parser.add_argument("--pca_solver",
                     default="arpack",
                     help="which PCA solver to use")
-
+parser.add_argument("--color_by",
+                    default=None,
+                    help="which columns to fetch from the protein .obs slot")
 
 
 args, opt = parser.parse_known_args()
@@ -257,8 +259,9 @@ else:
         sc.pl.pca_variance_ratio(all_mdata['prot'], log=True, n_pcs=n_pcs, save=".png")
 
         col_variables = args.color_by.split(",")
-        # for cv in col_variables:
-        #     sc.pl.pca(adata, color=cv, save="_" + cv + ".png")
+        col_variables = [a.strip() for a in col_variables]
+
+        col_variables = [a for a in all_mdata["prot"].obs.columns]
 
         sc.pl.pca(all_mdata['prot'], color=col_variables, save = "_vars.png")
         sc.pl.pca_loadings(all_mdata['prot'], components="1,2,3,4,5,6", save = ".png")

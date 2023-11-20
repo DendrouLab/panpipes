@@ -203,6 +203,7 @@ def prot_preprocess( log_file, scaled_file, ):
         cmd += " --run_pca True"
         cmd += " --n_pcs %(prot_n_pcs)s"
         cmd += " --pca_solver %(prot_solver)s"
+        cmd += " --color_by %(prot_color_by)s"
     cmd += " > %(log_file)s"
     job_kwargs["job_threads"] = PARAMS['resources_threads_high']
     P.run(cmd, **job_kwargs)

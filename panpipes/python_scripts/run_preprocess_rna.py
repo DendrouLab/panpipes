@@ -223,9 +223,9 @@ sc.tl.pca(adata, n_comps=n_pcs,
 sc.pl.pca_variance_ratio(adata, log=True, n_pcs=n_pcs, save=".png")
 
 col_variables = args.color_by.split(",")
-# for cv in col_variables:
-#     sc.pl.pca(adata, color=cv, save="_" + cv + ".png")
+col_variables = [a.strip() for a in col_variables]
 
+col_variables = [a for a in adata.obs.columns]
 sc.pl.pca(adata, color=col_variables, save = "_vars.png")
 sc.pl.pca_loadings(adata, components="1,2,3,4,5,6", save = ".png")
 sc.pl.pca_overview(adata, save = ".png")
