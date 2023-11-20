@@ -25,10 +25,10 @@ warnings.simplefilter(action='ignore', category=FutureWarning)
 parser = argparse.ArgumentParser()
 parser.add_argument("--filtered_mudata",
                     default=None,
-                    help="")  
+                    help="input mudata after rna filtering(if rna in modality dictionary)")  
 parser.add_argument("--bg_mudata",
                     default=None,
-                    help="")
+                    help="the mdata containing the raw measurements")
 parser.add_argument("--channel_col",
                     default=None,
                     help="")
@@ -36,23 +36,33 @@ parser.add_argument("--normalisation_methods", default="clr,dsb",
                    help="comma separated list of normalisation methods")
 parser.add_argument("--clr_margin",
                     default=0,
-                    help="")    
+                    help="run clr with margin calculated on cells (columns) or on features (rows)")    
 parser.add_argument("--quantile_clipping",
                     default=False,
                     help="")  
 parser.add_argument("--store_as_x",
                     default=None,
-                    help="")   
+                    help="which normalization to store in the X slot. Default to dsb if specified in normalization method")   
 parser.add_argument("--figpath",
                     default="./prot_figures",
-                    help="")  
+                    help="where to save the files")  
 parser.add_argument("--save_mtx",
                     default=False,
-                    help="")  
+                    help="if per channel normalization is applied, where to save the mtx file")  
 parser.add_argument("--save_mudata_path",
                     default=None,
                     help="")   
-              
+parser.add_argument("--run_pca",
+                    default=False,
+                    help="whether to run pca on protein modality")   
+parser.add_argument("--n_pcs",
+                    default=None,
+                    help="number of components to calculate")
+parser.add_argument("--pca_solver",
+                    default="arpack",
+                    help="which PCA solver to use")
+
+
 
 args, opt = parser.parse_known_args()
 # args = argparse.Namespace(filtered_mudata='test.h5mu', 
@@ -230,9 +240,29 @@ else:
         
     # run pca on X 
     # this basically makes no sense if you have a small panel of antibodies.
-    sc.tl.pca(all_mdata['prot'], 
-              n_comps=min(50,all_mdata['prot'].var.shape[0]-1), 
-              svd_solver='arpack', random_state=0) 
+    if args.run_pca:
+        L.info("running pca")
+
+        if all_mdata['prot'].var.shape[0] < int(args.n_pcs):
+            L.info("You have less features than number of PCs you intend to calculate")
+            n_pcs = all_mdata['prot'].var.shape[0] - 1
+            L.info("Setting n PCS to %i" % int(n_pcs))
+        else:
+            n_pcs = int(args.n_pcs)
+        sc.tl.pca(all_mdata['prot'], n_comps=n_pcs, 
+                        svd_solver=args.pca_solver, 
+                        random_state=0) 
+
+        # do some plots!
+        sc.pl.pca_variance_ratio(all_mdata['prot'], log=True, n_pcs=n_pcs, save=".png")
+
+        col_variables = args.color_by.split(",")
+        # for cv in col_variables:
+        #     sc.pl.pca(adata, color=cv, save="_" + cv + ".png")
+
+        sc.pl.pca(all_mdata['prot'], color=col_variables, save = "_vars.png")
+        sc.pl.pca_loadings(all_mdata['prot'], components="1,2,3,4,5,6", save = ".png")
+        sc.pl.pca_overview(all_mdata['prot'], save = ".png")
 
     if args.save_mudata_path is not None:
         all_mdata.update()

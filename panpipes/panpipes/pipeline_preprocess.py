@@ -124,11 +124,12 @@ def downsample(log_file, filt_obj):
 # setting these follows means that it still works if filter is False
 @active_if(mode_dictionary['rna'] is True)
 @follows(downsample)
+@follows(mkdir('figures/rna'))
 @transform(filter_mudata, formatter(), "logs/preprocess_rna.log")
 def rna_preprocess(adata_obj, log_file):
     cmd = """python %(py_path)s/run_preprocess_rna.py 
             --input_mudata %(adata_obj)s 
-            --fig_dir figures/ 
+            --fig_dir figures/rna/ 
             --output_scaled_mudata %(adata_obj)s
             """
     # add in the options if specified in pipeline.yml
@@ -175,7 +176,6 @@ def rna_preprocess(adata_obj, log_file):
 
 
 @active_if(mode_dictionary['prot'] is True)
-# @transform(rna_preprocess,formatter(),"logs/preprocess_prot.log")
 @follows(rna_preprocess)
 @originate("logs/preprocess_prot.log", PARAMS['mudata_file'])
 def prot_preprocess( log_file, scaled_file, ):
@@ -199,6 +199,10 @@ def prot_preprocess( log_file, scaled_file, ):
         cmd += " --store_as_x %(prot_store_as_X)s"
     if PARAMS['prot_save_norm_prot_mtx'] is True:
         cmd += " --save_mtx True"
+    if PARAMS["prot_pca"] is True:
+        cmd += " --run_pca True"
+        cmd += " --n_pcs %(prot_n_pcs)s"
+        cmd += " --pca_solver %(prot_solver)s"
     cmd += " > %(log_file)s"
     job_kwargs["job_threads"] = PARAMS['resources_threads_high']
     P.run(cmd, **job_kwargs)

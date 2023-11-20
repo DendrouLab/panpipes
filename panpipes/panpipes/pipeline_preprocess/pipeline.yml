@@ -256,13 +256,17 @@ prot:
 
   # do you want to save the prot normalised assay additionally as a txt file:
   save_norm_prot_mtx: False
-#----------------------------
-# Dimensionality reduction
-#----------------------------
-# it may be useful to run PCA on the protein assay, when you have more than 50 features.
-# Set to False by default
+  #----------------------------
+  # Prot Dimensionality reduction
+  #----------------------------
+  # it may be useful to run PCA on the protein assay, when you have more than 50 features.
+  # Set to False by default
   pca: False
+  # number of components. Specify at least n_pcs <= number of features (if solver:default it will use min(n_pcs, number of features -1))
   n_pcs: 50
+  # which solver to use, set "default" will use 'arpack'. 
+  solver: default
+  # column to be fetched from the protein layer .obs
   color_by: sample_id
 
 # --------------------------------------------------------------------------------------------------------
