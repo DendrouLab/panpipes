@@ -190,7 +190,6 @@ scr:
 
 # (for pipeline_preprocess.py)
 # exclude: exclude these genes from the HVG selection, if they are deemed HV.
-# plot_markers: plot these genes
 
 #-------------------------
 # cell cycle action
