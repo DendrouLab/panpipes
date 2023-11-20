@@ -77,6 +77,15 @@ norm_methods = args.normalisation_methods.split(',')
 
 L.info(args)
 
+figdir = args.figpath
+if not os.path.exists(figdir):
+    os.mkdir(figdir)
+
+sc.settings.figdir = figdir
+sc.set_figure_params(scanpy=True, fontsize=14, dpi=300, facecolor='white', figsize=(5,5))
+
+
+
 # load filtered data - if use_muon is True this will return a mudata object, else returns an mudata object
 
 L.info("reading filtered mudata object")
