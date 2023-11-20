@@ -188,7 +188,7 @@ scr:
 # calc_proportions: calculate proportion of reads mapping to X genes over total number of reads, per cell
 # score_genes: using scanpy.score_genes function, 
 
-# (for pipeline_integration.py)
+# (for pipeline_preprocess.py)
 # exclude: exclude these genes from the HVG selection, if they are deemed HV.
 # plot_markers: plot these genes
 
