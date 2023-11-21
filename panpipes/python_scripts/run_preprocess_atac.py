@@ -166,7 +166,7 @@ if args.dimred == "LSI":
 
 col_variables = args.color_by.split(",")
 col_variables = [a.strip() for a in col_variables]
-col_use = [var for var in col_variables if var in adata.obs.columns]
+col_use = [var for var in col_variables if var in atac.obs.columns]
 
 #some plotting before removing the components
 
@@ -176,7 +176,7 @@ if args.dimred =='PCA':
     sc.pl.pca_loadings(adata, components="1,2,3,4,5,6", save = ".png")
     sc.pl.pca_overview(adata, save = ".png")
 if args.dimred =='LSI':
-    sc.pl.embedding(atac, color=col_use,"X_lsi", save = ".png")
+    sc.pl.embedding(atac, color=col_use,basis="X_lsi", save = ".png")
     correlation_df = calc_tech_corr(extract_lsi(atac), 
         tech_covariates = ['n_genes_by_counts', 'total_counts'])
 
@@ -186,11 +186,8 @@ if args.dimred =='LSI':
         filename=os.path.join(args.figdir,"LSI_corr_plot.png"))
 
 
-
-    
-
-
 if args.dim_remove is not None:
+    L.info("removing component from dimred")
     dimrem=int(args.dim_remove)
     if args.dimred == "LSI":
         atac.obsm['X_lsi'] = atac.obsm['X_lsi'][:,dimrem:]
