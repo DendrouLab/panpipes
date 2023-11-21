@@ -311,6 +311,12 @@ atac:
   n_comps: 50 # how many components to compute
   # which dimension to exclude from further processing (sometimes useful to remove PC/LSI_1  if it's associated to tech factors)
   # leave blank to retain all 
-  dim_remove: 1
+  # if using PCA, which solver to use. Default == 'arpack'
+  solver: default
+  # what covariate to use to color the dimensionality reduction
+  color_by: sample_id
+  # whether to remove the component(s) associated to technical effects, common to remove 1 for LSI
+  # leave blank to avoid removing any
+  dim_remove: 
 
 

@@ -244,13 +244,18 @@ def atac_preprocess(log_file, scaled_file):
         cmd += " --dimred PCA"
     if PARAMS['atac_n_comps'] is not None:
         cmd += " --n_comps %(atac_n_comps)s"
+    if PARAMS['atac_solver'] is not None:
+        if PARAMS['atac_solver'] == "default":
+            cmd += " --solver arpack"
+        else:    
+            cmd += " --solver %(atac_solver)s"
     if PARAMS['atac_dim_remove'] is not None:
         cmd += " --dim_remove %(atac_dim_remove)s"
     if PARAMS['atac_feature_selection_flavour'] is not None:
         cmd += " --feature_selection_flavour %(atac_feature_selection_flavour)s"
     if PARAMS['atac_min_cutoff'] is not None:
         cmd += " --min_cutoff %(atac_min_cutoff)s"
-    
+    cmd += " --color_by %(atac_color_by)s" 
     cmd += " > %(log_file)s"
     job_kwargs["job_threads"] = PARAMS['resources_threads_high']
     P.run(cmd, **job_kwargs)
