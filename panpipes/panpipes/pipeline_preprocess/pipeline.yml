@@ -200,6 +200,8 @@ hvg:
   # the `exclude:` param accordingly.
   exclude_file: 
   exclude: # this is the variable that defines the genes to be excluded in the above file, leave empty if you're not excluding genes from HVG
+  # Do you want to filter the object to retain only Highly Variable Genes?
+  filter: False
 # Regression variables, what do you want to regress out, leave blank if nothing
 # We recommend not regressing out unless you have good reason to.
 regress_variables:
