@@ -39,28 +39,11 @@ modalities:
 # Filtering Cells and Features
 # --------------------------
 
-# the filtering process in panpipes is sequential as it goes through the filtering dictionary as follows:
-# For each modality, starting with rna, it will first filter on obs and then vars.
-# each modality has a dictionary in the following format. This is fully customizable to any
-# columns in the mudata.obs or var object.
-# When specifying a column name, make sure it exactly matches the column name you have in the input object.
-#------------------
-# rna:
-#------------------
-  # obs:
-    # min: <-- Any column for which you want to run a minimum filter, list them below the min: param  
-     # n_genes_by_counts: 500 <--- i.e. each cell must have a minimum of 500 in the n_genes_by_counts column
-    # max: <-- Any column for which you want to run a maximum filter, list them below the max: param 
-     # pct_counts_mt: 20 <-- i.e. each cell may have a maximum of 25 in the pct_counts_mt column
-                              # be careful with any columns named after gene sets. 
-                              # The column will be named based on the gene list input file, so if the mitochondrial genes are in group "mt" 
-                              # as in the example given in the resource file
-                              # then the column will be named "pct_counts_mt" .
-     # doublet_score:0.24
-    # bool: 
-      # is_doublet: False  <--- if you have any boolean columns you want to filter on, then use this section of the modality dictionary
-                              # in this case any obs['is_doublet'] that are False will be retained in the dataset.
-# this format of
+# the filtering process in panpipes is sequential as it goes through the filtering dictionary.
+# for each modality, starting with rna, it will first filter on obs and then vars.
+# each modality has a dictionary in the following format. 
+
+# MODALITY
 # obs:
   # min:
   # max:
@@ -69,9 +52,36 @@ modalities:
   # min:
   # max:
   # bool
-# can be applied to any modality by editing the filtering dictionary below. You are not restricted by the columns given as default.
 
+# This format can be applied to any modality by editing the filtering dictionary  
+# You are not restricted by the columns given as default.
+
+# This is fully customizable to any columns in the mudata.obs or var object.
+# When specifying a column name, make sure it exactly matches the column name in the h5mu object.
+
+#Example:
+
+#------------------
+# rna:
+#------------------
+  # obs:
+    # min: <-- Any column for which you want to run a minimum filter, 
+     # n_genes_by_counts: 500 <--- i.e. each cell must have a minimum of 500 in the n_genes_by_counts column
+    # max: <-- Any column for which you want to run a maximum filter
+     # pct_counts_mt: 20 <-- i.e. each cell may have a maximum of 25 in the pct_counts_mt column
+                              # be careful with any columns named after gene sets. 
+                              # The column will be named based on the gene list input file, 
+                              # so if the mitochondrial genes are in group "mt" 
+                              # as in the example given in the resource file
+                              # then the column will be named "pct_counts_mt" .
+
+    # bool: 
+      # is_doublet: False  <--- if you have any boolean columns you want to filter on, 
+                              # then use this section of the modality dictionary
+                              # in this case any obs['is_doublet'] that are False will be retained in the dataset.
+# --------------------------------------------------------------------------------------
 filtering:
+  # if set to false no filtering is applied to the mudata object
   run: True
   # a file containing only cell barcodes you want to keep, leave blank if not applicable
   keep_barcodes:
@@ -161,7 +171,7 @@ plotqc:
   rep_metrics:
 
 # --------------------------------------------------------------------------------------------------------
-# RNA Normalisation
+# RNA steps
 # --------------------------------------------------------------------------------------------------------
 # currently only standard sc.pp.normalize_total(adata, target_sum=1e4) followed by sc.pp.log1p(adata) is offered for RNA
 log1p: True
@@ -208,7 +218,7 @@ run_scale: True
 scale_max_value: 
 
 #----------------------------
-# Dimensionality reduction
+# RNA Dimensionality reduction
 #----------------------------
 pca:
   # number of components to compute
@@ -220,7 +230,7 @@ pca:
   color_by: sample_id
 
 # --------------------------------------------------------------------------------------------------------
-# Protein (PROT) normalisation
+# Protein (PROT) steps
 # --------------------------------------------------------------------------------------------------------
 prot:
   # comma separated string of normalisation options
@@ -270,7 +280,7 @@ prot:
   color_by: sample_id
 
 # --------------------------------------------------------------------------------------------------------
-# ATAC preprocessing and normalisation
+# ATAC steps
 # --------------------------------------------------------------------------------------------------------
 atac:
   binarize: False
@@ -292,8 +302,9 @@ atac:
   #   "tc[x]": "tc" followed by a minimum total count, e.g. tc100 will set features with total counts > 100 as highly variable
   #   "NULL": All features are assigned as highly variable
   #   "NA": Highly variable features won't be changed
-
-  # which dimred to use
+  #----------------------------
+  # ATAC Dimensionality reduction
+  #----------------------------
   dimred: LSI #PCA or LSI
   n_comps: 50 # how many components to compute
   # which dimension to exclude from further processing (sometimes useful to remove PC/LSI_1  if it's associated to tech factors)
