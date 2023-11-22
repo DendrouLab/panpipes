@@ -92,7 +92,7 @@ for x in wnn_params_bc.keys():
 
 L.debug(dict_graph)
 
-if dict_graph["rna"] =="scvi":
+if dict_graph["rna"]["obsm"] == "X_scvi":
     dict_graph["rna"]["obsm"] = "X_scVI"
 
 for kmod in dict_graph.keys():
