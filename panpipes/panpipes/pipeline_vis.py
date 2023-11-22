@@ -44,7 +44,7 @@ marker_files = PARAMS['custom_markers']['files']
 marker_files  = list(chain(*[marker_files[x]  for x in ['full', 'minimal'] if marker_files[x]  is not None]))
 
 
-do_plot_features = (PARAMS['custom_markers_files'] is not None or PARAMS['custom_markers_minimal'] is not None) and \
+do_plot_features = (PARAMS['custom_markers']['files']['full'] is not None or PARAMS['custom_markers']['files']['minimal'] is not None) and \
                 (PARAMS['do_plots_marker_dotplots'] or PARAMS['do_plots_marker_matrixplots'])
 
 
@@ -78,7 +78,7 @@ def plot_custom_markers_per_group(marker_file, log_file):
 plot_embeddings = any([True if val['run'] is True else False for val in PARAMS["embedding"].values() ])
 @active_if(plot_embeddings )
 @follows(set_up_dirs)
-@active_if(PARAMS['custom_markers_minimal'] is not None)
+@active_if(PARAMS['custom_markers']['files']['minimal'] is not None)
 @transform(PARAMS['custom_markers']['files']['minimal'], formatter(), "logs/markers_umap_{basename[0]}.log")
 def plot_custom_markers_umap(marker_file, log_file):
     embedding_dict = PARAMS["embedding"]
