@@ -15,6 +15,8 @@
 - changed typo in tutorial paths for clustering and deconvolution
 - fix io to read cellranger outs folder for atac. 
 - fix to avoid rerunning HVF and explicitly check X layer before normalization in pipeline_preprocess.py
+- fix plotting of umaps after batch correction
+- fix fetching string scvi if present in mudata for wnn
 
 
 ### dependencies
