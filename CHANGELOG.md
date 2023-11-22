@@ -5,11 +5,15 @@
 ### added
 - added example multiome submission file 10X_h5
 - added example multiome submission file cellranger
+- added PCA parameters in pipeline_preprocess.py for PROT modality to fix issue #120
+- added full control of dimred params for all modalities in pipeline_preprocess.py
 
 ### fixed
 
 - changed typo in tutorial paths for clustering and deconvolution
 - fix io to read cellranger outs folder for atac. 
+- fix to avoid rerunning HVF and explicitly check X layer before normalization in pipeline_preprocess.py
+
 
 ### dependencies
 
