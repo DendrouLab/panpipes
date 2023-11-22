@@ -113,42 +113,45 @@ else:
 
 
 # NORMALIZE
+if X_is_raw(atac):
+    if args.binarize is True:
+        L.info("binarizing peak count matrix")
+        ac.pp.binarize(atac)    
 
-if args.binarize is True:
-    L.info("binarizing peak count matrix")
-    ac.pp.binarize(atac)    
-
-if args.normalize is not None:
-    if args.normalize == "log1p":
-        if args.binarize:
-            L.warning("Careful, you have decided to binarize data but also to normalize per cell and log1p. Not sure this is meaningful")
-        sc.pp.normalize_per_cell(atac,counts_per_cell_after=1e4)
-        sc.pp.log1p(atac)
-        atac.layers["lognorm"] = atac.X.copy()
-    elif args.normalize == "TFIDF":
-        if args.TFIDF_flavour=="signac":
-            ac.pp.tfidf(atac, scale_factor=1e4, log_tfidf=True, log_tf=False, log_idf=False)
-            atac.layers["signac_norm"] = atac.X.copy()
-        elif args.TFIDF_flavour=="logTF":
-            ac.pp.tfidf(atac, scale_factor=1e4, log_tfidf=False, log_tf=True, log_idf=False)    
-            atac.layers["logTF_norm"] = atac.X.copy()
-        elif args.TFIDF_flavour=="logIDF":
-            ac.pp.tfidf(atac, scale_factor=1e4, log_tfidf=False, log_tf=False, log_idf=True)
-            atac.layers["logIDF_norm"] = atac.X.copy()
-else: 
-    L.error("We Require a normalization strategy for ATAC")
-    sys.exit("Exiting because no normalization was specified. If None was intended, check your pipeline.yml file")
+    if args.normalize is not None:
+        if args.normalize == "log1p":
+            if args.binarize:
+                L.warning("Careful, you have decided to binarize data but also to normalize per cell and log1p. Not sure this is meaningful")
+            sc.pp.normalize_per_cell(atac,counts_per_cell_after=1e4)
+            sc.pp.log1p(atac)
+            atac.layers["lognorm"] = atac.X.copy()
+        elif args.normalize == "TFIDF":
+            if args.TFIDF_flavour=="signac":
+                ac.pp.tfidf(atac, scale_factor=1e4, log_tfidf=True, log_tf=False, log_idf=False)
+                atac.layers["signac_norm"] = atac.X.copy()
+            elif args.TFIDF_flavour=="logTF":
+                ac.pp.tfidf(atac, scale_factor=1e4, log_tfidf=False, log_tf=True, log_idf=False)    
+                atac.layers["logTF_norm"] = atac.X.copy()
+            elif args.TFIDF_flavour=="logIDF":
+                ac.pp.tfidf(atac, scale_factor=1e4, log_tfidf=False, log_tf=False, log_idf=True)
+                atac.layers["logIDF_norm"] = atac.X.copy()
+    else: 
+        L.error("We Require a normalization strategy for ATAC")
+        sys.exit("Exiting because no normalization was specified. If None was intended, check your pipeline.yml file")
 
 
 #highly variable feature selection
-
-if args.feature_selection_flavour == "scanpy":
-    sc.pp.highly_variable_genes(atac, min_mean=float(args.min_mean), 
-    max_mean=float(args.max_mean), min_disp=float(args.min_disp))
-elif args.feature_selection_flavour == "signac":
-    findTopFeatures_pseudo_signac(atac, args.min_cutoff)
+if "highly_variable" in atac.var: 
+    L.warning( "You have %s Highly Variable Features", np.sum(atac.var.highly_variable))
 else:
-    L.warning("No highly variable feature selection was performed!")
+
+    if args.feature_selection_flavour == "scanpy":
+        sc.pp.highly_variable_genes(atac, min_mean=float(args.min_mean), 
+        max_mean=float(args.max_mean), min_disp=float(args.min_disp))
+    elif args.feature_selection_flavour == "signac":
+        findTopFeatures_pseudo_signac(atac, args.min_cutoff)
+    else:
+        L.warning("No highly variable feature selection was performed!")
 
 if "highly_variable" in atac.var: 
     L.warning( "You have %s Highly Variable Features", np.sum(atac.var.highly_variable))

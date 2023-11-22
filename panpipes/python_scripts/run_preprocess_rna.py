@@ -115,29 +115,32 @@ else:
 # sc.pp.highly variable genes Expects logarithmized data, 
 # except when flavor='seurat_v3' in which count data is expected.
 # change the order accordingly
-L.info("normalise, log and calculate highly variable genes")
-if args.flavor == "seurat_v3":
-    if args.n_top_genes is None:
-        raise ValueError("if seurat_v3 is used you must give a n_top_genes value")
+if X_is_raw(adata):
+    L.info("normalise, log and calculate highly variable genes")
+    if args.flavor == "seurat_v3":
+        if args.n_top_genes is None:
+            raise ValueError("if seurat_v3 is used you must give a n_top_genes value")
+        else:
+            sc.pp.highly_variable_genes(adata, flavor="seurat_v3", 
+                                        n_top_genes=int(args.n_top_genes),
+                                        batch_key=hvg_batch_key)
+        sc.pp.normalize_total(adata, target_sum=1e4)
+        sc.pp.log1p(adata)
     else:
-        sc.pp.highly_variable_genes(adata, flavor="seurat_v3", 
-                                    n_top_genes=int(args.n_top_genes),
+        sc.pp.normalize_total(adata, target_sum=1e4)
+        sc.pp.log1p(adata)
+        L.debug(adata.uns['log1p'])
+        sc.pp.highly_variable_genes(adata, flavor=args.flavor,
+                                    min_mean=float(args.min_mean), 
+                                    max_mean=float(args.max_mean),
+                                    min_disp=float(args.min_disp),
                                     batch_key=hvg_batch_key)
-    sc.pp.normalize_total(adata, target_sum=1e4)
-    sc.pp.log1p(adata)
+        L.debug(adata.uns['log1p'])
+if "highly_variable" in adata.var: 
+    L.warning( "You have %s Highly Variable Features", np.sum(adata.var.highly_variable))
+    sc.pl.highly_variable_genes(adata,show=False, save ="_genes_highlyvar.png")
 else:
-    sc.pp.normalize_total(adata, target_sum=1e4)
-    sc.pp.log1p(adata)
-    L.debug(adata.uns['log1p'])
-    sc.pp.highly_variable_genes(adata, flavor=args.flavor,
-                                min_mean=float(args.min_mean), 
-                                max_mean=float(args.max_mean),
-                                min_disp=float(args.min_disp),
-                                batch_key=hvg_batch_key)
-    L.debug(adata.uns['log1p'])
-
-sc.pl.highly_variable_genes(adata,show=False, save ="_genes_highlyvar.png")
-
+    sys.exit("I cannot find Highly Variable Features in your RNA")
 
 if isinstance(mdata, mu.MuData):
     mdata.update()
