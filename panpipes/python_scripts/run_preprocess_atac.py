@@ -124,7 +124,7 @@ if X_is_raw(atac):
                 L.warning("Careful, you have decided to binarize data but also to normalize per cell and log1p. Not sure this is meaningful")
             sc.pp.normalize_per_cell(atac,counts_per_cell_after=1e4)
             sc.pp.log1p(atac)
-            atac.layers["lognorm"] = atac.X.copy()
+            atac.layers["logged_counts"] = atac.X.copy()
         elif args.normalize == "TFIDF":
             if args.TFIDF_flavour=="signac":
                 ac.pp.tfidf(atac, scale_factor=1e4, log_tfidf=True, log_tf=False, log_idf=False)
