@@ -6,16 +6,19 @@
 - added example multiome submission file 10X_h5
 - added example multiome submission file cellranger
 - workflows & tutorials for `qc_spatial`, `preprocess_spatial`, and `deconvolution_spatial` to readthedocs
+- tutorial for `vis`
 
 ### fixed
 
 - changed typo in tutorial paths for clustering and deconvolution
 - fix io to read cellranger outs folder for atac. 
-- typos & capitalization in the pipeline.yml files of `qc_spatial`, `preprocess_spatial`, and `deconvolution_spatial`
+- typos & capitalization in the pipeline.yml files of `qc_spatial`, `preprocess_spatial`, and `deconvolution_spatial`, `vis`
 - remove `assay`, `sample_prefix`, and `modalities` parameters from the `qc_spatial` pipeline.yml 
 - remove `sample_prefix` and `modalities` parameters from the `preprocess_spatial` pipeline.yml
 - fixed error in `preprocess_spatial` when `filtering: run: False`
     -> now able to run no filtering without needing to save the MuData in `filtered.data` before running the pipeline
+- fixed error in `vis`
+    - change PARAMS['custom_markers_minimal'] -> PARAMS['custom_markers']['files']['minimal']
 
 ### dependencies
 
