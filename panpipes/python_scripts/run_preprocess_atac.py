@@ -171,7 +171,7 @@ col_use = [var for var in col_variables if var in atac.obs.columns]
 #some plotting before removing the components
 
 if args.dimred =='PCA':
-    sc.pl.pca_variance_ratio(atac, log=True, n_pcs=n_pcs, save=".png")
+    sc.pl.pca_variance_ratio(atac, log=True, n_pcs=int(args.n_comps), save=".png")
     sc.pl.pca(atac, color=col_use, save = "_vars.png")
     sc.pl.pca_loadings(atac, components="1,2,3,4,5,6", save = ".png")
     sc.pl.pca_overview(atac, save = ".png")
