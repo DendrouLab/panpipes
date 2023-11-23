@@ -79,7 +79,7 @@ Library	ATAC	Physical library ID	Valid barcodes	ATAC Valid barcodes
 Library	Gene Expression	Physical library ID	Estimated number of cells	Estimated number of cells
 Library	Gene Expression	Physical library ID	Fraction of transcriptomic reads in cells	GEX Fraction of transcriptomic reads in cells
 Library	Gene Expression	Physical library ID	Mean reads per cell	GEX Mean raw reads per cell
-Library	Gene Expression	Physical library ID	Median UMI counts per cell	GEX Median UMI counts per cell
+Library	Gene Expression	Physical library ID	Median UMI counts per cell	Median UMI Counts per Cell
 Library	Gene Expression	Physical library ID	Median genes per cell	GEX Median genes per cell
 Library	Gene Expression	Physical library ID	Percent duplicates	GEX Percent duplicates
 Library	Gene Expression	Physical library ID	Q30 bases in UMI	GEX Q30 bases in UMI
