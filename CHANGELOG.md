@@ -8,6 +8,7 @@
 - added PCA parameters in pipeline_preprocess.py for PROT modality to fix issue #120
 - added full control of dimred params for all modalities in pipeline_preprocess.py
 - more info on custom genes format files added to documentation
+- parsing summary files for cellranger multi version < 7 
 
 
 ### fixed
