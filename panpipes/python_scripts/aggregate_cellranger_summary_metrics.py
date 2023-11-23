@@ -133,6 +133,9 @@ def parse_10x_cellranger_multi(path_df,path_col='metrics_summary_path'):
                     names=['sample_id']).reset_index().drop(columns='level_1')
     # remove spaces and capitils from columns names
     msums.columns = [re.sub(' ', '_', x.lower()) for x in msums.columns]
+    # add a fix for version < cellranger 7
+    ranger = {"library_or_sample":"category"}
+    msums.rename(columns =ranger,inplace=True)
     # convert percentages from string to numeric
     msums['metric_value'] = [re.sub(",|%", "", x) for x in msums['metric_value']]
     msums['metric_value'] = msums['metric_value'].astype(float)
