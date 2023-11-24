@@ -12,7 +12,7 @@ folder)
 
     mkdir data_dir/
     cd data_dir/
-    panpipes qc_mm config
+    panpipes ingest config
 
 This will produce two files, `pipeline.log` and `pipeline.yml`
 
@@ -21,20 +21,20 @@ instructions within the yml file.
 
 Then check which jobs will run with the command
 
-    panpipes qc_mm show full
+    panpipes ingest show full
 
 The output of this will show a list of tasks that will be run as part of
 the pipeline.
 
 To run use the command
 
-    panpipes qc_mm make full
+    panpipes ingest make full
 
 Occasionally you might want to run tasks individually (e.g. to assess
 outputs before deciding the parameters for the next step) In order to do
 this you can run any task in the `show full` list such as:
 
-    panpipes qc_mm make plot_tenx_metrics
+    panpipes ingest make plot_tenx_metrics
 
 
 
