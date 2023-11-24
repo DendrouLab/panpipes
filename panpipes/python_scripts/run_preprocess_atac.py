@@ -31,9 +31,6 @@ log_handler.setFormatter(formatter)
 L.addHandler(log_handler)
 L.debug("testing logger works")
 
-
-
-
 sc.settings.verbosity = 3
 
 parser = argparse.ArgumentParser()

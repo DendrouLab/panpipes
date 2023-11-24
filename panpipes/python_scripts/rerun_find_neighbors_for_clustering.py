@@ -6,6 +6,7 @@ import scanpy as sc
 from muon import MuData, read
 from panpipes.funcs.scmethods import run_neighbors_method_choice
 from panpipes.funcs.io import read_yaml
+from panpipes.funcs.scmethods import lsi
 
 L = logging.getLogger()
 L.setLevel(logging.INFO)
@@ -53,6 +54,20 @@ for mod in neighbor_dict.keys():
         if (neighbor_dict[mod]['dim_red'] == "X_pca") and ("X_pca" not in adata.obsm.keys()):
             L.info("X_pca not found, computing it using default parameters")
             sc.tl.pca(adata)
+            if (mod == "atac") and (neighbor_dict[mod]['dim_remove'] is not None):
+                dimrem = int(neighbor_dict[mod]['dim_remove'])
+                adata.obsm['X_pca'] = adata.obsm['X_pca'][:, dimrem:]
+                adata.varm["PCs"] = adata.varm["PCs"][:, dimrem:]
+        if mod == "atac":
+            if (neighbor_dict[mod]['dim_red'] == "X_lsi") and ("X_lsi" not in adata.obsm.keys()):
+                L.info("X_lsi not found, computing it using default parameters")
+                lsi(adata=adata, num_components=50)
+                if neighbor_dict[mod]['dim_remove'] is not None:
+                    dimrem = int(neighbor_dict[mod]['dim_remove'])
+                    adata.obsm['X_lsi'] = adata.obsm['X_lsi'][:, dimrem:]
+                    adata.varm["LSI"] = adata.varm["LSI"][:, dimrem:]
+                    adata.uns["lsi"]["stdev"] = adata.uns["lsi"]["stdev"][dimrem:]
+
         # run command
         opts = dict(method=neighbor_dict[mod]['method'],
                     n_neighbors=int(neighbor_dict[mod]['k']),
