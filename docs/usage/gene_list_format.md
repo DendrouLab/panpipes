@@ -6,7 +6,7 @@ ribosomal genes, or excluding genes from HVG selection such as those constitutin
 
 ### Custom gene lists
 
-We provide an example of a preformatted gene lists file in panpipes/resources/qc_genelist_1.0.csv 
+We provide an example of a preformatted gene lists file in [resources/qc_genelist_1.0.csv](https://github.com/DendrouLab/panpipes/blob/main/panpipes/resources/qc_genelist_1.0.csv).
 
 All <sup>[1](#footnote1)</sup> files provided to the pipeline should be in a 3 columns format, where the column headers are "mod" (modality: "rna", "prot", or "atac"), feature and group. The group column is used to distinguish different gene groups.
 
@@ -29,13 +29,15 @@ flexibility as all organisms will require separate lists, but there are example 
 
 ### Cell cycle genes
 
-The cellcycle genes used in scanpy.score_genes_cell_cycle [Satija et al. (2015), Nature Biotechnology.] 
-are stored in  panpipes/resources/cell_cicle_genes.tsv
+The cellcycle genes used in [scanpy.score_genes_cell_cycle](https://scanpy.readthedocs.io/en/stable/generated/scanpy.tl.score_genes_cell_cycle.html) 
+are stored in [resources/cell_cycle_genes.csv](https://github.com/DendrouLab/panpipes/blob/main/panpipes/resources/cell_cycle_genes.tsv)
 
-differently from the other custom gene file, the cell cycle file should be a tab separated file with two columns:
+Differently from the other custom gene file, the cell cycle file should be a **tab separated file with two columns**:
 
 **gene_name**:  the name of the gene
+
 **cc_phase**: which phase of the cell cycle is the gene expression indicative of. 
+
 
 | gene_name | cc_phase |
 | --------- | -------- |
@@ -51,6 +53,7 @@ differently from the other custom gene file, the cell cycle file should be a tab
 Panpipes uses "actions" to define which tasks to use which gene list for.
 Specify the "group" name of the genes you want to use to apply the action i.e. calc_proportion: mt will calculate
 proportion of reads mapping to the genes whose group is "mt"
+
 
 The genes are scored for each modality using 
 
@@ -130,10 +133,10 @@ plotted, and a new file is saved per group.
 
 ## Final notes
 
-Be deliberate and informative with the choice of group names for any gene set use, since the .obs column generated as output will be named based on the group of the gene list input file. The columns added to the mudata object will be used for filtering in the `preprocess` workflow (see [filtering instructions](./filter_dict_instructions.md) ).
+Be deliberate and informative with the choice of group names for any gene set use, since the .obs column generated as output will be named based on the group of the gene list input file. 
+The columns added to the mudata object will be used for filtering in the `preprocess` workflow (see [filtering instructions](./filter_dict_instructions.md) ).
 
 If the mitochondrial genes are in group "mt" as in the example given in the resource file, then the column generated with the **calc_proportions** action and containing the percentage of MT genes will be named "pct_counts_mt".
 
 So specifying *pct_counts_mito* instead of *pct_counts_mt* will not filter the mudata based on mitochondrial %, because the workflow can't find the supplied column in the data.
-
 

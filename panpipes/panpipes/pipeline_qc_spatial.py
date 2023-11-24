@@ -37,7 +37,7 @@ print(PARAMS)
 #------------------------------------------------------------------------------------------------
 ## Create a dictionary of modalities
 #------------------------------------------------------------------------------------------------
-mode_dictionary = PARAMS["modalities"]
+mode_dictionary = {'spatial': True} #PARAMS["modalities"]
 #{'spatial': True}
 print(mode_dictionary)
 #------------------------------------------------------------------------------------------------
@@ -56,16 +56,14 @@ def set_up_dirs(log_file):
 ## Creating h5mu from filtered data files
 # -----------------------------------------------------------------------------------------------
 
-def unfilt_file():
-    sprefix = PARAMS['sample_prefix']
-    unfilt_file = sprefix + "_unfilt.h5mu"
-    return unfilt_file
 
 def gen_load_spatial_anndata_jobs():
     print(PARAMS['submission_file'])
     caf = pd.read_csv(PARAMS['submission_file'], sep='\t')
-    print(gen_load_spatial_jobs(caf,mode_dictionary=PARAMS["modalities"]))
-    return gen_load_spatial_jobs(caf,mode_dictionary=PARAMS["modalities"])
+    print(gen_load_spatial_jobs(caf,mode_dictionary={'spatial': True}))
+    global assays
+    assays = {}
+    return gen_load_spatial_jobs(caf,mode_dictionary={'spatial': True})
    
 
 
@@ -91,8 +89,10 @@ def load_mudatas(spatial_path, outfile,
         print('spatial_transformation = %s' % str(spatial_transformation))
     else:
         print("visium")
-    modality_dict = {k:True if path_dict[k] is not None else False for k,v in PARAMS['modalities'].items() }
+    modality_dict = {k:True if path_dict[k] is not None else False for k,v in {'spatial': True}.items() }
     print(modality_dict)
+
+    assays[outfile] = spatial_filetype
     
     cmd = """
         python %(py_path)s/make_mudataspatial_from_csv.py 
@@ -113,28 +113,22 @@ def load_mudatas(spatial_path, outfile,
     job_kwargs["job_threads"] = PARAMS['resources_threads_medium']
     P.run(cmd, **job_kwargs)
 
-# in this workflow we qc each ST independently
-# we need to use optional concatenation
 
 
 
 @follows(load_mudatas)
 @follows(mkdir("qc.data"))
+@follows(mkdir("./figures"))
 @transform(load_mudatas,
            regex("./tmp/(.*)_raw.h5(.*)"), 
            r"./logs/spatialQC_\1.log")
-#@originate(unfilt_file())
 def spatialQC(infile,log_file):
+    spatial_filetype = assays[infile]
     resources_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "resources")
     outfile = infile.replace("_raw","_unfilt")
     outfile = outfile.replace("tmp", "qc.data")
-    spatial_filetype = PARAMS["assay"]
-    if spatial_filetype is None:
-        spatial_filetype = "visium"
-    print(spatial_filetype)
     cmd = """
             python %(py_path)s/run_scanpyQC_spatial.py
-              --sampleprefix %(sample_prefix)s
               --input_anndata %(infile)s
               --spatial_filetype %(spatial_filetype)s
               --outfile %(outfile)s
@@ -157,7 +151,7 @@ def spatialQC(infile,log_file):
     if PARAMS['calc_proportions'] is not None:
         cmd += " --calc_proportions %(calc_proportions)s"
     cmd += " > %(log_file)s"
-    #cmd += " > logs/spatialQC_%(sample_id)s.log"
+
     job_kwargs["job_threads"] = PARAMS['resources_threads_medium']
     P.run(cmd, **job_kwargs)
 
@@ -170,21 +164,21 @@ def run_plotqc_query(pqc_dict):
 
 
 @follows(spatialQC)
+@follows(mkdir("./figures/spatial"))
 @active_if(run_plotqc_query(PARAMS['plotqc']))
-@transform(load_mudatas, #spatialQC
+@transform(load_mudatas, 
            regex("./tmp/(.*)_raw.h5(.*)"),
            r"./logs/qcplot.\1.log")
 def plotQC_spatial(unfilt_file,log_file):
+    spatial_filetype = assays[unfilt_file]
     unfilt_file = unfilt_file.replace("_raw","_unfilt")
     unfilt_file = unfilt_file.replace("tmp", "qc.data")
-    spatial_filetype = PARAMS["assay"]
     cmd = """
             python %(py_path)s/plot_qc_spatial.py
              --input_mudata %(unfilt_file)s
              --spatial_filetype %(spatial_filetype)s
              --figdir ./figures/spatial
             """
-#--output_mudata ./filtered_data/%(filt_file)s
     if PARAMS['plotqc']['grouping_var'] is not None:
         cmd += " --grouping_var %(plotqc_grouping_var)s"
     if PARAMS['plotqc']['spatial_metrics'] is not None:
