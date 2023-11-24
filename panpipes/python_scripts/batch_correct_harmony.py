@@ -77,6 +77,7 @@ elif args.dimred == "LSI":
 
 if dimred not in adata.obsm:
     L.info("i need a dimred to start, computing pca with default param")
+    dimred = "X_pca" 
     n_pcs = 50
     if adata.var.shape[0] < n_pcs:
         L.info("You have less features than number of PCs you intend to calculate")
