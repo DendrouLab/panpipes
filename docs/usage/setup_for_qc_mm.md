@@ -2,27 +2,29 @@
 Panpipes sample submission file
 ===========================
 
-The multimodal QC pipeline (qc_mm) requires a sample submission file which it uses to ingest the data into the pipeline. This is a tab-separated file with a minimum of 3 required columns, and one sample per row.
+*This section covers the ingestion of cell suspension datasets. For spatial trascriptomics ingestion please check [Sample submission file for the ingestion of spatial data](./setup_for_spatial_workflows.md)*
+
+The multimodal QC pipeline (ingest) requires a sample submission file which it uses to ingest the data into the pipeline. This is a tab-separated file with a minimum of 3 required columns, and one sample per row.
 
 The minimum required columns are
 
 sample_id | rna_path | rna_filetype  
 ----------|----------|-------------
 
-
-
 If you want to analyse other modalities, add additional columns to the input file
 
-- prot_path/prot_filetype
-- atac_path/atac_filetype
-- tcr_path/tcr_filetype
-- bcr_path/bcr_filetype
+- `prot_path` and `prot_filetype` (when you have protein data)
+- `atac_path` and `atac_filetype` (when you have atac data)
+- `tcr_path` and `tcr_filetype`
+- `bcr_path` and `bcr_filetype`
 
-**sample id**: Each row must have a unique sample ID. 
+1. **sample id**: Each row must have a unique sample ID. It doesn't necessarily correspond to folder where the same is stored, will be used from the ingestion onward to identify your sample. 
+For example, in your dataset with data from six individuals, you might have sample names like 'Sample_1' to 'Sample_6,' but you can choose to name your sample something more meaningful to you, like 'pbmc'
 
-**{X}_paths**: If giving a cellranger path, give the path folder containing all the cellranger outputs, known as the `outs` folder. Otherwise path should be the complete path to the file. If you have cellranger outputs which have rna and prot within the same files, specify the same path in rna_path and prot_path
+2. **{X}_paths**: If giving a cellranger path, give the path folder containing all the cellranger outputs, known as the `outs` folder. Otherwise path should be the complete path to the file. If you have cellranger outputs which have rna and prot within the same files, specify the same path in rna_path and prot_path. The same applies to multiome and cellranger multi outputs.
 
-**{X}_filetype**: The "filetype" column tells panpipe how to read in the data. Panpipes supports a range of inputs. See the [supported input filetypes](#supported-input-filetypes) below to see the options for the {X}_filetype columns
+
+3. **{X}_filetype**: The "filetype" column tells panpipe how to read in the data. Panpipes supports a range of inputs. See the [supported input filetypes](#supported-input-filetypes) below to see the options for the {X}_filetype columns
 
 
 
@@ -30,7 +32,11 @@ If you want to analyse other modalities, add additional columns to the input fil
 
 To include sample level metadata, you can add additional columns to the submission file
 e.g Tissue and Diagnosis columns in [sample_file_qc_mm.txt](sample_file_qc_mm)
-You will also need to list which additional metadata columns you want to include in your data object in the pipeline.yml for qc_mm.
+To include the additional metadata columns, specify them in `metadatacols` in the pipeline.yml for `ingest`.
+
+The order of the columns doesn't matter.
+
+    `metadatacols`: Use this section if you wish to include additional columns specified in your submission file, such as 'sex,' 'batch,' 'diseases,' etc. Leave it empty if you don't want to include metadata.
 
 ## Example sample submission file
 

@@ -24,9 +24,6 @@ from panpipes.funcs.io import write_obs
 
 parser = argparse.ArgumentParser()
 # required option
-parser.add_argument("--sampleprefix",
-                    default="",
-                    help="prefix to prepend when saving the metadata file")
 parser.add_argument("--input_anndata",
                     default="adata_raw.h5ad",
                     help="")
@@ -151,12 +148,12 @@ print(mdata.obs.columns)
 mdata.update()
 
 single_id = os.path.basename(str(args.input_anndata))
-single_id.replace("_raw.h5mu","")
+single_id = single_id.replace("_raw.h5mu","")
 L.info("updated metadata")
 print(mdata.obs.columns)
 
 L.info("saving obs in a metadata tsv file")
-write_obs(mdata, output_prefix=(args.sampleprefix +"."+ single_id), output_suffix="_cell_metadata.tsv") #check this function writes one metadata for each sample input
+write_obs(mdata, output_prefix=single_id, output_suffix="_cell_metadata.tsv")
 L.info("saving mudata")
 mdata.write(args.outfile)
 

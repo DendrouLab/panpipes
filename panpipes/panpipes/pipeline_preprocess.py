@@ -124,11 +124,12 @@ def downsample(log_file, filt_obj):
 # setting these follows means that it still works if filter is False
 @active_if(mode_dictionary['rna'] is True)
 @follows(downsample)
+@follows(mkdir('figures/rna'))
 @transform(filter_mudata, formatter(), "logs/preprocess_rna.log")
 def rna_preprocess(adata_obj, log_file):
     cmd = """python %(py_path)s/run_preprocess_rna.py 
             --input_mudata %(adata_obj)s 
-            --fig_dir figures/ 
+            --fig_dir figures/rna/ 
             --output_scaled_mudata %(adata_obj)s
             """
     # add in the options if specified in pipeline.yml
@@ -161,18 +162,20 @@ def rna_preprocess(adata_obj, log_file):
     else:
         cmd += " --scale False"
     if PARAMS['pca_scree_n_pcs'] is not None:
-        cmd += " --n_pcs %(pca_scree_n_pcs)s"
+        cmd += " --n_pcs %(pca_n_pcs)s"
+    if PARAMS['pca_solver'] is not None:
+        if PARAMS['pca_solver'] == "default":
+            cmd += " --pca_solver arpack"
+        else:
+            cmd += " --pca_solver %(pca_solver)s"
     if PARAMS['pca_color_by'] is not None:
         cmd += " --color_by %(pca_color_by)s"
-    if PARAMS['output_logged_mudata'] is not None:
-        cmd += " --output_logged_mudata %(unscaled_outfile)s"
     cmd += " > %(log_file)s "
     job_kwargs["job_threads"] = PARAMS['resources_threads_high']
     P.run(cmd, **job_kwargs)
 
 
 @active_if(mode_dictionary['prot'] is True)
-# @transform(rna_preprocess,formatter(),"logs/preprocess_prot.log")
 @follows(rna_preprocess)
 @originate("logs/preprocess_prot.log", PARAMS['mudata_file'])
 def prot_preprocess( log_file, scaled_file, ):
@@ -196,6 +199,13 @@ def prot_preprocess( log_file, scaled_file, ):
         cmd += " --store_as_x %(prot_store_as_X)s"
     if PARAMS['prot_save_norm_prot_mtx'] is True:
         cmd += " --save_mtx True"
+    if PARAMS["prot_pca"] is True:
+        cmd += """ 
+        --run_pca True
+        --n_pcs %(prot_n_pcs)s
+        --pca_solver %(prot_solver)s
+        --color_by %(prot_color_by)s
+        """
     cmd += " > %(log_file)s"
     job_kwargs["job_threads"] = PARAMS['resources_threads_high']
     P.run(cmd, **job_kwargs)
@@ -228,19 +238,31 @@ def atac_preprocess(log_file, scaled_file):
         cmd += " --max_mean %(atac_max_mean)s"    
     if PARAMS['atac_min_disp'] is not None:
         cmd += " --min_disp %(atac_min_disp)s"    
+    if PARAMS['atac_n_top_features'] is not None:
+        cmd += " --n_top_features %(atac_n_top_features)s" 
+    if PARAMS["atac_filter_by_hvf"] is not None:
+        if PARAMS["atac_filter_by_hvf"] is True:
+            cmd += " --filter_by_hvf True"
+        else: 
+            cmd += " --filter_by_hvf False"
     if PARAMS['atac_dimred'] is not None:
         cmd += " --dimred %(atac_dimred)s"
     else:    
         cmd += " --dimred PCA"
     if PARAMS['atac_n_comps'] is not None:
         cmd += " --n_comps %(atac_n_comps)s"
+    if PARAMS['atac_solver'] is not None:
+        if PARAMS['atac_solver'] == "default":
+            cmd += " --solver arpack"
+        else:    
+            cmd += " --solver %(atac_solver)s"
     if PARAMS['atac_dim_remove'] is not None:
         cmd += " --dim_remove %(atac_dim_remove)s"
     if PARAMS['atac_feature_selection_flavour'] is not None:
         cmd += " --feature_selection_flavour %(atac_feature_selection_flavour)s"
     if PARAMS['atac_min_cutoff'] is not None:
         cmd += " --min_cutoff %(atac_min_cutoff)s"
-    
+    cmd += " --color_by %(atac_color_by)s" 
     cmd += " > %(log_file)s"
     job_kwargs["job_threads"] = PARAMS['resources_threads_high']
     P.run(cmd, **job_kwargs)

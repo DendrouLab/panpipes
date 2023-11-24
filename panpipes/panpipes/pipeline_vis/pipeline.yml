@@ -23,9 +23,8 @@ condaenv:
 
 # Start
 # --------------------------
-# either one that exists already with
 sample_prefix: ""
-mudata_obj: 
+mudata_obj:  # path to the mudata object 
 
 modalities:
   rna: True 
@@ -35,7 +34,7 @@ modalities:
   multimodal: True
 
 
-# on dot plots and bar plots, grouping vars are used to group other features (for categorical, continuous and feature plots)
+# on dot plots and bar plots, grouping vars are used to group other features (for categorical, continuous, and feature plots)
 grouping_vars: 
   - sample_id
   - rna:leiden_res0.6
@@ -53,8 +52,10 @@ custom_markers:
     
     # the full list will be plotted in dot plots and matrix plots, one plot per group
     full:
+      -
     # the shorter list will be plotted on umaps as well as other plot types, one plot per group
     minimal:
+      - 
      
     # | feature_1 | feature_2 | colour         |
     # |-----------|-----------|----------------|
@@ -97,7 +98,7 @@ categorical_vars: &categorical_vars
 continuous_vars: &continuous_vars
   # use mod:variable notation, 
   # any metrics that you want to plot on all modality umaps go under "all"
-  # these variables will be plotted as continous variables
+  # these variables will be plotted as continuous variables
   all: 
     - leiden_res0.5
   rna: 
@@ -140,7 +141,7 @@ do_plots:
   paired_scatters: True
 
 # embedding plots using the modality and embedding basis specified.
-# will plot all of minimal markers csv, and categorical and continous variables
+# will plot all of minimal markers csv, and categorical, and continuous variables
 embedding:
   rna: 
     run: True

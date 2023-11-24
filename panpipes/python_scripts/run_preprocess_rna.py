@@ -37,9 +37,6 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--input_mudata',
                     default='data/mudata-n5000_filt.h5ad',
                     help='')
-parser.add_argument('--output_logged_mudata',
-                    default=None,
-                    help='if not specified, then the input file will be overwritten')
 parser.add_argument('--output_scaled_mudata',
                     default=None,
                     help='if not specified then the output will be written to output_logged_mudata path')
@@ -69,15 +66,12 @@ parser.add_argument('--scale', default=True, type=check_for_bool)
 parser.add_argument('--scale_max_value', default=None)
 # pca options
 parser.add_argument("--n_pcs", default=50)
+parser.add_argument("--pca_solver", default="arpack")
 parser.add_argument("--color_by", default="batch") 
 
 parser.set_defaults(verbose=True)
 args, opt = parser.parse_known_args()
 L.info(args)
-
-# args = argparse.Namespace(input_mudata='test.h5mu', output_logged_mudata=None, output_scaled_mudata='test.h5mu', use_muon=False, fig_dir='figures/', exclude_file='/Users/crg/Documents/Projects/github_repos/sc_pipelines_muon_dev/resources/exclude_genes_HLAIGTR_v1.txt', flavor='seurat_v3', n_top_genes='2000', min_mean=0.0125, max_mean=3, min_disp=0.5, filter_by_hvg='False', regress_out=None, scale_max_value=None, n_pcs='50', color_by='sample_id', verbose=True)
-# sc.settings.verbosity = 3
-# sc.logging.print_header()
 
 figdir = args.fig_dir
 if not os.path.exists(figdir):
@@ -97,7 +91,7 @@ adata = mdata['rna']
 if args.hvg_batch_key is not None:
     columns = [x.strip() for x in args.hvg_batch_key.split(",")]
     if len(columns) > 1: 
-        L.info("combining batch comlumns into one column 'hvg_batch_key'")
+        L.info("combining batch columns into one column 'hvg_batch_key'")
         adata.obs["hvg_batch_key"] = adata.obs[columns].apply(lambda x: '|'.join(x), axis=1)
         # make sure that batch is a categorical
         adata.obs["hvg_batch_key"] = adata.obs["hvg_batch_key"].astype("category")
@@ -118,32 +112,35 @@ else:
     sys.exit("X is not raw data and raw_counts layer not found")
 
 
-# sc.pp.highly variabel genes Expects logarithmized data, 
+# sc.pp.highly variable genes Expects logarithmized data, 
 # except when flavor='seurat_v3' in which count data is expected.
 # change the order accordingly
-L.info("normalise, log and calculate highly variable genes")
-if args.flavor == "seurat_v3":
-    if args.n_top_genes is None:
-        raise ValueError("if seurat_v3 is used you must give a n_top_genes value")
+if X_is_raw(adata):
+    L.info("normalise, log and calculate highly variable genes")
+    if args.flavor == "seurat_v3":
+        if args.n_top_genes is None:
+            raise ValueError("if seurat_v3 is used you must give a n_top_genes value")
+        else:
+            sc.pp.highly_variable_genes(adata, flavor="seurat_v3", 
+                                        n_top_genes=int(args.n_top_genes),
+                                        batch_key=hvg_batch_key)
+        sc.pp.normalize_total(adata, target_sum=1e4)
+        sc.pp.log1p(adata)
     else:
-        sc.pp.highly_variable_genes(adata, flavor="seurat_v3", 
-                                    n_top_genes=int(args.n_top_genes),
+        sc.pp.normalize_total(adata, target_sum=1e4)
+        sc.pp.log1p(adata)
+        L.debug(adata.uns['log1p'])
+        sc.pp.highly_variable_genes(adata, flavor=args.flavor,
+                                    min_mean=float(args.min_mean), 
+                                    max_mean=float(args.max_mean),
+                                    min_disp=float(args.min_disp),
                                     batch_key=hvg_batch_key)
-    sc.pp.normalize_total(adata, target_sum=1e4)
-    sc.pp.log1p(adata)
+        L.debug(adata.uns['log1p'])
+if "highly_variable" in adata.var: 
+    L.warning( "You have %s Highly Variable Features", np.sum(adata.var.highly_variable))
+    sc.pl.highly_variable_genes(adata,show=False, save ="_genes_highlyvar.png")
 else:
-    sc.pp.normalize_total(adata, target_sum=1e4)
-    sc.pp.log1p(adata)
-    L.debug(adata.uns['log1p'])
-    sc.pp.highly_variable_genes(adata, flavor=args.flavor,
-                                min_mean=float(args.min_mean), 
-                                max_mean=float(args.max_mean),
-                                min_disp=float(args.min_disp),
-                                batch_key=hvg_batch_key)
-    L.debug(adata.uns['log1p'])
-
-sc.pl.highly_variable_genes(adata,show=False, save ="_genes_highlyvar.png")
-
+    sys.exit("I cannot find Highly Variable Features in your RNA")
 
 if isinstance(mdata, mu.MuData):
     mdata.update()
@@ -184,25 +181,15 @@ filter_by_hvgs = args.filter_by_hvg
 
 if filter_by_hvgs is True:
     L.info("filtering object to only include highly variable genes")
-    adata = adata[:, adata.var.highly_variable]
+    mdata.mod["rna"] = adata[:, adata.var.highly_variable]
     if isinstance(mdata, mu.MuData):
         mdata.update()
+    adata = mdata.mod["rna"]
     genes = adata.var
     genes['gene_name'] = adata.var.index
     genes.to_csv("filtered_genes.tsv", sep="\t", index=True)
  
-if args.output_logged_mudata is None:
-    args.output_logged_mudata = args.input_mudata
 
-if args.output_scaled_mudata == args.output_logged_mudata:
-    pass
-else:
-    mdata.write(args.output_logged_mudata)
-
-
-#------
-# OPINION: I don't like using raw very much. I'd kinda prefer to use a layer
-# adata.raw = adata # this means that log normalised counts are saved in raw
 adata.layers['logged_counts'] = adata.X.copy()
 L.debug(adata.uns['log1p'])
 # regress out
@@ -226,24 +213,24 @@ L.debug(adata.uns['log1p'])
 # run pca
 L.info("running pca")
 
-sc.tl.pca(adata, n_comps=int(args.n_pcs), svd_solver='arpack', random_state=0) #given args above this should work
-# extract pca coordinates for plotting (in R??)
-pca_coords = pd.DataFrame(adata.obsm['X_pca'])
-# add in the rownames 
-pca_coords.index = adata.obs_names
-# save coordinates to file
-# (note this saves values values up to 6 significant figures, because why save 20 for a plot
-pca_fname = re.sub(".h5ad|.h5mu", "_pca.txt.gz", args.output_scaled_mudata)
-pca_coords.to_csv(pca_fname, sep='\t')
+if adata.var.shape[0] < int(args.n_pcs):
+    L.info("You have less features than number of PCs you intend to calculate")
+    n_pcs = adata.var.shape[0] - 1
+    L.info("Setting n PCS to %i" % int(n_pcs))    
+else:
+    n_pcs = int(args.n_pcs)
+sc.tl.pca(adata, n_comps=n_pcs, 
+                svd_solver=args.pca_solver, 
+                random_state=0) 
 
 # do some plots!
-sc.pl.pca_variance_ratio(adata, log=True, n_pcs=int(args.n_pcs), save=".png")
+sc.pl.pca_variance_ratio(adata, log=True, n_pcs=n_pcs, save=".png")
 
 col_variables = args.color_by.split(",")
-# for cv in col_variables:
-#     sc.pl.pca(adata, color=cv, save="_" + cv + ".png")
+col_variables = [a.strip() for a in col_variables]
 
-sc.pl.pca(adata, color=col_variables, save = "_vars.png")
+col_use = [var for var in col_variables if var in adata.obs.columns]
+sc.pl.pca(adata, color=col_use, save = "_vars.png")
 sc.pl.pca_loadings(adata, components="1,2,3,4,5,6", save = ".png")
 sc.pl.pca_overview(adata, save = ".png")
 

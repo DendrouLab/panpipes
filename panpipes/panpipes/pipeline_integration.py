@@ -60,6 +60,7 @@ def set_up_dirs(log_file):
 # ------------------------------------------------------------------------
 #rna No batch correction
 @follows(set_up_dirs)
+#@active_if(PARAMS['rna_run']) #TO DO enable this
 @originate("batch_correction/umap_rna_none.csv")
 def run_no_batch_umap(outfile):
     # print(PARAMS)

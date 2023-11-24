@@ -23,7 +23,7 @@ condaenv:
 
 sample_prefix: mdata
 scaled_obj: mdata_scaled.h5mu
-# full obj only applicable if you have filtered your sacled object by hvgs
+# full obj only applicable if you have filtered your scaled object by hvgs
 # in this case panpipes will use the full obj to calculate rank_gene_groups and for plotting those genes
 # it should contain all the genes you want to include in rank_gene_groups, plus logged_counts as a layer
 # if your scaled_obj contains all the genes then leave full_obj blank
@@ -44,7 +44,7 @@ multimodal:
 
 
 # ---------------------------------------
-# parameters for find neighbours
+# parameters for finding neighbours
 # ---------------------------------------
 # 
 # -----------------------------
@@ -52,7 +52,8 @@ multimodal:
 neighbors:
   rna:
     use_existing: True
-    # number of Principal Components to calculate for neighbours and umap:
+    # which representation in .obsm to use for nearest neighbors
+    # if dim_red=X_pca and X_pca not in .obsm, will be computed with default parameters
     dim_red: X_pca
     #how many components to use for clustering
     n_dim_red: 30
@@ -64,7 +65,8 @@ neighbors:
     method: scanpy
   prot:
     use_existing: True
-    # number of Principal Components to calculate for neighbours and umap:
+    # which representation in .obsm to use for nearest neighbors
+    # if dim_red=X_pca and X_pca not in .obsm, will be computed with default parameters
     dim_red: X_pca
     #how many components to use for clustering
     n_dim_red: 30
@@ -76,8 +78,11 @@ neighbors:
     method: scanpy
   atac:
     use_existing: True
-    # number of Principal Components to calculate for neighbours and umap:
-    dim_red: X_pca
+    # which representation in .obsm to use for nearest neighbors
+    # if dim_red=X_lsi/X_pca and X_lsi/X_pca not in .obsm, will be computed with default parameters
+    dim_red: X_lsi
+    # if dim_red=X_lsi/X_pca and X_lsi/X_pca not in .obsm, which dimension to remove
+    dim_remove: 1
     #how many components to use for clustering
     n_dim_red: 30
     # number of neighbours
@@ -88,7 +93,8 @@ neighbors:
     method: scanpy
   spatial:
     use_existing: False
-    # number of Principal Components to calculate for neighbours and umap:
+    # which representation in .obsm to use for nearest neighbors
+    # if dim_red=X_pca and X_pca not in .obsm, will be computed with default parameters
     dim_red: X_pca
     #how many components to use for clustering
     n_dim_red: 30
@@ -162,7 +168,7 @@ clusterspecs:
 # ---------------------------------------
 # where pseudo_suerat is set to False 
 # we run https://scanpy.readthedocs.io/en/stable/generated/scanpy.tl.rank_genes_groups.html
-# where pseudo_seurat is set to True, we run an a python implementation of Seurat::FindMarkers (written by CRG)
+# where pseudo_seurat is set to True, we run a python implementation of Seurat::FindMarkers (written by CRG)
 
 markerspecs:
   rna:
@@ -173,7 +179,7 @@ markerspecs:
     mincells: 10 # if a cluster contains less than n cells then do not bother doing marker analysis
     # where pseudo_suerat is set to False 
     # we run https://scanpy.readthedocs.io/en/stable/generated/scanpy.tl.rank_genes_groups.html
-    # where pseudo_seurat is set to True, we run an a python implementation of Seurat::FindMarkers (written by CRG) is used,
+    # where pseudo_seurat is set to True, we run a python implementation of Seurat::FindMarkers (written by CRG),
     pseudo_seurat: False
     # these next two settings do not matter unless pseudo_seurat is set to True,
     # If applicable look at Seurat documentation for FindMarkers for details
@@ -182,7 +188,7 @@ markerspecs:
 
   prot:
     run:
-    layer: clr
+    layer: clr #options clr,dsb
     mincells: 10 # if a cluster contains less than n cells then do not bother doing marker analysis
     # method options: [‘logreg’, ‘t-test’, ‘wilcoxon’, ‘t-test_overestim_var’]]
     method: wilcoxon
@@ -192,7 +198,7 @@ markerspecs:
 
   atac:
     run:
-    layer: 
+    layer: logged_counts #options logged_counts, signac_norm , logTF_norm,logIDF_norm
     mincells: 10
     # method options: [‘logreg’, ‘t-test’, ‘wilcoxon’, ‘t-test_overestim_var’]]
     method: wilcoxon
@@ -216,7 +222,7 @@ markerspecs:
     mincells: 10 # if a cluster contains less than n cells then do not bother doing marker analysis
     # where pseudo_suerat is set to False 
     # we run https://scanpy.readthedocs.io/en/stable/generated/scanpy.tl.rank_genes_groups.html
-    # where pseudo_seurat is set to True, we run an a python implementation of Seurat::FindMarkers (written by CRG) is used,
+    # where pseudo_seurat is set to True, we run a python implementation of Seurat::FindMarkers (written by CRG),
     pseudo_seurat: False
     # these next two settings do not matter unless pseudo_seurat is set to True,
     # If applicable look at Seurat documentation for FindMarkers for details
@@ -224,7 +230,7 @@ markerspecs:
     threshuse: 0.25
 
 # ---------------------------------------
-# plot specs are used to define which metadata columns are used in the visualisations
+# plot specs are used to define which metadata columns are used in the visualizations
 # ---------------------------------------
 plotspecs:
   layers:

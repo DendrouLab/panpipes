@@ -96,6 +96,21 @@ def cell2loc_plot_QC_reference(reference_model,fig_path_reconstr, fig_path_expr,
     plt.savefig(fig_path_expr)
 
 
+def plot_lsi_corr(corr_df, tech_covariates=['n_genes_by_counts', 'total_counts'], filename="corr_plot.png"):
+    plt.figure(figsize=(10, 6))  # Optional: You can adjust the figure size
+
+    for tech in tech_covariates:
+        subset = corr_df[corr_df['Tech_Covariate'] == tech]
+        plt.scatter(subset['LSI_Component'], subset['Correlation'], label=f'{tech} Correlation')
+
+    plt.xlabel('LSI Component')
+    plt.ylabel('Correlation Value')
+    plt.title('Correlation between LSI Components and Technical Covariates')
+    plt.legend()
+    plt.xticks(rotation=45)
+    
+    plt.savefig(filename)  # Saving the plot to the specified file
+    plt.close()  # Optional: Close the figure after saving to free up memory
 
 
 def scatter_one(group_choice, col_choice, plot_df, axs=None, colour="#1f77b4", title=""):
