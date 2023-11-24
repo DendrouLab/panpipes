@@ -16,8 +16,10 @@ For information on normalization methods included in panpipes please check the [
 
 ## Integration 
 
-You can supply a MuData object with normalized data directly to the `integration` workflow. If you have previously computed latent representations for the modalities in the MuData, these should be in the relevant `.obsm` slot.
-If no dimensionality reduction is present, the `integration` workflow will calculate PCA with [default parameters](https://github.com/scverse/scanpy/blob/master/scanpy/tools/_utils.py#L28) adjusting for number of pcs to be `adata.n_vars -1`
+You can supply a MuData object with normalized data in the `.X` slot of every modality directly to the `integration` workflow. 
+
+If you have previously computed latent representations for the modalities in the MuData, these should be in the relevant `.obsm` slot.
+If no dimensionality reduction is present, the `integration` workflow will default PCA for every modality, with [default parameters](https://github.com/scverse/scanpy/blob/master/scanpy/tools/_utils.py#L28) adjusting for number of pcs to be `adata.n_vars -1`
 
 
 ## Clustering
