@@ -89,7 +89,7 @@ parser.add_argument("--color_by", default="batch")
 args, opt = parser.parse_known_args()
 
 L.info("running with args:")
-L.debug(args)
+L.info(args)
 
 figdir = args.figdir
 
@@ -162,7 +162,7 @@ if "highly_variable" in atac.var:
 # filter by hvgs
 filter_by_hvgs = args.filter_by_hvf
 
-if filter_by_hvgs is True:
+if filter_by_hvgs:
     L.info("filtering object to only include highly variable features")
     mdata.mod["atac"] = atac[:, atac.var.highly_variable]
     if isinstance(mdata, mu.MuData):

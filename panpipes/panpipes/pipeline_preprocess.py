@@ -240,6 +240,11 @@ def atac_preprocess(log_file, scaled_file):
         cmd += " --min_disp %(atac_min_disp)s"    
     if PARAMS['atac_n_top_features'] is not None:
         cmd += " --n_top_features %(atac_n_top_features)s" 
+    if PARAMS["atac_filter_by_hvf"] is not None:
+        if PARAMS["atac_filter_by_hvf"] is True:
+            cmd += " --filter_by_hvf True"
+        else: 
+            cmd += " --filter_by_hvf False"
     if PARAMS['atac_dimred'] is not None:
         cmd += " --dimred %(atac_dimred)s"
     else:    
