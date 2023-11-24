@@ -27,6 +27,7 @@
 - fix to avoid rerunning HVF and explicitly check X layer before normalization in pipeline_preprocess.py
 - fix plotting of umaps after batch correction
 - fix fetching string scvi if present in mudata for wnn
+- fixed lsi requirement for atac
 
 ### dependencies
 

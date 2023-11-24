@@ -156,13 +156,16 @@ if "highly_variable" in atac.var:
 # The combined steps of TF-IDF followed by SVD are known as latent semantic indexing (LSI), 
 # and were first introduced for the analysis of scATAC-seq data by Cusanovich et al. 2015.
 
+if args.dimred == "LSI" and args.normalize == "TFIDF":
+    lsi(adata=atac, num_components=int(args.n_comps))
+else:
+    L.info("Applying LSI on logged_counts is not recommended. Changing dimred to PCA")
+    args.dimred = "PCA"
 if args.dimred == "PCA":
     sc.pp.scale(atac)
     atac.layers["scaled_counts"] = atac.X.copy()
     sc.tl.pca(atac, n_comps=int(args.n_comps), svd_solver=args.solver, 
     random_state=0)
-if args.dimred == "LSI":
-    lsi(adata=atac, num_components=int(args.n_comps))
 
 col_variables = args.color_by.split(",")
 col_variables = [a.strip() for a in col_variables]

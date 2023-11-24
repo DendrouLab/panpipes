@@ -306,7 +306,7 @@ atac:
   #----------------------------
   # ATAC Dimensionality reduction
   #----------------------------
-  dimred: LSI #PCA or LSI
+  dimred: LSI #PCA or LSI (LSI will only be computed if the normalize param is set to TFIDF)
   n_comps: 50 # how many components to compute
   # which dimension to exclude from further processing (sometimes useful to remove PC/LSI_1  if it's associated to tech factors)
   # leave blank to retain all 
