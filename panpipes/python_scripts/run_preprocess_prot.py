@@ -25,10 +25,10 @@ warnings.simplefilter(action='ignore', category=FutureWarning)
 parser = argparse.ArgumentParser()
 parser.add_argument("--filtered_mudata",
                     default=None,
-                    help="")  
+                    help="input mudata after rna filtering(if rna in modality dictionary)")  
 parser.add_argument("--bg_mudata",
                     default=None,
-                    help="")
+                    help="the mdata containing the raw measurements")
 parser.add_argument("--channel_col",
                     default=None,
                     help="")
@@ -36,26 +36,40 @@ parser.add_argument("--normalisation_methods", default="clr,dsb",
                    help="comma separated list of normalisation methods")
 parser.add_argument("--clr_margin",
                     default=0,
-                    help="")    
+                    help="run clr with margin calculated on cells (columns) or on features (rows)")    
 parser.add_argument("--quantile_clipping",
                     default=False,
                     help="")  
 parser.add_argument("--store_as_x",
                     default=None,
-                    help="")   
+                    help="which normalization to store in the X slot. Default to dsb if specified in normalization method")   
 parser.add_argument("--figpath",
-                    default="./adt_figures",
-                    help="")  
+                    default="./prot_figures",
+                    help="where to save the files")  
 parser.add_argument("--save_mtx",
                     default=False,
-                    help="")  
+                    help="if per channel normalization is applied, where to save the mtx file")  
 parser.add_argument("--save_mudata_path",
                     default=None,
                     help="")   
-              
+parser.add_argument("--run_pca",
+                    default=False,
+                    help="whether to run pca on protein modality")   
+parser.add_argument("--n_pcs",
+                    default=None,
+                    help="number of components to calculate")
+parser.add_argument("--pca_solver",
+                    default="arpack",
+                    help="which PCA solver to use")
+parser.add_argument("--color_by",
+                    default="sample_id",
+                    help="which columns to fetch from the protein .obs slot")
+
 
 args, opt = parser.parse_known_args()
-# args = argparse.Namespace(filtered_mudata='test.h5mu', bg_mudata='/well/cartography/users/zsj686/non_cart_projects/005-multimodal_scpipelines/ingest/test_raw.h5mu', channel_col=None, normalisation_methods='clr,dsb', clr_margin='0', quantile_clipping='True', figpath='./figures/adt', save_mtx=False, save_mudata_path='test.h5mu')
+# args = argparse.Namespace(filtered_mudata='test.h5mu', 
+# bg_mudata='/well/cartography/users/zsj686/non_cart_projects/005-multimodal_scpipelines/ingest/test_raw.h5mu', 
+# channel_col=None, normalisation_methods='clr,dsb', clr_margin='0', quantile_clipping='True', figpath='./figures/prot', save_mtx=False, save_mudata_path='test.h5mu')
 save_mtx=pnp.pp.check_for_bool(args.save_mtx)
 
 norm_methods = args.normalisation_methods.split(',')
@@ -63,7 +77,16 @@ norm_methods = args.normalisation_methods.split(',')
 
 L.info(args)
 
-# load filtered data - if use_umon is True this will return a mudata object, else returns an mudata object
+figdir = args.figpath
+if not os.path.exists(figdir):
+    os.mkdir(figdir)
+
+sc.settings.figdir = figdir
+sc.set_figure_params(scanpy=True, fontsize=14, dpi=300, facecolor='white', figsize=(5,5))
+
+
+
+# load filtered data - if use_muon is True this will return a mudata object, else returns an mudata object
 
 L.info("reading filtered mudata object")
 try:
@@ -137,7 +160,7 @@ if args.channel_col is not None:
         if 'clr' in norm_methods:
             # make sure to start from raw counts
             mdata["prot"].X = mdata["prot"].layers["raw_counts"].copy()
-            pnp.scmethods.run_adt_normalise(mdata=mdata, mdata_bg=None,
+            pnp.scmethods.run_prot_normalise(mdata=mdata, mdata_bg=None,
                     method="clr",
                     clr_margin=int(args.clr_margin))
             L.info("saving ridgeplot")
@@ -148,7 +171,7 @@ if args.channel_col is not None:
                 plt.savefig(os.path.join(args.figpath, str(si) + "_clr_ridgeplot_isotypes.png"))
             # save out the data in what format?
             if save_mtx:
-                pnp.io.write_10x_counts(mdata["prot"], os.path.join("adt_clr" , str(si) ), layer="raw_counts")
+                pnp.io.write_10x_counts(mdata["prot"], os.path.join("prot_clr" , str(si) ), layer="raw_counts")
         # then run dsb
         if 'dsb' in norm_methods:
             mdata_bg = mdata_bg_per_sample[si]
@@ -161,7 +184,7 @@ if args.channel_col is not None:
             # plt.savefig(os.path.join(args.figpath, si + "_log10umi.png"))
             # run dsb
             # this stores a layer named after the method as well as overwriting X
-            pnp.scmethods.run_adt_normalise(mdata=mdata, 
+            pnp.scmethods.run_prot_normalise(mdata=mdata, 
                                             mdata_bg=mdata_bg,
                                             method="dsb", 
                                             isotypes=isotypes)
@@ -171,7 +194,7 @@ if args.channel_col is not None:
                 pnp.plotting.ridgeplot(mdata["prot"], features=isotypes, layer="dsb",  splitplot=1)
                 plt.savefig(os.path.join(args.figpath, str(si) + "_dsb_ridgeplot_isotypes.png"))
             if save_mtx:
-                pnp.io.write_10x_counts(mdata["prot"], os.path.join("adt_dsb" , str(si)), layer="raw_counts")
+                pnp.io.write_10x_counts(mdata["prot"], os.path.join("prot_dsb" , str(si)), layer="raw_counts")
 else:
     # run on all the data (not on a channel basis)
     # first run clr
@@ -184,7 +207,7 @@ else:
         all_mdata["prot"].X = all_mdata["prot"].layers["raw_counts"].copy()
         # run normalise
         # this stores a layer named after the method as well as overwriting X
-        pnp.scmethods.run_adt_normalise(mdata=all_mdata, 
+        pnp.scmethods.run_prot_normalise(mdata=all_mdata, 
                 mdata_bg=None,
                 method="clr",
                 clr_margin=int(args.clr_margin))
@@ -195,7 +218,7 @@ else:
             plt.savefig(os.path.join(args.figpath, "clr_ridgeplot_isotypes.png"))
         # save out the data in what format?
         if save_mtx:
-            pnp.io.write_10x_counts(all_mdata["prot"], os.path.join("adt_clr"), layer="clr")
+            pnp.io.write_10x_counts(all_mdata["prot"], os.path.join("prot_clr"), layer="clr")
     if 'dsb' in norm_methods:
         # make sure to start from raw counts
         all_mdata["prot"].X = all_mdata["prot"].layers["raw_counts"].copy()
@@ -205,7 +228,7 @@ else:
         mu.pl.histogram(all_mdata_bg["rna"], ["log10umi"], bins=50)
         plt.savefig(os.path.join(args.figpath, "all_log10umi.png"))
         # this stores a layer named after the method as well as overwriting X
-        pnp.scmethods.run_adt_normalise(mdata=all_mdata, 
+        pnp.scmethods.run_prot_normalise(mdata=all_mdata, 
                 mdata_bg=all_mdata_bg, 
                 method="dsb",
                 isotypes=isotypes) 
@@ -221,16 +244,46 @@ else:
             plt.savefig(os.path.join(args.figpath, "dsb_ridgeplot_isotypes.png"))
         # save out the data in what format?
         if save_mtx:
-            pnp.io.write_10x_counts(all_mdata["prot"], os.path.join("adt_dsb"), layer="dsb")
+            pnp.io.write_10x_counts(all_mdata["prot"], os.path.join("prot_dsb"), layer="dsb")
     
     if args.store_as_x is not None:
         all_mdata["prot"].X = all_mdata["prot"].layers[args.store_as_x]
         
     # run pca on X 
     # this basically makes no sense if you have a small panel of antibodies.
-    sc.tl.pca(all_mdata['prot'], 
-              n_comps=min(50,all_mdata['prot'].var.shape[0]-1), 
-              svd_solver='arpack', random_state=0) 
+    if args.run_pca:
+        L.info("running pca")
+
+        if all_mdata['prot'].var.shape[0] < int(args.n_pcs):
+            L.info("You have less features than number of PCs you intend to calculate")
+            n_pcs = all_mdata['prot'].var.shape[0] - 1
+            L.info("Setting n PCS to %i" % int(n_pcs))
+        else:
+            n_pcs = int(args.n_pcs)
+        sc.tl.pca(all_mdata['prot'], n_comps=n_pcs, 
+                        svd_solver=args.pca_solver, 
+                        random_state=0) 
+
+        # do some plots!
+        sc.pl.pca_variance_ratio(all_mdata['prot'], log=True, n_pcs=n_pcs, save=".png")
+        
+        L.info(args.color_by)
+        
+        col_variables = args.color_by.split(",")
+        L.info("col_variables")
+        L.info(col_variables)
+        
+        col_variables = [a.strip() for a in col_variables]
+
+        L.info("col_variables now")
+        L.info(col_variables)
+        
+        col_use = [var for var in col_variables if var in all_mdata['prot'].obs.columns]
+        L.info("col_use")
+        L.info(col_use)
+        sc.pl.pca(all_mdata['prot'], color=col_use, save = "_vars.png")
+        sc.pl.pca_loadings(all_mdata['prot'], components="1,2,3,4,5,6", save = ".png")
+        sc.pl.pca_overview(all_mdata['prot'], save = ".png")
 
     if args.save_mudata_path is not None:
         all_mdata.update()

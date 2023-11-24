@@ -119,8 +119,10 @@ if 'prot' in mdata.mod.keys():
 mdata.update()
 mdata_bg.update()
 
-n_samples_rna=len(mdata['rna'].obs['sample_id'].unique())
-n_samples_prot=len(mdata['prot'].obs['sample_id'].unique())
+if 'rna' in mdata.mod.keys():
+    n_samples_rna=len(mdata['rna'].obs['sample_id'].unique())
+if "prot" in mdata.mod.keys():
+    n_samples_prot=len(mdata['prot'].obs['sample_id'].unique())
 
 # quantifying the top background features
 if os.path.exists(args.figpath) is False:
@@ -147,7 +149,7 @@ if 'rna' in mdata.mod.keys():
 # quantifying the top background features
 ## Repeat for protein (if it exists)
 if 'prot' in mdata.mod.keys():
-    # this time we'll just use all the adts.
+    # this time we'll just use all the prot vars.
     top_genes = list(mdata_bg['prot'].var_names)
     bg_df = pnp.scmethods.get_mean_background_fraction(mdata_bg['prot'], top_background=top_genes, group_by=args.channel_col)
     if bg_df.shape[0] >1:
@@ -157,7 +159,7 @@ if 'prot' in mdata.mod.keys():
             fig, ax = plt.subplots(nrows=2,ncols=1,figsize=(24,10), facecolor="white")
             sns.heatmap(bg_df.iloc[:,1:split_int], ax=ax[0])
             sns.heatmap(bg_df.iloc[:,split_int:len(top_genes)], ax=ax[1])
-            fig.suptitle("mean exprs (raw counts) of ADT in empty drops")  
+            fig.suptitle("mean exprs (raw counts) of PROT in empty drops")  
             fig.tight_layout()
         else:
             fig, ax = plt.subplots(figsize=(12,10), facecolor="white")
@@ -173,7 +175,7 @@ if 'prot' in mdata.mod.keys():
             pnp.plotting.adjust_x_axis(ax[0])
             sns.heatmap(plt_df.iloc[split_int:len(top_genes),:], ax=ax[1])
             pnp.plotting.adjust_x_axis(ax[1])
-            fig.suptitle("mean exprs (raw counts) of ADT in empty drops")  
+            fig.suptitle("mean exprs (raw counts) of PROT in empty drops")  
             fig.tight_layout()
         else:
             fig, ax= plt.subplots(figsize=(12,8))
@@ -183,7 +185,7 @@ if 'prot' in mdata.mod.keys():
         plt.savefig(os.path.join(args.figpath,"barplot_background_" + args.channel_col + "_prot_top_expressed.png"))
 
 
-## QC for gex and protein fcomparing foreground and background
+## QC for rna and protein comparing foreground and background
 
 if 'rna' in mdata.mod.keys():
     pnp.pl.scatter_fg_vs_bg(mdata, mdata_bg,x="rna:log1p_n_genes_by_counts", y="rna:log1p_total_counts", facet_row=args.channel_col)

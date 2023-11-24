@@ -54,8 +54,8 @@ project <- opt$project
 
 if(!is.null(opt$csvpaths)) {
   caf <- read.table(opt$csvpaths, header=T, sep="\t")
-  if(!"gex_path" %in% colnames(caf)){
-    caf$gex_path=caf$path
+  if(!"rna_path" %in% colnames(caf)){
+    caf$rna_path=caf$path
     caf <- caf %>% filter(filetype=="cellranger")
     if(nrow(caf)==0){
       message("no cellranger inputs")
@@ -63,8 +63,8 @@ if(!is.null(opt$csvpaths)) {
     }
 
   }
-  # paths <- gsub("filtered_feature_bc_matrix","metrics_summary.csv",caf$gex_path)
-  paths <- file.path(caf$gex_path, "metrics_summary.csv")
+  # paths <- gsub("filtered_feature_bc_matrix","metrics_summary.csv",caf$rna_path)
+  paths <- file.path(caf$rna_path, "metrics_summary.csv")
   
   # paths <- gsub("\\/$","", paths)
 
@@ -146,7 +146,7 @@ if(ncol(tag.mat)>0){
 }
 
 if(nrow(mat)==0){mat <- tag.mat}
-#modify this to deal with AB reads and GEX reads, need to split the knee plotting in 2 if you want both GEX and ADT knees in 2 different graphs
+#modify this to deal with AB reads and rna reads, need to split the knee plotting in 2 if you want both rna and PROT knees in 2 different graphs
 if(opt$kneeplot){
   print("plotting kneeplot")
   gsub("metrics_summary.csv","raw_feature_bc_matrix" , paths) ->normpath
@@ -155,7 +155,7 @@ if(opt$kneeplot){
   for( a in 1:length(normpath)){
     print(normpath[a])
     mm<-Read10X(normpath[a])
-    if(class(mm)=="list") { mm<-do.call("rbind",mm)} #modify this to deal with AB reads and GEX reads, need to split the knee plotting in 2 if you want both GEX and ADT in 2 different graphs
+    if(class(mm)=="list") { mm<-do.call("rbind",mm)} #modify this to deal with prot reads and rna reads, need to split the knee plotting in 2 if you want both rna and prot in 2 different graphs
     colnames(mm) <- paste0(colnames(mm),"_",rownames(mat)[a])
     xx <- CreateSeuratObject(mm,assay = "RNA",  min.cells = 0, min.features = 0)
     xx@meta.data %>%
@@ -200,11 +200,11 @@ if(opt$kneeplot){
       theme(legend.key.size = unit(0.2,"cm"), axis.text=element_text(size=13,face="bold", color="black"))  ->gb }
   gb + fl$layers ->gb
 
-  ggsave(gb,height = 15 ,width = 17, dpi=300, file=paste0(opt$figdir,"10xMetrics_",project,"_gex_knee_plot.png"), type="cairo-png")
+  ggsave(gb,height = 15 ,width = 17, dpi=300, file=paste0(opt$figdir,"10xMetrics_",project,"_rna_knee_plot.png"), type="cairo-png")
 
 
 }
 
-# if ADT exists then repeat for ADT
+# if PROT exists then repeat for PROT
 
 message("finished pipeline")

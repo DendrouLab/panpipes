@@ -22,7 +22,7 @@ Then qc metrics are computed using [scanpy.pp.calculated_qc_metrics](https://sca
 - Protein metadata such as isotype status or shorter names incorporated into the object. Inputs for this are described [here]
 - Per cell QC metrics computed as described above, including pct_isotype where isotype information is available. 
 - Per Protein metrics, total_counts, and are computed, in order to compare the binding of different antibodies (applicable when your assay is CITE-seq based). These are defined in the yml:
-`prot_metrics_per_adt: total_counts,log1p_total_counts,n_cells_by_counts,mean_counts`
+`plot_metrics_per_prot: total_counts,log1p_total_counts,n_cells_by_counts,mean_counts`
 - A rudimentary check for cells that are 'isotype' outliers, i.e. the cells where the isotype content is in the top 10% quantile for more than 2 isotypes. (these parameters are customisable in the`pipeline.yml`). See the function [here](https://github.com/DendrouLab/panpipes/blob/main/panpipes/funcs/scmethods.py#L328). 
 ```
 # isotype outliers: one way to determine which cells are very sticky is to work out which cells have the most isotype UMIs
@@ -63,7 +63,7 @@ There is an additional optional `assess_background` step, if the raw data (inclu
     [Inputs to Multimodal QC pipeline](../setup_for_qc_mm)
 2.  Generate qc genelists as described in
     [Gene list format](../gene_list_format)
-3.  For adt assay - generate the protein metadata file
+3.  For prot assay - generate the protein metadata file
     [example]((https://github.com/DendrouLab/panpipes/blob/main/resources/protein_metadata_w_iso.md)).
     This file is integrated into the mdata\['prot'\].var slot.
 4.  Generate config file (`panpipes ingest config`)

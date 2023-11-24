@@ -157,11 +157,11 @@ plotqc:
   grouping_var: sample_id,orig.ident
   # use these continuous variables to plot gradients and distributions
   rna_metrics: pct_counts_mt,pct_counts_rp,pct_counts_hb,doublet_scores
-  prot_metrics: total_counts,log1p_total_counts,n_adt_by_counts
+  prot_metrics: total_counts,log1p_total_counts,n_prot_by_counts
   atac_metrics: total_counts
   rep_metrics: 
 
-
+# --------------------------------------------------------------------------------------------------------
 # RNA Normalisation
 # --------------------------------------------------------------------------------------------------------
 # hvg_flavour options include "seurat", "cell_ranger", "seurat_v3", default; "seurat"
@@ -213,8 +213,8 @@ pca:
   scree_n_pcs: 50
   color_by: sample_id
 
-
-# Protein (ADT) normalisation
+# --------------------------------------------------------------------------------------------------------
+# Protein (PROT) normalisation
 # --------------------------------------------------------------------------------------------------------
 prot:
   # comma separated string of normalisation options
@@ -229,7 +229,7 @@ prot:
 
   # CLR parameters:
   # margin determines whether you normalise per cell (as you would RNA norm), 
-  # or by feature (recommended, due to the variable nature of adts). 
+  # or by feature (recommended, due to the variable nature of prot assays). 
   # CLR margin 0 is recommended for informative qc plots in this pipeline
   # 0 = normalise colwise (per feature)
   # 1 = normalise rowwise (per cell)
@@ -250,9 +250,9 @@ prot:
 
   # do you want to save the prot normalised assay additionally as a txt file:
   save_norm_prot_mtx: False
-
+# --------------------------------------------------------------------------------------------------------
 # ATAC preprocessing and normalisation
-# --------------------------
+# --------------------------------------------------------------------------------------------------------
 atac:
   binarize: False
   normalize: TFIDF

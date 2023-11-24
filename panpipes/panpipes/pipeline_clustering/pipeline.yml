@@ -188,7 +188,7 @@ markerspecs:
 
   prot:
     run:
-    layer: clr
+    layer: clr #options clr,dsb
     mincells: 10 # if a cluster contains less than n cells then do not bother doing marker analysis
     # method options: [‘logreg’, ‘t-test’, ‘wilcoxon’, ‘t-test_overestim_var’]]
     method: wilcoxon
@@ -198,7 +198,7 @@ markerspecs:
 
   atac:
     run:
-    layer: 
+    layer: logged_counts #options logged_counts, signac_norm , logTF_norm,logIDF_norm
     mincells: 10
     # method options: [‘logreg’, ‘t-test’, ‘wilcoxon’, ‘t-test_overestim_var’]]
     method: wilcoxon
