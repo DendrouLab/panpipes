@@ -16,7 +16,7 @@ Additionally, the normalized data can be scaled using scanpy's [sc.pp.scale](htt
    1. clr margin= 0, normalize within each feature's distribution, across all cells
    2. clr margin= 1, normalize within each cells' counts distribution, across all features
    
-    *if you come from R, please note that the [margins are transposed](https://en.wikipedia.org/wiki/The_Scream#/media/File:Edvard_Munch,_1893,_The_Scream,_oil,_tempera_and_pastel_on_cardboard,_91_x_73_cm,_National_Gallery_of_Norway.jpg) in the Python and anndata world*
+    *if you come from R, please note that the [margins are transposed](https://images.hindustantimes.com/rf/image_size_630x354/HT/p2/2017/09/21/Pictures/_78c6a162-9e94-11e7-9c3b-8e901839ece0.JPG) in the Python and anndata world*
 
 2. dsb using [muon's prot processing](https://muon.readthedocs.io/en/latest/api/generated/muon.prot.pp.html)
 
