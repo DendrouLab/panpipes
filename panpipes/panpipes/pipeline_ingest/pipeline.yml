@@ -55,7 +55,7 @@ submission_file:
 # as a comma-separated string e.g. batch,disease,sex
 metadatacols: 
 
-# which concat join to you want to perform on your mudata objects, recommended inner
+# which concat join do you want to perform on your mudata objects, recommended inner
 # see https://anndata.readthedocs.io/en/latest/concatenation.html#inner-and-outer-joins for details
 concat_join_type: inner
 
@@ -115,12 +115,16 @@ subset_prot_barcodes_to_rna: False
 # QC options
 # ------------------------------------------------------------------------------------------------
 # ------------------------
-# 10X qc files processing
+# 10X cellranger files processing
 # ------------------------
-plot_10X_metrics: True 
+# if starting from cellranger outputs, you can parse multiple metrics_summary.csv files and plot them together
+# the workflow looks for the metrics_summary file in the "outs" folder and will stop if it doesn't find it.
+plot_10X_metrics: True #Set to False if not using cellranger folders as input
+# if starting from cellranger outputs, you can parse the raw cell counts and plot kneeplots
 kneeplot: False
+
 # ------------
-## Doublets on RNA - Scrublet
+# Doublets on RNA - Scrublet
 # ------------
 scr:
   run: True
@@ -158,25 +162,48 @@ scr:
 # RNA QC
 # ------------
 # this part of the pipeline allows to generate the QC parameters that will be used to 
-# evaluate inclusion/ exclusion criteria. Filtering of cells/genes happens in the following pipeline
-# pipeline_integration.py.
+# evaluate inclusion/ exclusion criteria. Filtering of cells/genes happens in the next workflow (preprocess)
+# leave options blank to avoid running, "default" (to use the data stored within the package) 
 
-# leave options blank to avoid running, "default" (the data stored within the package) 
-# cell cycle action
-# ccgenes will plot the proportions of cell cycle genes (recommended to leave as default)
-ccgenes: default
 # It's often practical to rely on known gene lists, for a series of tasks, like evaluating % of mitochondrial genes or
-# ribosomal genes, or excluding IGG genes from HVG selection. We collect useful gene lists in a file, resources/custom_gene_lists_v1.tsv, 
-# and define "actions" on them as follows:
+# ribosomal genes, or excluding IGG genes from HVG selection. For the ingest workflow, 
+# We collect the cellcycle genes used in scanpy.score_genes_cell_cycle [Satija et al. (2015), Nature Biotechnology.] 
+# in in a file, panpipes/resources/cell_cicle_genes.tsv
+# and an example gene list in panpipes/resources/qc_genelist_1.0.csv 
+
+# | mod | feature| group  |
+# |-----| -------|--------|
+# | RNA | gene_1 | mt     |
+# | RNA | gene_2 | rp     |
+# | RNA | gene_1 | exclude|
+# | RNA | gene_1 | markerX|  
+
+
+# We define "actions" on them as follows:
+
+# specify the "group" name of the genes you want to use to apply the action i.e. calc_proportion: mt will calculate
+# proportion of reads mapping to the genes whose group is "mt"
+
 # (for pipeline_ingest.py)
 # calc_proportions: calculate proportion of reads mapping to X genes over total number of reads, per cell
 # score_genes: using scanpy.score_genes function, 
-# (for pipeline_integration.py)
-# exclude: exclude these genes from the HVG selection, if they are deemed HV.
-# plot_markers: plot these genes
-# 
-# custom genes actions
 
+# (for pipeline_preprocess.py)
+# exclude: exclude these genes from the HVG selection, if they are deemed HV.
+
+#-------------------------
+# cell cycle action
+#-------------------------
+# ccgenes will plot the proportions of cell cycle genes (recommended to leave as default)
+ccgenes: default
+# Setting the `ccgenes` to `default` will calculate the phase of the cell cycle in which the cell is by using 
+# `scanpy.tl.score_genes_cell_cycle` using the file provided in panpipes/resources/cell_cicle_genes.tsv
+# Users can create their own list and specify the path in the `ccgenes` param to score the cells with a custom list.
+# If left blank, the cellcycle score will not be calculated.
+
+#-------------------------
+# custom genes actions
+#-------------------------
 custom_genes_file: resources/qc_genelist_1.0.csv
 calc_proportions: hb,mt,rp
 score_genes: MarkersNeutro
@@ -186,8 +213,9 @@ score_genes: MarkersNeutro
 # ------------
 # all metrics should be inputted as a comma separated string e.g. a,b,c
 
-# likely a combination of metadatacolumns and demultiplex_metadatacols
-plotqc_grouping_var: sample_id
+# base of the plots, normally is the channel also referred to "sample_id"
+plotqc_grouping_var: orig.ident
+# other cell covariates
 plotqc_rna_metrics: doublet_scores,pct_counts_mt,pct_counts_rp,pct_counts_hb,pct_counts_ig
 
 
@@ -329,10 +357,10 @@ plotqc_rep_metrics:
 # ------------
 # Profiling Protein Ambient background
 # ------------
-# It is useful to chararcterise the background of your gene expression assay and antibody binding assay
-# Inspect the plots and decide if to apply corrections, for example see Cellbender or SoupX.
-# Please note that this analysis only makes sense if you are providing a RAW input (so the "empty" droplets can be used to
-# estimate the BG )
+# It is useful to characterise the background of your gene expression assay and antibody binding assay.
+# Inspect the plots and decide if to apply corrections, for example see Cellbender or SoupX. (currently not included in panpipes)
+# Please note that this analysis can only be performed if you are providing a RAW input starting from cellranger outputs
+# (so the "empty" droplets can be used to  estimate the BG )
 # Setting `assess_background` to True will:
 # 1. create h5mu from raw data inputs (expected as cellranger h5 or mtx folder, if you do not have this then set to False)
 # 2. Plot comparitive QC plots to compare distribution of UMI and feature counts in background and foreground

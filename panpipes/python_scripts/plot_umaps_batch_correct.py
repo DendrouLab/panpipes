@@ -87,7 +87,7 @@ for mod in umaps_df['mod'].unique():
         os.mkdir(os.path.join(args.fig_dir, mod))
     L.info("plotting modality: %s" % mod)
     plt_df = umaps_df[umaps_df['mod'] == mod].copy()
-    pointsize = 150000 / plt_df.shape[0]
+    pointsize = 10000 / plt_df.shape[0]
     plt_df["method"] = plt_df["method"].astype("category")
     # put none at the top of the list
     if mod != "multimodal":
@@ -109,7 +109,8 @@ for mod in umaps_df['mod'].unique():
         L.info("plotting grouping var %s" % col)
         # make sure everything is a category so that when they get plotted it's the same color
         plt_df[col] = plt_df[col].astype(str).astype('category')
-        plt_df = plt_df.sort_values(by="umap_1")
+        plt_df = plt_df.sample(frac=1).reset_index(drop=True)
+        #plt_df = plt_df.sort_values(by="umap_1")
         g = sns.FacetGrid(plt_df, col="method", col_wrap=3, sharex=False, sharey=False)
         g = (g.map(sns.scatterplot, "umap_1", "umap_2", col, s=pointsize, linewidth=0))
         g.add_legend() 

@@ -549,9 +549,6 @@ def run_qc():
 # -----------------------------------------------------------------------------------------------
 
 @follows(run_qc)
-# @transform(run_rna_qc,
-#             regex(r"(.*)_cell_metadata.tsv"),
-#             r"logs/plot_qc.log", )
 @originate("logs/plot_qc.log", orfile())
 def plot_qc(log_file, cell_file):
     qcmetrics = PARAMS['plotqc_rna_metrics']

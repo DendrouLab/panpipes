@@ -25,10 +25,10 @@ warnings.simplefilter(action='ignore', category=FutureWarning)
 parser = argparse.ArgumentParser()
 parser.add_argument("--filtered_mudata",
                     default=None,
-                    help="")  
+                    help="input mudata after rna filtering(if rna in modality dictionary)")  
 parser.add_argument("--bg_mudata",
                     default=None,
-                    help="")
+                    help="the mdata containing the raw measurements")
 parser.add_argument("--channel_col",
                     default=None,
                     help="")
@@ -36,23 +36,35 @@ parser.add_argument("--normalisation_methods", default="clr,dsb",
                    help="comma separated list of normalisation methods")
 parser.add_argument("--clr_margin",
                     default=0,
-                    help="")    
+                    help="run clr with margin calculated on cells (columns) or on features (rows)")    
 parser.add_argument("--quantile_clipping",
                     default=False,
                     help="")  
 parser.add_argument("--store_as_x",
                     default=None,
-                    help="")   
+                    help="which normalization to store in the X slot. Default to dsb if specified in normalization method")   
 parser.add_argument("--figpath",
                     default="./prot_figures",
-                    help="")  
+                    help="where to save the files")  
 parser.add_argument("--save_mtx",
                     default=False,
-                    help="")  
+                    help="if per channel normalization is applied, where to save the mtx file")  
 parser.add_argument("--save_mudata_path",
                     default=None,
                     help="")   
-              
+parser.add_argument("--run_pca",
+                    default=False,
+                    help="whether to run pca on protein modality")   
+parser.add_argument("--n_pcs",
+                    default=None,
+                    help="number of components to calculate")
+parser.add_argument("--pca_solver",
+                    default="arpack",
+                    help="which PCA solver to use")
+parser.add_argument("--color_by",
+                    default="sample_id",
+                    help="which columns to fetch from the protein .obs slot")
+
 
 args, opt = parser.parse_known_args()
 # args = argparse.Namespace(filtered_mudata='test.h5mu', 
@@ -65,7 +77,16 @@ norm_methods = args.normalisation_methods.split(',')
 
 L.info(args)
 
-# load filtered data - if use_umon is True this will return a mudata object, else returns an mudata object
+figdir = args.figpath
+if not os.path.exists(figdir):
+    os.mkdir(figdir)
+
+sc.settings.figdir = figdir
+sc.set_figure_params(scanpy=True, fontsize=14, dpi=300, facecolor='white', figsize=(5,5))
+
+
+
+# load filtered data - if use_muon is True this will return a mudata object, else returns an mudata object
 
 L.info("reading filtered mudata object")
 try:
@@ -230,9 +251,39 @@ else:
         
     # run pca on X 
     # this basically makes no sense if you have a small panel of antibodies.
-    sc.tl.pca(all_mdata['prot'], 
-              n_comps=min(50,all_mdata['prot'].var.shape[0]-1), 
-              svd_solver='arpack', random_state=0) 
+    if args.run_pca:
+        L.info("running pca")
+
+        if all_mdata['prot'].var.shape[0] < int(args.n_pcs):
+            L.info("You have less features than number of PCs you intend to calculate")
+            n_pcs = all_mdata['prot'].var.shape[0] - 1
+            L.info("Setting n PCS to %i" % int(n_pcs))
+        else:
+            n_pcs = int(args.n_pcs)
+        sc.tl.pca(all_mdata['prot'], n_comps=n_pcs, 
+                        svd_solver=args.pca_solver, 
+                        random_state=0) 
+
+        # do some plots!
+        sc.pl.pca_variance_ratio(all_mdata['prot'], log=True, n_pcs=n_pcs, save=".png")
+        
+        L.info(args.color_by)
+        
+        col_variables = args.color_by.split(",")
+        L.info("col_variables")
+        L.info(col_variables)
+        
+        col_variables = [a.strip() for a in col_variables]
+
+        L.info("col_variables now")
+        L.info(col_variables)
+        
+        col_use = [var for var in col_variables if var in all_mdata['prot'].obs.columns]
+        L.info("col_use")
+        L.info(col_use)
+        sc.pl.pca(all_mdata['prot'], color=col_use, save = "_vars.png")
+        sc.pl.pca_loadings(all_mdata['prot'], components="1,2,3,4,5,6", save = ".png")
+        sc.pl.pca_overview(all_mdata['prot'], save = ".png")
 
     if args.save_mudata_path is not None:
         all_mdata.update()

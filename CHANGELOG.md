@@ -5,11 +5,20 @@
 ### added
 - added example multiome submission file 10X_h5
 - added example multiome submission file cellranger
+- added PCA parameters in pipeline_preprocess.py for PROT modality to fix issue #120
+- added full control of dimred params for all modalities in pipeline_preprocess.py
+- more info on custom genes format files added to documentation
+- parsing summary files for cellranger multi version < 7 
+
 
 ### fixed
 
 - changed typo in tutorial paths for clustering and deconvolution
 - fix io to read cellranger outs folder for atac. 
+- fix to avoid rerunning HVF and explicitly check X layer before normalization in pipeline_preprocess.py
+- fix plotting of umaps after batch correction
+- fix fetching string scvi if present in mudata for wnn
+
 
 ### dependencies
 
