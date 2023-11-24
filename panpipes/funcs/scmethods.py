@@ -318,6 +318,8 @@ def run_neighbors_method_choice(adata, method, n_neighbors, n_pcs, metric, use_r
     # This works with both Anndata and MuData inputs 
     # useful if we are dealing with a MuData object but we want to use single rep, e.g.
     # calculating neighbors on a totalVI latent rep
+    if n_pcs > adata.n_vars:
+        logging.info("Reducing the number of components from %i to %i" %(n_pcs, adata.n_vars-1))
     if method == "scanpy":
         logging.info("Computing neighbors using scanpy")
         from scanpy.pp import neighbors
