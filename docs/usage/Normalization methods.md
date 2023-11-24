@@ -26,8 +26,8 @@ Additionally, the normalized data can be scaled using scanpy's [sc.pp.scale](htt
 2. TFIDF with 3 flavours
    1. "signac", following [signac's defaults](https://stuartlab.org/signac/articles/pbmc_vignette#normalization-and-linear-dimensional-reduction).
     using [muon's atac processing](https://muon.readthedocs.io/en/latest/api/generated/muon.atac.pp.tfidf.html#muon.atac.pp.tfidf) 
-   2. logTF: logging the TF term using using [muon's atac processing](https://muon.readthedocs.io/en/latest/api/generated/muon.atac.pp.tfidf.html#muon.atac.pp.tfidf) 
-   3. logIDF: logging the IDF term using using [muon's atac processing](https://muon.readthedocs.io/en/latest/api/generated/muon.atac.pp.tfidf.html#muon.atac.pp.tfidf) 
+   2. "logTF": logging the TF term using using [muon's atac processing](https://muon.readthedocs.io/en/latest/api/generated/muon.atac.pp.tfidf.html#muon.atac.pp.tfidf) 
+   3. "logIDF": logging the IDF term using using [muon's atac processing](https://muon.readthedocs.io/en/latest/api/generated/muon.atac.pp.tfidf.html#muon.atac.pp.tfidf) 
 
 
 
