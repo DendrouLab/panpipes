@@ -30,7 +30,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--query_data',
                     default='adata_scaled.h5ad',
                     help='path to query data. can be a raw 10x dataset or a preprocessed anndata/mudata')
-parser.add_argument('--query_celltype',default='celltype',
+parser.add_argument('--query_celltype',default=None,
                     help='if query has already a column with cell labeling in obs. Default to "celltype" ')
 parser.add_argument('--adata_reference',
                     default='adata_.h5ad',
@@ -56,7 +56,8 @@ parser.add_argument('--neighbors_k', default=30,
                     help="neighbors k")
 parser.add_argument('--neighbors_metric',default="euclidean",
                     help="neighbor metric, e.g. euclidean or cosine")
-
+parser.add_argument('--outfile',default=None,
+                    help="file where to save umap")
 
 args, opt = parser.parse_known_args()
 sc.settings.figdir = "figures/"
@@ -143,9 +144,9 @@ if reference_architecture=="scvi":
     vae_q = scvi.model.SCVI.load_query_data(
     adata_query,
     reference_path)
-    latent_choice= "X_scVI"
+    latent_choice= "X_scvi"
     vae_q.train(max_epochs= max_epochs , plan_kwargs=train_kwargs)
-    adata_query.obsm["X_scVI"] = vae_q.get_latent_representation()
+    adata_query.obsm["X_scvi"] = vae_q.get_latent_representation()
     
 
 if reference_architecture=="scanvi":
@@ -155,13 +156,13 @@ if reference_architecture=="scanvi":
     vae_q = scvi.model.SCANVI.load_query_data( 
     adata_query,
     reference_path)
-    latent_choice= "X_scANVI"
+    latent_choice= "X_scanvi"
     #vae_q.train(**train_kwargs) this doesn't work anymore cause max_epochs is not recognised as part of the plan kwargs
     vae_q.train(max_epochs= max_epochs , plan_kwargs=train_kwargs)
-    adata_query.obsm["X_scANVI"] = vae_q.get_latent_representation()
+    adata_query.obsm["X_scanvi"] = vae_q.get_latent_representation()
     adata_query.obs["predictions"] = vae_q.predict()
     if args.query_celltype is not None:
-        L.info("Query has celltypes in column %i, i will plot what predictions look like from scanvi model" % args.query_celltype)
+        L.info("Query has celltypes in column %s, i will plot what predictions look like from scanvi model" % args.query_celltype)
         df = adata_query.obs.groupby([str(args.query_celltype), "predictions"]).size().unstack(fill_value=0)
         norm_df = df / df.sum(axis=0)
 
@@ -171,6 +172,7 @@ if reference_architecture=="scanvi":
         _ = plt.yticks(np.arange(0.5, len(df.index), 1), df.index)
         plt.xlabel("Predicted")
         plt.ylabel("Observed")
+        plt.tight_layout()
         file_name = "SCANVI_predicted_vs_observed_labels_query_data"
         plt.savefig(os.path.join("figures/", file_name + ".png"))
         
@@ -219,7 +221,7 @@ if reference_architecture=="totalvi":
             if pname not in adata_query.obsm.keys():
                 X_df = pd.DataFrame(0, index=adata_ref.obs_names, columns=adata_ref.obsm[pname].columns)
 
-                adata_query.obsm["protein_counts"] = query.obsm["pro_exp"].copy()
+                adata_query.obsm["protein_counts"] = adata_query.obsm["pro_exp"].copy()
             
 
             for p in adata_ref.obsm[pname].columns:
@@ -279,6 +281,7 @@ if reference_architecture=="totalvi":
             _ = plt.yticks(np.arange(0.5, len(df.index), 1), df.index)
             plt.xlabel("Predicted")
             plt.ylabel("Observed")
+            plt.tight_layout()
             file_name = "totalvi_predicted_vs_observed_labels_query_data"
             plt.savefig(os.path.join("figures/", file_name + ".png"))
         
@@ -349,16 +352,17 @@ model_name = ''.join(e for e in model_name if e.isalnum())
 
 
 file_name= "umap_" + model_name + "_" + latent_choice
+L.info ("filename is %s" % file_name )
 
 fig = sc.pl.embedding(adata_full, basis = "umap",color=["is_reference"],
          show=False, return_fig=True)
-
+fig.tight_layout()
 fig.savefig(os.path.join("figures/", file_name + ".png"))
 
 umap = pd.DataFrame(adata_full.obsm['X_umap'], adata_full.obs.index)
 
 umap.to_csv(os.path.join("refmap/", file_name + ".csv") )
-file_name= "query_to_reference_" + model_name + "_" + latent_choice + ".h5mu" #change this to mudata
+file_name= "query_to_reference_" + model_name + "_" + latent_choice + ".h5mu" 
 
 mdata_save = MuData({"rna":adata_full})
 

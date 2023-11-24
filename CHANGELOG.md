@@ -14,10 +14,12 @@
 - added check for n_pcs in run_neighbors_method_choice
 - added filtering by HVF for atac
 
+
 ### fixed
 
 - changed typo in tutorial paths for clustering and deconvolution
 - fix io to read cellranger outs folder for atac. 
+- fixes to refmap workflow 
 - typos & capitalization in the pipeline.yml files of `qc_spatial`, `preprocess_spatial`, and `deconvolution_spatial`, `vis`
 - remove `assay`, `sample_prefix`, and `modalities` parameters from the `qc_spatial` pipeline.yml 
 - remove `sample_prefix` and `modalities` parameters from the `preprocess_spatial` pipeline.yml
@@ -31,6 +33,7 @@
 - fixed lsi requirement for atac
 - fixed top features for atac
 - fixed filtering HVG for rna
+
 
 ### dependencies
 

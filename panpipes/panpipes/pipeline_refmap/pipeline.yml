@@ -30,11 +30,13 @@ query: path_to_dataset
 # we support raw10x formats, or preprocessed quality filtered mudata or anndata as input query
 modality: rna
 # if you supplied a mu data, specify the modality to be used
-# currently only RNA query supported
-
+# only RNA modality supported by current models!
 # does your query data have a batch effect, what column?
-# transform_batch term is only used in totalvi?
 query_batch:
+# does your query have a celltype annotation you want to use to compare to
+# the transferred label?
+# leave empty if not
+query_celltype: 
 #----------------------
 # scvi tools params
 #----------------------
@@ -43,30 +45,32 @@ query_batch:
 # leave blank for no model specification
 
 # specify the reference anndata/mudata with RNA. you need this only if you want to calc umap on both reference and query data.
-# or leave blank and only provide model paths
+# otherwise leave blank and only provide model paths
 reference_data: path_to_mudata 
 # path to tovalvi saved model
 totalvi: 
   - path_to_totalvi1
   - path_to_totalvi2
 impute_proteins: True
+# transform_batch is a batch-covariate specific to totalvi, allows the model to use the batch information in the query to mitigate 
+# differences in protein sequencing depth
 transform_batch:
-# if you did not run scanvi, and you want to simply map query onto reference, 
-# path_to_scvi will be used to initialize scanvi for label transfer.
-# if you have an initialized scanvi model instead, add it here
+# Specify the full path to the model, i.e. Path/to/scanvi/model.pt
+# if not running the method, remove the dummy - path_to_xxx and leave blank
 scvi:
   - path_to_scvi
 scanvi: 
   - path_to_scanvi 
-
-
+# for scvi and totalvi, if the reference model has a trained random forest classifier, use to
+# classify cells in the query
+run_randomforest: False
 
 #----------------------
 # training params
 #----------------------
 
-# to reuse these params, (for example for WNN) please use anchors (&) and scalars (*) in the relevant place
-# i.e. &rna_neighbors will be called by *rna_neighbors where referenced
+# to reuse the same params in multiple locations, please use anchors (&) and scalars (*) in the relevant place
+# i.e. if specifying &rna_neighbors, the same params will be called by *rna_neighbors where referenced
 
 training_plan:
   totalvi: &totalvitraining 
@@ -93,6 +97,23 @@ neighbors:
     metric: euclidean
     # scanpy | hnsw (from scvelo)
     method: scanpy
+
+
+#----------------------
+# Run scib metrics on query, specify params:
+#----------------------
+# see documentation for the metrics used at https://scib.readthedocs.io/en/latest/
+# running scib on query data after trasferring labels, where available (totalvi and scanvi), or using default leiden clustering after training the vae model (scvi)
+scib:
+  run: False
+  #used for ARI and NMI (if left empty will default to leiden clustering calculated on the new latent representation after reference mapping)
+  cluster_key: predictions
+  # used for clisi_graph_embed (if left empty will default to query_batch specified above)
+  # if no batch is present the metrics will not be included in the results
+  batch_key:
+  #ground truth label (if left empty it will default to query_celltype specified above )
+  celltype_key: celltype
+
 
 
   

@@ -54,6 +54,7 @@ dependencies = [
     "ruffus", 
     "scanorama", 
     "scanpy>=1.9.1", 
+    "scib",
     "seaborn<=0.12.2",
     "scikit-misc", 
     "scirpy",
