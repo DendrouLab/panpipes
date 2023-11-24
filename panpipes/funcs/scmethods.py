@@ -141,7 +141,38 @@ def findTopFeatures_pseudo_signac(adata, min_cutoff):
         adata.var["highly_variable"] = True
         return
 
+def extract_lsi(adata):
+    if "X_lsi" not in adata.obsm.keys():
+        sys.error("Can't extract lsi from this object")
+    else:
+        tab = pd.concat([
+        pd.DataFrame(
+        adata.obsm["X_lsi"],
+        index=adata.obs_names,
+        columns=[f"LSI_{i+1}" for i in range(adata.obsm["X_lsi"].shape[1])]),
+        adata.obs,
+        ],axis=1)
+        return tab
 
+def calc_tech_corr(lsi_df,tech_covariates=['n_genes_by_counts','total_counts'], ncomps = 20):
+    """
+    lsi_df = extract_lsi(adata)
+    tech_covariates = what columns of the obs to use
+    ncomps = which LSI components to show
+    """
+    lsi_columns = [f"LSI_{i}" for i in range(1, ncomps+1)]  # Top 20 LSI columns
+    correlation_data = []
+
+    for col in lsi_columns:
+        for tech in tech_covariates:
+            corr_value = lsi_df[col].corr(lsi_df[tech])
+            correlation_data.append({'LSI_Component': col, 'Tech_Covariate': tech, 'Correlation': corr_value})
+
+    # Creating a DataFrame
+    correlation_df = pd.DataFrame(correlation_data)
+    return correlation_df
+    
+    
 
 def exp_mean_sparse(x):
     """

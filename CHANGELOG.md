@@ -7,6 +7,11 @@
 - added example multiome submission file cellranger
 - workflows & tutorials for `qc_spatial`, `preprocess_spatial`, and `deconvolution_spatial` to readthedocs
 - tutorial for `vis`
+- added PCA parameters in pipeline_preprocess.py for PROT modality to fix issue #120
+- added full control of dimred params for all modalities in pipeline_preprocess.py
+- more info on custom genes format files added to documentation
+- parsing summary files for cellranger multi version < 7 
+
 
 ### fixed
 
@@ -19,6 +24,9 @@
     -> now able to run no filtering without needing to save the MuData in `filtered.data` before running the pipeline
 - fixed error in `vis`
     - change PARAMS['custom_markers_minimal'] -> PARAMS['custom_markers']['files']['minimal']
+- fix to avoid rerunning HVF and explicitly check X layer before normalization in pipeline_preprocess.py
+- fix plotting of umaps after batch correction
+- fix fetching string scvi if present in mudata for wnn
 
 ### dependencies
 

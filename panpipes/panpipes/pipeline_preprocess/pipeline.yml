@@ -1,6 +1,7 @@
 # Pipeline pipeline_preprocess.py configuration file
 # ==============================================
-
+# Authors Charlotte Rich-Griffin and Fabiola Curion
+# ------------------------
 # compute resource options
 # ------------------------
 resources:
@@ -22,15 +23,11 @@ condaenv:
 # --------------------------
 sample_prefix: 
 unfiltered_obj: 
-# if running this on prefiltered datat then
+# if running this on prefiltered data then
 #1. set unfiltered obj (above) to blank
 #2. rename your filtered file to match, the format PARAMS['sample_prefix'] + '.h5mu'
 #3. put renamed file in the same folder as this yml.
 #4. set filtering run: to False below.
-
-# leave empty if you don't want to save an intermediate muData with normalized expression 
-# stored in X for the RNA object
-output_logged_mudata:
 
 modalities:
   rna:  True
@@ -38,29 +35,15 @@ modalities:
   rep: False
   atac: False
 
-# Filtering
 # --------------------------
+# Filtering Cells and Features
+# --------------------------
+
 # the filtering process in panpipes is sequential as it goes through the filtering dictionary.
 # for each modality, starting with rna, it will first filter on obs and then vars.
-# each modality has a dictionary in the following format. This is fully customisable to any
-# columns in the mudata.obs or var object.
-# To avoid being prescriptive with the covariates names, we allow to provide custom names.
-# When specifying a column name, make sure it exactly matches the column name in the h5mu object.
-# rna:
-  # obs:
-    # min: <-- Any column for which you want to run a minimum filter, 
-     # n_genes_by_counts: 500 <--- i.e. each cell must have a minimum of 500 in the n_genes_by_counts column
-    # max: <-- Any column for which you want to run a maxiumum filter
-     # pct_counts_mt: 20 <-- i.e. each cell may have a maximum of 25 in the pct_counts_mt column
-                              # be careful with any columns named after gene sets. 
-                              # The column will be named based on the gene list input file, so if the mitochondrial genes are in group "mt" 
-                              # as in the example given in the resource file
-                              # then the column will be named "pct_counts_mt" .
+# each modality has a dictionary in the following format. 
 
-    # bool: 
-      # is_doublet: True  <--- if you have any boolean columns you want to filter on, then use this section of the modality dictionary
-                              # in this case any obs['is_doublet'] that are True will be retained in the dataset.
-# this format of
+# MODALITY
 # obs:
   # min:
   # max:
@@ -69,11 +52,38 @@ modalities:
   # min:
   # max:
   # bool
-# can be applied to any modality by editing the filtering dictionary below. You are not restricted by the columns given as default.
 
+# This format can be applied to any modality by editing the filtering dictionary  
+# You are not restricted by the columns given as default.
+
+# This is fully customizable to any columns in the mudata.obs or var object.
+# When specifying a column name, make sure it exactly matches the column name in the h5mu object.
+
+#Example:
+
+#------------------
+# rna:
+#------------------
+  # obs:
+    # min: <-- Any column for which you want to run a minimum filter, 
+     # n_genes_by_counts: 500 <--- i.e. each cell must have a minimum of 500 in the n_genes_by_counts column
+    # max: <-- Any column for which you want to run a maximum filter
+     # pct_counts_mt: 20 <-- i.e. each cell may have a maximum of 25 in the pct_counts_mt column
+                              # be careful with any columns named after gene sets. 
+                              # The column will be named based on the gene list input file, 
+                              # so if the mitochondrial genes are in group "mt" 
+                              # as in the example given in the resource file
+                              # then the column will be named "pct_counts_mt" .
+
+    # bool: 
+      # is_doublet: False  <--- if you have any boolean columns you want to filter on, 
+                              # then use this section of the modality dictionary
+                              # in this case any obs['is_doublet'] that are False will be retained in the dataset.
+# --------------------------------------------------------------------------------------
 filtering:
+  # if set to false no filtering is applied to the mudata object
   run: True
-  # a file containing only barcodes you want to keep, leave blank if not applicable
+  # a file containing only cell barcodes you want to keep, leave blank if not applicable
   keep_barcodes:
   #------------------------------------------------------
   rna:
@@ -92,11 +102,10 @@ filtering:
         pct_counts_rp:
         # either one score for all samples e.g. 0.25, 
         # or a csv file with two columns sample_id, and cut off
-        # less than
+        # if you want to apply a custom scrublet threshold per input sample you can specify it as a max value here
         doublet_scores:
-        #  if you wanted to be more precise i.e. apply a different srublet threshold per sample
-        # you could add a new column to the mudata['rna'].obs with True False values, and list
-        # that column under bool:, you can do this for any modality
+      # you could add a new column to the mudata['rna'].obs with True False values, and list
+      # that column under bool:, you can do this for any modality
       bool:
     ## var filtering: (feature) gene level filtering here
     var:
@@ -126,15 +135,17 @@ filtering:
     var:    
       nucleosome_signal:
 
-# Intersecting barcodes
 # ----------------------
+# Intersecting cell barcodes
+# ----------------------
+# Subset observations (cells) in-place by intersect
+# taking observations present only in modalities listed in mods, or all modalities if mods is None.  
 # set a comma separated list where you want to keep only the intersection of barcodes. e.g. rna,prot 
 intersect_mods: 
 
-
-# ------------
-# downsampling
-# ------------
+# ----------------------
+# Downsampling cell barcodes
+# ----------------------
 # how many cells to downsample to, leave blank to keep all cells.
 downsample_n: 
 # if we want to equalise by dataset or sample_id then specifiy a column in obs
@@ -145,10 +156,11 @@ downsample_col:
 # if more than 1 modality is added then these will be intersected.
 downsample_mods: 
 
-# ------------
-## plotting vars
-# ------------
+# ----------------------
+# Plotting variables
+# ----------------------
 # all metrics should be inputted as a comma separated string without spaces e.g. a,b,c
+# leave blank to avoid plotting
 plotqc:
   # use these categorical variables to plot/split by
   grouping_var: sample_id
@@ -157,23 +169,18 @@ plotqc:
   prot_metrics: total_counts,log1p_total_counts,n_prot_by_counts,pct_counts_isotype
   atac_metrics: 
   rep_metrics:
-
-
-
 # --------------------------------------------------------------------------------------------------------
-# RNA Normalisation
+# RNA steps
 # --------------------------------------------------------------------------------------------------------
+# currently only standard sc.pp.normalize_total(adata, target_sum=1e4) followed by sc.pp.log1p(adata) is offered for RNA
+log1p: True
 # hvg_flavour options include "seurat", "cell_ranger", "seurat_v3", default; "seurat"
 # for dispersion based methods "seurat" and "cell_ranger", you can specify parameters: min_mean, max_mean, min_disp
-# for "seurat_v3" a different method is used, a you specify how many variavle genes to find.
-# If you specify n_top_genes, then the other paramteres are nulled.
+# for "seurat_v3" a different method is used, and you need to specify how many variable genes to find in n_top_genes
+# If you specify n_top_genes, then the other paramters are nulled.
 # details: https://scanpy.readthedocs.io/en/stable/api/scanpy.pp.highly_variable_genes.html
 hvg:
-  # there is a defaul exclusions file for immune cells in panpipes/resources/exclude_genes_HLAIGTR_v1.txt
-  # examine this to see what format is expected, if you want to use this file set the parameter to "default
-  exclude_file: resources/qc_genelist_1.0.csv
-  exclude: exclude # this is the variable that defines the genes to be excluded in the above file
-  flavor: seurat_v3 # "seurat", "cell_ranger", "seurat_v3"
+  flavor: seurat # "seurat", "cell_ranger", "seurat_v3"
   # If batch key is specified, highly-variable genes are selected within each batch separately and merged. 
   # details: https://scanpy.readthedocs.io/en/stable/generated/scanpy.pp.highly_variable_genes.html#:~:text=or%20return%20them.-,batch_key,-%3A%20Optional%5B
   # If you want to use more than one obs column as a covariates, include it as covariate1,covariate2 (comma separated list)
@@ -183,14 +190,23 @@ hvg:
   min_mean:
   max_mean:
   min_disp:
-  # if you want to filter the scaled object by hvgs (essential for large datasets) then set filter to True
+  # It may be useful to exclude some genes from the HVG selection. 
+  # In the file resources/qc_genelist_1.0.csv, we include an example of genes that could be excluded when analysing immune cells, 
+  # Examine this file, it has a first column with gene ids and the second column identifying the groups to
+  # which this genes belong. 
+  # This workflow will exclude the genes that you specify by their group name. when specifying "default", the workflows will
+  # remove from hvg the genes that in the file are flagged "exclude". You can customize the gene list and change the name of the gene group in
+  # the `exclude:` param accordingly.
+  exclude_file: 
+  exclude: # this is the variable that defines the genes to be excluded in the above file, leave empty if you're not excluding genes from HVG
+  # Do you want to filter the object to retain only Highly Variable Genes?
   filter: False
-
 # Regression variables, what do you want to regress out, leave blank if nothing
-# I recommend not regressing out unless you have good reason to.
+# We recommend not regressing out unless you have good reason to.
 regress_variables:
-
+#----------------------------
 # Scaling
+#----------------------------
 # This scaling has the effect that all genes are weighted equally for downstream analysis. 
 # discussion from Leucken et al Best Practices paper: https://doi.org/10.15252/msb.20188746
 # "There is currently no consensus on whether or not to perform normalization over genes. 
@@ -199,17 +215,23 @@ regress_variables:
 # The preference between the two choices revolves around whether all genes should be weighted equally for downstream analysis, 
 # or whether the magnitude of expression of a gene is an informative proxy for the importance of the gene."
 run_scale: True
-# scale, clip values as per: https://scanpy.readthedocs.io/en/stable/api/scanpy.pp.scale.html
-scale_max_value:
+# if blank defaults scale, clip values as per: https://scanpy.readthedocs.io/en/stable/api/scanpy.pp.scale.html
+scale_max_value: 
 
-
-# run pca upstream correction methods.  
+#----------------------------
+# RNA Dimensionality reduction
+#----------------------------
 pca:
-  scree_n_pcs: 50
+  # number of components to compute
+  n_pcs: 50
+  # set "default" will use 'arpack'. 
+  # Otherwise specify a different solver, see https://scanpy.readthedocs.io/en/stable/generated/scanpy.tl.pca.html
+  solver: default 
+  # color to use when plotting the PCA
   color_by: sample_id
 
 # --------------------------------------------------------------------------------------------------------
-# Protein (PROT) normalisation
+# Protein (PROT) steps
 # --------------------------------------------------------------------------------------------------------
 prot:
   # comma separated string of normalisation options
@@ -231,10 +253,10 @@ prot:
   clr_margin: 0
 
   # DSB parameters:
-   # you must specify the path to the background h5mu created in pipeline ingest in order to run dsb.
+  # you must specify the path to the background h5mu created in pipeline ingest in order to run dsb.
   background_obj:
- # quantile clipping, even with normalisation, 
-  # some cells get extreme outliers which can be clipped as discussed https://github.com/niaid/dsb
+  # quantile clipping, 
+  # even with normalisation, some cells get extreme outliers which can be clipped as discussed https://github.com/niaid/dsb
   # maximum value will be set at the value of the 99.5% quantile, applied per feature
   # note that this feature is in the default muon mu.pp.dsb code, but manually implemented in this code.
   quantile_clipping: True
@@ -245,15 +267,27 @@ prot:
 
   # do you want to save the prot normalised assay additionally as a txt file:
   save_norm_prot_mtx: False
+  #----------------------------
+  # Prot Dimensionality reduction
+  #----------------------------
+  # it may be useful to run PCA on the protein assay, when you have more than 50 features.
+  # Set to False by default
+  pca: False
+  # number of components. Specify at least n_pcs <= number of features -1 
+  n_pcs: 50
+  # which solver to use, set "default" will use 'arpack'. 
+  solver: default
+  # column to be fetched from the protein layer .obs
+  color_by: sample_id
+
 # --------------------------------------------------------------------------------------------------------
-# ATAC preprocessing and normalisation
+# ATAC steps
 # --------------------------------------------------------------------------------------------------------
 atac:
   binarize: False
   normalize: TFIDF # "log1p" or "TFIDF"
   # if normalize = "TFIDF", else leave blank:
   TFIDF_flavour: signac # "signac", "logTF" or "logIDF"
-
   # highly variable feature selection:
   # HVF selection either with scanpy's pp.highly_variable_genes() function or a pseudo-FindTopFeatures() function of the signac package
   feature_selection_flavour: signac  # "signac" or "scanpy"
@@ -269,12 +303,19 @@ atac:
   #   "tc[x]": "tc" followed by a minimum total count, e.g. tc100 will set features with total counts > 100 as highly variable
   #   "NULL": All features are assigned as highly variable
   #   "NA": Highly variable features won't be changed
-
-  # which dimred to use
+  #----------------------------
+  # ATAC Dimensionality reduction
+  #----------------------------
   dimred: LSI #PCA or LSI
   n_comps: 50 # how many components to compute
   # which dimension to exclude from further processing (sometimes useful to remove PC/LSI_1  if it's associated to tech factors)
   # leave blank to retain all 
-  dim_remove: 1
+  # if using PCA, which solver to use. Default == 'arpack'
+  solver: default
+  # what covariate to use to color the dimensionality reduction
+  color_by: sample_id
+  # whether to remove the component(s) associated to technical effects, common to remove 1 for LSI
+  # leave blank to avoid removing any
+  dim_remove: 
 
 
