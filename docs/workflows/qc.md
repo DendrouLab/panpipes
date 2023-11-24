@@ -1,18 +1,20 @@
-QC
-==
+Ingestion and Quality Control metrics generation
+===========
 
 ## Pipeline steps for all modalities:
 
 Panpipes `ingest` loads and concatenates data from a variety of [filetype inputs](../usage/setup_for_qc_mm).
 Panpipes creates a mudata object containing the data in assays called 'rna', 'prot', 'atac', and 'rep'. See the [mudata documentation](https://mudata.readthedocs.io/en/latest/) for more details on interactively accessing these data.
 
+
 Feature names will be forced to be unique. This means that protein assay names will be prefixed with 'prot_'
+
 
 Then qc metrics are computed using [scanpy.pp.calculated_qc_metrics](https://scanpy.readthedocs.io/en/stable/generated/scanpy.pp.calculate_qc_metrics.html). Total counts per cell and total features per cell, are computed as standard, but the gene scores are completely customisable as described in the [gene list format page](../usage/gene_list_format). These metrics are plotted as violin plots, and scatters.
 
 
 ### RNA QC steps
-- Per cell QC metrics computed
+- Per cell QC metrics computed, optionally providing custom gene lists for calculation (see [Using custom genes annotations: gene list formats](../usage/gene_list_format.md))
 - Doublet scores are computed with [scrublet](https://github.com/swolock/scrublet)
 - cell cycle phases is inferred per cell with [sc.tl.score_genes_cell_cycle](https://scanpy.readthedocs.io/en/stable/generated/scanpy.tl.score_genes_cell_cycle.html)
 
@@ -38,11 +40,12 @@ isotype_n_pass: 2
 
 ### ATAC QC steps
 QC for atac includes some modality specific metrics computation, namely:
-- TSS (transcription start site) enrichment is computed with [mu.atac.tl.tss_enrichment](https://muon.readthedocs.io/en/latest/api/generated/muon.atac.tl.tss_enrichment.html)
 - Percent fragments in peaks 
 - Number of mitochondrial reads per cell
-Please note that differently from what happens with other modalities,  `panpipes ingest` expects one multiome sample at the time, since concatenating different peak-callings may result in unwanted artefacts. Please check the cellranger documentation on how to aggregate multiple atac runs before using panpipes.
-  
+- TSS (transcription start site) enrichment is computed with [mu.atac.tl.tss_enrichment](https://muon.readthedocs.io/en/latest/api/generated/muon.atac.tl.tss_enrichment.html)
+
+Please note that `panpipes ingest` expects that you have concatenated your multiome samples and so expects one multiome sample at the time, since concatenating different peak-callings may result in unwanted artefacts. Please check the cellranger documentation on how to aggregate multiple atac runs before using panpipes.
+
 
 ### Repertoire (Rep) QC Steps
 - Using the [scirpy](https://scirpy.scverse.org/en/stable/index.html) library (v.0.12.0), the chains are qc'd with [scirpy.tl.chain_qc](https://scirpy.scverse.org/en/stable/generated/scirpy.tl.chain_qc.html)
@@ -61,7 +64,7 @@ There is an additional optional `assess_background` step, if the raw data (inclu
 
 1.  Generate sample submission file as described in
     [Inputs to Multimodal QC pipeline](../setup_for_qc_mm)
-2.  Generate qc genelists as described in
+2.  Generate or supply qc genelists as described in
     [Gene list format](../gene_list_format)
 3.  For prot assay - generate the protein metadata file
     [example]((https://github.com/DendrouLab/panpipes/blob/main/resources/protein_metadata_w_iso.md)).
@@ -73,7 +76,7 @@ There is an additional optional `assess_background` step, if the raw data (inclu
 7.  Use outputs to decide filtering thresholds.
     -   **Note that the actual filtering occurs in the first step of
         Preprocess pipeline**
-    -   TODO: create doc to explain the pipeline outputs
+    
 
 The h5mu file outputted from `ingest` contains concatenated raw counts
 from all samples in the submission file, plus qc metrics are computed,
