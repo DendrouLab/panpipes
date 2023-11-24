@@ -76,14 +76,12 @@ elif args.dimred == "LSI":
     dimred = "X_lsi"
 
 if dimred not in adata.obsm:
-    L.info("i need a dimred to start Harmony, computing pca with default param")
-
-    if adata.var.shape[0] < int(args.n_pcs):
+    L.info("i need a dimred to start, computing pca with default param")
+    n_pcs = 50
+    if adata.var.shape[0] < n_pcs:
         L.info("You have less features than number of PCs you intend to calculate")
         n_pcs = adata.var.shape[0] - 1
         L.info("Setting n PCS to %i" % int(n_pcs))    
-    else:
-        n_pcs = int(args.n_pcs)
     sc.pp.scale(adata)
     sc.tl.pca(adata, n_comps=n_pcs, 
                     svd_solver='arpack', 
