@@ -82,6 +82,7 @@ parser.add_argument("--feature_selection_flavour",
 parser.add_argument("--min_cutoff",
                     default=None,
                     help="cutoff for Signac's HVF selection")
+parser.add_argument("--filter_by_hvf", default=False) 
 parser.add_argument("--color_by", default="batch") 
 
 
@@ -157,6 +158,19 @@ else:
 
 if "highly_variable" in atac.var: 
     L.warning( "You have %s Highly Variable Features", np.sum(atac.var.highly_variable))
+
+# filter by hvgs
+filter_by_hvgs = args.filter_by_hvf
+
+if filter_by_hvgs is True:
+    L.info("filtering object to only include highly variable features")
+    mdata.mod["atac"] = atac[:, atac.var.highly_variable]
+    if isinstance(mdata, mu.MuData):
+        mdata.update()
+    atac = mdata["atac"]
+    genes = atac.var
+    genes['gene_name'] = atac.var.index
+    genes.to_csv("filtered_variable_features.tsv", sep="\t", index=True)
 
 # The combined steps of TF-IDF followed by SVD are known as latent semantic indexing (LSI), 
 # and were first introduced for the analysis of scATAC-seq data by Cusanovich et al. 2015.

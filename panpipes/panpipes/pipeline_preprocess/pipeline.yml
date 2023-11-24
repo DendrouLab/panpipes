@@ -296,7 +296,9 @@ atac:
   max_mean: #default 1.5
   min_disp: #default 0.5
   # if n_top_features is specified, it overwrites previous defaults for HVF selection
-  n_top_features: 
+  n_top_features:
+  # Filter the atac layer to retain only HVF 
+  filter_by_hvf: False
   # parameter for HVF flavour == "signac"
   min_cutoff: q5
   # min_cutoff can be specified as follows:
