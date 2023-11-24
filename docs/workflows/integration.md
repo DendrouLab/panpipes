@@ -12,18 +12,16 @@ The flowchart indicates which tools are available for each modality out of RNA (
 
 1.  In a new folder, generate config file for integration,
     `panpipes integration config` and edit the pipeline.yml file.
-2.  Run `panpipes integration make plot_pcas` and assess the post
-    filtering qc plots, and pca outputs
-3.  Run batch correction with
-    `panpipes integration make batch_correction` (or run steps 2 and 3
+2.  Run batch correction with
+    `panpipes integration make batch_correction` (or run all corrections
     in one go with `panpipes integration make full`)
-4.  Use pipeline outputs to decide on the best batch correction method
-5.  Edit the integration pipeline yml with your preferred batch
+3.  Use pipeline outputs to decide on the best batch correction method
+4.  Edit the integration pipeline yml with your preferred batch
     correction
-6.  Run `panpipes integration make merge_correction`
+5.  Run `panpipes integration make merge_correction`
 
 
 ## Expected structure of MuData object
 The ideal way to run `panpipes integration` is to use the output mudata file from `panpipes preprocess`, as this will make sure the MuData object has correctly names layers and slots. 
 
-The bare minimum MuData object required is normalised data in the X slot of each modality,  a 'raw_counts' layer in each modality, and a sample_id column in each slot of the obs and the outer obs. Plus a PCA in the obsm slot for each modality.
+The bare minimum MuData object required is normalised data in the X slot of each modality,  a 'raw_counts' layer in each modality, and a sample_id column in each slot of the obs and the outer obs. A plus is a PCA in the obsm slot for each modality, if not it will be calculated on the flight with default parameters.
