@@ -11,7 +11,8 @@
 - added full control of dimred params for all modalities in pipeline_preprocess.py
 - more info on custom genes format files added to documentation
 - parsing summary files for cellranger multi version < 7 
-
+- added check for n_pcs in run_neighbors_method_choice
+- added filtering by HVF for atac
 
 ### fixed
 
@@ -27,6 +28,9 @@
 - fix to avoid rerunning HVF and explicitly check X layer before normalization in pipeline_preprocess.py
 - fix plotting of umaps after batch correction
 - fix fetching string scvi if present in mudata for wnn
+- fixed lsi requirement for atac
+- fixed top features for atac
+- fixed filtering HVG for rna
 
 ### dependencies
 

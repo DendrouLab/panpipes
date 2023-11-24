@@ -181,9 +181,10 @@ filter_by_hvgs = args.filter_by_hvg
 
 if filter_by_hvgs is True:
     L.info("filtering object to only include highly variable genes")
-    adata = adata[:, adata.var.highly_variable]
+    mdata.mod["rna"] = adata[:, adata.var.highly_variable]
     if isinstance(mdata, mu.MuData):
         mdata.update()
+    adata = mdata.mod["rna"]
     genes = adata.var
     genes['gene_name'] = adata.var.index
     genes.to_csv("filtered_genes.tsv", sep="\t", index=True)

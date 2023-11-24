@@ -62,6 +62,8 @@ parser.add_argument("--max_mean",
 parser.add_argument("--min_disp",
                     default=0.5,
                     help="dispersion min for HVF selection")
+parser.add_argument('--n_top_features', default=None,
+                    help = "if using scanpy and setting this, selecting these many HVF")
 parser.add_argument("--dimred",
                     default="PCA",
                     help="which dimensionality red to use for atac")
@@ -80,13 +82,14 @@ parser.add_argument("--feature_selection_flavour",
 parser.add_argument("--min_cutoff",
                     default=None,
                     help="cutoff for Signac's HVF selection")
+parser.add_argument("--filter_by_hvf", default=False) 
 parser.add_argument("--color_by", default="batch") 
 
 
 args, opt = parser.parse_known_args()
 
 L.info("running with args:")
-L.debug(args)
+L.info(args)
 
 figdir = args.figdir
 
@@ -143,8 +146,11 @@ if "highly_variable" in atac.var:
 else:
 
     if args.feature_selection_flavour == "scanpy":
-        sc.pp.highly_variable_genes(atac, min_mean=float(args.min_mean), 
-        max_mean=float(args.max_mean), min_disp=float(args.min_disp))
+        if args.n_top_features is None:
+            sc.pp.highly_variable_genes(atac, min_mean=float(args.min_mean), 
+            max_mean=float(args.max_mean), min_disp=float(args.min_disp))
+        else:
+            sc.pp.highly_variable_genes(atac, n_top_genes=int(args.n_top_features))
     elif args.feature_selection_flavour == "signac":
         findTopFeatures_pseudo_signac(atac, args.min_cutoff)
     else:
@@ -153,16 +159,32 @@ else:
 if "highly_variable" in atac.var: 
     L.warning( "You have %s Highly Variable Features", np.sum(atac.var.highly_variable))
 
+# filter by hvgs
+filter_by_hvgs = args.filter_by_hvf
+
+if filter_by_hvgs:
+    L.info("filtering object to only include highly variable features")
+    mdata.mod["atac"] = atac[:, atac.var.highly_variable]
+    if isinstance(mdata, mu.MuData):
+        mdata.update()
+    atac = mdata["atac"]
+    genes = atac.var
+    genes['gene_name'] = atac.var.index
+    genes.to_csv("filtered_variable_features.tsv", sep="\t", index=True)
+
 # The combined steps of TF-IDF followed by SVD are known as latent semantic indexing (LSI), 
 # and were first introduced for the analysis of scATAC-seq data by Cusanovich et al. 2015.
 
+if args.dimred == "LSI" and args.normalize == "TFIDF":
+    lsi(adata=atac, num_components=int(args.n_comps))
+else:
+    L.info("Applying LSI on logged_counts is not recommended. Changing dimred to PCA")
+    args.dimred = "PCA"
 if args.dimred == "PCA":
     sc.pp.scale(atac)
     atac.layers["scaled_counts"] = atac.X.copy()
     sc.tl.pca(atac, n_comps=int(args.n_comps), svd_solver=args.solver, 
     random_state=0)
-if args.dimred == "LSI":
-    lsi(adata=atac, num_components=int(args.n_comps))
 
 col_variables = args.color_by.split(",")
 col_variables = [a.strip() for a in col_variables]

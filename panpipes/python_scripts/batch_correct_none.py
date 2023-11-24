@@ -83,10 +83,27 @@ if int(args.neighbors_n_pcs) > 0:
     pc_kwargs['use_rep'] = dimred
     pc_kwargs['n_pcs'] = int(args.neighbors_n_pcs)
 else:
-    # If n_pcs==0 use .X if use_rep is None.
+    # need to push scanpy to use .X if use_rep is None.
     pc_kwargs['use_rep'] = None
     pc_kwargs['n_pcs'] = int(args.neighbors_n_pcs)
-    
+
+
+if dimred not in adata.obsm:
+    L.info("i need a dimred to start, computing pca with default param")
+    n_pcs = 50
+    if adata.var.shape[0] < n_pcs:
+        L.info("You have less features than number of PCs you intend to calculate")
+        n_pcs = adata.var.shape[0] - 1
+        L.info("Setting n PCS to %i" % int(n_pcs))    
+    sc.pp.scale(adata)
+    sc.tl.pca(adata, n_comps=n_pcs, 
+                    svd_solver='arpack', 
+                    random_state=0) 
+    pc_kwargs['use_rep'] = "X_pca"
+    pc_kwargs['n_pcs'] = n_pcs
+
+
+
 run_neighbors_method_choice(adata, 
     method=args.neighbors_method, 
     n_neighbors=int(args.neighbors_k), 

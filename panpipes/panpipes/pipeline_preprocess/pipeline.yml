@@ -295,6 +295,10 @@ atac:
   min_mean: #default 0.05
   max_mean: #default 1.5
   min_disp: #default 0.5
+  # if n_top_features is specified, it overwrites previous defaults for HVF selection
+  n_top_features:
+  # Filter the atac layer to retain only HVF 
+  filter_by_hvf: False
   # parameter for HVF flavour == "signac"
   min_cutoff: q5
   # min_cutoff can be specified as follows:
@@ -306,7 +310,7 @@ atac:
   #----------------------------
   # ATAC Dimensionality reduction
   #----------------------------
-  dimred: LSI #PCA or LSI
+  dimred: LSI #PCA or LSI (LSI will only be computed if the normalize param is set to TFIDF)
   n_comps: 50 # how many components to compute
   # which dimension to exclude from further processing (sometimes useful to remove PC/LSI_1  if it's associated to tech factors)
   # leave blank to retain all 
