@@ -62,6 +62,8 @@ parser.add_argument("--max_mean",
 parser.add_argument("--min_disp",
                     default=0.5,
                     help="dispersion min for HVF selection")
+parser.add_argument('--n_top_features', default=None,
+                    help = "if using scanpy and setting this, selecting these many HVF")
 parser.add_argument("--dimred",
                     default="PCA",
                     help="which dimensionality red to use for atac")
@@ -143,8 +145,11 @@ if "highly_variable" in atac.var:
 else:
 
     if args.feature_selection_flavour == "scanpy":
-        sc.pp.highly_variable_genes(atac, min_mean=float(args.min_mean), 
-        max_mean=float(args.max_mean), min_disp=float(args.min_disp))
+        if args.n_top_features is None:
+            sc.pp.highly_variable_genes(atac, min_mean=float(args.min_mean), 
+            max_mean=float(args.max_mean), min_disp=float(args.min_disp))
+        else:
+            sc.pp.highly_variable_genes(atac, n_top_genes=int(args.n_top_features))
     elif args.feature_selection_flavour == "signac":
         findTopFeatures_pseudo_signac(atac, args.min_cutoff)
     else:

@@ -238,6 +238,8 @@ def atac_preprocess(log_file, scaled_file):
         cmd += " --max_mean %(atac_max_mean)s"    
     if PARAMS['atac_min_disp'] is not None:
         cmd += " --min_disp %(atac_min_disp)s"    
+    if PARAMS['atac_n_top_features'] is not None:
+        cmd += " --n_top_features %(atac_n_top_features)s" 
     if PARAMS['atac_dimred'] is not None:
         cmd += " --dimred %(atac_dimred)s"
     else:    
