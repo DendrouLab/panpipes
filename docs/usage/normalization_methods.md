@@ -34,14 +34,15 @@ Additionally, the normalized data can be scaled using scanpy's [sc.pp.scale](htt
 Layers nomenclature
 ============================
 
-Normalised data is saved in each modality slot in their specific layers:
+Raw, Normalised and Scaled data are saved for each modality in their specific layers:
 
     atac.layers["logTF_norm"] = atac.X.copy()
-    
+
+Using the following nomenclature:
 
 | method                 | layer           | modality      |
 | ---------------------- | --------------- | ------------- |
-| raw counts             | "raw_counts     | RNA/ATAC/PROT |
+| raw counts             | "raw_counts"    | RNA/ATAC/PROT |
 | standard log1p         | "logged_counts" | RNA or ATAC   |
 | scaled counts          | "scaled_counts" | RNA or ATAC   |
 | clr                    | "clr"           | PROT          |
@@ -49,6 +50,7 @@ Normalised data is saved in each modality slot in their specific layers:
 | TFIDF (signac flavour) | "signac_norm"   | ATAC          |
 | TFIDF (logTF)          | "logTF_norm"    | ATAC          |
 | TFIDF (logIDF)         | "logIDF_norm"   | ATAC          |
+
 
 
 
