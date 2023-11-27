@@ -1,7 +1,8 @@
-# ----------------------- #
-# Spatial QC pipeline 
-# ----------------------- #
-# Written by Fabiola Curion, Sarah Ouologuem
+# ============================================================
+# Ingestion, spatial transcriptomics workflow Panpipes (pipeline_qc_spatial.py)
+# ============================================================
+# Written by Fabiola Curion and Sarah Ouologuem
+
 
 # This pipeline needs a sample metadata file (see resources for an example)
 # Will run :

@@ -1,6 +1,6 @@
-# ----------------------- #
-# QC pipeline DendrouLab
-# ----------------------- #
+# ============================================================
+# Ingest workflow Panpipes (pipeline_ingest.py)
+# ============================================================
 # written by Charlotte Rich-Griffin, Fabiola Curion
 
 # This pipeline needs a sample metadata file (see resources for an example)

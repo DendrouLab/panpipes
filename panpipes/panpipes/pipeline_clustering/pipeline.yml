@@ -1,5 +1,7 @@
-# Pipeline pipeline_clustering_scanpy.py configuration file
-# ==============================================
+# ============================================================
+# Clustering workflow Panpipes (pipeline_clustering.py)
+# ============================================================
+# written by Charlotte Rich-Griffin, Fabiola Curion
 
 # ------------------------
 # compute resource options

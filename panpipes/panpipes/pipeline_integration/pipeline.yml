@@ -1,5 +1,7 @@
-# Pipeline pipeline_integration.py configuration file
-# ==============================================
+# ============================================================
+# Integration workflow Panpipes (pipeline_integration.py)
+# ============================================================
+# written by Charlotte Rich-Griffin, Fabiola Curion
 
 # compute resource options
 # ------------------------

@@ -1,7 +1,7 @@
-# ==============================================
-# Preprocessing, spatial transcriptomics
-# ==============================================
-
+# ============================================================
+# Preprocessing, spatial transcriptomics workflow Panpipes (pipeline_preprocess_spatial.py)
+# ============================================================
+# Written by Fabiola Curion and Sarah Ouologuem
 
 # ---------------------------
 # 0. Compute resource options

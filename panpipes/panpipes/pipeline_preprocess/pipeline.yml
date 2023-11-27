@@ -1,6 +1,9 @@
-# Pipeline pipeline_preprocess.py configuration file
-# ==============================================
-# Authors Charlotte Rich-Griffin and Fabiola Curion
+# ============================================================
+# Preprocess workflow Panpipes (pipeline_preprocess.py)
+# ============================================================
+# written by Charlotte Rich-Griffin and Fabiola Curion
+
+
 # ------------------------
 # compute resource options
 # ------------------------
