@@ -1,6 +1,6 @@
-# ----------------------- #
-# Visualisation pipeline DendrouLab
-# ----------------------- #
+# ============================================================
+# Visualization workflow Panpipes (pipeline_vis.py)
+# ============================================================
 # written by Charlotte Rich-Griffin and Fabiola Curion
 
 # WARNING: Do not edit any line with the format `continuous_vars: &continuous_vars` or `continuous_vars: *continuous_vars`

@@ -1,5 +1,7 @@
-# Pipeline pipeline_refmap.py configuration file
-# ==============================================
+# ============================================================
+# Refmap workflow Panpipes (pipeline_refmap.py)
+# ============================================================
+# written by Charlotte Rich-Griffin and Fabiola Curion
 
 # compute resource options
 # ------------------------

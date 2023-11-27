@@ -1,6 +1,6 @@
-# ----------------------- #
-# QC pipeline DendrouLab
-# ----------------------- #
+# ============================================================
+# Ingest workflow Panpipes (pipeline_ingest.py)
+# ============================================================
 # written by Charlotte Rich-Griffin, Fabiola Curion
 
 # This pipeline needs a sample metadata file (see resources for an example)
@@ -120,8 +120,6 @@ subset_prot_barcodes_to_rna: False
 # if starting from cellranger outputs, you can parse multiple metrics_summary.csv files and plot them together
 # the workflow looks for the metrics_summary file in the "outs" folder and will stop if it doesn't find it.
 plot_10X_metrics: True #Set to False if not using cellranger folders as input
-# if starting from cellranger outputs, you can parse the raw cell counts and plot kneeplots
-kneeplot: False
 
 # ------------
 # Doublets on RNA - Scrublet
@@ -325,8 +323,8 @@ normalisation_methods: clr #default clr
 # margin determines whether you normalise per cell (as you would RNA norm), 
 # or by feature (recommended, due to the variable nature of prot assays). 
 # CLR margin 0 is recommended for informative qc plots in this pipeline
-# 0 = normalise colwise (per feature)
-# 1 = normalise rowwise (per cell)
+# 0 = normalise rowwise (per feature)
+# 1 = normalise colwise (per cell)
 clr_margin: 0
 
 
