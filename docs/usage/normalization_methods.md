@@ -31,7 +31,7 @@ Additionally, the normalized data can be scaled using scanpy's [sc.pp.scale](htt
 
 
 
-Layers nomenclature
+Layers nomenclature within each modality
 ============================
 
 Raw, Normalised and Scaled data are saved for each modality in their specific layers:
