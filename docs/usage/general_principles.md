@@ -1,7 +1,7 @@
 
 
 General principles for running panpipes 
-----------------------------------------
+=====================================
 
 
 Panpipes is a single cell multimodal analysis pipeline with a lot of functionalities to streamline and speed up your single cell projects.
