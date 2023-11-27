@@ -162,7 +162,7 @@ L.info("calculated scores and metrics")
 L.info("saving anndata and obs in a metadata tsv file")
 write_obs(mdata, output_prefix=args.sampleprefix, 
         output_suffix="_cell_metadata.tsv")
-# CRITICAL to do WORK OUT WHICH QC SCRIPT TO USE  TO SAVE THE MDATA OR ANNDATA
+
 mdata.write(args.outfile)
 
 L.info("done")
