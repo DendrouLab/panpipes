@@ -200,10 +200,14 @@ def prot_preprocess( log_file, scaled_file, ):
     if PARAMS['prot_save_norm_prot_mtx'] is True:
         cmd += " --save_mtx True"
     if PARAMS["prot_pca"] is True:
+        if PARAMS['prot_solver'] is not None:
+            if PARAMS['prot_solver'] == "default":
+                cmd += " --pca_solver arpack"
+            else:
+                cmd += " --pca_solver %(pca_solver)s"
         cmd += """ 
         --run_pca True
         --n_pcs %(prot_n_pcs)s
-        --pca_solver %(prot_solver)s
         --color_by %(prot_color_by)s
         """
     cmd += " > %(log_file)s"
