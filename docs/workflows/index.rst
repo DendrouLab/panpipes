@@ -7,8 +7,8 @@ Workflows
     qc
     preprocess
     integration
-    refmap
     clustering
+    refmap
     vis
     ingest_spatial
     preprocess_spatial
