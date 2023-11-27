@@ -1,7 +1,7 @@
 Tutorials
 ==========
 
-Check out the following tutorials which take you through the running of a subset of the data used in our preprint:
+Check out the following tutorials which take you through some common analysis steps with Panpipes:
 
 
 - [Ingest pipeline](https://panpipes-tutorials.readthedocs.io/en/latest/ingesting_data/Ingesting_data_with_panpipes.html)
