@@ -36,7 +36,7 @@ If no dimensionality reduction and HVF are present, the pipeline defaults to cal
 
 ## Refmap
 
-Refmap accepts as query any mudata with raw counts in the `mdata['rna'].X` layer, the reference model and, optionally, the reference anndata. For more info on formatting the query see the [refmap workflow]()
+Refmap accepts as query any mudata with raw counts in the `mdata['rna'].X` layer, the reference model and, optionally, the reference anndata. For more info on formatting the query see the [refmap workflow](https://panpipes-pipelines.readthedocs.io/en/latest/workflows/refmap.html)
 
 
 ## Vis
