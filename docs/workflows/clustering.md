@@ -6,9 +6,10 @@ The panpipes clustering pipeline runs the following steps:
 ```
 neighbors:
   rna:
-    use_existing: False
-    # number of Principal Components to calculate for neighbours and umap:
-    dim_red: X_harmony (or any reduced dimensional represenation in your MuData object)
+    use_existing: True
+    # which representation in .obsm to use for nearest neighbors
+    # if dim_red=X_pca and X_pca not in .obsm, will be computed with default parameters
+    dim_red: X_pca
     #how many components to use for clustering
     n_dim_red: 30
     # number of neighbours
@@ -44,3 +45,5 @@ neighbors:
 The ideal way to run `panpipes clustering` is to use the output mudata file from `panpipes preprocess` or `panpipes integration`, as this will make sure the MuData object has correctly names layers and slots. 
 
 The bare minimum MuData object required is normalised data in the X slot of each modality,  a sample_id column in each slot of the obs and the outer obs, and the layers indicated in the find_markers section of the yml.
+
+Check the [clustering tutorial](https://panpipes-tutorials.readthedocs.io/en/latest/clustering/clustering_tutorial.html) for an example of how to run the workflow.

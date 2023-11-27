@@ -4,12 +4,12 @@ Tutorials
 Check out the following tutorials which take you through some common analysis steps with Panpipes:
 
 
-- [Ingest pipeline](https://panpipes-tutorials.readthedocs.io/en/latest/ingesting_data/Ingesting_data_with_panpipes.html)
-- [Preprocessing pipeline](https://panpipes-tutorials.readthedocs.io/en/latest/filtering_data/filtering_data_with_panpipes.html)
-- [Integration pipeline](https://panpipes-tutorials.readthedocs.io/en/latest/uni_multi_integration/Integrating_data_with_panpipes.html)
-- [Clustering pipeline](https://panpipes-tutorials.readthedocs.io/en/latest/clustering/clustering_tutorial.html)
-- [Reference mapping](https://panpipes-tutorials.readthedocs.io/en/latest/refmap_pancreas/Reference_mapping.html)
-- [Visualization pipeline](https://panpipes-tutorials.readthedocs.io/en/latest/visualization/vis_with_panpipes.html)
+- [Ingest workflow](https://panpipes-tutorials.readthedocs.io/en/latest/ingesting_data/Ingesting_data_with_panpipes.html)
+- [Preprocessing workflow](https://panpipes-tutorials.readthedocs.io/en/latest/filtering_data/filtering_data_with_panpipes.html)
+- [Integration workflow](https://panpipes-tutorials.readthedocs.io/en/latest/uni_multi_integration/Integrating_data_with_panpipes.html)
+- [Clustering workflow](https://panpipes-tutorials.readthedocs.io/en/latest/clustering/clustering_tutorial.html)
+- [Reference mapping workflow](https://panpipes-tutorials.readthedocs.io/en/latest/refmap_pancreas/Reference_mapping.html)
+- [Visualization workflow](https://panpipes-tutorials.readthedocs.io/en/latest/visualization/vis_with_panpipes.html)
   
 Spatial analysis:
 
