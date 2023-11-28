@@ -264,7 +264,7 @@ prot:
   # note that this feature is in the default muon mu.pp.dsb code, but manually implemented in this code.
   quantile_clipping: True
   
-  # which normalisation method to be store in the X slot. If you choose to run more than one normalisation method,
+  # which normalisation method to be stored in the X slot. If you choose to run more than one normalisation method,
   # which one to you want to store in the X slot, if not specified 'dsb' is the default when run.
   store_as_X: 
 

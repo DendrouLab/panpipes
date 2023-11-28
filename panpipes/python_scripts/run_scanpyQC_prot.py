@@ -95,10 +95,10 @@ if args.per_cell_metrics is not None:
     per_cell_metrics = args.per_cell_metrics.split(",")
     per_cell_metrics = [a.strip() for a in per_cell_metrics]
 
-# TODO: What happens if it is None?
 
 
-# work out if we already have istype column, if not try to infer from index.
+
+# work out if we already have isotype column, if not try to infer from index.
 if 'isotype' not in prot.var.columns:
     # this means that isotype column was not included in the protein conversion table 
     # so we are going to have a wwhack at identifying them
@@ -123,7 +123,7 @@ sc.pp.calculate_qc_metrics(prot,
                         percent_top=None,log1p=True, inplace=True)
 
 ## let's assess the isotype outlier cells. 
-#(Cells with an excessive amount of isotype indictaing stickiness)
+#(Cells with an excessive amount of isotype indicating stickiness)
 if (len(isotypes) > 0) & check_for_bool(args.identify_isotype_outliers):
     L.info("identifying isotype outliers")
     # this measn we found some isotypes earlier
