@@ -159,6 +159,8 @@ if args.ccgenes is not None:
 
 L.info("calculated scores and metrics")
 
+mdata.update()
+
 L.info("saving anndata and obs in a metadata tsv file")
 write_obs(mdata, output_prefix=args.sampleprefix, 
         output_suffix="_cell_metadata.tsv")
