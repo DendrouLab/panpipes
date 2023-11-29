@@ -12,6 +12,7 @@ We create a conda environment with R and python
 Panpipes has a lot of dependencies, so you may want to consider [`mamba`](https://mamba.readthedocs.io/en/latest/index.html) instead of `conda for installation.
 
 ```
+#This follows the suggestions made here: [https://www.biostars.org/p/498049/](https://www.biostars.org/p/498049/) 
 conda config --add channels conda-forge
 conda config --set channel_priority strict
 # you should remove the strict priority afterwards!
@@ -23,10 +24,21 @@ now we activate the environment
 ```
 conda activate pipeline_env
 ```
+Panpipes requires the unix package `time`, in conda you can install it with:
+You can check if it installed with `dpkg-query -W time`. If time not already installed, you can 
 
-This follows the suggestions made here: [https://www.biostars.org/p/498049/](https://www.biostars.org/p/498049/) 
+```
+conda install time
+```
+or
 
-Install specific dependencies
+```
+apt-get install time
+```
+
+
+
+Install specific python dependencies
 
 ```
 conda install -c conda-forge pynndescent
@@ -37,23 +49,6 @@ Install R packages
 conda install -c conda-forge r-tidyverse r-optparse r-ggforce r-ggraph r-xtable r-hdf5r r-clustree
 ```
 
-Panpipes requires the unix package `time`, in conda you can install it with:
-
-You can check if it installed with 
-
-```
-dpkg-query -W time
-```
-if this is not already installed on your conda env with: 
-
-```
-conda install time
-```
-or
-
-```
-apt-get install time
-```
 
 You can install `panpipes` directly from `PyPi` with:
 
