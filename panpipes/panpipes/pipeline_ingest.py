@@ -313,6 +313,7 @@ def concat_bg_mudatas(infiles, outfile):
 
 def orfile():
     return PARAMS['sample_prefix'] + "_cell_metadata.tsv"
+@active_if(PARAMS["scr_run"])
 @active_if(PARAMS['modalities_rna'])
 @active_if(PARAMS["use_existing_h5mu"] is False)
 @follows(mkdir("scrublet"))
