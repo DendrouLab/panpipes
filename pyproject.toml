@@ -49,6 +49,7 @@ dependencies = [
     "paramiko", 
     "pep8",
     "pysam",
+    "pynndescent",
     "pytest",
     "pyyaml",
     "ruffus", 
