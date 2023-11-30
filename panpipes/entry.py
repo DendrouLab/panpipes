@@ -20,7 +20,8 @@ import sys
 import re
 import imp
 import panpipes
-
+from panpipes.R_scripts import __path__ as r_path
+import subprocess
 
 def main(argv=None):
     argv = sys.argv
@@ -39,12 +40,16 @@ def main(argv=None):
         print(*pipelines_list, sep="\n")
         return
     command = argv[1]
-    command = re.sub("-", "_", command)
-    pipeline = "pipeline_{}".format(command)
-    del sys.argv[0]
-    (file, pathname, description) = imp.find_module(pipeline, paths)
-    module = imp.load_module(pipeline, file, pathname, description)
-    module.main(sys.argv)
+    if command != 'install_r_dependencies':
+        command = re.sub("-", "_", command)
+        pipeline = "pipeline_{}".format(command)
+        del sys.argv[0]
+        (file, pathname, description) = imp.find_module(pipeline, paths)
+        module = imp.load_module(pipeline, file, pathname, description)
+        module.main(sys.argv)
+    else:
+        subprocess.check_output(["Rscript", r_path[0] + "/install_R_libs.R"])
+
 
 
 if __name__ == "__main__":
