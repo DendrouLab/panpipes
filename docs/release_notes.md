@@ -4,6 +4,14 @@ Releases
 ## [latest]
 
 ### added
+
+### fixed
+
+### dependencies
+
+## v0.4.1
+
+### added
 - added example multiome submission file 10X_h5
 - added example multiome submission file cellranger
 - workflows & tutorials for `qc_spatial`, `preprocess_spatial`, and `deconvolution_spatial` to readthedocs
