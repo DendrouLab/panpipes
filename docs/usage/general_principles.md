@@ -92,4 +92,4 @@ When it's completed, you will find a message informing you it's done, like this 
 
 ## Final notes
 
-All panpipes workflow follow these general principles, with specific custom parameters and input files for each workflow. See the [Worflows](../workflows/) section for detailed info on each workflow and check out our [Tutorials](../tutorials/) for more examples.
+All panpipes workflow follow these general principles, with specific custom parameters and input files for each workflow. See the [Worflows](https://panpipes-pipelines.readthedocs.io/en/latest/workflows/index.html) section for detailed info on each workflow and check out our [Tutorials](https://panpipes-pipelines.readthedocs.io/en/latest/tutorials/index.html) for more examples.
