@@ -52,7 +52,6 @@ Big Change! the submission files for the `ingest` workflow have now changed! we 
 See tutorials for examples of submission files.
 
 
-
 ### added
 - merged PR #111:
   - LSI in panpipes_preprocess is run on the highly variable features
@@ -82,7 +81,7 @@ See tutorials for examples of submission files.
 ### dependencies
 - additional dependencies: squidpy, cell2location, openpyxl
 
-# v 0.2.0
+## v 0.2.0
 - First public version of panpipes
     - contains qc_mm, preprocess, intergration, clustering
 
