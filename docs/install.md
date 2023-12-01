@@ -1,17 +1,18 @@
 
 # Installation of panpipes
 
-## Step 1: create virtual environment
+### Create virtual environment
 
 We recommend running panpipes within a virtual environment to maintain reproducibility
 
 
 ### Option 1: create conda environment (Recommended)
 
-We create a conda environment with R and python
-Panpipes has a lot of dependencies, so you may want to consider [`mamba`](https://mamba.readthedocs.io/en/latest/index.html) instead of `conda for installation.
+To Run panpipes, we install it in a conda environment with R and python.
+Panpipes has a lot of dependencies, so you may want to consider the faster [`mamba`](https://mamba.readthedocs.io/en/latest/index.html) instead of `conda` for installation.
 
 ```
+#This follows the suggestions made here: [https://www.biostars.org/p/498049/](https://www.biostars.org/p/498049/) 
 conda config --add channels conda-forge
 conda config --set channel_priority strict
 # you should remove the strict priority afterwards!
@@ -24,27 +25,42 @@ now we activate the environment
 conda activate pipeline_env
 ```
 
-This follows the suggestions made here: [https://www.biostars.org/p/498049/](https://www.biostars.org/p/498049/) 
-
-Install specific dependencies
-
-```
-conda install -c conda-forge pynndescent
-```
-
-Install R packages
+Let's first install the R packages
 ```
 conda install -c conda-forge r-tidyverse r-optparse r-ggforce r-ggraph r-xtable r-hdf5r r-clustree
 ```
 
-Panpipes requires the unix package `time`, in conda you can install it with:
+Then we can install panpipes: 
 
-You can check if it installed with 
+#### 1. Installing panpipes from PyPi 
+
+You can install `panpipes` directly from `PyPi` with:
 
 ```
-dpkg-query -W time
+pip install panpipes
 ```
-if this is not already installed on your conda env with: 
+
+If you intend to use panpipes for spatial analysis, instead install:
+```
+pip install 'panpipes[spatial]'
+```
+The extra `[spatial]` includes squidpy and cell2location packages.
+
+
+#### 2. Nightly versions of panpipes.
+
+If you would prefer to use the most recent dev version, install from github
+
+```
+git clone https://github.com/DendrouLab/panpipes
+cd panpipes
+pip install -e .
+```
+
+------------
+
+Panpipes requires the unix package `time`. 
+You can check if it installed with `dpkg-query -W time`. If time not already installed, you can 
 
 ```
 conda install time
@@ -55,33 +71,11 @@ or
 apt-get install time
 ```
 
-You can install `panpipes` directly from `PyPi` with:
 
-```
-pip install panpipes
-```
-
-If you intend to use panpies for spatial analysis, instead install:
-```
-pip install 'panpipes[spatial]'
-```
-The extra `[spatial]` includes squidpy and cell2location packages.
-
-
-
-#### Nightly versions of panpipes.
-
-If you would prefer to use the most recent dev version, install from github
-
-```
-git clone https://github.com/DendrouLab/panpipes
-cd panpipes
-pip install -e .
-```
 
 ### Option 2: python venv environment:
 
-Navigate to where you want to create your virtual environment  and follow the steps below to create a pip virtual environment
+Navigate to where you want to create your virtual environment and follow the steps below to create a pip virtual environment
 
 ```
 python3 -m venv --prompt=panpipes python3-venv-panpipes/
@@ -98,19 +92,21 @@ As explained in the conda installation, you can install `panpipes` with:
 ```
 pip install panpipes
 ```
+or install a nightly version of panpipes cloning the github repo.
 
-If you would prefer to use the most recent dev version, install from github
+#### R packages installation in python venv
+
+If you are using a venv virtual environment, the pipeline will call a local R installation, so make sure R is installed and install the required packages with the command we provide below.
+(This executable requires that you specify a CRAN mirror in your `.Rprofile`).
+for example, add this line to your `.Rprofile` to automatically fetch the preferred mirror:
+
+*remember to customise with your preferred [R mirror](https://cran.r-project.org/mirrors.html).*
 
 ```
-git clone https://github.com/DendrouLab/panpipes
-cd panpipes
-pip install -e .
+  options(repos = c(CRAN="https://cran.uni-muenster.de/"))
 ```
 
-
-
-If you are using a venv virtual environment,  the pipeline will call a local R installation, so make sure R is installed and install the required packages with the command we provide below.
-(This executable requires that you specify  a CRAN mirror in your `.Rprofile`)
+Now, to automatically install the R dependecies, run:
 
  ```
 panpipes install_r_dependencies
@@ -131,13 +127,11 @@ A list of available pipelines should appear!
 
 
 You're all set to run `panpipes` on your local machine.
-If you want to configure it on a HPC server, jump to [step 2](#step-2-pipeline-configuration)
+If you want to configure it on a HPC server, follow the next instructions.
 
-
-## Step 2 pipeline configuration 
-
+## Pipeline configuration for HPC clusters
 (For SGE or SLURM clusters)
-*Note: You won't need this for a local installation of panpipes.*
+*Note: You only need this configuration step if you want to use an HPC to dispatch individual task as separate parallel jobs. You won't need this for a local installation of panpipes.*
 
 Create a yml file for the cgat core pipeline software to read
 
@@ -189,7 +183,7 @@ echo "export DRMAA_LIBRARY_PATH=$PATH_TO/libdrmaa.so.1.0" >> ~/.bashrc
 ```
 
 ### Specifying Conda environments to run panpipes
-If using conda environments, you can use one single big environment (the instructions provided do that) or create one for each of the workflows in panpipes, (i.e. one workflow = one environment) 
+If using conda environments, you can use one single big environment (the instructions provided do just that) or create one for each of the workflows in panpipes, (i.e. one workflow = one environment) 
 The environment (s) should be specified in the .cgat.yml global configuration file or in each of the single workflows pipeline.yml configuration files and it will be picked up by the pipeline as the default environment. 
 Please note that if you specify the conda environment in the workflows configuration file this will be the first choice to run the pipeline. 
 
