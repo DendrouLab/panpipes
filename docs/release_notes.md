@@ -3,7 +3,7 @@ Releases
 ==============
 
 
-## [main]
+## [latest]
 
 ### added
 - added example multiome submission file 10X_h5
