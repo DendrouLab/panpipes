@@ -33,6 +33,7 @@
 - fixed lsi requirement for atac
 - fixed top features for atac
 - fixed filtering HVG for rna
+- moved pynndescent to PyPi dependencies
 
 
 ### dependencies
