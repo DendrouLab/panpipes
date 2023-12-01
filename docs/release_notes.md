@@ -82,7 +82,7 @@ See tutorials for examples of submission files.
 ### dependencies
 - additional dependencies: squidpy, cell2location, openpyxl
 
-## v 0.2.0
+## v0.2.0
 - First public version of panpipes
     - contains qc_mm, preprocess, intergration, clustering
 
