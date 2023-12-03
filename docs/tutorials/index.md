@@ -21,5 +21,6 @@ Spatial analysis:
 Additional tutorials:
 
 - [Ingesting multiome from cellranger outputs](https://panpipes-tutorials.readthedocs.io/en/latest/ingesting_multiome/ingesting_mome.html)
+- [Ingesting CITEseq + V(D)J from cellranger multi outputs](https://panpipes-tutorials.readthedocs.io/en/latest/ingesting_multimodal_data/ingesting_multimodal_data.html)
 - [Ingesting mouse data](https://panpipes-tutorials.readthedocs.io/en/latest/ingesting_mouse/Ingesting_mouse_data_with_panpipes.html)
 
