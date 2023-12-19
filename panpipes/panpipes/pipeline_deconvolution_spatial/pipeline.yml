@@ -91,6 +91,31 @@ Cell2Location:
 
 
 
+Tangram: 
+  run: True # Whether to run Tangram 
+
+  # -------------------------------
+  # Feature selection paramaters
+  # -------------------------------
+  # Reduced feature set can either be given  a) via a csv file of genes or b) sc.tl.rank_genes_groups() is run and the top n markers of each group are selected 
+  # If no file is given in a), b) will be run, i.e. feature selection is not optional.  
+  feature_selection: 
+    #  a) Path to a csv file containing a reduced feature set
+    gene_list: # A header in the csv is expected in the first row
+
+    # b) Parameters for sc.tl.rank_genes_groups() gene selection.
+    rank_genes: 
+      labels_key: cell_type # Which column in .obs of the reference to use for the 'groupby' parameter of sc.tl.rank_genes_groups()
+      layer: Null # Default None, which layer to use of the reference for sc.tl.rank_genes_groups(). if Null (i.e. None), uses .X
+      n_genes: 100 # Default 100, how many top genes to select of each 'groupby' group
+      test_method: wilcoxon # Default t-test_overestim_var, which test method to use. one of: ['logreg', 't-test', 'wilcoxon', 't-test_overestim_var']
+      correction_method: benjamini-hochberg # Default benjamini-hochberg, which p-value correction method to use. one of: ['benjamini-hochberg', 'bonferroni']. Used only for 't-test', 't-test_overestim_var', and 'wilcoxon'
+
+  model: 
+    labels_key: # Default None, cell type key in the reference .obs
+    num_epochs: # Default 1000. Number of epochs for tangram.mapping_utils.map_cells_to_space()
+    device: cpu # Default cpu. Device to use for deconvolution
+    kwargs: # Parameters for tangram.mapping_utils.map_cells_to_space()
 
 
 
