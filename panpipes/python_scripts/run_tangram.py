@@ -7,7 +7,7 @@ warnings.simplefilter(action='ignore', category=FutureWarning)
 import numpy as np
 import pandas as pd
 import scanpy as sc
-import tangram as tg
+import tangram as tg 
 import muon as mu
 
 import os
@@ -69,7 +69,7 @@ parser.add_argument("--num_epochs",
                     default=1000,
                     help="Number of epochs for tangram.mapping_utils.map_cells_to_space()")
 parser.add_argument("--device",
-                    default=None,
+                    default="cpu",
                     help="Device to use for deconvolution")
 parser.add_argument("--kwargs",
                     default={},
@@ -116,7 +116,7 @@ else: # perform feature selection using sc.tl.rank_genes_groups()
     markers = list(np.unique(markers_df.melt().value.values))
 
 # "Preprocess" anndatas
-tg.pp_adatas(adata_sc=adata_st, adata_sp=adata_st, genes=markers)
+tg.pp_adatas(adata_sc=adata_sc, adata_sp=adata_st, genes=markers)
 
 # 3. Run tangram
 adata_results = tg.mapping_utils.map_cells_to_space(
@@ -132,12 +132,10 @@ tg.construct_obs_plot(df, adata_st, perc=0.05)
 sc.pl.spatial(adata_st, color=annotation_list, cmap="viridis", show=False, frameon=False, ncols=3, save = "_tangram_ct_pred.png")
 
 
-mdata_singlecell.mod["rna"] = adata_sc
-mdata_singlecell.update()
-mdata_spatial.mod["spatial"] = adata_st
-mdata_spatial.update()
+mdata_singlecell_results = mu.MuData({"rna": adata_sc})
+mdata_spatial_results = mu.MuData({"spatial": adata_st})
 
-mdata_singlecell.write(output_dir+"/Tangram_screference_output.h5mu")
-mdata_spatial.write(output_dir+"/Tangram_spatial_output.h5mu")
+mdata_singlecell_results.write(output_dir+"/Tangram_screference_output.h5mu")
+mdata_spatial_results.write(output_dir+"/Tangram_spatial_output.h5mu")
 
 L.info("Done")
