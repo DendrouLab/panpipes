@@ -10,23 +10,20 @@ description = "Panpipes - multimodal single cell pipelines"
 readme = "README.md"
 
 classifiers = [
-    # Pick your license as you wish
     "License :: OSI Approved :: BSD License",
 
-    # Optional
     # How mature is this project? Common values are
     #   3 - Alpha
     #   4 - Beta
     #   5 - Production/Stable
     "Development Status :: 3 - Alpha",
 
-    # Indicate who your project is intended for
     "Intended Audience :: Science/Research",
     "Programming Language :: Python :: 3",
     "Programming Language :: R"
     ]
 
-requires-python = ">= 3.8"
+requires-python = ">= 3.9"
 
 dependencies = [
     "anndata>=0.8.0",
@@ -38,7 +35,7 @@ dependencies = [
     "harmonypy", 
     "leidenalg", 
     "louvain",
-    "matplotlib<=3.7.3",
+    "matplotlib",
     "mofapy2",
     "mudata>=0.2.1",
     "muon",

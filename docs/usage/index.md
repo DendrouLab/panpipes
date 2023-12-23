@@ -1,8 +1,6 @@
-Usage guidelines
-================
+# Usage guidelines
 
-See  [installation](../install) for installation instructions
-
+See [installation](../install) for installation instructions
 
 ```{toctree}
 :maxdepth: 1

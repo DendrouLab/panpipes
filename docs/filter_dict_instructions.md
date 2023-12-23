@@ -1,17 +1,16 @@
 
 # Filtering
 
-
 The filtering process in panpipes is sequential as it goes through the filtering dictionary.
 
-For each modality, starting with rna, it will first filter on obs and then vars.
-Each modality has a dictionary which must be fully customised to the
-columns in your the mudata.obs or var object. This is turn will be defined the names of the "groups" in your input gene list files. ([more details](https://github.com/DendrouLab/panpipes/blob/master/docs/gene_list_format.md))
+For each modality, starting with RNA, it will first filter on obs and then vars.
+Each modality has a dictionary which must be fully customised to the columns in your the mudata.obs or var object.
+This is turn will be defined the names of the "groups" in your input gene list files. ([more details](https://github.com/DendrouLab/panpipes/blob/master/docs/gene_list_format.md))
 
 **When specifying a column name, make sure it exactly matches the column name in the h5mu object.**
 
 Basic dict:
-```
+```yaml
 mod:
   obs:
     max:
@@ -22,13 +21,15 @@ mod:
     min:
     bool:
 ```
+
 Firstly for columns in mdata['mod'].obs.
 Under "max" you list any columns which you want to run a maximum filter for e.g. total_counts, under "min" you list any columns you want to run a minimum filter and under "bool" list any boolean columns you want to filter on e.g. "is_doublet"
 
 Then repeat for columns in mdata['mod'].var
 
-Full example for rna
-```
+Full example for RNA
+
+```yaml
 rna:
   obs:
     min:  
@@ -45,6 +46,4 @@ rna:
 
 In this example, the cells are filtered to contain more than 500 genes, less than 20000 counts, less than 20% mitochondrial content, and where is_doublet is False. Then genes are filtered to contain at least 3 cells with >0 reads.
 
-You can use this notation to expand filtering to any set of columns you have in any modality. 
-
-
+You can use this notation to expand filtering to any set of columns you have in any modality.

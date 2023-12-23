@@ -1,6 +1,5 @@
 
-Panpipes sample submission file
-===========================
+# Panpipes sample submission file
 
 *This section covers the ingestion of cell suspension datasets. For spatial trascriptomics ingestion please check [Sample submission file for the ingestion of spatial data](./setup_for_spatial_workflows.md)*
 
@@ -18,15 +17,12 @@ If you want to analyse other modalities, add additional columns to the input fil
 - `tcr_path` and `tcr_filetype`
 - `bcr_path` and `bcr_filetype`
 
-1. **sample id**: Each row must have a unique sample ID. It doesn't necessarily correspond to folder where the same is stored, will be used from the ingestion onward to identify your sample. 
+1. **sample id**: Each row must have a unique sample ID. It doesn't necessarily correspond to folder where the same is stored, will be used from the ingestion onward to identify your sample.
 For example, in your dataset with data from six individuals, you might have sample names like 'Sample_1' to 'Sample_6,' but you can choose to name your sample something more meaningful to you, like 'pbmc'
 
 2. **{X}_paths**: If giving a cellranger path, give the path folder containing all the cellranger outputs, known as the `outs` folder. Otherwise path should be the complete path to the file. If you have cellranger outputs which have rna and prot within the same files, specify the same path in rna_path and prot_path. The same applies to multiome and cellranger multi outputs.
 
-
 3. **{X}_filetype**: The "filetype" column tells panpipe how to read in the data. Panpipes supports a range of inputs. See the [supported input filetypes](#supported-input-filetypes) below to see the options for the {X}_filetype columns
-
-
 
 ## Sample metadata
 
@@ -40,21 +36,19 @@ The order of the columns doesn't matter.
 
 ## Example sample submission file
 
-
 | sample_id | rna_path                           | rna_filetype | prot_path                            | prot_filetype | tissue | diagnosis |
 |-----------|------------------------------------|--------------|-------------------------------------|--------------|--------|-----------|
 | Sample1   | Sample1_gex.csv                    | csv_matrix   | Sample1_adt.csv                     | csv_matrix   | pbmc   | healthy   |
 | Sample2   | cellranger_count/Sample2_GEX/outs/ | cellranger   | cellranger_count/Sample2_CITE/outs/ | cellranger   | pbmc   | diseased  |
 
-
 Download this file: [sample_file_qc_mm.txt](sample_file_qc_mm.txt)
-
 View other examples on sample submission files on our [github page](https://github.com/DendrouLab/panpipes/tree/main/panpipes/resources)
 
-
 ## Additional file inputs for ATAC data
+
 Include additional files from the cellranger outputs under the following three columns:
-- fragments_file 
+
+- fragments_file
 - peak_annotation_file
 - per_barcode_metrics_file
 
@@ -76,18 +70,18 @@ tcr/bcr     |tracer| data from [TraCeR](https://github.com/Teichlab/tracer) furt
 tcr/bcr     |bracer| data from [BraCeR](https://github.com/Teichlab/bracer) further [details](https://scverse.org/scirpy/latest/generated/scirpy.io.read_bracer.html)
 tcr/bcr     |airr  | airr formatted tsv further [details](https://scverse.org/scirpy/latest/generated/scirpy.io.read_airr.html#scirpy.io.read_airr)
 
-For repertoire (tcr/bcr) inputs, panpipes uses the scirpy (v.0.12.0) functions [scirpy]https://scverse.org/scirpy/latest/api.html. Review their documentation for more specific details about inputs.
+For repertoire (tcr/bcr) inputs, panpipes uses the scirpy (v.0.12.0) functions [scirpy]<https://scverse.org/scirpy/latest/api.html>. Review their documentation for more specific details about inputs.
 
+## Combining data sets
 
-## Combining data sets.
 Note that if you are combining multiple datasets from different sources the final anndata object will only contain the intersection of the genes
 from all the data sets. For example if the mitochondrial genes have been excluded from one of the inputs, they will be excluded from the final data set.
 In this case it might be wise to run qc separately on each dataset, and them merge them together to create on h5ad file to use as input for
 integration pipeline.
 
+## Barcode level metadata
 
-
-## Barcode level metadata 
-If you have cell or barcode level metadata such as results from a demultiplexing algorithm, save it in a two column csv file containing 2 column; barcode_id, and sample_id. Specify the path to this file in the pipeline.yml file.
+If you have cell or barcode level metadata such as results from a demultiplexing algorithm, save it in a two column csv file containing 2 column; barcode_id, and sample_id.
+Specify the path to this file in the pipeline.yml file.
 
 The sample_ids in this file must match the sample_id column in the submission file.
