@@ -47,12 +47,15 @@ parse_cell_metadata <- function(cmtd, cat_vars, grp_vars){
 parse_vars <- function(cat_vars){
     if (is.list(cat_vars)){
         uniq_cat_vars <- unique(unlist(cat_vars))
-        uniq_cat_vars
-        # cat vars
+        if (!is.null(uniq_cat_vars)){
         cat_split = data.frame(str_split(uniq_cat_vars, ":", simplify = T)) %>%
             mutate(mod =ifelse(X1 %in% c('rna', 'prot', 'atac', 'rep'), X1, "multimodal"),
                         variable = gsub(":", "_", uniq_cat_vars)) %>% 
             select(mod, variable)
+        }
+        else{
+            cat_split = NULL
+        }
     }else{
         cat_split = data.frame(variable=gsub(":", "_", cat_vars))
     }
@@ -87,7 +90,7 @@ cmtd <- parse_cell_metadata(cmtd, cat_vars, grp_vars)
 
 
 # Barplots ----------------------------------------------------------------
-if( PARAMS$do_plots$categorical_barplots){
+if( PARAMS$do_plots$categorical_barplots & !is.null(cat_vars)){
     for( mod in unique(cat_vars$mod)){
         if (!dir.exists(file.path(mod))) dir.create(file.path(mod))
         print(mod)
@@ -123,7 +126,7 @@ if( PARAMS$do_plots$categorical_barplots){
 }
 }
 # Stacked barplots by grouping var ----------------------------------------------------------------
-if( PARAMS$do_plots$categorical_stacked_barplots){
+if( PARAMS$do_plots$categorical_stacked_barplots & !is.null(cat_vars) & !is.null(grp_vars)){
 
     for( mod in unique(cat_vars$mod)){
         print(mod)
@@ -179,7 +182,7 @@ if( PARAMS$do_plots$categorical_stacked_barplots){
 }
 
 # Violin by grouping var ----------------------------------------------------------------
-if( PARAMS$do_plots$continuous_violin){
+if( PARAMS$do_plots$continuous_violin & !is.null(cont_vars) & !is.null(grp_vars)){
 
 
     for( mod in unique(cont_vars$mod)){
