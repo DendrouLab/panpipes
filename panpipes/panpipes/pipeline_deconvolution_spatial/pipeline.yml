@@ -120,8 +120,9 @@ Tangram:
     labels_key: # Default None, cell type key in the reference .obs
     num_epochs: # Default 1000. Number of epochs for tangram.mapping_utils.map_cells_to_space()
     device: cpu # Default cpu. Device to use for deconvolution
-    kwargs: # Parameters for tangram.mapping_utils.map_cells_to_space()
-
+    kwargs: # Parameters for tangram.mapping_utils.map_cells_to_space(), feel free to add or remove parameters below 
+      learning_rate: 0.1
+      lambda_d: 0
 
 
 

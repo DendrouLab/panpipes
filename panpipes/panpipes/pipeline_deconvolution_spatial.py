@@ -143,6 +143,9 @@ def run_tangram(input_spatial, outfile_spatial, sample_prefix, input_singlecell)
         cmd += f" --num_epochs {PARAMS['Tangram_model']['num_epochs']}"
     if PARAMS['Tangram_model']['device'] is not None:
         cmd += f" --device {PARAMS['Tangram_model']['device']}"
+    if PARAMS['Tangram_model']['kwargs'] is not None:
+        kwargs = PARAMS['Tangram_model']['kwargs'].__str__().replace("'", '"')
+        cmd += f" --kwargs '{kwargs}'"
 
     cmd += " > logs/%(log_file)s "
     job_kwargs["job_threads"] = PARAMS['resources_threads_low']

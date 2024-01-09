@@ -14,6 +14,7 @@ import os
 import argparse
 import sys
 import logging
+import json
 
 
 L = logging.getLogger()
@@ -72,7 +73,8 @@ parser.add_argument("--device",
                     default="cpu",
                     help="Device to use for deconvolution")
 parser.add_argument("--kwargs",
-                    default={},
+                    default='{}',
+                    type=str,
                     help="Parameters for tangram.mapping_utils.map_cells_to_space()")
 
 
@@ -81,6 +83,9 @@ args, opt = parser.parse_known_args()
 
 L.info("running with args:")
 L.debug(args)
+
+if isinstance(args.kwargs, str): 
+	args.kwargs = json.loads(args.kwargs)
 
 figdir = args.figdir
 if not os.path.exists(figdir):
