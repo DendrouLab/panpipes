@@ -1,12 +1,12 @@
-# ============================================================
-# Spatial Deconvolution workflow Panpipes (pipeline_deconvolution_spatial.py)
-# ============================================================
-# written by Sarah Ouologuem
+# ==========================================
+# Panpipes: Spatial Deconvolution Workflow 
+# ==========================================
+# Written by Sarah Ouologuem
 
 
-# ----------------------
+# ---------------------------
 # 0. Compute resource options
-# ------------------------
+# ---------------------------
 resources:
   # Number of threads used for parallel jobs
   threads_high: 1 # Must be enough memory to load all input files and create MuDatas
@@ -23,16 +23,17 @@ condaenv:  # Path to conda env, leave blank if running native or your cluster au
 
 # One or multiple slides can be deconvoluted with the same reference in one run. For that, one MuData object for each slide is expected. 
 
-input_spatial: data/spatial_data # Path to folder containing one or multiple MuDatas of spatial data. For all MuData files in that folder, deconvolution is run by the pipeline.
+input_spatial:  # Path to folder containing one or multiple MuDatas of spatial data. The pipeline is reading in all MuData files in that folder and assuming that they are MuDatas of spatial slides. 
+# For all MuData files in that folder, deconvolution is run by the pipeline.
 # In the MuData objects, the spatial data is expected to be saved in mudata.mod["spatial"]. For each spatial MuData, deconvolution is run with "input_singlecell" (see below) as a reference
 
-input_singlecell: data/single_cell_reference.h5mu # Path to the MuData file of the reference single-cell data, reference data expected to be saved in mudata.mod["rna"]
-
+input_singlecell:  # Path to the MuData file of the reference single-cell data, reference data expected to be saved in mudata.mod["rna"]
 
 
 # ----------------------
 ## 2. Cell2Location
 # ----------------------
+
 Cell2Location: 
   run: True # Whether to run Cell2Location 
   
@@ -91,6 +92,10 @@ Cell2Location:
 
 
 
+# -------------
+## 3. Tangram
+# -------------
+
 Tangram: 
   run: True # Whether to run Tangram 
 
@@ -108,8 +113,8 @@ Tangram:
       labels_key: cell_type # Which column in .obs of the reference to use for the 'groupby' parameter of sc.tl.rank_genes_groups()
       layer: Null # Default None, which layer to use of the reference for sc.tl.rank_genes_groups(). if Null (i.e. None), uses .X
       n_genes: 100 # Default 100, how many top genes to select of each 'groupby' group
-      test_method: wilcoxon # Default t-test_overestim_var, which test method to use. one of: ['logreg', 't-test', 'wilcoxon', 't-test_overestim_var']
-      correction_method: benjamini-hochberg # Default benjamini-hochberg, which p-value correction method to use. one of: ['benjamini-hochberg', 'bonferroni']. Used only for 't-test', 't-test_overestim_var', and 'wilcoxon'
+      test_method: wilcoxon # Default t-test_overestim_var, which test method to use. one of ['logreg', 't-test', 'wilcoxon', 't-test_overestim_var']
+      correction_method: benjamini-hochberg # Default benjamini-hochberg, which p-value correction method to use. one of ['benjamini-hochberg', 'bonferroni']. Used only for 't-test', 't-test_overestim_var', and 'wilcoxon'
 
   model: 
     labels_key: # Default None, cell type key in the reference .obs

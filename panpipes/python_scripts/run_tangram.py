@@ -129,7 +129,10 @@ tg.project_cell_annotations(adata_results, adata_st, annotation=args.labels_key_
 annotation_list = list(pd.unique(adata_sc.obs[args.labels_key_model]))
 df = adata_st.obsm["tangram_ct_pred"][annotation_list]
 tg.construct_obs_plot(df, adata_st, perc=0.05)
-sc.pl.spatial(adata_st, color=annotation_list, cmap="viridis", show=False, frameon=False, ncols=3, save = "_tangram_ct_pred.png")
+if "spatial" in adata_st.uns: 
+	sc.pl.spatial(adata_st, color=annotation_list, cmap="viridis", show=False, frameon=False, ncols=3, save = "_tangram_ct_pred.png")
+else: 
+	sc.pl.spatial(adata_st, color=annotation_list, cmap="viridis", show=False, frameon=False, ncols=3, save = "_tangram_ct_pred.png",spot_size=0.5)
 
 
 mdata_singlecell_results = mu.MuData({"rna": adata_sc})

@@ -122,28 +122,27 @@ def run_tangram(input_spatial, outfile_spatial, sample_prefix, input_singlecell)
         --figdir %(figdir)s
         --output_dir %(output_dir)s
               """
-
     # feature selection paramaters
-    if PARAMS['Tangram_feature_selection_gene_list'] is not None:
-        cmd += " --gene_list %(Tangram_feature_selection_gene_list)s"
-    if PARAMS['Tangram_feature_selection_rank_genes_labels_key'] is not None:
-        cmd += " --labels_key_rank_genes %('Tangram_feature_selection_rank_genes_labels_key)s"
-    if PARAMS['Tangram_feature_selection_rank_genes_layer'] is not None:
-        cmd += " --layer_rank_genes %(Tangram_feature_selection_rank_genes_layer)s"
-    if PARAMS['Tangram_feature_selection_rank_genes_n_genes'] is not None:
-        cmd += " --n_genes_rank %('Tangram_feature_selection_rank_genes_n_genes)s"
-    if PARAMS['Tangram_feature_selection_test_method'] is not None:
-        cmd += " --method_rank_genes %(Tangram_feature_selection_test_method)s"
-    if PARAMS['Tangram_feature_selection_rank_genes_correction_method'] is not None:
-        cmd += " --corr_method_rank_genes %(Tangram_feature_selection_rank_genes_correction_method)s"    
+    if PARAMS['Tangram_feature_selection']['gene_list'] is not None:
+        cmd += f' --gene_list {PARAMS["Tangram_feature_selection"]["gene_list"]}'
+    if PARAMS['Tangram_feature_selection']['rank_genes']['labels_key'] is not None:
+        cmd += f' --labels_key_rank_genes {PARAMS["Tangram_feature_selection"]["rank_genes"]["labels_key"]}'
+    if PARAMS['Tangram_feature_selection']['rank_genes']['layer'] is not None:
+        cmd += f" --layer_rank_genes {PARAMS['Tangram_feature_selection']['rank_genes']['layer']}"
+    if PARAMS['Tangram_feature_selection']['rank_genes']['n_genes'] is not None:
+        cmd += f" --n_genes_rank {PARAMS['Tangram_feature_selection']['rank_genes']['n_genes']}"
+    if PARAMS['Tangram_feature_selection']['rank_genes']['test_method'] is not None:
+        cmd += f" --method_rank_genes {PARAMS['Tangram_feature_selection']['rank_genes']['test_method']}"
+    if PARAMS['Tangram_feature_selection']['rank_genes']['correction_method'] is not None:
+        cmd += f" --corr_method_rank_genes {PARAMS['Tangram_feature_selection']['rank_genes']['correction_method']}"    
     
     # model parameters 
-    if PARAMS['Tangram_model_labels_key'] is not None:
-        cmd += " --labels_key_model %('Tangram_model_labels_key)s"
-    if PARAMS['Tangram_model_num_epochs'] is not None:
-        cmd += " --num_epochs %('Tangram_model_num_epochs)s"
-    if PARAMS['Tangram_model_device'] is not None:
-        cmd += " --device %('Tangram_model_device)s"
+    if PARAMS['Tangram_model']['labels_key'] is not None:
+        cmd += f" --labels_key_model {PARAMS['Tangram_model']['labels_key']}"
+    if PARAMS['Tangram_model']['num_epochs'] is not None:
+        cmd += f" --num_epochs {PARAMS['Tangram_model']['num_epochs']}"
+    if PARAMS['Tangram_model']['device'] is not None:
+        cmd += f" --device {PARAMS['Tangram_model']['device']}"
 
     cmd += " > logs/%(log_file)s "
     job_kwargs["job_threads"] = PARAMS['resources_threads_low']
