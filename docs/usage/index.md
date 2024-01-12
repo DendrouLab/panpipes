@@ -1,4 +1,5 @@
-# Usage guidelines
+Usage guidelines
+================
 
 See [installation](../install) for installation instructions
 

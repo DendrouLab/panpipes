@@ -1,4 +1,5 @@
-# Sample submission file for the ingestion of spatial data
+Sample submission file for the ingestion of spatial data
+===========================
 
 The spatial transcriptomics ingestion workflow requires a sample submission file that specifies the location of the input files. The sample submission file is a tab-separated file with one row per sample. Panpipes currently supports the ingestion of `Visium` and `Vizgen` data.
 

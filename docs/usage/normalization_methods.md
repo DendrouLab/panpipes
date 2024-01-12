@@ -1,4 +1,6 @@
-# Normalization methods
+Normalization methods
+=======================
+
 
 panpipes currently supports the following normalization methods:
 

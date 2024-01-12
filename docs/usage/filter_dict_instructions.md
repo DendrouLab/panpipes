@@ -1,4 +1,5 @@
-# Filtering mudata objects within preprocess pipeline
+Filtering mudata objects within preprocess pipeline
+============
 
 In `panpipes preprocess` a completely customisable filtering process is implemented, such that you can filter your data by basically any metric.
 
@@ -19,8 +20,8 @@ rna/prot/atac:
   
 ```
 
-For each modality, starting with rna, panpipes will first filter on `obs` and then `var`.
-Each modality has a dictionary which must be fully customised to the columns in your the mudata.obs or var object.
+For each modality, starting with RNA, panpipes will first filter on `obs` and then `var`.
+Each modality has a dictionary which must be fully customised to the columns in your the `mudata.obs` or `.var` object.
 
 **When specifying a column name, make sure it exactly matches the column name in the h5mu object.** 
 
@@ -30,9 +31,11 @@ You can review this by loading up your h5mu object in Python:
 import muon as mu; mu.read(filepath).obs.columns
 ```
 
-Firstly for columns in `mdata['mod'].obs`.
-Under "max" you list any columns which you want to run a maximum filter for e.g. total_counts, under "min" you list any columns you want to run a minimum filter and under "bool" list any boolean columns you want to filter on e.g. "is_doublet"
-Then repeat for columns in `mdata['mod'].var`.
+Firstly, to filter for the covariates in the columns of `mdata['mod'].obs`, where `mod` is your modality (i.e. `rna`,`prot`, etc.)
+
+Under "max" you list any columns which you want to run a maximum filter for e.g. total_counts, followed by the threshold. Specify under "min" any columns you want to run a minimum filter, followed by the threshold. Finally, under "bool" list any boolean columns you want to filter on e.g. "is_doublet"
+Then repeat the same for columns in `mdata['mod'].var`.
+
 For example:
 
 ```yaml
