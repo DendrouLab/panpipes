@@ -77,6 +77,8 @@ L.info("Running multivi")
 rna= mu.read(args.scaled_anndata +"/" + "rna")
 atac= mu.read(args.scaled_anndata +"/" + "atac")
 
+if check_for_bool(params["multimodal"]["MultiVI"]["lowmem"]) is None:
+    params["multimodal"]["MultiVI"]["lowmem"]=True 
 
 if check_for_bool(params["multimodal"]["MultiVI"]["lowmem"]):
     L.info("subsetting atac to top 25k HVF")
@@ -127,7 +129,7 @@ L.info("concatenating modalities to comply with multiVI")
 # adata_paired = ad.concat([rna, atac], join="outer")
 # adata_paired.var = pd.concat([rna.var,atac.var])
 
-adata_paired = ad.concat([rna.T, atac.T]).T
+adata_paired = ad.concat([rna.copy().T, atac.copy().T]).copy().T
 
 rna_cols=rna.obs.columns
 atac_cols=atac.obs.columns
