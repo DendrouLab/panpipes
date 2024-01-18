@@ -34,6 +34,9 @@ For example, in your dataset with data from six individuals, you might have samp
 
 ## Additional input files when processing atac data
 
+Panpipes supports reading ATAC/multiome data from a single sample. If you have multiple samples you have to merge them before ingesting with panpipes to ensure that the peak coordinates are harmonized across samples, since simple concatenation would induce undesired batch effects. We recommend using [cellranger](https://kb.10xgenomics.com/hc/en-us/articles/6057890578829-Does-cellranger-atac-aggr-redo-peak-calling-).  or [cellatac](https://github.com/cellgeni/cellatac) to aggregate the peaks across samples. Check the [signac documentation](https://stuartlab.org/signac/articles/merging) for a detailed explanation of the steps (you can use this approach to merge samples if you don't have the cellranger outputs)
+
+
 When available, you can include additional files from the cellranger outputs under the following three columns:
 
 - **peak_annotation_file**: file containing peaks mapped to gene based on the genomic location of the nearby gene. This is a tabular format tab separated (usually `.tsv`). See [general 10X info](https://support.10xgenomics.com/single-cell-multiome-atac-gex/software/pipelines/latest/output/peak-annotations?src=social&lss=youtube&cnm=&cid=NULL)
