@@ -72,6 +72,9 @@ spatial = [
     "squidpy",
     "cell2location"
 ]
+multivi = [
+    "scvi-tools==0.20.3"
+]
 pypi_upload = [
     "twine",
     "build"

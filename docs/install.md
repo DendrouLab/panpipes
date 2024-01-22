@@ -40,6 +40,13 @@ You can install `panpipes` directly from `PyPi` with:
 pip install panpipes
 ```
 
+In case of wanting to use the integration method `MultiVI` with `panpipes`, please consider running the following command to install a stable version of `scvi-tools` and avoid dependency issues: 
+```
+pip install panpipes[multivi]
+```
+
+
+
 If you intend to use panpipes for spatial analysis, instead install:
 ```
 pip install 'panpipes[spatial]'
