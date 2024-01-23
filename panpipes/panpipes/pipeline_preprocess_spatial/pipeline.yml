@@ -9,7 +9,7 @@
 
 resources:
   # Number of threads used for parallel jobs
-  threads_high: 1 # Must be enough memory to load all input files and create MuDatas
+  threads_high: 1 # Number of threads used for high intensity computing tasks
   threads_medium: 1  # Must be enough memory to load your mudata and do computationally light tasks
   threads_low: 1 # Must be enough memory to load text files and do plotting, requires much less memory
 
