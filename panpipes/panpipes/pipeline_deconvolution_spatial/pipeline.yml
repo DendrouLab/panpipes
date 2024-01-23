@@ -1,6 +1,6 @@
-# ==========================================
-# Panpipes: Spatial Deconvolution Workflow 
-# ==========================================
+# =============================================================================================
+# Deconvolution, spatial transcriptomics workflow Panpipes (pipeline_deconvolution_spatial.py)
+# =============================================================================================
 # Written by Sarah Ouologuem
 
 
