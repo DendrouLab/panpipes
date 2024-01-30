@@ -119,11 +119,11 @@ spatial:
   #    np.Inf: no clipping
 
   # Parameters for both cases norm_hvg_flavour = "seurat" and "squidpy":
-  n_top_genes: 2000 # Default is None; mandatory for norm_hvg_flavour = "seurat" and squidpy_hvg_flavor: "seurat_v3"
+  n_top_genes: 2000 # Leave blank to use default (2000); mandatory for norm_hvg_flavour = "seurat" and squidpy_hvg_flavor: "seurat_v3"
   filter_by_hvg: False # Leave blank to use default (False); if True, subset the data to highly-variable genes after finding them
   hvg_batch_key: # Leave blank to use default (None); if specified, highly-variable genes are selected within each batch separately and merged
 
-  n_pcs: 50 # Leave blank to use default (50); how many PCs to compute with sc.pp.PCA()
+  n_pcs: 50 # Leave blank to use default (50); how many PCs to compute with sc.pp.PCA() and plot in sc.pl.pca_variance_ratio()
 
 
 
