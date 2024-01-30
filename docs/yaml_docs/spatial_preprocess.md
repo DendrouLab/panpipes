@@ -98,7 +98,6 @@ ___Parameters for both `norm_hvg_flavour` flavours___
 | `filter_by_hvg` | __`bool`__ (default: False) <br> Subset the data to the HVGs. <br>  |
 | `hvg_batch_key` | __`str`__ (default: None) <br> If specified, HVGs are selected within each batch separately and merged. |
 
-<br>
 
 ### **PCA**
 
