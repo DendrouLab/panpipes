@@ -24,10 +24,12 @@ jobs:
 
       - name: Conda info
         if: env.debug == 'true'
+        shell: bash -l {0}
         run: conda info
 
       - name: Conda list
         if: env.debug == 'true'
+        shell: bash -l {0}
         run: conda list
 
       - name: Install dependencies
