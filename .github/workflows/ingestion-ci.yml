@@ -31,9 +31,8 @@ jobs:
           python-version: ${{ matrix.python-version }}
           channels: conda-forge
           channel-priority: strict
-
-      - run: |
-          mamba install -n pipeline_env r-base=4.3.0
+          activate-environment: pipeline_env
+          environment-file: pipeline_env.yaml
 
       - name: Conda info
         if: env.debug == 'true'
@@ -44,10 +43,6 @@ jobs:
         if: env.debug == 'true'
         shell: pwsh
         run: conda list
-
-      - name: Install dependencies
-        run: |
-          mamba env create -f requirements.txt
 
       - name: Run tests
         run: |
