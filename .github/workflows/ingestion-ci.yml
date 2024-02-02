@@ -21,19 +21,19 @@ jobs:
         python-version: ["3.9"]
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       
       - uses: conda-incubator/setup-miniconda@v3
         with:
+          miniforge-version: latest
           auto-activate-base: true
-          activate-environment: pipeline_env
           auto-update-conda: true
           python-version: ${{ matrix.python-version }}
           channels: conda-forge
           channel-priority: strict
 
       - run: |
-          conda install -n pipeline_env r-base=4.3.0
+          mamba install -n pipeline_env r-base=4.3.0
 
       - name: Conda info
         if: env.debug == 'true'
@@ -47,8 +47,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          mamba env create -f requirements.txt
 
       - name: Run tests
         run: |
