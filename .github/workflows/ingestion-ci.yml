@@ -28,11 +28,10 @@ jobs:
           miniforge-version: latest
           auto-activate-base: true
           auto-update-conda: true
-          python-version: ${{ matrix.python-version }}
           channels: conda-forge
           channel-priority: strict
           activate-environment: pipeline_env
-          environment-file: pipeline_env.yaml
+          environment-file: pipeline_env.yaml # consider moving to etc/pipeline_env.yaml
 
       - name: Conda info
         if: env.debug == 'true'
