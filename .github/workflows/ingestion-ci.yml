@@ -31,7 +31,7 @@ jobs:
           channel-priority: strict
 
       - run: |
-          conda install r-base=4.3.0
+          conda install -n pipeline_env r-base=4.3.0
 
       - name: Conda info
         if: env.debug == 'true'
