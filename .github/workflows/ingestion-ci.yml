@@ -55,6 +55,18 @@ jobs:
           curl -o teaseq/ingest/data.dir/subsample_atac.h5ad https://figshare.com/ndownloader/files/41671554
           curl -o teaseq/ingest/data.dir/subsample_rna.h5ad https://figshare.com/ndownloader/files/41671557
       
+      # Note: we run the following to test that the commands works
+      # However, the following task will replacing the file anyway
       - name: Preparing the configuration file
         shell: bash -el {0}
         run: panpipes ingest config
+      
+      - name: Edit the submission file
+        run: curl -o pipeline.yml https://panpipes-tutorials.readthedocs.io/en/latest/_downloads/9a4fcbc3c0a4fdc8e6578d086a88730f/pipeline.yml
+      
+      - name: Preparing the submission file
+        run: curl -o sample_file_qc.txt https://panpipes-tutorials.readthedocs.io/en/latest/_downloads/40ed291bf9a7ff73c4f396ec63cff2f7/sample_file_qc.txt        
+        
+      - name: File tree
+        if: env.debug == 'true'
+        run: tree
