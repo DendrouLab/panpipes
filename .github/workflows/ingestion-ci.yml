@@ -56,4 +56,5 @@ jobs:
           curl -o teaseq/ingest/data.dir/subsample_rna.h5ad https://figshare.com/ndownloader/files/41671557
       
       - name: Preparing the configuration file
+        shell: bash -el {0}
         run: panpipes ingest config
