@@ -53,29 +53,39 @@ jobs:
       # Note: all three files are renamed during the download to trim the "subsample_" prefix
       - name: Preparing the data
         run: |
-          mkdir -p teaseq/ingest && cd teaseq/ingest
-          mkdir data.dir
-          curl -o data.dir/adt.h5ad https://figshare.com/ndownloader/files/41671551
-          curl -o data.dir/atac.h5ad https://figshare.com/ndownloader/files/41671554
-          curl -o data.dir/rna.h5ad https://figshare.com/ndownloader/files/41671557
+          mkdir -p teaseq/ingest/data.dir
+          cd teaseq/ingest/data.dir
+          curl -o adt.h5ad https://figshare.com/ndownloader/files/41671551
+          curl -o atac.h5ad https://figshare.com/ndownloader/files/41671554
+          curl -o rna.h5ad https://figshare.com/ndownloader/files/41671557
       
       # Note: we run the following to test that the commands works
       # However, the following task will replacing the file anyway
       - name: Preparing the configuration file
         shell: bash -el {0}
-        run: panpipes ingest config
+        run: |
+          cd teaseq/ingest/data.dir
+          panpipes ingest config
       
       - name: Edit the submission file
-        run: curl -o pipeline.yml https://panpipes-tutorials.readthedocs.io/en/latest/_downloads/9a4fcbc3c0a4fdc8e6578d086a88730f/pipeline.yml
+        run: |
+          cd teaseq/ingest
+          curl -o pipeline.yml https://panpipes-tutorials.readthedocs.io/en/latest/_downloads/9a4fcbc3c0a4fdc8e6578d086a88730f/pipeline.yml
       
       - name: Preparing the submission file
-        run: curl -o sample_file_qc.txt https://panpipes-tutorials.readthedocs.io/en/latest/_downloads/40ed291bf9a7ff73c4f396ec63cff2f7/sample_file_qc.txt
+        run: |
+          cd teaseq/ingest
+          curl -o sample_file_qc.txt https://panpipes-tutorials.readthedocs.io/en/latest/_downloads/40ed291bf9a7ff73c4f396ec63cff2f7/sample_file_qc.txt
       
       - name: Preparing the QC gene lists
-        run: curl -o qc_genelist_1.0.csv https://panpipes-tutorials.readthedocs.io/en/latest/_downloads/fd38f25644105ea357a26e78a59139bb/qc_genelist_1.0.csv
+        run: |
+          cd teaseq/ingest
+          curl -o qc_genelist_1.0.csv https://panpipes-tutorials.readthedocs.io/en/latest/_downloads/fd38f25644105ea357a26e78a59139bb/qc_genelist_1.0.csv
         
       - name: Replace template contents in configuration file
-        run: sed 's+panpipes-tutorials/tutorials/ingesting_data/qc_genelist_1.0.csv+qc_genelist_1.0.csv+g' pipeline.yml
+        run: |
+          cd teaseq/ingest
+          sed 's+panpipes-tutorials/tutorials/ingesting_data/qc_genelist_1.0.csv+qc_genelist_1.0.csv+g' pipeline.yml
 
       - name: File tree
         if: env.debug == 'true'
@@ -83,11 +93,15 @@ jobs:
 
       - name: Review pipeline tasks
         shell: bash -el {0}
-        run: panpipes ingest show full --local
+        run: |
+          cd teaseq/ingest
+          panpipes ingest show full --local
 
       - name: Run pipeline tasks
         shell: bash -el {0}
-        run: panpipes ingest make full --local
+        run: |
+          cd teaseq/ingest
+          panpipes ingest make full --local
         
       - name: File tree
         if: env.debug == 'true'
