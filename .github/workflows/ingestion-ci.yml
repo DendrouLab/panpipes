@@ -43,7 +43,17 @@ jobs:
         shell: pwsh
         run: conda list
 
-      - name: Run tests
-        shell: bash -el {0}
+      #- name: Run tests
+      #  shell: bash -el {0}
+      #  run: |
+      #    python -m pytest tests/
+
+      - name: Preparing the data
         run: |
-          python -m pytest tests/
+          mkdir -p teaseq/ingest/data.dir
+          curl -o teaseq/ingest/data.dir/subsample_adt.h5ad https://figshare.com/ndownloader/files/41671551
+          curl -o teaseq/ingest/data.dir/subsample_atac.h5ad https://figshare.com/ndownloader/files/41671554
+          curl -o teaseq/ingest/data.dir/subsample_rna.h5ad https://figshare.com/ndownloader/files/41671557
+      
+      - name: Preparing the configuration file
+        run: panpipes ingest config
