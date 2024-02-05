@@ -64,7 +64,7 @@ jobs:
       - name: Preparing the configuration file
         shell: bash -el {0}
         run: |
-          cd teaseq/ingest/data.dir
+          cd teaseq/ingest
           panpipes ingest config
       
       - name: Edit the submission file
