@@ -1,4 +1,4 @@
-name: Ingestion CI
+name: Tutorials CI
 
 on:
   push:
@@ -12,7 +12,7 @@ env:
   debug: 'true'
 
 jobs:
-  build:
+  ingestion:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
