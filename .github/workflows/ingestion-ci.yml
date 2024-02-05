@@ -75,6 +75,10 @@ jobs:
       - name: Replace template contents in configuration file
         run: sed 's+panpipes-tutorials/tutorials/ingesting_data/qc_genelist_1.0.csv+qc_genelist_1.0.csv+g' pipeline.yml
 
+      - name: File tree
+        if: env.debug == 'true'
+        run: tree
+
       - name: Review pipeline tasks
         shell: bash -el {0}
         run: panpipes ingest show full --local
