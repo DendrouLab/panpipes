@@ -50,12 +50,13 @@ jobs:
       #  run: |
       #    python -m pytest tests/
 
+      # Note: all three files are renamed during the download to trim the "subsample_" prefix
       - name: Preparing the data
         run: |
           mkdir -p teaseq/ingest/data.dir
-          curl -o teaseq/ingest/data.dir/subsample_adt.h5ad https://figshare.com/ndownloader/files/41671551
-          curl -o teaseq/ingest/data.dir/subsample_atac.h5ad https://figshare.com/ndownloader/files/41671554
-          curl -o teaseq/ingest/data.dir/subsample_rna.h5ad https://figshare.com/ndownloader/files/41671557
+          curl -o teaseq/ingest/data.dir/adt.h5ad https://figshare.com/ndownloader/files/41671551
+          curl -o teaseq/ingest/data.dir/atac.h5ad https://figshare.com/ndownloader/files/41671554
+          curl -o teaseq/ingest/data.dir/rna.h5ad https://figshare.com/ndownloader/files/41671557
       
       # Note: we run the following to test that the commands works
       # However, the following task will replacing the file anyway
