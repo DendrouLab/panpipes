@@ -32,8 +32,7 @@ def gen_filter_jobs():
         sample_prefix = os.path.basename(input_spatial)
         sample_prefix = sample_prefix.replace(".h5mu","")
         outfile_spatial = "cell2location.output/" + sample_prefix + "/Cell2Loc_spatial_output.h5mu"
-        yield input_spatial, outfile_spatial, sample_prefix, input_singlecell
-
+        yield input_spatial, outfile_spatial, sample_prefix, input_singlecell    
 
 
 @mkdir("logs")
@@ -54,60 +53,106 @@ def run_cell2location(input_spatial, outfile_spatial, sample_prefix, input_singl
         --figdir %(figdir)s
         --output_dir %(output_dir)s
               """
-    
     # feature selection paramaters
-    if PARAMS['Cell2Location_gene_list'] is not None:
-        cmd += " --gene_list %(Cell2Location_gene_list)s"
-    if PARAMS['Cell2Location_remove_mt'] is not None:
-        cmd += " --remove_mt %(Cell2Location_remove_mt)s"
-    if PARAMS['Cell2Location_cell_count_cutoff'] is not None:
-        cmd += " --cell_count_cutoff %(Cell2Location_cell_count_cutoff)s"
-    if PARAMS['Cell2Location_cell_percentage_cutoff2'] is not None:
-        cmd += " --cell_percentage_cutoff2 %(Cell2Location_cell_percentage_cutoff2)s"
-    if PARAMS['Cell2Location_nonz_mean_cutoff'] is not None:
-        cmd += " --nonz_mean_cutoff %(Cell2Location_nonz_mean_cutoff)s"
-    
+    if PARAMS['Cell2Location_feature_selection']['gene_list'] is not None:
+        cmd += f" --gene_list {PARAMS['Cell2Location_feature_selection']['gene_list']}"
+    if PARAMS['Cell2Location_feature_selection']['remove_mt'] is not None:
+        cmd += f" --remove_mt {PARAMS['Cell2Location_feature_selection']['remove_mt']}"
+    if PARAMS['Cell2Location_feature_selection']['cell_count_cutoff'] is not None:
+        cmd += f" --cell_count_cutoff {PARAMS['Cell2Location_feature_selection']['cell_count_cutoff']}"
+    if PARAMS['Cell2Location_feature_selection']['cell_percentage_cutoff2'] is not None:
+        cmd += f" --cell_percentage_cutoff2 {PARAMS['Cell2Location_feature_selection']['cell_percentage_cutoff2']}"
+    if PARAMS['Cell2Location_feature_selection']['nonz_mean_cutoff'] is not None:
+        cmd += f" --nonz_mean_cutoff {PARAMS['Cell2Location_feature_selection']['nonz_mean_cutoff']}"
     # parameters for the reference model
-    if PARAMS['Cell2Location_labels_key_reference'] is not None:
-        cmd += " --labels_key_reference %(Cell2Location_labels_key_reference)s"
-    if PARAMS['Cell2Location_batch_key_reference'] is not None:
-        cmd += " --batch_key_reference %(Cell2Location_batch_key_reference)s"
-    if PARAMS['Cell2Location_layer_reference'] is not None:
-        cmd += " --layer_reference %(Cell2Location_layer_reference)s"
-    if PARAMS['Cell2Location_categorical_covariate_keys_reference'] is not None:
-        cmd += " --categorical_covariate_keys_reference %(Cell2Location_categorical_covariate_keys_reference)s"
-    if PARAMS['Cell2Location_continuous_covariate_keys_reference'] is not None:
-        cmd += " --continuous_covariate_keys_reference %(Cell2Location_continuous_covariate_keys_reference)s"
-    if PARAMS['Cell2Location_max_epochs_reference'] is not None:
-        cmd += " --max_epochs_reference %(Cell2Location_max_epochs_reference)s"
-    
-        # parameters for the spatial model
-    if PARAMS['Cell2Location_batch_key_st'] is not None:
-        cmd += " --batch_key_st %(Cell2Location_batch_key_st)s"
-    if PARAMS['Cell2Location_layer_st'] is not None:
-        cmd += " --layer_st %(Cell2Location_layer_st)s"
-    if PARAMS['Cell2Location_categorical_covariate_keys_st'] is not None:
-        cmd += " --categorical_covariate_keys_st %(Cell2Location_categorical_covariate_keys_st)s"
-    if PARAMS['Cell2Location_continuous_covariate_keys_st'] is not None:
-        cmd += " --continuous_covariate_keys_st %(Cell2Location_continuous_covariate_keys_st)s"
-    if PARAMS['Cell2Location_max_epochs_st'] is not None:
-        cmd += " --max_epochs_st %(Cell2Location_max_epochs_st)s"
-    if PARAMS['Cell2Location_N_cells_per_location'] is not None:
-        cmd += " --N_cells_per_location %(Cell2Location_N_cells_per_location)s"
-    if PARAMS['Cell2Location_detection_alpha'] is not None:
-        cmd += " --detection_alpha %(Cell2Location_detection_alpha)s"
+    if PARAMS['Cell2Location_reference']['labels_key'] is not None:
+        cmd += f" --labels_key_reference {PARAMS['Cell2Location_reference']['labels_key']}"
+    if PARAMS['Cell2Location_reference']['batch_key'] is not None:
+        cmd += f" --batch_key_reference {PARAMS['Cell2Location_reference']['batch_key']}"
+    if PARAMS['Cell2Location_reference']['layer'] is not None:
+        cmd += f" --layer_reference {PARAMS['Cell2Location_reference']['layer']}"
+    if PARAMS['Cell2Location_reference']['categorical_covariate_keys'] is not None:
+        cmd += f" --categorical_covariate_keys_reference {PARAMS['Cell2Location_reference']['categorical_covariate_keys']}"
+    if PARAMS['Cell2Location_reference']['continuous_covariate_keys'] is not None:
+        cmd += f" --continuous_covariate_keys_reference {PARAMS['Cell2Location_reference']['continuous_covariate_keys']}"
+    if PARAMS['Cell2Location_reference']['max_epochs'] is not None:
+        cmd += f" --max_epochs_reference {PARAMS['Cell2Location_reference']['max_epochs']}"
+    if PARAMS['Cell2Location_reference']['use_gpu'] is not None:
+        cmd += f" --use_gpu_reference {PARAMS['Cell2Location_reference']['use_gpu']}" 
+    # parameters for the spatial model
+    if PARAMS['Cell2Location_spatial']['batch_key'] is not None:
+        cmd += f" --batch_key_st {PARAMS['Cell2Location_spatial']['batch_key']}"
+    if PARAMS['Cell2Location_spatial']['layer'] is not None:
+        cmd += f" --layer_st {PARAMS['Cell2Location_spatial']['layer']}"
+    if PARAMS['Cell2Location_spatial']['categorical_covariate_keys'] is not None:
+        cmd += f" --categorical_covariate_keys_st {PARAMS['Cell2Location_spatial']['categorical_covariate_keys']}"
+    if PARAMS['Cell2Location_spatial']['continuous_covariate_keys'] is not None:
+        cmd += f" --continuous_covariate_keys_st {PARAMS['Cell2Location_spatial']['continuous_covariate_keys']}"
+    if PARAMS['Cell2Location_spatial']['max_epochs'] is not None:
+        cmd += f" --max_epochs_st {PARAMS['Cell2Location_spatial']['max_epochs']}"
+    if PARAMS['Cell2Location_spatial']['N_cells_per_location'] is not None:
+        cmd += f" --N_cells_per_location {PARAMS['Cell2Location_spatial']['N_cells_per_location']}"
+    if PARAMS['Cell2Location_spatial']['detection_alpha'] is not None:
+        cmd += f" --detection_alpha {PARAMS['Cell2Location_spatial']['detection_alpha']}"
+    if PARAMS['Cell2Location_spatial']['use_gpu'] is not None:
+        cmd += f" --use_gpu_st {PARAMS['Cell2Location_spatial']['use_gpu']}"
     
     if PARAMS['Cell2Location_save_models'] is not None:
-        cmd += " --save_models %(Cell2Location_save_models)s"
-    
+        cmd += " --save_models %(Cell2Location_save_models)s"   
+
     cmd += " > logs/%(log_file)s "
     job_kwargs["job_threads"] = PARAMS['resources_threads_low']
     P.run(cmd, **job_kwargs)
 
 
 
+@active_if(PARAMS['Tangram_run'] is True)
+@mkdir("figures/Tangram")
+@mkdir("tangram.output")
+@files(gen_filter_jobs)
+def run_tangram(input_spatial, outfile_spatial, sample_prefix, input_singlecell):
 
-@follows(run_cell2location)
+    figdir = "./figures/Tangram/" + sample_prefix
+    output_dir = "./tangram.output/" + sample_prefix
+    log_file = "Tangram_" + sample_prefix + ".log"
+    cmd = """
+        python %(py_path)s/run_tangram.py
+        --input_spatial %(input_spatial)s
+        --input_singlecell %(input_singlecell)s
+        --figdir %(figdir)s
+        --output_dir %(output_dir)s
+              """
+    # feature selection paramaters
+    if PARAMS['Tangram_feature_selection']['gene_list'] is not None:
+        cmd += f' --gene_list {PARAMS["Tangram_feature_selection"]["gene_list"]}'
+    if PARAMS['Tangram_feature_selection']['rank_genes']['labels_key'] is not None:
+        cmd += f' --labels_key_rank_genes {PARAMS["Tangram_feature_selection"]["rank_genes"]["labels_key"]}'
+    if PARAMS['Tangram_feature_selection']['rank_genes']['layer'] is not None:
+        cmd += f" --layer_rank_genes {PARAMS['Tangram_feature_selection']['rank_genes']['layer']}"
+    if PARAMS['Tangram_feature_selection']['rank_genes']['n_genes'] is not None:
+        cmd += f" --n_genes_rank {PARAMS['Tangram_feature_selection']['rank_genes']['n_genes']}"
+    if PARAMS['Tangram_feature_selection']['rank_genes']['test_method'] is not None:
+        cmd += f" --method_rank_genes {PARAMS['Tangram_feature_selection']['rank_genes']['test_method']}"
+    if PARAMS['Tangram_feature_selection']['rank_genes']['correction_method'] is not None:
+        cmd += f" --corr_method_rank_genes {PARAMS['Tangram_feature_selection']['rank_genes']['correction_method']}"    
+    
+    # model parameters 
+    if PARAMS['Tangram_model']['labels_key'] is not None:
+        cmd += f" --labels_key_model {PARAMS['Tangram_model']['labels_key']}"
+    if PARAMS['Tangram_model']['num_epochs'] is not None:
+        cmd += f" --num_epochs {PARAMS['Tangram_model']['num_epochs']}"
+    if PARAMS['Tangram_model']['device'] is not None:
+        cmd += f" --device {PARAMS['Tangram_model']['device']}"
+    if PARAMS['Tangram_model']['kwargs'] is not None:
+        kwargs = PARAMS['Tangram_model']['kwargs'].__str__().replace("'", '"')
+        cmd += f" --kwargs '{kwargs}'"
+
+    cmd += " > logs/%(log_file)s "
+    job_kwargs["job_threads"] = PARAMS['resources_threads_low']
+    P.run(cmd, **job_kwargs)
+
+
+@follows(run_cell2location, run_tangram)
 def full():
     """
     All cgat pipelines should end with a full() function which updates,

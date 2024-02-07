@@ -1,6 +1,6 @@
-# ============================================================
+# =============================================================================
 # Ingestion, spatial transcriptomics workflow Panpipes (pipeline_qc_spatial.py)
-# ============================================================
+# =============================================================================
 # Written by Fabiola Curion and Sarah Ouologuem
 
 
@@ -76,6 +76,6 @@ score_genes: MarkersNeutro # Comma-separated without spaces, which groups in the
 # All metrics and grouping variables should be inputted as a comma separated string without spaces, e.g. a,b,c
 
 plotqc:
-  grouping_var: sample_id # sample_id is the name of each spatial slide (specified in the submission file) and it will always be used to plot.
+  grouping_var: sample_id # sample_id is the name of each spatial slide (specified in the submission file)
   spatial_metrics: total_counts,n_genes_by_counts # If metric is present in both, .obs and .var, both will be plotted
 
