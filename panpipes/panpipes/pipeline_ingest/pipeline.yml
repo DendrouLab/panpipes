@@ -190,6 +190,13 @@ scr:
 # exclude: exclude these genes from the HVG selection, if they are deemed HV.
 
 #-------------------------
+# custom genes actions
+#-------------------------
+custom_genes_file: resources/qc_genelist_1.0.csv
+calc_proportions: hb,mt,rp
+score_genes: MarkersNeutro
+
+#-------------------------
 # cell cycle action
 #-------------------------
 # ccgenes will plot the proportions of cell cycle genes (recommended to leave as default)
@@ -198,13 +205,6 @@ ccgenes: default
 # `scanpy.tl.score_genes_cell_cycle` using the file provided in panpipes/resources/cell_cicle_genes.tsv
 # Users can create their own list and specify the path in the `ccgenes` param to score the cells with a custom list.
 # If left blank, the cellcycle score will not be calculated.
-
-#-------------------------
-# custom genes actions
-#-------------------------
-custom_genes_file: resources/qc_genelist_1.0.csv
-calc_proportions: hb,mt,rp
-score_genes: MarkersNeutro
 
 #------------------------
 # Plot QC 

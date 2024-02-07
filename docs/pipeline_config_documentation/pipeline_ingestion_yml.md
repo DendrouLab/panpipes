@@ -10,7 +10,7 @@
 
 # pipeline.yml for ingestion workflow
 
-## Compute resource options
+## Compute resources options
 
 * <p class="parameter">resources</p>
   
@@ -38,7 +38,7 @@
     Leave blank if running native or your cluster automatically inherits the login node environment
 
 
-## Loading and concatenating data options
+## Loading and merging data options
 ### Project name and data format
 
 * <p class="parameter">project</p> String, Default: "test"
@@ -51,12 +51,12 @@
     Prefix for sample names.
 
 
-* <p class="parameter">use_existing_h5mu</p> Boolean (True/False)
+* <p class="parameter">use_existing_h5mu</p> Boolean (True/False), Default: False
     
-    If you have an existing MuData object (.h5mu file) that you want to run panpipes on, then store it in the folder where you intend to run the workflow, and call it ${sample_prefix}_unfilt.h5mu where ${sample_prefix} = sample_prefix argument above.
+    If you want to read an existing MuData object (.h5mu file), set to True. Move the object to the folder where you intend to run the ingestion workflow, and call it ${sample_prefix}_unfilt.h5mu where ${sample_prefix} = sample_prefix argument above.
 
 
-* <p class="parameter">submission_file</p> String
+* <p class="parameter">submission_file</p> String, Mandatory parameter
     
     Submission file name (e.g. sample_file_qc.txt).
     Ensure that the submission file must be in the right format.
@@ -99,12 +99,12 @@ The Quality Control (QC) is run for each modality independently.
 
 * <p class="parameter">barcode_mtd</p>
   
-    Specify if you want to integrate barcode level data, such as demultiplexing with hashtags, chemical tags or lipid tagging.
+    Optionally, you can ingest cell-barcode-level metadata, such as demultiplexing with hashtags, chemical tags or lipid tagging.
     In case you have cell level metadata such as results from a demultiplexing algorithm, you can incorporate it into the MuData object.
     The demultiplexing results should be stored in one csv file containing 2 columns, barcode_id, and sample_id.
     Note that the sample_id should match the sample_id column in the submission file.
   
-    * <p class="parameter">include</p> Boolean, Default: True<br>
+    * <p class="parameter">include</p> Boolean, Default: False<br>
         <p>Set to True if you want to include barcode level data.
         </p><br>
       
@@ -118,7 +118,9 @@ The Quality Control (QC) is run for each modality independently.
         </p><br>
     
 
-### Loading prot data - additional options
+### Loading Protein data - additional options
+Optionally, you can provide additional information on the Protein modality by specifying the following parameters.
+
 * <p class="parameter">protein_metadata_table</p> String
     
     File containing additional information on the proteins.
@@ -144,22 +146,24 @@ The Quality Control (QC) is run for each modality independently.
     
 * <p class="parameter">subset_prot_barcodes_to_rna</p> Default: False
     
-    Set to True if you want to treat filtered rna barcodes as the "real" cells (which we assume one wants to do in most cases), and, additionally, the out prot assay barcodes should mathc the rna ones.
+    If providing separate prot and rna 10X output (`load_prot_from_raw`: True), consider setting `subset_prot_barcodes_to_rna` to True.
+    Set to True if you want to treat filtered rna barcodes as the "real" cells (which we assume one wants to do in most cases), and, additionally, the out prot assay barcodes should match the rna ones.
     If set to False, the full prot matrix will be loaded into the MuData object.
 
 
 ## Quality Control (QC) options
-### 10X cellranger files processing
+### Processing of 10X cellranger files
 
-* <p class="parameter">plot_10X_metrics</p> Boolean, Default: True<br>
+* <p class="parameter">plot_10X_metrics</p> Boolean, Default: False<br>
     
     Specify if you want to plot 10x cellranger QC metrics.
-    Set this parameter to False if not using cellranger folders as input.
+    Set this parameter to False if you're not using cellranger folders as input.
     If starting from cellranger output, you can parse multiple metrics_summary.csv files and plot them together.
     The ingestion workflow will search for the metrics_summary file(s) in the "outs" folder and will stop if it doesn't find it.
  
 
-### Doublets on RNA - Scrublet
+### Doublet detection on RNA modality
+For doublet detection, we use the [Scrublet tool](https://www.sciencedirect.com/science/article/pii/S2405471218304745?via%3Dihub) for detection of doublets in the data. Doublets are cells that contain two distinct cell barcodes, and are often a result of two cells being encapsulated in the same droplet during the library preparation step.
 
 * <p class="parameter">scr</p><br>
     
@@ -213,13 +217,17 @@ The Quality Control (QC) is run for each modality independently.
         If use_thr (previous parameter) is set to True, the threshold specified here will be used to define doublets.
     
 
-### RNA QC    
-This file section specifies parameters used for running Quality Control (QC) on the data.
-Note that we do not filter out cells or genes, as this is part of the subsequent workflow (preprocess).
+### RNA modality Quality Control
+In the following, we specify parameters used for running QC on the RNA modality data.
+In the ingestion workflow we compute cell and genes QC metrics (such as % of mitochondrial genes, number of genes expressed in a cell etc.) but we do not apply filtering, as this is part of the subsequent workflow (preprocess).
 Feel free to leave options blank to run with default parameters.
 
+#### Providing a gene list and defining actions on the genes
+To calculate RNA QC metrics, we need to define a gene list providing additional information on the genes in the data.
+Additionally, we can specify what actions we want to apply to the genes, such as what metrics to calculate.
+
 Usually, it's convenient to rely on known gene lists, as this simplifies various downstream tasks, such as evaluating the percentage of mitochondrial genes in the data, identify ribosomal genes, or excluding IGG genes from HVG selection.
-For the ingestion workflow, we retrieved the cell cycle genes used in scanpy.score_genes_cell_cycle [Satija et al. (2015), Nature Biotechnology.] and stored them in a file: panpipes/resources/cell_cicle_genes.tsv.
+For the ingestion workflow, we retrieved the cell cycle genes used in `scanpy.score_genes_cell_cycle` [Satija et al. (2015), Nature Biotechnology](https://www.nature.com/articles/nbt.3192) and stored them in a file: panpipes/resources/cell_cicle_genes.tsv.
 Additionally, we also provide an example for an entire gene list: panpipes/resources/qc_genelist_1.0.csv 
 
 | mod | feature | group  |
@@ -241,19 +249,7 @@ score_genes: using scanpy.score_genes function,
 (for pipeline_preprocess.py)
 exclude: exclude these genes from the HVG selection, if they are deemed HV.
 
-#### cell cycle action
-
-ccgenes will plot the proportions of cell cycle genes, and, for each cell, determine in which cell cycle stage the respective cell is in.
-Internally, `ccgenes` uses `scanpy.tl.score_genes_cell_cycle`, which requires a file comprising cell cicle genes to be provided.
-
-* <p class="parameter">ccgenes</p> String, Default: default
-    
-    Specify if you want to leave the default [cell cycle genes file provided by panpipes](panpipes/resources/cell_cicle_genes.tsv) (by setting this parameter to `default`) or if you want to provide your own list, in that case specify the path to that file in this parameter.
-    We recommend leaving this parameter as `default`.
-    If left blank, the cellcycle score will not be calculated.
-    
-
-#### custom genes actions
+#### Custom genes actions
 
 * <p class="parameter">custom_genes_file</p>String, Default: resources/qc_genelist_1.0.csv
     
@@ -268,9 +264,20 @@ Internally, `ccgenes` uses `scanpy.tl.score_genes_cell_cycle`, which requires a 
 * <p class="parameter">score_genes</p> Default: MarkersNeutro
     
     Specify what genes should be scored.
+
+#### Cell cycle action
+
+`ccgenes` will plot the proportions of cell cycle genes, and, for each cell, determine in which cell cycle stage the respective cell is in.
+Internally, `ccgenes` uses `scanpy.tl.score_genes_cell_cycle`, which requires a file comprising cell cicle genes to be provided.
+
+* <p class="parameter">ccgenes</p> String, Default: default
+    
+    Specify if you want to leave the default [cell cycle genes file provided by panpipes](panpipes/resources/cell_cicle_genes.tsv) (by setting this parameter to `default`) or if you want to provide your own list, in that case specify the path to that file in this parameter.
+    We recommend leaving this parameter as `default`.
+    If left blank, the cellcycle score will not be calculated.
  
 
-### Plot QC
+### Plotting utilities for QC plots
 
 * <p class="parameter">plotqc_grouping_var</p> String, Default: orig.ident
     
@@ -279,7 +286,7 @@ Internally, `ccgenes` uses `scanpy.tl.score_genes_cell_cycle`, which requires a 
     If left blank, the base of the plot will be the `sample_id` of your submission file.
     
 
-### Plot RNA QC metrics
+### Plotting RNA QC metrics
 All parameter values in this section should be provided as a comma separated String e.g. a,b,c.
 
 * <p class="parameter">plotqc_rna_metrics</p> String (comma-separated), Default: doublet_scores,pct_counts_mt,pct_counts_rp,pct_counts_hb,pct_counts_ig
@@ -288,7 +295,7 @@ All parameter values in this section should be provided as a comma separated Str
     Must be cell observations stored in .obs of the RNA AnnData.
   
 
-### Plot PROT QC metrics
+### Plotting Protein QC metrics
 Plotting QC metrices for protein data requires prot_path to be included in the submission file.
 All parameter values in this section should be provided as a comma separated String e.g. a,b,c.
 
@@ -351,7 +358,7 @@ Setting asses_background to True when you don't have RAW inputs will stop the pi
     If you want to keep all the raw data then set this parameter to False.
 
 
-### Files required for profiling ambient background or running dsb normalisation:
+### Files required for profiling ambient background or running dsb normalisation
 To profile ambient background or run dsb normalization, the raw_feature_bc_matrix folder from cellranger or equivalent is required.
 The pipeline will automatically search for this as a .h5 or matrix folder, if the {mod}_filetype is set to "cellranger", "cellranger_multi" or "10X_h5" based on the path specified in the submission file.
 
@@ -378,7 +385,7 @@ This can help to determine any inconsistencies in staining per channel and other
     Note that if you choose to run the clr on a per-channel basis, then it is not stored in the `MuData` file.
 
 
-## PROT normalization
+## Protein normalization
 
 * <p class="parameter">normalisation_methods</p> String, Default: clr, Options: dsb,clr
     
@@ -389,7 +396,7 @@ This can help to determine any inconsistencies in staining per channel and other
     [clr here](https://muon.readthedocs.io/en/latest/api/generated/muon.prot.pp.clr.html).
 
 
-### CLR parameters
+### Centered log ratio (CLR) normalization options
 
 * <p class="parameter">clr_margin</p> Integer, Default: 0
   
@@ -399,7 +406,7 @@ This can help to determine any inconsistencies in staining per channel and other
     - 0 = normalise rowwise (per feature, recommended)
     - 1 = normalise colwise (per cell)
 
-### DSB parameters
+### Denoised and Scaled by Background (DSB) normalization options
  In order to run DSB you must have access to the complete raw counts, including the empty droplets from both rna and protein assays.
  See details for how to make sure your files are compatible in the _assess background_ section above.
 
