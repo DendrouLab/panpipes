@@ -63,8 +63,21 @@ jobs:
       - name: Preparing the data
         run: |
           mkdir -p teaseq/integration && cd  teaseq/integration
-          curl -L -o teaseq.h5mu https://figshare.com/ndownloader/files/44471927 
-          
+          curl -L -o teaseq.h5mu https://figshare.com/ndownloader/files/44471927
+
+      # Note: we run the following to test that the commands works
+      # However, the following task will replacing the file anyway
+      - name: Preparing the configuration file
+        shell: bash -el {0}
+        run: |
+            cd teaseq/integration
+            panpipes integration config
+
+      - name: Edit the submission file
+        run: |
+            cd teaseq/integration
+            curl -o pipeline.yml https://panpipes-tutorials.readthedocs.io/en/latest/_downloads/f834fdb0a65979b0e4d11d6d75188a8e/pipeline.yml
+            
       - name: File tree
         if: env.debug == 'true'
         run: tree
