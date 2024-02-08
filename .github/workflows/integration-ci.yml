@@ -70,29 +70,29 @@ jobs:
       - name: Preparing the configuration file
         shell: bash -el {0}
         run: |
-            cd teaseq/integration
-            panpipes integration config
+          cd teaseq/integration
+          panpipes integration config
 
       - name: Edit the submission file
         run: |
-            cd teaseq/integration
-            curl -o pipeline.yml https://panpipes-tutorials.readthedocs.io/en/latest/_downloads/f834fdb0a65979b0e4d11d6d75188a8e/pipeline.yml
+          cd teaseq/integration
+          curl -o pipeline.yml https://panpipes-tutorials.readthedocs.io/en/latest/_downloads/f834fdb0a65979b0e4d11d6d75188a8e/pipeline.yml
             
-            - name: File tree
-            if: env.debug == 'true'
-            run: tree
+      - name: File tree
+        if: env.debug == 'true'
+        run: tree
     
       - name: Review pipeline tasks
         shell: bash -el {0}
         run: |
-            cd teaseq/integration
-            panpipes integration show full --local
+          cd teaseq/integration
+          panpipes integration show full --local
 
       - name: Run pipeline tasks
         shell: bash -el {0}
         run: |
-            cd teaseq/integration
-            panpipes integration make full --local
+          cd teaseq/integration
+          panpipes integration make full --local
         
       - name: File tree
         if: env.debug == 'true'
