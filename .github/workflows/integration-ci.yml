@@ -78,6 +78,22 @@ jobs:
             cd teaseq/integration
             curl -o pipeline.yml https://panpipes-tutorials.readthedocs.io/en/latest/_downloads/f834fdb0a65979b0e4d11d6d75188a8e/pipeline.yml
             
+            - name: File tree
+            if: env.debug == 'true'
+            run: tree
+    
+      - name: Review pipeline tasks
+        shell: bash -el {0}
+        run: |
+            cd teaseq/integration
+            panpipes integration show full --local
+
+      - name: Run pipeline tasks
+        shell: bash -el {0}
+        run: |
+            cd teaseq/integration
+            panpipes integration make full --local
+        
       - name: File tree
         if: env.debug == 'true'
         run: tree
