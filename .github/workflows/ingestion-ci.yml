@@ -29,7 +29,7 @@ jobs:
         with:
           miniforge-version: latest
           auto-activate-base: true
-          auto-update-conda: true
+          auto-update-conda: false
           channels: conda-forge
           channel-priority: strict
           activate-environment: pipeline_env
@@ -44,11 +44,6 @@ jobs:
         if: env.debug == 'true'
         shell: pwsh
         run: conda list
-
-      #- name: Run tests
-      #  shell: bash -el {0}
-      #  run: |
-      #    python -m pytest tests/
 
       # Note: all three files are renamed during the download to trim the "subsample_" prefix
       - name: Preparing the data
@@ -106,3 +101,9 @@ jobs:
       - name: File tree
         if: env.debug == 'true'
         run: tree
+        
+      - uses: actions/upload-artifact@v4
+        with:
+          name: teaseq_unfilt.h5mu
+          path: teaseq/ingest/teaseq_unfilt.h5mu
+          retention-days: 1
