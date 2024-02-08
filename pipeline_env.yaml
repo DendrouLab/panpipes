@@ -16,3 +16,12 @@ dependencies:
   - pip:
     - panpipes[spatial]
     - pytest
+    - boto3==1.34.34
+    - botocore==1.34.34
+    - flax==0.8.0
+    - fonttools==4.47.2
+    - jax==0.4.23
+    - jaxlib==0.4.23
+    - orbax-checkpoint==0.5.2
+    - pytorch-lightning==2.1.4
+    
