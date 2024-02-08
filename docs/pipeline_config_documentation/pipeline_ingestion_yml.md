@@ -222,9 +222,14 @@ In the following, we specify parameters used for running QC on the RNA modality 
 In the ingestion workflow we compute cell and genes QC metrics (such as % of mitochondrial genes, number of genes expressed in a cell etc.) but we do not apply filtering, as this is part of the subsequent workflow (preprocess).
 Feel free to leave options blank to run with default parameters.
 
-#### Providing a gene list and defining actions on the genes
+#### Providing a gene list
 To calculate RNA QC metrics, we need to define a gene list providing additional information on the genes in the data.
 Additionally, we can specify what actions we want to apply to the genes, such as what metrics to calculate.
+
+* <p class="parameter">custom_genes_file</p>String, Default: resources/qc_genelist_1.0.csv
+    
+    Path to the file containing the entire gene list. Panpipes provides such a file with standard genes, and the path to this file is set as default.
+ 
 
 Usually, it's convenient to rely on known gene lists, as this simplifies various downstream tasks, such as evaluating the percentage of mitochondrial genes in the data, identify ribosomal genes, or excluding IGG genes from HVG selection.
 For the ingestion workflow, we retrieved the cell cycle genes used in `scanpy.score_genes_cell_cycle` [Satija et al. (2015), Nature Biotechnology](https://www.nature.com/articles/nbt.3192) and stored them in a file: panpipes/resources/cell_cicle_genes.tsv.
@@ -237,6 +242,7 @@ Additionally, we also provide an example for an entire gene list: panpipes/resou
 | RNA | gene_3  | exclude|
 | RNA | gene_3  | markerX|  
 
+#### Defining actions on the genes
 Next, we define "actions" on the genes as follows:
 
 In the group column, specify what actions you want to apply to that specific gene.
@@ -249,12 +255,6 @@ score_genes: using scanpy.score_genes function,
 (for pipeline_preprocess.py)
 exclude: exclude these genes from the HVG selection, if they are deemed HV.
 
-#### Custom genes actions
-
-* <p class="parameter">custom_genes_file</p>String, Default: resources/qc_genelist_1.0.csv
-    
-    Path to the file containing the entire gene list. Panpipes provides such a file with standard genes, and the path to this file is set as default.
-  
 
 * <p class="parameter">calc_proportions</p> Default: hb,mt,rp
     
@@ -265,13 +265,12 @@ exclude: exclude these genes from the HVG selection, if they are deemed HV.
     
     Specify what genes should be scored.
 
-#### Cell cycle action
-
-`ccgenes` will plot the proportions of cell cycle genes, and, for each cell, determine in which cell cycle stage the respective cell is in.
-Internally, `ccgenes` uses `scanpy.tl.score_genes_cell_cycle`, which requires a file comprising cell cicle genes to be provided.
+Furthermore, there is the possibility to define a cell cycle action:
 
 * <p class="parameter">ccgenes</p> String, Default: default
     
+    `ccgenes` will plot the proportions of cell cycle genes, and, for each cell, determine in which cell cycle stage the respective cell is in.
+    Internally, `ccgenes` uses `scanpy.tl.score_genes_cell_cycle`, which requires a file comprising cell cicle genes to be provided.
     Specify if you want to leave the default [cell cycle genes file provided by panpipes](panpipes/resources/cell_cicle_genes.tsv) (by setting this parameter to `default`) or if you want to provide your own list, in that case specify the path to that file in this parameter.
     We recommend leaving this parameter as `default`.
     If left blank, the cellcycle score will not be calculated.

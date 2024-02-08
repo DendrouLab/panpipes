@@ -113,7 +113,8 @@ plotqc_rna_metrics: doublet_scores,pct_counts_mt,pct_counts_rp,pct_counts_hb,pct
 # ------------
 # Plot PROT QC metrics 
 # ------------
-
+# requires prot_path to be included in the submission file
+# all metrics should be provided as a comma separated string e.g. a,b,c
 plotqc_prot_metrics: total_counts,log1p_total_counts,n_prot_by_counts,pct_counts_isotype
 plot_metrics_per_prot: total_counts,log1p_total_counts,n_cells_by_counts,mean_counts
 
@@ -125,6 +126,7 @@ isotype_n_pass: 2
 # ------------
 # Profiling Protein Ambient background
 # ------------
+# PLEASE NOTE that this analysis can ONLY BE RUN IF YOU ARE PROVIDING RAW input starting from cellranger outputs
 
 assess_background: False
 downsample_background: True
@@ -147,6 +149,9 @@ normalisation_methods: clr
 
 
 # CLR parameters:
+# margin determines whether you normalise per cell (as you would for RNA),
+# or by feature (recommended, due to the variable nature of prot assays).
+# CLR margin 0 is recommended for informative qc plots in this pipeline
 clr_margin: 0
 
 
@@ -156,7 +161,9 @@ quantile_clipping: True
 # ------------
 # Plot ATAC QC metrics 
 # ------------
-
+# is this an ATAC alone or a multiome sample?
+# this is NOT a multiome experiment, but you have an RNA anndata that you would like to use for TSS enrichment
+# leave empty if no rna provided
 is_paired: True
 partner_rna:
 features_tss: #resources/features_tss_hg19.tsv
