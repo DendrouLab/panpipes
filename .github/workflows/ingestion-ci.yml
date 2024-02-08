@@ -1,0 +1,108 @@
+name: Tutorials CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+env:
+  debug: 'true'
+
+jobs:
+  ingestion:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ["ubuntu-latest"] # , "macos-latest", "windows-latest"
+        python-version: ["3.9"]
+
+    steps:
+      # - uses: actions/checkout@v4
+      - name: Download Conda YAML file
+        run: curl -o pipeline_env.yaml https://raw.githubusercontent.com/DendrouLab/panpipes/kra-gha/pipeline_env.yaml
+      
+      - uses: conda-incubator/setup-miniconda@v3
+        with:
+          miniforge-version: latest
+          auto-activate-base: true
+          auto-update-conda: true
+          channels: conda-forge
+          channel-priority: strict
+          activate-environment: pipeline_env
+          environment-file: pipeline_env.yaml # consider moving to etc/pipeline_env.yaml
+
+      - name: Conda info
+        if: env.debug == 'true'
+        shell: bash -el {0}
+        run: conda info
+
+      - name: Conda list
+        if: env.debug == 'true'
+        shell: pwsh
+        run: conda list
+
+      #- name: Run tests
+      #  shell: bash -el {0}
+      #  run: |
+      #    python -m pytest tests/
+
+      # Note: all three files are renamed during the download to trim the "subsample_" prefix
+      - name: Preparing the data
+        run: |
+          mkdir -p teaseq/ingest/data.dir
+          cd teaseq/ingest/data.dir
+          curl -L -o adt.h5ad https://figshare.com/ndownloader/files/41671551
+          curl -L -o atac.h5ad https://figshare.com/ndownloader/files/41671554
+          curl -L -o rna.h5ad https://figshare.com/ndownloader/files/41671557
+      
+      # Note: we run the following to test that the commands works
+      # However, the following task will replacing the file anyway
+      - name: Preparing the configuration file
+        shell: bash -el {0}
+        run: |
+          cd teaseq/ingest
+          panpipes ingest config
+      
+      - name: Edit the submission file
+        run: |
+          cd teaseq/ingest
+          curl -o pipeline.yml https://panpipes-tutorials.readthedocs.io/en/latest/_downloads/9a4fcbc3c0a4fdc8e6578d086a88730f/pipeline.yml
+      
+      - name: Preparing the submission file
+        run: |
+          cd teaseq/ingest
+          curl -o sample_file_qc.txt https://panpipes-tutorials.readthedocs.io/en/latest/_downloads/40ed291bf9a7ff73c4f396ec63cff2f7/sample_file_qc.txt
+      
+      - name: Preparing the QC gene lists
+        run: |
+          cd teaseq/ingest
+          curl -o qc_genelist_1.0.csv https://panpipes-tutorials.readthedocs.io/en/latest/_downloads/fd38f25644105ea357a26e78a59139bb/qc_genelist_1.0.csv
+        
+      - name: Replace template contents in configuration file
+        run: |
+          cd teaseq/ingest
+          sed -i 's+panpipes-tutorials/tutorials/ingesting_data/qc_genelist_1.0.csv+qc_genelist_1.0.csv+g' pipeline.yml
+
+      - name: File tree
+        if: env.debug == 'true'
+        run: tree
+
+      - name: Review pipeline tasks
+        shell: bash -el {0}
+        run: |
+          cd teaseq/ingest
+          panpipes ingest show full --local
+
+      - name: Run pipeline tasks
+        shell: bash -el {0}
+        run: |
+          cd teaseq/ingest
+          panpipes ingest make full --local
+        
+      - name: File tree
+        if: env.debug == 'true'
+        run: tree
