@@ -22,6 +22,7 @@ dependencies:
     - fonttools==4.47.2
     - jax==0.4.23
     - jaxlib==0.4.23
+    - numpy==1.22.4
     - orbax-checkpoint==0.5.2
     - pytorch-lightning==2.1.4
     

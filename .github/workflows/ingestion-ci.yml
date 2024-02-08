@@ -29,13 +29,14 @@ jobs:
         with:
           miniforge-version: latest
           auto-activate-base: true
-          auto-update-conda: false
+          auto-update-conda: true
           channels: conda-forge
           channel-priority: strict
           activate-environment: pipeline_env
           environment-file: pipeline_env.yaml # consider moving to etc/pipeline_env.yaml
 
-      - name: Pin version of jax
+      # Note: the pinned versions in pipeline_env.yaml are not respected during the miniconda step above
+      - name: Pin version of pip dependencies
         shell: bash -el {0}
         run: pip install --force-reinstall -v \
           boto3==1.34.34 \
