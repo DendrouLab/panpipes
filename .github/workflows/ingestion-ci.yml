@@ -37,7 +37,16 @@ jobs:
 
       - name: Pin version of jax
         shell: bash -el {0}
-        run: pip install --force-reinstall -v boto3==1.34.34 botocore==1.34.34 flax==0.8.0 fonttools==4.47.2 jax==0.4.23 jaxlib==0.4.23 orbax-checkpoint==0.5.2 pytorch-lightning==2.1.4
+        run: pip install --force-reinstall -v \
+          boto3==1.34.34 \
+          botocore==1.34.34 \
+          flax==0.8.0 \
+          fonttools==4.47.2 \
+          jax==0.4.23 \
+          jaxlib==0.4.23 \
+          numpy==1.22.4 \
+          orbax-checkpoint==0.5.2 \
+          pytorch-lightning==2.1.4
           
       - name: Conda info
         if: env.debug == 'true'
