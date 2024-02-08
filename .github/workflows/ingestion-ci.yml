@@ -35,6 +35,10 @@ jobs:
           activate-environment: pipeline_env
           environment-file: pipeline_env.yaml # consider moving to etc/pipeline_env.yaml
 
+      - name:
+        shell: bash
+        run: pip install --force-reinstall -v jax==0.4.23 jaxlib==0.4.23
+          
       - name: Conda info
         if: env.debug == 'true'
         shell: bash -el {0}
