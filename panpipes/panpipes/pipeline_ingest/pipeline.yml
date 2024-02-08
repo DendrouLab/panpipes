@@ -4,7 +4,9 @@
 # This file contains the parameters for the ingest workflow. For descriptions of the parameters, see the documentation at TODO
 
 
-# compute resource options
+#--------------------------
+# Compute resources options
+#--------------------------
 resources:
   threads_high: 1
   threads_medium: 1
@@ -12,10 +14,11 @@ resources:
 
 condaenv:
 
-# ------------------------------------------------------------------------------------------------
-# Loading and concatenating data options
-# ------------------------------------------------------------------------------------------------
+# --------------------------------
+# Loading and merging data options
+# --------------------------------
 
+# ----------------------------
 # Project name and data format
 project: "test"
 sample_prefix: "test"
@@ -24,10 +27,8 @@ submission_file:
 metadatacols:
 concat_join_type: inner
 
-
-#---------------------------------------
+#--------------------------
 # Modalities in the project
-#---------------------------------------
 modalities:
   rna: False
   prot: False
@@ -35,34 +36,32 @@ modalities:
   tcr: False
   atac: False
 
-#---------------------------------------
-# Integrating barcode level data e.g. 
-# demultiplexing with hashtags, chemical tags or lipid tagging
-#---------------------------------------
+#--------------------------------
+# Integrating barcode level data
+# e.g. demultiplexing with hashtags, chemical tags or lipid tagging
 barcode_mtd:
   include: true
   path:
   metadatacols:  
 
-#---------------------------------------
-# Loading prot data - additional options
-#---------------------------------------
+#------------------------------------------
+# Loading Protein data - additional options
 protein_metadata_table:
 index_col_choice:
 load_prot_from_raw: False
 subset_prot_barcodes_to_rna: False
 
-# ------------------------------------------------------------------------------------------------
-# QC options
-# ------------------------------------------------------------------------------------------------
-# ------------------------
-# 10X cellranger files processing
-# ------------------------
+
+# -----------------------------
+# Quality Control (QC) options
+# -----------------------------
+
+# -----------------------------------
+# Processing of 10X cellranger files
 plot_10X_metrics: True
 
-# ------------
-# Doublets on RNA - Scrublet
-# ------------
+# ----------------------------------
+# Doublet detection on RNA modality
 scr:
   run: True
   expected_doublet_rate: 0.06
@@ -75,44 +74,35 @@ scr:
   use_thr: True
   call_doublets_thr: 0.25
 
-# ------------
-# RNA QC
-# ------------
+# ----------------------------
+# RNA modality Quality Control
 
+# Providing a gene list
+custom_genes_file: resources/qc_genelist_1.0.csv
+
+# Defining actions on the genes
 
 # (for pipeline_ingest.py)
-# calc_proportions: calculate proportion of reads mapping to X genes over total number of reads, per cell
-# score_genes: using scanpy.score_genes function,
+calc_proportions: hb,mt,rp
+score_genes: MarkersNeutro
 
 # (for pipeline_preprocess.py)
 # exclude:
 
-#-------------------------
-# custom genes actions
-#-------------------------
-custom_genes_file: resources/qc_genelist_1.0.csv
-calc_proportions: hb,mt,rp
-score_genes: MarkersNeutro
-
-#-------------------------
 # cell cycle action
-#-------------------------
 ccgenes: default
 
-#------------------------
-# Plot QC 
-#------------------------
+#---------------------------------
+# Plotting utilities for QC plots
 plotqc_grouping_var: orig.ident
 
-
-# ------------
-# Plot RNA QC metrics
-# ------------
+# ------------------------
+# Plotting RNA QC metrics
 plotqc_rna_metrics: doublet_scores,pct_counts_mt,pct_counts_rp,pct_counts_hb,pct_counts_ig
 
-# ------------
-# Plot PROT QC metrics 
-# ------------
+# ----------------------------
+# Plotting Protein QC metrics
+
 # requires prot_path to be included in the submission file
 # all metrics should be provided as a comma separated string e.g. a,b,c
 plotqc_prot_metrics: total_counts,log1p_total_counts,n_prot_by_counts,pct_counts_isotype
@@ -122,45 +112,9 @@ identify_isotype_outliers: True
 isotype_upper_quantile: 90
 isotype_n_pass: 2
 
-  
-# ------------
-# Profiling Protein Ambient background
-# ------------
-# PLEASE NOTE that this analysis can ONLY BE RUN IF YOU ARE PROVIDING RAW input starting from cellranger outputs
+# ---------------------
+# Plot ATAC QC metrics
 
-assess_background: False
-downsample_background: True
-
-# -----------------------------------------------------
-# Files required for profiling ambient background or running dsb normalisation:
-# -----------------------------------------------------
-
-#----------------
-# Investigate per channel antibody staining:
-#----------------
-channel_col: sample_id
-save_norm_prot_mtx: False
-
-#-------------------
-# PROT normalization
-#-------------------
-
-normalisation_methods: clr
-
-
-# CLR parameters:
-# margin determines whether you normalise per cell (as you would for RNA),
-# or by feature (recommended, due to the variable nature of prot assays).
-# CLR margin 0 is recommended for informative qc plots in this pipeline
-clr_margin: 0
-
-
-# DSB parameters:
-quantile_clipping: True
-
-# ------------
-# Plot ATAC QC metrics 
-# ------------
 # is this an ATAC alone or a multiome sample?
 # this is NOT a multiome experiment, but you have an RNA anndata that you would like to use for TSS enrichment
 # leave empty if no rna provided
@@ -169,20 +123,16 @@ partner_rna:
 features_tss: #resources/features_tss_hg19.tsv
 plotqc_atac_metrics: n_genes_by_counts,total_counts,pct_fragments_in_peaks,atac_peak_region_fragments,atac_mitochondrial_reads,atac_TSS_fragments
 
-# ------------
+# ---------------------------
 # Plot Repertoire QC metrics
-# ------------
-
 ir_dist:
   metric:
   sequence:
-
 
 clonotype_definition:
   receptor_arms:
   dual_ir:
   within_group:
-
 
 plotqc_rep_metrics:
  - is_cell
@@ -192,4 +142,44 @@ plotqc_rep_metrics:
  - rep:receptor_subtype
  - rep:chain_pairing
  - rep:multi_chain
+
+
+# -------------------------------------
+# Profiling Protein Ambient background
+# -------------------------------------
+# PLEASE NOTE that this analysis can ONLY BE RUN IF YOU ARE PROVIDING RAW input starting from cellranger outputs
+
+assess_background: False
+downsample_background: True
+
+# -----------------------------------------------------
+# Files required for profiling ambient background or running dsb normalisation
+
+# The pipeline requires the raw_feature_bc_matrix folder from cellranger or equivalent,
+# specified in the submission file path with {mod}_filetype set to "cellranger," "cellranger_multi," or "10X_h5"
+# for automatic search of .h5 or matrix folder for profiling ambient background or running dsb normalization.
+
+#-------------------------------------------
+# Investigate per-channel antibody staining
+channel_col: sample_id
+save_norm_prot_mtx: False
+
+
+#----------------------
+# Protein normalization
+#----------------------
+
+normalisation_methods: clr
+
+#-----------------------------------------------
+# Centered log ratio (CLR) normalization options
+
+# margin determines whether you normalise per cell (as you would for RNA),
+# or by feature (recommended, due to the variable nature of prot assays).
+# CLR margin 0 is recommended for informative qc plots in this pipeline
+clr_margin: 0
+
+#--------------------------------------------------------------
+# Denoised and Scaled by Background (DSB) normalization options
+quantile_clipping: True
 
