@@ -5,6 +5,8 @@ Releases
 
 ### added
 
+- added Tangram to `deconvolution_spatial`
+
 ### fixed
 
 - fixed error in `vis`
