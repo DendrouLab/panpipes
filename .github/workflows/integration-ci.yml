@@ -80,7 +80,7 @@ jobs:
 
       - name: Replace template contents in configuration file
         run: |
-          cd teaseq/ingest
+          cd teaseq/integration
           sed -i 's+/Users/fabiola.curion/Documents/devel/miniconda3/envs/pipeline_env+pipeline_env+g' pipeline.yml
                
       - name: File tree
