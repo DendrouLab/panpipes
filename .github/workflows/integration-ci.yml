@@ -12,7 +12,7 @@ env:
   debug: 'true'
 
 jobs:
-  ingestion:
+  integration:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
