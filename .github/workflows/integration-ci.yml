@@ -77,7 +77,13 @@ jobs:
         run: |
           cd teaseq/integration
           curl -o pipeline.yml https://panpipes-tutorials.readthedocs.io/en/latest/_downloads/f834fdb0a65979b0e4d11d6d75188a8e/pipeline.yml
-            
+
+          - name: Replace template contents in configuration file
+          run: |
+            cd teaseq/ingest
+            sed -i 's+/Users/fabiola.curion/Documents/devel/miniconda3/envs/pipeline_env+pipeline_env+g' pipeline.yml
+          
+          
       - name: File tree
         if: env.debug == 'true'
         run: tree
