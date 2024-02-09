@@ -21,9 +21,11 @@ jobs:
         python-version: ["3.9"]
 
     steps:
-      # - uses: actions/checkout@v4
-      - name: Download Conda YAML file
-        run: curl -o pipeline_env.yaml https://raw.githubusercontent.com/DendrouLab/panpipes/kra-gha/pipeline_env.yaml
+      - uses: actions/checkout@v4
+
+      - name: File tree
+        if: env.debug == 'true'
+        run: tree
       
       - uses: conda-incubator/setup-miniconda@v3
         with:
@@ -33,8 +35,14 @@ jobs:
           channels: conda-forge
           channel-priority: strict
           activate-environment: pipeline_env
-          environment-file: pipeline_env.yaml # consider moving to etc/pipeline_env.yaml
+          environment-file: pipeline_env.yaml
 
+      - name: Install Panpipes
+        shell: bash -el {0}
+        run: |
+          pip install -e .
+          conda list
+          
       - name: Conda info
         if: env.debug == 'true'
         shell: bash -el {0}
@@ -44,11 +52,6 @@ jobs:
         if: env.debug == 'true'
         shell: pwsh
         run: conda list
-
-      #- name: Run tests
-      #  shell: bash -el {0}
-      #  run: |
-      #    python -m pytest tests/
 
       # Note: all three files are renamed during the download to trim the "subsample_" prefix
       - name: Preparing the data
@@ -89,7 +92,7 @@ jobs:
 
       - name: File tree
         if: env.debug == 'true'
-        run: tree
+        run: tree teaseq
 
       - name: Review pipeline tasks
         shell: bash -el {0}
@@ -105,4 +108,10 @@ jobs:
         
       - name: File tree
         if: env.debug == 'true'
-        run: tree
+        run: tree teaseq
+        
+      - uses: actions/upload-artifact@v4
+        with:
+          name: teaseq_unfilt.h5mu
+          path: teaseq/ingest/teaseq_unfilt.h5mu
+          retention-days: 1
