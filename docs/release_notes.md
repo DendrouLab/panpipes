@@ -1,4 +1,18 @@
+
 # Changelog
+
+## [latest]
+
+### added
+
+- added Tangram to `deconvolution_spatial`
+
+### fixed
+
+- fixed error in `vis`
+    - error occurred when only wanting to plot continuous or categorical variables (or neither), not both 
+
+### dependencies
 
 ## v0.4.1
 
