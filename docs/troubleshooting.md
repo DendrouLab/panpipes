@@ -1,11 +1,20 @@
-#Troubleshooting common issues when running panpipes
+# Troubleshooting common issues when running panpipes
 
-### What to do when the pipeline breaks mid run
+### What to do when the pipeline breaks mid-run
 
-Sometimes the pipeline will stop because, for example,  a parameter is wrong in the config file, or a path was not
-accurately changed in the yaml file. 
+Sometimes the pipeline will stop because, for example,  a parameter is wrong in the config file, or a path is not
+accurate in the YAML file. 
 
-First: check the log file to see what went wrong and fix the issue 
+TODO add examples of directories when pipeline breaks mid-run
 
-Second: Before re running make sure to delete any intermediate files that where created in the previous run which
-broke halfway through, to ensure that you can fully reattempt.  
+**Solution**
+First: check the log files to see what went wrong.
+- Inspect the pipeline.log file: the bottom of the file will print the error that broke the pipeline.
+TODO: add text from a failed pipeline.log as an example
+- In this case the pipeline failed at ...: inspect the log file for this process in logs/xxx.log
+
+You can fix the issue by ...
+
+Second: Before re-running panpipes, we recommend deleting any intermediate files that were created in the previous run which
+broke halfway through.  
+
