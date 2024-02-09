@@ -2,7 +2,7 @@
 # Ingest workflow Panpipes (pipeline_ingest.py)
 # ============================================================
 # This file contains the parameters for the ingest workflow. 
-For descriptions of the parameters, see the documentation at TODO
+# For full descriptions of the parameters, see the documentation at TODO
 
 
 #--------------------------
@@ -58,7 +58,7 @@ subset_prot_barcodes_to_rna: False
 # -----------------------------
 
 # -----------------------------------
-# Processing of 10X cellranger files
+# Processing of 10X cellranger metrics files
 plot_10X_metrics: True
 
 # ----------------------------------
@@ -88,18 +88,13 @@ custom_genes_file: resources/qc_genelist_1.0.csv
 calc_proportions: hb,mt,rp
 score_genes: MarkersNeutro
 
-# (for pipeline_preprocess.py)
-# exclude:
-
 # cell cycle action
 ccgenes: default
 
-#---------------------------------
-# Plotting utilities for QC plots
-plotqc_grouping_var: orig.ident
-
 # ------------------------
 # Plotting RNA QC metrics
+# all metrics should be provided as a comma separated string e.g. a,b,c
+plotqc_grouping_var: orig.ident
 plotqc_rna_metrics: doublet_scores,pct_counts_mt,pct_counts_rp,pct_counts_hb,pct_counts_ig
 
 # ----------------------------
@@ -117,12 +112,13 @@ isotype_n_pass: 2
 # ---------------------
 # Plot ATAC QC metrics
 
-# is this an ATAC alone or a multiome sample?
-# this is NOT a multiome experiment, but you have an RNA anndata that you would like to use for TSS enrichment
-# leave empty if no rna provided
+# set is_paired to True if a multiome is ingested
 is_paired: True
+# If this is NOT a multiome experiment, but you have an RNA anndata that you would like to use for TSS enrichment
+# use the partner_rna to specify the path to the file and provide a features_tss file with the tss coordinates 
+# leave empty if multiome is used
 partner_rna:
-features_tss: #resources/features_tss_hg19.tsv
+features_tss: 
 plotqc_atac_metrics: n_genes_by_counts,total_counts,pct_fragments_in_peaks,atac_peak_region_fragments,atac_mitochondrial_reads,atac_TSS_fragments
 
 # ---------------------------
@@ -137,6 +133,7 @@ clonotype_definition:
   within_group:
 
 plotqc_rep_metrics:
+# provide a item list
  - is_cell
  - extra_chains
  - clonal_expansion
@@ -149,7 +146,7 @@ plotqc_rep_metrics:
 # -------------------------------------
 # Profiling Protein Ambient background
 # -------------------------------------
-# PLEASE NOTE that this analysis can ONLY BE RUN IF YOU ARE PROVIDING RAW input starting from cellranger outputs
+# PLEASE NOTE that this analysis can only be run if your inputs are from cellranger raw outputs
 
 assess_background: False
 downsample_background: True
@@ -179,6 +176,8 @@ normalisation_methods: clr
 # margin determines whether you normalise per cell (as you would for RNA),
 # or by feature (recommended, due to the variable nature of prot assays).
 # CLR margin 0 is recommended for informative qc plots in this pipeline
+# 0 = normalise rowwise (per feature)
+# 1 = normalise colwise (per cell)
 clr_margin: 0
 
 #--------------------------------------------------------------
