@@ -1,7 +1,9 @@
 
 # Spatial QC YAML 
 
-In this documentation, the parameters of the `qc_spatial` yaml file are explained. In general, the user can leave parameters empty to use defaults. <br>  The individual steps run by the pipeline are described in the [spatial QC workflow](../workflows/ingest_spatial.md). 
+In this documentation, the parameters of the `qc_spatial` yaml file are explained. 
+This file is generated running `panpipes qc_spatial config`.
+In general, the user can leave parameters empty to use defaults. <br>  The individual steps run by the pipeline are described in the [spatial QC workflow](../workflows/ingest_spatial.md). 
 
 
 

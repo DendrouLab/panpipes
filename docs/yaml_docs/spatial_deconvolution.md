@@ -1,7 +1,9 @@
 
 # Spatial Deconvolution YAML
 
-In this documentation, the parameters of the `deconvolution_spatial` yaml file are explained. In general, the user can leave parameters empty to use defaults. <br> The individual steps run by the pipeline are described in the [spatial deconvolution workflow](../workflows/deconvolute_spatial.md). 
+In this documentation, the parameters of the `deconvolution_spatial` yaml file are explained. 
+This file is generated running `panpipes deconvolution config`.
+In general, the user can leave parameters empty to use defaults. <br> The individual steps run by the pipeline are described in the [spatial deconvolution workflow](../workflows/deconvolute_spatial.md). 
 
 
 
