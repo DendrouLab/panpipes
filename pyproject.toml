@@ -40,7 +40,7 @@ dependencies = [
     "jaxlib<=0.4.23",
     "leidenalg", 
     "louvain",
-    "matplotlib",
+    "matplotlib<=3.7.3",
     "mofapy2",
     "mudata>=0.2.1",
     "muon",
