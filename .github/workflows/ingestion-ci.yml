@@ -21,9 +21,14 @@ jobs:
         python-version: ["3.9"]
 
     steps:
-      # - uses: actions/checkout@v4
-      - name: Download Conda YAML file
-        run: curl -o pipeline_env.yaml https://raw.githubusercontent.com/DendrouLab/panpipes/kra-gha/pipeline_env.yaml
+      - uses: actions/checkout@v4
+
+      - name: File tree
+        if: env.debug == 'true'
+        run: tree
+
+      # - name: Download Conda YAML file
+      #   run: curl -o pipeline_env.yaml https://raw.githubusercontent.com/DendrouLab/panpipes/kra-gha/pipeline_env.yaml
       
       - uses: conda-incubator/setup-miniconda@v3
         with:
@@ -33,21 +38,27 @@ jobs:
           channels: conda-forge
           channel-priority: strict
           activate-environment: pipeline_env
-          environment-file: pipeline_env.yaml # consider moving to etc/pipeline_env.yaml
+          environment-file: pipeline_env.yaml
+
+      - name: Install Panpipes
+        shell: bash -el {0}
+        run: |
+          pip install -e .
+          conda list
 
       # Note: the pinned versions in pipeline_env.yaml are not respected during the miniconda step above
-      - name: Pin version of pip dependencies
-        shell: bash -el {0}
-        run: pip install --force-reinstall -v \
-          boto3==1.34.34 \
-          botocore==1.34.34 \
-          flax==0.8.0 \
-          fonttools==4.47.2 \
-          jax==0.4.23 \
-          jaxlib==0.4.23 \
-          numpy==1.22.4 \
-          orbax-checkpoint==0.5.2 \
-          pytorch-lightning==2.1.4
+      # - name: Pin version of pip dependencies
+      #   shell: bash -el {0}
+      #   run: pip install --force-reinstall -v \
+      #     boto3==1.34.34 \
+      #     botocore==1.34.34 \
+      #     flax==0.8.0 \
+      #     fonttools==4.47.2 \
+      #     jax==0.4.23 \
+      #     jaxlib==0.4.23 \
+      #     numpy==1.22.4 \
+      #     orbax-checkpoint==0.5.2 \
+      #     pytorch-lightning==2.1.4
           
       - name: Conda info
         if: env.debug == 'true'
