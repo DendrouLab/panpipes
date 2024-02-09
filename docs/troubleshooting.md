@@ -1,4 +1,7 @@
-What to do if your pipeline beaks mid-run: 
+#Troubleshooting common issues when running panpipes
+
+
+### What to do when the pipeline breaks mid run
 
 Sometimes the pipeline will stop because, for example,  a parameter is wrong in the config file, or a path was not
 accurately changed in the yml file. 
