@@ -82,7 +82,7 @@ modalities:
 # this should be stored in one csv containing 2 columns, barcode_id, and sample_id,
 # which should match the sample_id column in the submission file.
 barcode_mtd:
-  include: true
+  include: False
   path:
   metadatacols:  
 
