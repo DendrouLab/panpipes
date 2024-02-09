@@ -51,6 +51,7 @@ Contents
    install
    usage/index
    workflows/index
+   yaml_docs/index
    tutorials/index
    ../changelog
    contribute_guidelines
