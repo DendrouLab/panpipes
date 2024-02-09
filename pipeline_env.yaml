@@ -14,5 +14,4 @@ dependencies:
   - r-xtable
   - pip
   - pip:
-    - panpipes[spatial]
     - pytest
