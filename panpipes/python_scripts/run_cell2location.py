@@ -85,6 +85,9 @@ parser.add_argument("--continuous_covariate_keys_reference",
 parser.add_argument("--max_epochs_reference",
                     default=None,
                     help="")
+parser.add_argument("--use_gpu_reference",
+                    default=True,
+                    help="")
 
 # parameters for spatial model: 
 parser.add_argument("--labels_key_st",
@@ -111,6 +114,9 @@ parser.add_argument("--detection_alpha",
 parser.add_argument("--max_epochs_st",
                     default=None,
                     help="")  
+parser.add_argument("--use_gpu_st",
+                    default=True,
+                    help="")
 
 
 args, opt = parser.parse_known_args()
@@ -179,6 +185,14 @@ if args.max_epochs_st is None:
 else: 
     max_epochs_st= int(args.max_epochs_st)
 
+if (args.use_gpu_reference is True) or (args.use_gpu_reference == "True"): 
+    use_gpu_reference = True
+else:
+    use_gpu_reference = False
+if (args.use_gpu_st is True) or (args.use_gpu_st == "True"): 
+    use_gpu_st = True
+else:
+    use_gpu_st = False
 
 
 
@@ -234,7 +248,7 @@ c2l.models.RegressionModel.setup_anndata(adata=adata_sc,
                                          categorical_covariate_keys = categorical_covariate_keys_reference,
                                          continuous_covariate_keys =  continuous_covariate_keys_reference)
 model_ref = c2l.models.RegressionModel(adata_sc)
-model_ref.train(max_epochs=max_epochs_reference)
+model_ref.train(max_epochs=max_epochs_reference, use_gpu = use_gpu_reference)
 
 # plot elbo
 cell2loc_plot_history(model_ref, figdir + "/ELBO_reference_model.png")
@@ -271,7 +285,7 @@ c2l.models.Cell2location.setup_anndata(adata=adata_st,
 model_spatial = c2l.models.Cell2location(adata = adata_st, cell_state_df=inf_aver, 
                                         N_cells_per_location=float(args.N_cells_per_location),
                                         detection_alpha=float(args.detection_alpha))
-model_spatial.train(max_epochs=max_epochs_st)
+model_spatial.train(max_epochs=max_epochs_st, use_gpu = use_gpu_st)
 
 #plot elbo
 cell2loc_plot_history(model_spatial, figdir + "/ELBO_spatial_model.png")

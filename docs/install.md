@@ -46,8 +46,7 @@ If you intend to use panpipes for spatial analysis, instead install:
 ```bash
 pip install 'panpipes[spatial]'
 ```
-
-The extra `[spatial]` includes squidpy and cell2location packages.
+The extra `[spatial]` includes squidpy, cell2location, and tangram-sc packages.
 
 #### 2. Nightly versions of panpipes
 

@@ -70,7 +70,8 @@ notebook = [
 ]
 spatial = [
     "squidpy",
-    "cell2location"
+    "cell2location",
+    "tangram-sc"
 ]
 pypi_upload = [
     "twine",
