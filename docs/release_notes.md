@@ -1,5 +1,5 @@
-Releases
-===========
+
+# Changelog
 
 ## [latest]
 
