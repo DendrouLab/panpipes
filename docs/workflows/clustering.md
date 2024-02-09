@@ -3,8 +3,6 @@
 The panpipes clustering pipeline runs the following steps:
 
 - Detect or generate nearest neighbor graph 
- 
-
 - Generate UMAPS with different minimum distance parameters
 - Calculate leiden or louvain clustering, at a range of resolutions, saving them as csv and in the MuData object.
 - Visualise clustering on UMAPs and as a [clustree diagram](https://lazappi.github.io/clustree/articles/clustree.html). Note that it is important to specify more than 1 resolution for clustree to work.
@@ -43,7 +41,7 @@ Check the [clustering tutorial](https://panpipes-tutorials.readthedocs.io/en/lat
 
 
 ## A note on neighbors graph:
-In order to take advantage of batch corrected data, we recommend using the `integration` workflow which generates nearest neighbor graphs based on batch corrected/integrated data, before running `clustering`. If you wish to create a new nearest neighbor graph (perhaps to test a different parameter set), then make sure to set the `use_existing: False` in the clustering `yml` configuration file and fill in the yml with your custom params, and repeat for each modality for which you want to recompute the neighbors :
+In order to take advantage of batch corrected data, we recommend using the `integration` workflow which generates K nearest neighbor graphs (KNN) based on batch corrected/integrated data, before running `clustering`. If you wish to create a new nearest neighbor graph (perhaps to test a different parameter set), then make sure to set the `use_existing: False` in the clustering `yml` configuration file and fill in the yml with your custom params, and repeat for each modality for which you want to recompute the neighbors :
 
 ```yaml
 neighbors:

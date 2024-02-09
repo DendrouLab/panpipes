@@ -45,4 +45,4 @@ bioRxiv 2023.03.11.532085; doi: https://doi.org/10.1101/2023.03.11.532085](https
 ## Contributors
 
 Created and Maintained by Charlotte Rich-Griffin and Fabiola Curion.
-Additional contributors: Sarah Ouologuem, Devika Agarwal, and Tom Thomas.
+Additional contributors: Sarah Ouologuem, Devika Agarwal, Lilly May, Kevin Rue-Albrecht.

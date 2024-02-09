@@ -54,7 +54,7 @@ def run_harmony(outfile):
 
 ```
 
-The first 4 lines of the given code are ruffus decorators, which is what allows the definition of the tasks' execution flow and conditions for the subsequent tasks in the data analysis pipeline.
+The first 4 lines of the given code are `Ruffus` decorators, which is what allows the definition of the tasks' execution flow and conditions for the subsequent tasks in the data analysis pipeline.
 
 Here, we are specifying that `run_harmony` will run after the previous task `set_up_dirs` is complete run (see [line 31](../panpipes/panpipes/pipeline_integration.py#L31)).
 We're also specifying that the `run_harmony` task will run only if in the configuration file the `rna_run: ` voice is set to True and if `harmony` is one of the tools listed under `rna_tools: `, amongst those that can perform batch correction on RNA that we include.

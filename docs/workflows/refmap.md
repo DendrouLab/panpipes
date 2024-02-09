@@ -14,13 +14,13 @@ For a full tutorial on refmap please check the [tutorials](https://panpipes-pipe
 
 ## Expected structure of MuData object
 
-The ideal way to run `panpipes refmap` is to use the output mudata file from `panpipes preprocess`, as this will make sure the MuData object has correctly names layers and slots.
+The ideal way to run `panpipes refmap` is to use the output `MuData` file from `panpipes preprocess`, as this will make sure the `MuData` object has correctly names layers and slots.
 
 ## Formatting query data
 
 The reference mapping models used in `panpipes` require that the query is formatted in a special way to match some of the features in the reference. It is for example common practice to share the list of the highly variable genes (or the equivalent set of features) that was used to build the reference, alongside the model itself. We had already formatted the data for this tutorial, but if you're interested in using your own query you should pay special attention to this.
 
-Since each reference model has likely a different structure, at the moment we don't provide standardised code to format the reference and query.
+Since each reference model has likely a different structure, at the moment we don't provide standard code to format the reference and query.
 
 For example, the reference and query data we used for the paper looks like this:
 

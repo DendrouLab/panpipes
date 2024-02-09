@@ -36,6 +36,6 @@ for rna and atac highly variable genes are computed.
 
 ## Expected structure of MuData object
 
-The ideal way to run `panpipes preprocess` is to use the output mudata file from `panpipes ingest`, as this will make sure the MuData object has correctly names layers and slots.
+The ideal way to run `panpipes preprocess` is to use the output `MuData` file from `panpipes ingest`, as this will make sure the `MuData` object has correctly names layers and slots.
 
 The bare minimum MuData object required is raw data in the X slot of each modality and a sample_id column the .obs slot of each of each modality, and the common (outer) obs.
