@@ -4,9 +4,9 @@ on:
   push:
     branches:
       - main
-  #pull_request:
-  #  branches:
-  #    - main
+  pull_request:
+   branches:
+     - main
 
 env:
   debug: 'true'
@@ -44,11 +44,6 @@ jobs:
         if: env.debug == 'true'
         shell: pwsh
         run: conda list
-
-      #- name: Run tests
-      #  shell: bash -el {0}
-      #  run: |
-      #    python -m pytest tests/
 
       # Note: all three files are renamed during the download to trim the "subsample_" prefix
       - name: Preparing the data
