@@ -1,7 +1,7 @@
 Tutorials
 ==========
 
-Check out the following tutorials which take you through common single cell multimodal analysis steps with Panpipes:
+Check out the following tutorials which take you through common single-cell multimodal analysis steps with Panpipes:
 
 
 - [Ingest workflow](https://panpipes-tutorials.readthedocs.io/en/latest/ingesting_data/Ingesting_data_with_panpipes.html)

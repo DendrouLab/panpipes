@@ -1,17 +1,16 @@
 
 # Installation of panpipes
 
-### Create virtual environment
+## Create virtual environment
 
-We recommend running panpipes within a virtual environment to maintain reproducibility
-
+We recommend running panpipes within a virtual environment to prevent conflicts.
 
 ### Option 1: create conda environment (Recommended)
 
 To Run panpipes, we install it in a conda environment with R and python.
 Panpipes has a lot of dependencies, so you may want to consider the faster [`mamba`](https://mamba.readthedocs.io/en/latest/index.html) instead of `conda` for installation.
 
-```
+```bash
 #This follows the suggestions made here: [https://www.biostars.org/p/498049/](https://www.biostars.org/p/498049/) 
 conda config --add channels conda-forge
 conda config --set channel_priority strict
@@ -19,80 +18,81 @@ conda config --set channel_priority strict
 conda search r-base
 conda create --name pipeline_env python=3.9 r-base=4.3.0
 ```
+
 now we activate the environment
 
-```
+```bash
 conda activate pipeline_env
 ```
 
 Let's first install the R packages
-```
+
+```bash
 conda install -c conda-forge r-tidyverse r-optparse r-ggforce r-ggraph r-xtable r-hdf5r r-clustree
 ```
 
-Then we can install panpipes: 
+Then we can install panpipes:
 
-#### 1. Installing panpipes from PyPi 
+#### 1. Installing panpipes from PyPi
 
 You can install `panpipes` directly from `PyPi` with:
 
-```
+```bash
 pip install panpipes
 ```
 
 If you intend to use panpipes for spatial analysis, instead install:
-```
+
+```bash
 pip install 'panpipes[spatial]'
 ```
 The extra `[spatial]` includes squidpy, cell2location, and tangram-sc packages.
 
+#### 2. Nightly versions of panpipes
 
-#### 2. Nightly versions of panpipes.
+If you prefer to use the most recent dev version, install from Github
 
-If you would prefer to use the most recent dev version, install from github
-
-```
+```bash
 git clone https://github.com/DendrouLab/panpipes
 cd panpipes
 pip install -e .
 ```
 
-------------
-
 Panpipes requires the unix package `time`. 
 You can check if it installed with `dpkg-query -W time`. If time not already installed, you can 
 
-```
+```bash
 conda install time
 ```
+
 or
 
-```
+```bash
 apt-get install time
 ```
 
+### Option 2: python venv environment
 
+Navigate to where you want to create your virtual environment and follow the steps below to create a pip virtual environment.
 
-### Option 2: python venv environment:
-
-Navigate to where you want to create your virtual environment and follow the steps below to create a pip virtual environment
-
-```
+```bash
 python3 -m venv --prompt=panpipes python3-venv-panpipes/
 # This will create a panpipes/venv folder
 ```
 
-activate the environment
+Activate the environment
 
-```
+```bash
 source python3-venv-panpipes/bin/activate
 ```
 
 As explained in the conda installation, you can install `panpipes` with:
-```
+
+```bash
 pip install panpipes
 ```
-or install a nightly version of panpipes cloning the github repo.
+
+or install a nightly version of panpipes by cloning the Github repository.
 
 #### R packages installation in python venv
 
@@ -102,13 +102,13 @@ for example, add this line to your `.Rprofile` to automatically fetch the prefer
 
 *remember to customise with your preferred [R mirror](https://cran.r-project.org/mirrors.html).*
 
-```
+```R
   options(repos = c(CRAN="https://cran.uni-muenster.de/"))
 ```
 
 Now, to automatically install the R dependecies, run:
 
- ```
+ ```bash
 panpipes install_r_dependencies
  ```
 
@@ -116,56 +116,57 @@ If you want more control over your installation use the [script on github](https
 Running with the option `--vanilla` or `--no-site-file` prevents R from reading your `.Renvironment` or `.Rprofile` in case you want to use different settings from you local R installation.
 You can expect the installation of R libraries to take quite some time, this is not something related to `panpipes` but how R manages their libraries and dependencies!
 
-
 #### Check installation
 
 To check the installation was successful run the following line
-```
+
+```bash
 panpipes --help
 ```
-A list of available pipelines should appear!
 
+A list of available pipelines should appear!
 
 You're all set to run `panpipes` on your local machine.
 If you want to configure it on a HPC server, follow the next instructions.
 
 ## Pipeline configuration for HPC clusters
+
 (For SGE or SLURM clusters)
 *Note: You only need this configuration step if you want to use an HPC to dispatch individual task as separate parallel jobs. You won't need this for a local installation of panpipes.*
 
 Create a yml file for the cgat core pipeline software to read
 
-```
+```bash
 vim ~/.cgat.yml
 ```
 
 For SGE servers:
-```
+
+```bash
 cluster:
   queue_manager: sge
   queue: short
 condaenv:
 ```
 
-
 For Slurm servers:
-```
+
+```bash
 cluster:
     queue_manager: slurm
     queue: short
 ```
 
-There are likely other options that relate to **your specific server**, e.g. 
-These are added as 
-```
+There are likely other options that relate to **your specific server**.
+These are added as:
+
+```yaml
 cluster:
     queue_manager: slurm
     queue: short
     options: --qos=xxx --exclude=compute-node-0[02-05,08-19],compute-node-010-0[05,07,35,37,51,64,68-71]
 
 ```
-
-
 
 See [cgat-core documentation](https://cgat-core.readthedocs.io/en/latest/getting_started/Cluster_config.html) for cluster specific additional configuration instructions.
 
@@ -173,37 +174,34 @@ Note that there is extra information on the .cgat.yml for Oxford BMRC rescomp us
 
 ### DRMAA library path
 
-
 if `echo $DRMAA_LIBRARY_PATH` does not return anything, add DRMAA_LIBRARY_PATH to your bash environment (the line below is specific to the rescomp server)
 You need to find the path to this libdrmaa.so.1.0 file on your server, ask your sys admin if you cannot find it!
 
-```
+```bash
 PATH_TO_DRMAA = ""
 echo "export DRMAA_LIBRARY_PATH=$PATH_TO/libdrmaa.so.1.0" >> ~/.bashrc
 ```
 
 ### Specifying Conda environments to run panpipes
-If using conda environments, you can use one single big environment (the instructions provided do just that) or create one for each of the workflows in panpipes, (i.e. one workflow = one environment) 
-The environment (s) should be specified in the .cgat.yml global configuration file or in each of the single workflows pipeline.yml configuration files and it will be picked up by the pipeline as the default environment. 
-Please note that if you specify the conda environment in the workflows configuration file this will be the first choice to run the pipeline. 
 
+If using Conda environments, you can use one single big environment (the instructions provided do just that) or create one for each of the workflows in panpipes, (i.e. one workflow = one environment).
+The environment (s) should be specified in the .cgat.yml global configuration file or in each of the single workflows pipeline.yml configuration files, and it will be picked up by the pipeline as the default environment.
+Please note that if you specify the Conda environment in the workflows configuration file this will be the first choice to run the pipeline.
 
+If no environment is specified, the default behaviour of the pipeline is to inherit environment variables from the node where the pipeline is run. However there have been reported issues on SLURM clusters where this was not the default behaviour.
+In such instances we recommend adding the Conda environment param in the .cgat.yml file or in each of the pipeline.yml independently.
 
-If no environment is specified, the default behaviour of the pipeline is to inherit environment variables from the node where the pipeline is run. However there have been reported issues on SLURM clusters where this was not the default behaviour. In those instances we recommend to add the conda environment param in the .cgat.yml file or in each of the pipeline.yml independently.
-
-i.e. :
-
-```
-
+```yaml
 cluster:
     queue_manager: slurm
     queue: cpu_p
     options: --qos=xxx --exclude=compute-node-0[02-05,08-19],compute-node-010-0[05,07,35,37,51,64,68-71]
 condaenv: /path/to/pipeline_env
 ```
-or 
 
-```
+or:
+
+```yaml
 # ----------------------- #
 # Visualisation pipeline DendrouLab
 # ----------------------- #
@@ -226,4 +224,3 @@ resources:
 # path to conda env, leave blank if running native or your cluster automatically inherits the login node environment
 condaenv: /path/to/env
 ```
-

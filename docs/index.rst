@@ -52,7 +52,7 @@ Contents
    usage/index
    workflows/index
    tutorials/index
-   release_notes
+   ../changelog
    contribute_guidelines
    contributors
    references
