@@ -1,7 +1,8 @@
 # ============================================================
 # Ingest workflow Panpipes (pipeline_ingest.py)
 # ============================================================
-# This file contains the parameters for the ingest workflow. For descriptions of the parameters, see the documentation at TODO
+# This file contains the parameters for the ingest workflow. 
+For descriptions of the parameters, see the documentation at TODO
 
 
 #--------------------------
@@ -78,6 +79,7 @@ scr:
 # RNA modality Quality Control
 
 # Providing a gene list
+# see documentation at https://panpipes-pipelines.readthedocs.io/en/latest/usage/gene_list_format.html#
 custom_genes_file: resources/qc_genelist_1.0.csv
 
 # Defining actions on the genes
