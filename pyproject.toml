@@ -36,7 +36,8 @@ dependencies = [
     "drmaa", 
     "gevent",
     "harmonypy",
-    #removed jax to figure if it's needed by cell2location
+    "jax<=0.4.23", # temp for scvi https://github.com/theislab/scvelo/issues/1186
+    "jaxlib<=0.4.23",
     "leidenalg", 
     "louvain",
     "matplotlib<=3.7.3",
@@ -72,9 +73,7 @@ notebook = [
 spatial = [
     "squidpy",
     "cell2location",
-    "tangram-sc",
-    "jax<=0.4.23",
-    "jaxlib<=0.4.23",
+    "tangram-sc"
 ]
 pypi_upload = [
     "twine",
