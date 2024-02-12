@@ -36,8 +36,7 @@ dependencies = [
     "drmaa", 
     "gevent",
     "harmonypy",
-    "jax<=0.4.23",
-    "jaxlib<=0.4.23",
+    #removed jax to figure if it's needed by cell2location
     "leidenalg", 
     "louvain",
     "matplotlib<=3.7.3",
@@ -73,7 +72,9 @@ notebook = [
 spatial = [
     "squidpy",
     "cell2location",
-    "tangram-sc"
+    "tangram-sc",
+    "jax<=0.4.23",
+    "jaxlib<=0.4.23",
 ]
 pypi_upload = [
     "twine",
