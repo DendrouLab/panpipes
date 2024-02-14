@@ -11,7 +11,7 @@
 # Ingestion YAML
 
 In this documentation, the parameters of the `ingest` configuration yaml file are explained. 
-This file is generated running `panpipes ingest config`.  <br> The individual steps run by the pipeline are described in the [spatial preprocess workflow](../workflows/qc.md). 
+This file is generated running `panpipes ingest config`.  <br> The individual steps run by the pipeline are described in the [ingestion workflow](../workflows/qc.md). 
 
 When running the ingestion workflow, panpipes provides a basic `pipeline.yml` file.
 To run the workflow on your own data, you need to specify the parameters described below in the `pipeline.yml` file to meet the requirements of your data.
