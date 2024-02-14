@@ -94,12 +94,12 @@ Check https://bbknn.readthedocs.io/en/latest/ for more information
         * <p class="parameter">exclude_mt_genes:</p> String, Default: mt
         
         * <p class="parameter">model_args:</p>
-                * <p class="parameter">n_layers:</p>
-                * <p class="parameter">n_latent:</p>
+                * <p class="parameter">n_layers:</p> Float, Default: 1.0
+                * <p class="parameter">n_latent:</p> Integer, Default: 10
                 * <p class="parameter">gene_likelihood:</p> String, Default: zinb
-        * <p class="parameter">training_agrs:</p>
+        * <p class="parameter">training_agrs</p>
                 * <p class="parameter">max_epochs:</p> Integer, Default: 400
-                * <p class="parameter">train_size:</p> Float, Default: 0.9
+                * <p class="parameter">train_size</p> Float, Default: 0.9
                 * <p class="parameter">early_stopping:</p> Boolean, Default: True
         * <p class="parameter">training_plan:</p>
                 * <p class="parameter">lr:</p> Float, Default:0.001
@@ -109,7 +109,16 @@ Check https://bbknn.readthedocs.io/en/latest/ for more information
                 * <p class="parameter">lr_patience</p> integer, Default: 8
                 * <p class="parameter">lr_factor</p> Float, Default: 0.1
 ### Find neighbour parameters 
-
+ * <p class="parameter">rna:</p> String, Default: &atac_neighbors
+         * <p class="parameter">npcs</p> Integer, Default: 30   
+         Number of principal components to calculate for neighbors and Umap 
+         * <p class="parameter">k</p> Integer, Default: 30
+         Number of neighbors 
+         * <p class="parameter">metric</p> String, Default: euclidean 
+         Metric can be either euclidean or cosine 
+         * <p class="parameter">methof</p> String, Default: scanpy
+         Method can either be scanpy or hnsw
+         
             
 
                 
