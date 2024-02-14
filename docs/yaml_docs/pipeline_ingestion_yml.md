@@ -13,6 +13,17 @@
 In this documentation, the parameters of the `ingest` configuration yaml file are explained. 
 This file is generated running `panpipes ingest config`.  <br> The individual steps run by the pipeline are described in the [spatial preprocess workflow](../workflows/qc.md). 
 
+When running the ingestion workflow, panpipes provides a basic `pipeline.yml` file.
+To run the workflow on your own data, you need to specify the parameters described below in the `pipeline.yml` file to meet the requirements of your data.
+However, we do provide pre-filled versions of the `pipeline.yml` file for individual [tutorials](https://panpipes-pipelines.readthedocs.io/en/latest/tutorials/index.html).
+You can download the different ingestion pipeline.yml files here:
+- Basic `pipeline.yml` file (not prefilled) that is generated when calling `panpipes ingest config: [Download here](https://github.com/DendrouLab/panpipes/blob/main/panpipes/panpipes/pipeline_ingest/pipeline.yml)
+- `pipeline.yml` file for [Ingesting data Tutorial](https://panpipes-tutorials.readthedocs.io/en/latest/ingesting_data/Ingesting_data_with_panpipes.html): [Download here](https://github.com/DendrouLab/panpipes-tutorials/blob/main/docs/ingesting_data/pipeline.yml)
+- `pipeline.yml` file for [Ingesting Mouse data Tutorial](https://panpipes-tutorials.readthedocs.io/en/latest/ingesting_mouse/Ingesting_mouse_data_with_panpipes.html): [Download here](https://github.com/DendrouLab/panpipes-tutorials/blob/main/docs/ingesting_mouse/pipeline.yml)
+- `pipeline.yml` file for [Ingesting multimodal (CITE-Seq + VDJ) data Tutorial](https://panpipes-tutorials.readthedocs.io/en/latest/ingesting_multimodal_data/ingesting_multimodal_data.html): [Download here](https://github.com/DendrouLab/panpipes-tutorials/blob/main/docs/ingesting_multimodal_data/pipeline.yml)
+- `pipeline.yml` file for [Ingesting multiome data from cellranger Tutorial](https://panpipes-tutorials.readthedocs.io/en/latest/ingesting_multiome/ingesting_mome.html): [Download here](https://github.com/DendrouLab/panpipes-tutorials/blob/main/docs/ingesting_multiome/pipeline.yml)
+
+
 ## Compute resources options
 
 * <p class="parameter">resources</p>
