@@ -1,5 +1,5 @@
 
-# Changelog
+# Releases
 
 ## [latest]
 
