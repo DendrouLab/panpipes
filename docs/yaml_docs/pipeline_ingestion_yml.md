@@ -401,7 +401,7 @@ This can help to determine any inconsistencies in staining per channel and other
 
 ## Protein normalization
 
-<span class="parameter">normalisation_methods</span> String, Default: clr, Options: dsb,clr<br>
+<span class="parameter">normalisation_methods</span> `String`, Default: clr, Options: dsb,clr<br>
     Choose a normalization method.
     Setting normalization method to dsb without providing raw files will stop the pipeline with an error.
     More details on this can be found [here](https://muon.readthedocs.io/en/latest/omics/citeseq.html), and more specific information on 
