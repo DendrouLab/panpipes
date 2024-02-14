@@ -53,7 +53,7 @@ Contents
    workflows/index
    yaml_docs/index
    tutorials/index
-   ../changelog
+   ../CHANGELOG
    contribute_guidelines
    contributors
-   release_notes
+  
