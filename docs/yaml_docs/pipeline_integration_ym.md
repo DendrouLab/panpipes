@@ -61,5 +61,57 @@ You can download the different integration pipeline.yml files here:
 * <p class="parameter">preprocessed_obj</p> String, Mandatory parameter
     
     Path to the output file from preprocessing (e.g. ../preprocess/test.h5mu).
-    Ensure that the submission file must be in the right format and that the right path is provided. 
+    Ensure that the submission file must be in the right format and that the right path is provided.
+
+### Batch correction
+
+* <p class="parameter">rna:</p>
+      * <p class="parameter">run</p> Boolean, Default: True
+      Defines if you want the batch correction to run 
+
+      * <p class="parameter">tools</p> String (comma-separated), Default: harmony,bbknn,scanorama,scvi 
+      Defines the method used to run batch correction, multiple can be selected.
+      choices: harmony,bbknn,scanorama,scvi
+
+       * <p class="parameter">column</p> String (comma-separated), Default: sample_id
+       The column you want to batch correct on, if a comma-separated list is specified then all will be used simultaneously
+
+  ### Harmony arguments
+  
+* <p class="parameter">harmony:</p>
+            Basic parameters required to run harmony 
+       * <p class="parameter">sigma</p> Float, Default: 0.1
+       * <p class="parameter">theta</p> Float, Default: 1.0
+       * <p class="parameter">npcs</p> Integer, Default: 30
+
+  ### BBKNN arguments
+Check https://bbknn.readthedocs.io/en/latest/ for more information 
+  * <p class="parameter">exclude_mt_genes:</p> 
+
+  ### SCVI arguments
+  * <p class="parameter">rna:</p>
+        * <p class="parameter">exclude_mt_genes:</p> Boolean, Default: True
+        * <p class="parameter">exclude_mt_genes:</p> String, Default: mt
+        
+        * <p class="parameter">model_args:</p>
+                * <p class="parameter">n_layers:</p>
+                * <p class="parameter">n_latent:</p>
+                * <p class="parameter">gene_likelihood:</p> String, Default: zinb
+        * <p class="parameter">training_agrs:</p>
+                * <p class="parameter">max_epochs:</p> Integer, Default: 400
+                * <p class="parameter">train_size:</p> Float, Default: 0.9
+                * <p class="parameter">early_stopping:</p> Boolean, Default: True
+        * <p class="parameter">training_plan:</p>
+                * <p class="parameter">lr:</p> Float, Default:0.001
+                * <p class="parameter">n_epochs_kl_warmup:</p> Integer, Default: 400
+                * <p class="parameter">reduce_lr_on_plateau:</p> Boolean, Default: True
+                * <p class="parameter">lr_scheduler_metric</p>
+                * <p class="parameter">lr_patience</p> integer, Default: 8
+                * <p class="parameter">lr_factor</p> Float, Default: 0.1
+### Find neighbour parameters 
+
+            
+
+                
+    
 
