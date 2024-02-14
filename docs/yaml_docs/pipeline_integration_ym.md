@@ -21,4 +21,45 @@ You can download the different integration pipeline.yml files here:
 
 ## Compute resources options
 
+* <p class="parameter">resources</p>
+  
+    Computing resources to use, specifically the number of threads used for parallel jobs.
+    Specified by the following three parameters:
+
+  - <p class="parameter">threads_high</p> Integer, Default: 1
+        <p>Number of threads used for high intensity computing tasks. 
+        For each thread, there must be enough memory to load your MuData object which was created in the preprocessing step of the workflow.
+        </p><br>
+  
+  - <p class="parameter">threads_medium</p> Integer, Default: 1
+        <p>Number of threads used for medium intensity computing tasks.
+        For each thread, there must be enough memory to load your mudata and do computationally light tasks.
+        </p><br>
+  
+  - <p class="parameter">threads_low</p> Integer, Default: 1
+  	    <p>Number of threads used for low intensity computing tasks.
+        For each thread, there must be enough memory to load text files and do plotting, requires much less memory than the other two.
+        </p><br>
+
+  - <p class="parameter">threads_gou</p> Integer, Default: 2
+        <p>Number of gpu used for computing tasks.
+        For each thread, there must be enough memory to compute the tasks above. (ASKKKKKKKKKKKKKKK)
+
+* <p class="parameter">condaenv</p> String
+  
+    Path to conda environment that should be used to run panpipes.
+    Leave blank if running native or your cluster automatically inherits the login node environment
+
+## Loading and merging data options
+### Data format
+
+
+* <p class="parameter">sample_prefix</p> String, Default: "test"
+    
+    Prefix for the sample that comes out of the filtering/ preprocessing steps of the workflow.
+
+* <p class="parameter">preprocessed_obj</p> String, Mandatory parameter
+    
+    Path to the output file from preprocessing (e.g. ../preprocess/test.h5mu).
+    Ensure that the submission file must be in the right format and that the right path is provided. 
 
