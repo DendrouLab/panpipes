@@ -7,7 +7,7 @@
 Panpipes is a set of computational workflows designed to automate multimodal single-cell and spatial transcriptomic analyses by incorporating widely-used Python-based tools to perform quality control, preprocessing, integration, clustering, and reference mapping at scale. 
 Panpipes allows reliable and customisable analysis and evaluation of individual and integrated modalities, thereby empowering decision-making before downstream investigations.
 
-**See our [documentation](https://panpipes-pipelines.readthedocs.io/en/latest/) and our [preprint](https://www.biorxiv.org/content/10.1101/2023.03.11.532085v2)**:  
+**See our [documentation](https://panpipes-pipelines.readthedocs.io/en/latest/) and our [preprint](https://www.biorxiv.org/content/10.1101/2023.03.11.532085v2)**  
 
 These workflows make use of [cgat-core](https://github.com/cgat-developers/cgat-core):
 
