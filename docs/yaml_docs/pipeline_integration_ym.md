@@ -27,7 +27,7 @@ You can download the different integration pipeline.yml files here:
     Specified by the following three parameters:
 
   - <p class="parameter">threads_high</p> Integer, Default: 1
-        <p>Number of threads used for high intensity computing tasks. 
+        Number of threads used for high intensity computing tasks. 
         For each thread, there must be enough memory to load your MuData object which was created in the preprocessing step of the workflow.
         </p><br>
   
@@ -65,62 +65,118 @@ You can download the different integration pipeline.yml files here:
 
 ### Batch correction
 
-* <p class="parameter">rna:</p>
-      * <p class="parameter">run</p> Boolean, Default: True
-      Defines if you want the batch correction to run 
+* <p class="parameter">rna:</p> 
+  Batch correction is specified by the following parameters:
+  
+   - <p class="parameter">run</p> Boolean, Default: True 
+        <p>Defines if you want the batch correction to run 
+          </p><br>
+   - <p  class="parameter">tools</p> String (comma-separated), Default: harmony,bbknn,scanorama,scvi 
+          <p>Defines the method used to run batch correction, multiple can be selected.
+           choices: harmony,bbknn,scanorama,scvi
+           </p><br>
+    - <p class="parameter">column</p> String (comma-separated), Default: sample_id
 
-      * <p class="parameter">tools</p> String (comma-separated), Default: harmony,bbknn,scanorama,scvi 
-      Defines the method used to run batch correction, multiple can be selected.
-      choices: harmony,bbknn,scanorama,scvi
-
-       * <p class="parameter">column</p> String (comma-separated), Default: sample_id
-       The column you want to batch correct on, if a comma-separated list is specified then all will be used simultaneously
-
+     The column you want to batch correct on, if a comma-separated list is specified then all will be used simultaneously
+ 
   ### Harmony arguments
   
-* <p class="parameter">harmony:</p>
-            Basic parameters required to run harmony 
-       * <p class="parameter">sigma</p> Float, Default: 0.1
-       * <p class="parameter">theta</p> Float, Default: 1.0
-       * <p class="parameter">npcs</p> Integer, Default: 30
+- <span class="parameter">harmony:</p>
+    Basic parameters required to run harmony:
+   
+    - <span class="parameter">sigma</span> Float, Default: 0.1<br>
+    - <span class="parameter">theta</span> Float, Default: 1.0<br>
+    - <span class="parameter">npcs</span> Integer, Default: 30<br>
 
+  
   ### BBKNN arguments
 Check https://bbknn.readthedocs.io/en/latest/ for more information 
-  * <p class="parameter">exclude_mt_genes:</p> 
+   <span class="parameter">exclude_mt_genes:</span> 
 
   ### SCVI arguments
-  * <p class="parameter">rna:</p>
-        * <p class="parameter">exclude_mt_genes:</p> Boolean, Default: True
-        * <p class="parameter">exclude_mt_genes:</p> String, Default: mt
-        
-        * <p class="parameter">model_args:</p>
-                * <p class="parameter">n_layers:</p> Float, Default: 1.0
-                * <p class="parameter">n_latent:</p> Integer, Default: 10
-                * <p class="parameter">gene_likelihood:</p> String, Default: zinb
-        * <p class="parameter">training_agrs</p>
-                * <p class="parameter">max_epochs:</p> Integer, Default: 400
-                * <p class="parameter">train_size</p> Float, Default: 0.9
-                * <p class="parameter">early_stopping:</p> Boolean, Default: True
-        * <p class="parameter">training_plan:</p>
-                * <p class="parameter">lr:</p> Float, Default:0.001
-                * <p class="parameter">n_epochs_kl_warmup:</p> Integer, Default: 400
-                * <p class="parameter">reduce_lr_on_plateau:</p> Boolean, Default: True
-                * <p class="parameter">lr_scheduler_metric</p>
-                * <p class="parameter">lr_patience</p> integer, Default: 8
-                * <p class="parameter">lr_factor</p> Float, Default: 0.1
-### Find neighbour parameters 
- * <p class="parameter">rna:</p> String, Default: &atac_neighbors
-         * <p class="parameter">npcs</p> Integer, Default: 30   
-         Number of principal components to calculate for neighbors and Umap 
-         * <p class="parameter">k</p> Integer, Default: 30
-         Number of neighbors 
-         * <p class="parameter">metric</p> String, Default: euclidean 
-         Metric can be either euclidean or cosine 
-         * <p class="parameter">methof</p> String, Default: scanpy
-         Method can either be scanpy or hnsw
-         
-            
+   <span class="parameter">rna</span>
+  SCVI parameters are specified as: 
+  
+  - <span  class="parameter">exclude_mt_genes:</span> `Boolean`, Default: True
+  - <span  class="parameter">exclude_mt_genes:</span> `String`, Default: mt
+   
 
-                
+    <span class="parameter">model_args:</span>
+    Model argument parameters:
+       - <span class="parameter">n_layers:</span> `Float`, Default: 1.0
+      
+       - <span class="parameter">n_latent:</span> `Integer`, Default: 10
     
+       - <span class="parameter">gene_likelihood:</span> `String`, Default: zinb
+    
+    <span class="parameter">training_agrs</p>:
+    Training argument parameters:
+       - <span class="parameter">max_epochs:</span> `Integer`, Default: 400
+         
+       - <span class="parameter">train_size</span> `Float`, Default: 0.9
+         
+       - <span class="parameter">early_stopping:</span> `Boolean`, Default: True
+    
+    <span class="parameter">training_plan:</p>:
+    Training plan parameters:
+       - <span class="parameter">lr:</span> `Float`, Default:0.001
+         
+       - <span class="parameter">n_epochs_kl_warmup:</span> `Integer`, Default: 40
+         
+       - <span class="parameter">reduce_lr_on_plateau:</span> `Boolean`, Default: True
+  
+       - <span class="parameter">lr_scheduler_metric</span> (HEREEEEEEE)
+    
+       - <span class="parameter">lr_patience</span> `Integer`, Default: 8
+         
+       - <span class="parameter">lr_factor</span> `Float`, Default: 0.1
+    
+### Find neighbour parameters 
+ <span class="parameter">neighbors:</span> `String`, Default: &atac_neighbors
+ 
+ <span class="parameter">npcs</span> `Integer`, Default: 30   
+   Number of principal components to calculate for neighbors and Umap
+  
+  <span class="parameter">k</span> `Integer`, Default: 30
+  Number of neighbors
+  
+  <span class="parameter">metric</span> `String`, Default: euclidean
+   Metric can be either euclidean or cosine
+  
+  <span class="parameter">methof</span> `String`, Default: scanpy
+    The method can either be scanpy or hnsw
+         
+### Multimodal integration             
+ <span class="parameter">run</span> `Boolean`, Default: True<br>
+ Leave False if you don't want to run multimodal integration 
 
+  <span class="parameter">tools</span> `String`(Comma separated), Default: "WNN" <br>
+ Method you want to use to run batch correction. Options include: WNN, totalvi and multiVI. You can specify mutiple. 
+
+ <span class="parameter">column_categorical</span> `String`(Comma separated), Default: sample_id <br>
+ This is the column you want to run a batch correction on, multiple can be selected simultaneously. 
+
+ Extra parameters: 
+ <span class="parameter">totalvi:</span> 
+   These are the basic totalvi parameters required, you can add more if it fits your analysis better. 
+
+   -  <span class="parameter">modalities</span> `String`(Comma separated), Default: rna, prot <br>
+  totalvi has to run on both rna and protein data
+  
+   -  <span class="parameter">exclude_mt_genes</span> `Boolean`, Default: True <br>
+   -  <span class="parameter">mr_column</span> `String`, Default: mt <br>
+   -  <span class="parameter">filter_by_hvg</span> `Boolean`, Default: True <br>
+   To filter manually create a column called prot_outliers in mdata['prot']
+   -  <span class="parameter">filter_prot_outliers</span> `Boolean`, Default: False <br>
+   -  <span class="parameter">model_args</span>:
+      -  <span class="parameter">latent_distribution</span>`String`, Default: "normal" <br>
+  -  <span class="parameter">training_args</span>:
+      -  <span class="parameter">max_epochs</span>`Integer`, Default: 100 <br>
+      -  <span class="parameter">train_size</span>`Float`, Default: 0.9 <br>
+      -  <span class="parameter">early_stopping</span> `Boolean`, Default: True <br>
+  -  <span class="parameter">training_args</span> `String`, Default: Nonw <br>
+
+
+
+ <span class="parameter">MultiVi:</span>:
+ 
