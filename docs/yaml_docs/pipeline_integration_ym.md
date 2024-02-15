@@ -178,5 +178,87 @@ Check https://bbknn.readthedocs.io/en/latest/ for more information
 
 
 
- <span class="parameter">MultiVi:</span>:
+ <span class="parameter">MultiVI:</span>
+  These are the basic MultiVI parameters required, you can add more if it fits your analysis better. Leave arguments blank for default
+  
+  -  <span class="parameter">lowmen</span> `Boolean`, Default: True <be
+
+By setting lowmen to True it will subset the atac to the top 25k HVF which is recommended to deal with concatenation of atac,rna on large datasets which at the moment is suboptimally required by scvitool. Note that >100GB of RAM are required to concatenate atac,rna with 15k cells and 120k total features (union rna,atac).
+
+ -  <span class="parameter">model_args</span> `String`, Default: None <br>
+   - <span class="parameter">n_hidden</span> `String`, Default: None <br>
+   -  <span class="parameter">n_latent</span> `Boolean`, Default: True <br>
+   -  <span class="parameter">region_factors</span> `Boolean`, Default: True <br>
+   -  <span class="parameter">latent_distribution</span> `String`, Default: normal <br>
+   -  <span class="parameter">deeply_inject_covariates</span> `Boolean`, Default: False <br>
+   -  <span class="parameter">fully_paired</span> `Boolean`, Default: False <br>
+   
+ -  <span class="parameter">training_args</span> 
+   -  <span class="parameter">max_epochs</span> `Integer`, Default: 500 <br>
+   -  <span class="parameter">lr</span> `Float`, Default: 0.0001 <br>
+   -  <span class="parameter">use_gpu</span> `String`, Default: None <br>
+     Leave blank for default str, int and bool.
+   -  <span class="parameter">train_size</span> `Float`, Default: 0.9 <br>
+   -  <span class="parameter">validation_size</span> `String`, Default: None <br>
+   Leave blank for default
+
+   -  <span class="parameter">batch_size</span> `Integer`, Default: 128 <br>
+   -  <span class="parameter">weight_decay</span> `Float`, Default: 0.001 <br>
+   -  <span class="parameter">eps</span> `Float`, Default: 1e-08 <br>
+   -  <span class="parameter">early_stopping</span> `Boolean`, Default: True <br>
+   -  <span class="parameter">save_best</span> `Boolean`, Default: True <br>
+   -  <span class="parameter">check_val_every_n_epoch</span> `String`, Default: None <br>
+   Leave blank for the default integer
+
+   -  <span class="parameter">n_steps_kl_warmup</span> `String`, Default: None <br>
+   Leave blank for the default integer
+
+   -  <span class="parameter">n_epochs_kl_warmup</span> `Integer`, Default: 50 <br>
+   -  <span class="parameter">adversarial_mixing</span> `Boolean`, Default: True <br>
+   
+ -  <span class="parameter">training_plan</span> `String, Default: None
+   Leave blank for default dict
+
+  <span class="parameter">mofa:</span> 
+   These are the basic mofa parameters required, you can add more if it fits your analysis better. 
+   
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
  
