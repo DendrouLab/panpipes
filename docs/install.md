@@ -28,7 +28,7 @@ conda activate pipeline_env
 Let's first install the R packages
 
 ```bash
-conda install -c conda-forge r-tidyverse r-optparse r-ggforce r-ggraph r-xtable r-hdf5r r-clustree
+conda install -c conda-forge r-tidyverse r-optparse r-ggforce r-ggraph r-xtable r-hdf5r r-clustree r-cowplot
 ```
 
 Then we can install panpipes:
