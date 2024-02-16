@@ -15,34 +15,31 @@ This documentation explains the parameters of the `integration` configuration ya
 When running the integration workflow, panpipes provides you with a basic `pipeline.yml` file. To run the workflow with your own data you need to specify the parameters described below in the `pipeline.yml` file to meet the requirements of your data. However, we do provide pre-filled versions of the `pipeline.yml` for individual [tutorials](https://panpipes-pipelines.readthedocs.io/en/latest/tutorials/index.html).
 
 You can download the different integration pipeline.yml files here:
-- Basic `pipeline.yml` file (not pre-filled) that is generated when calling `panpipes integration config`: (Download here)[https://github.com/DendrouLab/panpipes/blob/main/panpipes/panpipes/pipeline_integration/pipeline.yml]
+- Basic `pipeline.yml` file (not pre-filled) that is generated when calling `panpipes integration config`: [Download here](https://github.com/DendrouLab/panpipes/blob/main/panpipes/panpipes/pipeline_integration/pipeline.yml)
 - `pipeline.yml`for [Integration tutorial](https://panpipes-tutorials.readthedocs.io/en/latest/uni_multi_integration/pipeline_yml.html)
 
 
 ## Compute resources options
 
-<span class="parameter">resources</span>
-Computing resources to use, specifically the number of threads used for parallel jobs.
-Specified by the following three parameters:
+- <span class="parameter">resources</span>
 
-  - <span class="parameter">threads_high</span> `Integer`, Default: 1<br>
+Computing resources to use, specifically the number of threads used for parallel jobs.
+Specified by the following parameters:
+   - <span class="parameter">threads_high</span> `Integer`, Default: 1<br>
     Number of threads used for high intensity computing tasks. 
-    For each thread, there must be enough memory to load your MuData object which was created in the preprocessing step of the workflow.
-     
-  
-  - <span class="parameter">threads_medium</span> `Integer`, Default: 1<br>
+    For each thread, there must be enough memory to load your MuData object which was created in the preprocessing step of 
+the workflow.
+       
+   - <span class="parameter">threads_medium</span> `Integer`, Default: 1<br>
     Number of threads used for medium intensity computing tasks.
     For each thread, there must be enough memory to load your mudata and do computationally light tasks.
 
-  
-   - <span class="parameter">threads_low</span> `Integer`, Default: 1<br>
+  - <span class="parameter">threads_low</span> `Integer`, Default: 1<br>
   	 Number of threads used for low intensity computing tasks.
-     For each thread, there must be enough memory to load text files and do plotting, requires much less memory than the other two.
-    
-
- - <span class="parameter">threads_gou</span> `Integer`, Default: 2<br>
-   Number of gpu used for computing tasks.
-   For each thread, there must be enough memory to compute the tasks above. (ASKKKKKKKKKKKKKKK)
+     For each thread, there must be enough memory to load text files and do plotting, requires much less memory than the other two.  
+   - <span class="parameter">threads_gpu</span> `Integer`, Default: 2<br>
+   Number of cores per gpu used for computing tasks.
+   For each thread, there must be enough memory to compute the tasks above. 
 
 <span class="parameter">condaenv</span> `String`<br>
   Path to conda environment that should be used to run panpipes.
@@ -56,13 +53,13 @@ Specified by the following three parameters:
 Prefix for the sample that comes out of the filtering/ preprocessing steps of the workflow.
 
 <span class="parameter">preprocessed_obj</span> `String`, Mandatory parameter<br>
- Path to the output file from preprocessing (e.g. ../preprocess/test.h5mu).
+ Path to the output file from preprocessing (e.g. `../preprocess/test.h5mu`).
  Ensure that the submission file must be in the right format and that the right path is provided.
 
-### Batch correction
+## Batch correction
 
 <span class="parameter">rna:</span> 
-  Batch correction is specified by the following parameters:
+  Batch correction for the rna modality is specified by the following parameters:
   
     
   - <span class="parameter">run</span> `Boolean`, Default: True<br>
@@ -70,7 +67,7 @@ Prefix for the sample that comes out of the filtering/ preprocessing steps of th
         
   - <span class="parameter">tools</span> `String` (comma-separated), Default: harmony,bbknn,scanorama,scvi<br> 
     Defines the method used to run batch correction, multiple can be selected.
-    choices: harmony,bbknn,scanorama,scvi
+    choices: harmony, bbknn, scanorama, scvi
        
    - <span class="parameter">column</span> `String` (comma-separated), Default: sample_id<br>
 
@@ -81,67 +78,65 @@ Prefix for the sample that comes out of the filtering/ preprocessing steps of th
 - <span class="parameter">harmony:</span>
     Basic parameters required to run harmony:
    
-    - <span class="parameter">sigma</span> Float, Default: 0.1<br>
-    - <span class="parameter">theta</span> Float, Default: 1.0<br>
-    - <span class="parameter">npcs</span> Integer, Default: 30<br>
+    - <span class="parameter">sigma</span> `Float`, Default: 0.1<br>
+    - <span class="parameter">theta</span> `Float`, Default: 1.0<br>
+    - <span class="parameter">npcs</span> `Integer`, Default: 30<br>
 
-  
-  ### BBKNN arguments
+  For more information on harmony check https://portals.broadinstitute.org/harmony/reference/RunHarmony.html
+### BBKNN arguments
 Check https://bbknn.readthedocs.io/en/latest/ for more information 
-   
-<span class="parameter">exclude_mt_genes:</span> (CHHEECCKKKKKK)
+- <span class="parameter">bbknn:</span>  
+  - <span class="parameter">neighbors_within_batch:</span> `Integer`, Default: 3<br>
 
-  ### SCVI arguments
-   <span class="parameter">rna</span>
-  SCVI parameters are specified as: 
-  
-  - <span  class="parameter">exclude_mt_genes:</span> `Boolean`, Default: True
-  - <span  class="parameter">exclude_mt_genes:</span> `String`, Default: mt
-   
-
-    <span class="parameter">model_args:</span>
+### SCVI arguments
+  -  <span class="parameter">scvi</span>: SCVI parameters are specified as
+      - <span  class="parameter">exclude_mt_genes:</span> `Boolean`, Default: True<br>
+      - <span  class="parameter">exclude_mt_genes:</span> `String`, Default: mt<br>
+      - <span class="parameter">model_args:</span>
     Model argument parameters:
-       - <span class="parameter">n_layers:</span> `Float`, Default: 1.0
+         - <span class="parameter">n_layers:</span> `Float`, Default: 1.0<br>
       
-       - <span class="parameter">n_latent:</span> `Integer`, Default: 10
+         - <span class="parameter">n_latent:</span> `Integer`, Default: 10<br>
+      
+         - <span class="parameter">gene_likelihood:</span> `String`, Default: zinb<br>
     
-       - <span class="parameter">gene_likelihood:</span> `String`, Default: zinb
-    
-    <span class="parameter">training_agrs</p>
+     -  <span class="parameter">training_agrs</span>
     Training argument parameters:
-       - <span class="parameter">max_epochs</span> `Integer`, Default: 400
+         - <span class="parameter">max_epochs</span> `Integer`, Default: 400<br>
          
-       - <span class="parameter">train_size</span> `Float`, Default: 0.9
+         - <span class="parameter">train_size</span> `Float`, Default: 0.9<br>
          
-       - <span class="parameter">early_stopping:</span> `Boolean`, Default: True
+         - <span class="parameter">early_stopping:</span> `Boolean`, Default: True<br>
     
-    <span class="parameter">training_plan</p>
+     -  <span class="parameter">training_plan</span>
     Training plan parameters:
-       - <span class="parameter">lr</span> `Float`, Default:0.001
+         - <span class="parameter">lr</span> `Float`, Default:0.001<br>
          
-       - <span class="parameter">n_epochs_kl_warmup:</span> `Integer`, Default: 40
+         - <span class="parameter">n_epochs_kl_warmup:</span> `Integer`, Default: 40<br>
          
-       - <span class="parameter">reduce_lr_on_plateau:</span> `Boolean`, Default: True
+         - <span class="parameter">reduce_lr_on_plateau:</span> `Boolean`, Default: True<br>
   
-       - <span class="parameter">lr_scheduler_metric</span> (HEREEEEEEE)
+         - <span class="parameter">lr_scheduler_metric</span><br> `String`, Default: elbo_validation<br>
     
-       - <span class="parameter">lr_patience</span> `Integer`, Default: 8
+         - <span class="parameter">lr_patience</span> `Integer`, Default: 8<br>
          
-       - <span class="parameter">lr_factor</span> `Float`, Default: 0.1
-    
+         - <span class="parameter">lr_factor</span> `Float`, Default: 0.1<br>
+         
+  For more information check https://docs.scvi-tools.org/en/stable/api/reference/scvi.model.SCVI.html  
+
 ### Find neighbour parameters 
- <span class="parameter">neighbors:</span> `String`, Default: &atac_neighbors
+- <span class="parameter">neighbors:</span> `String`, Default: &rna_neighbors<br>
  
- <span class="parameter">npcs</span> `Integer`, Default: 30   
+  - <span class="parameter">npcs</span> `Integer`, Default: 30<br>   
    Number of principal components to calculate for neighbors and Umap
   
-  <span class="parameter">k</span> `Integer`, Default: 30
+  -  <span class="parameter">k</span> `Integer`, Default: 30<br>
   Number of neighbors
   
-  <span class="parameter">metric</span> `String`, Default: euclidean
+  -  <span class="parameter">metric</span> `String`, Default: euclidean<br>
    Metric can be either euclidean or cosine
   
-  <span class="parameter">methof</span> `String`, Default: scanpy
+  -  <span class="parameter">methof</span> `String`, Default: scanpy<br>
     The method can either be scanpy or hnsw
          
 ### Multimodal integration             
