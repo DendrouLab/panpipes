@@ -25,6 +25,7 @@ You can download the different integration pipeline.yml files here:
 
 Computing resources to use, specifically the number of threads used for parallel jobs.
 Specified by the following parameters:
+
    - <span class="parameter">threads_high</span> `Integer`, Default: 1<br>
     Number of threads used for high intensity computing tasks. 
     For each thread, there must be enough memory to load your MuData object which was created in the preprocessing step of 
@@ -77,7 +78,7 @@ Prefix for the sample that comes out of the filtering/ preprocessing steps of th
 
      The column you want to batch correct on, if a comma-separated list is specified then all will be used simultaneously
  
-  ### Harmony arguments
+### Harmony arguments
   
 - <span class="parameter">harmony:</span>
     Basic parameters required to run harmony:
@@ -144,7 +145,7 @@ Check https://bbknn.readthedocs.io/en/latest/ for more information
     The method can either be scanpy or hnsw
 
 
-## Protein
+## Protein modality
 <span class="parameter">prot:</span> 
   Batch correction for the protein modality is specified by the following parameters:
   
@@ -160,7 +161,7 @@ Check https://bbknn.readthedocs.io/en/latest/ for more information
 
      The column you want to batch correct on, if a comma-separated list is specified then all will be used simultaneously
  
-  ### Harmony arguments
+### Harmony arguments
   
 - <span class="parameter">harmony:</span>
     Basic parameters required to run harmony:
@@ -170,7 +171,9 @@ Check https://bbknn.readthedocs.io/en/latest/ for more information
     - <span class="parameter">npcs</span> `Integer`, Default: 30<br>
 
   For more information on harmony check https://portals.broadinstitute.org/harmony/reference/RunHarmony.html
+  
 ### BBKNN arguments
+
 Check https://bbknn.readthedocs.io/en/latest/ for more information 
 - <span class="parameter">bbknn:</span>  
   - <span class="parameter">neighbors_within_batch:</span> `Integer`, Default: 3<br>
@@ -191,7 +194,7 @@ Check https://bbknn.readthedocs.io/en/latest/ for more information
     The method can either be scanpy or hnsw
 
 
-## atac
+## ATAC modality 
 
 <span class="parameter">atac:</span> 
   Batch correction for the protein modality is specified by the following parameters:
@@ -202,15 +205,15 @@ Check https://bbknn.readthedocs.io/en/latest/ for more information
   - <span class="parameter">dimred</span> `String`, Default: PCA<br>
     Defines if you which dimensionality reduction to use, PCA or LSI 
     
-  - <span class="parameter">tools</span> `String` (comma-separated), Default: (CHEEEEECKKKK) <br> 
+  - <span class="parameter">tools</span> `String` (comma-separated), Default: harmony<br> 
     Defines the method used to run batch correction, multiple can be selected.
-    choices: harmony, bbknn, combat
+    choices: harmony, bbknn
        
    - <span class="parameter">column</span> `String` (comma-separated), Default: sample_id<br>
 
      The column you want to batch correct on, if a comma-separated list is specified then all will be used simultaneously
  
-  ### Harmony arguments
+### Harmony arguments
   
 - <span class="parameter">harmony:</span>
     Basic parameters required to run harmony:
@@ -220,12 +223,18 @@ Check https://bbknn.readthedocs.io/en/latest/ for more information
     - <span class="parameter">npcs</span> `Integer`, Default: 30<br>
 
   For more information on harmony check https://portals.broadinstitute.org/harmony/reference/RunHarmony.html
+  
 ### BBKNN arguments
+
 Check https://bbknn.readthedocs.io/en/latest/ for more information 
+
 - <span class="parameter">bbknn:</span>  
+
   - <span class="parameter">neighbors_within_batch:</span> `Integer`, Default: 3<br>
+  
 
 ### Find neighbour parameters 
+
 - <span class="parameter">neighbors:</span> `String`, Default: &atac_neighbors<br>
  
   - <span class="parameter">npcs</span> `Integer`, Default: 30<br>   
@@ -254,113 +263,130 @@ Check https://bbknn.readthedocs.io/en/latest/ for more information
  This is the column you want to run a batch correction on, multiple can be selected simultaneously. 
 
  Extra parameters: 
- - <span class="parameter">totalvi:</span> 
+ 
+### TotalVI arguments
+
+  **totalvi has to run on both rna and protein data**
+  
    These are the basic totalvi parameters required, you can add more if it fits your analysis better. 
 
- -  <span class="parameter">modalities</span> `String`(Comma separated), Default: rna,prot<br>
  
-  totalvi has to run on both rna and protein data
-  
+ - <span class="parameter">totalvi:</span> 
+
+   -  <span class="parameter">modalities</span> `String`(Comma separated), Default: rna,prot<br>
    -  <span class="parameter">exclude_mt_genes</span> `Boolean`, Default: True<br>
-   -  <span class="parameter">mr_column</span> `String`, Default: mt<br>
+   -  <span class="parameter">mt_column</span> `String`, Default: mt<br>
    -  <span class="parameter">filter_by_hvg</span> `Boolean`, Default: True<br>
-   To filter manually create a column called prot_outliers in mdata['prot']
-   -  <span class="parameter">filter_prot_outliers</span> `Boolean`, Default: False<br>
    
+   To filter manually create a column called prot_outliers in mdata['prot']
+   
+   -  <span class="parameter">filter_prot_outliers</span> `Boolean`, Default: False<br>
    -  <span class="parameter">model_args</span>:
       -  <span class="parameter">latent_distribution</span>`String`, Default: "normal"<br>
       
-  -  <span class="parameter">training_args</span>:
+   -  <span class="parameter">training_args</span>:
       -  <span class="parameter">max_epochs</span>`Integer`, Default: 100<br>
       -  <span class="parameter">train_size</span>`Float`, Default: 0.9<br>
       -  <span class="parameter">early_stopping</span> `Boolean`, Default: True<br>
-  -  <span class="parameter">training_args</span> `String`, Default: Nonw<br>
+   -  <span class="parameter">training_plan</span> `String`, Default: None<br>
 
+### MultiVI arguments
 
+  **totalvi has to run on both rna and atac data**
 
-  -  <span class="parameter">MultiVI:</span>
-  These are the basic MultiVI parameters required, you can add more if it fits your analysis better. Leave arguments blank for default
+   These are the basic multivi parameters required, you can add more if it fits your analysis better. 
+   
+   By setting lowmen to True it will subset the atac to the top 25k HVF which is recommended to deal with concatenation of atac,rna on large datasets which at the moment is suboptimally required by scvitool. Note that >100GB of RAM are required to concatenate atac,rna with 15k cells and 120k total features (union rna,atac)
 
-By setting lowmen to True it will subset the atac to the top 25k HVF which is recommended to deal with concatenation of atac,rna on large datasets which at the moment is suboptimally required by scvitool. Note that >100GB of RAM are required to concatenate atac,rna with 15k cells and 120k total features (union rna,atac).
+ -  <span class="parameter">MultiVI:</span>
   
-      - <span class="parameter">lowmen</span> `Boolean`, Default: True<br>
-      
-      -  <span class="parameter">model_args</span> `String`, Default: None<br>
-           -  <span class="parameter">n_hidden</span> `String`, Default: None<br>
-           -  <span class="parameter">n_latent</span> `Boolean`, Default: True<br>
-           -  <span class="parameter">region_factors</span> `Boolean`, Default: True<br>
-           -  <span class="parameter">latent_distribution</span> `String`, Default: normal<br>
-           -  <span class="parameter">deeply_inject_covariates</span> `Boolean`, Default: False<br>
-           -  <span class="parameter">fully_paired</span> `Boolean`, Default: False<br>
-        -  <span class="parameter">training_args</span> 
-           -  <span class="parameter">max_epochs</span> `Integer`, Default: 500<br>
-           -  <span class="parameter">lr</span> `Float`, Default: 0.0001<br>
-           -  <span class="parameter">use_gpu</span> `String`, Default: None<br>
+    - <span class="parameter">lowmen</span> `Boolean`, Default: True<br>
+    -  <span class="parameter">model_args</span> `String`, Default: None<br>
+        -  <span class="parameter">n_hidden</span> `String`, Default: None<br>
+        -  <span class="parameter">n_latent</span> `Boolean`, Default: True<br>
+        -  <span class="parameter">region_factors</span> `Boolean`, Default: True<br>
+        -  <span class="parameter">latent_distribution</span> `String`, Default: normal<br>
+        -  <span class="parameter">deeply_inject_covariates</span> `Boolean`, Default: False<br>
+        -  <span class="parameter">fully_paired</span> `Boolean`, Default: False<br>
+    -  <span class="parameter">training_args</span> 
+        -  <span class="parameter">max_epochs</span> `Integer`, Default: 500<br>
+        -  <span class="parameter">lr</span> `Float`, Default: 0.0001<br>
+        -  <span class="parameter">use_gpu</span> `String`, Default: None<br>
      Leave blank for default str, int and bool.
-           -  <span class="parameter">train_size</span> `Float`, Default: 0.9<br>
-           -  <span class="parameter">validation_size</span> `String`, Default: None<br>
+        -  <span class="parameter">train_size</span> `Float`, Default: 0.9<br>
+        -  <span class="parameter">validation_size</span> `String`, Default: None<br>
     Leave blank for default
-           -  <span class="parameter">batch_size</span> `Integer`, Default: 128<br>
-           -  <span class="parameter">weight_decay</span> `Float`, Default: 0.001<br>
-           -  <span class="parameter">eps</span> `Float`, Default: 1e-08<br>
-           -  <span class="parameter">early_stopping</span> `Boolean`, Default: True<br>
-           -  <span class="parameter">save_best</span> `Boolean`, Default: True<br>
-           -  <span class="parameter">check_val_every_n_epoch</span> `String`, Default: None<br>
+        -  <span class="parameter">batch_size</span> `Integer`, Default: 128<br>
+        -  <span class="parameter">weight_decay</span> `Float`, Default: 0.001<br>
+        -  <span class="parameter">eps</span> `Float`, Default: 1e-08<br>
+        -  <span class="parameter">early_stopping</span> `Boolean`, Default: True<br>
+        -  <span class="parameter">save_best</span> `Boolean`, Default: True<br>
+        -  <span class="parameter">check_val_every_n_epoch</span> `String`, Default: None<br>
    Leave blank for the default integer
-           -  <span class="parameter">n_steps_kl_warmup</span> `String`, Default: None<br>
+        -  <span class="parameter">n_steps_kl_warmup</span> `String`, Default: None<br>
    Leave blank for the default integer
-           -  <span class="parameter">n_epochs_kl_warmup</span> `Integer`, Default: 50<br>
-           -  <span class="parameter">adversarial_mixing</span> `Boolean`, Default: True<br>
-       -  <span class="parameter">training_plan</span> `String, Default: None<br>
-  -  <span class="parameter">mofa:</span> These are the basic mofa parameters required, you can add more if it fits your analysis better. 
-      -  <span class="parameter">modalities</span> `String` (Comma separated), Default: rna, prot, atac <br>
-      -  <span class="parameter">fliter_by_hgv</span> `Boolean`, Default: True<br>
-      -  <span class="parameter">n_factors</span> `Integer`, Default: 10<br>
-      -  <span class="parameter">n_iterations</span> `Integer`, Default: 1000<br>
-      -  <span class="parameter">convergence_mode</span> `String`, Default: fast<br>
+        -  <span class="parameter">n_epochs_kl_warmup</span> `Integer`, Default: 50<br>
+        -  <span class="parameter">adversarial_mixing</span> `Boolean`, Default: True<br>
+  -  <span class="parameter">training_plan</span> `String`, Default: None<br>
+  
+  
+### Mofa
+
+**Requires at least two modalities, however can run with all three**
+  
+  These are the basic mofa parameters required, you can add more if it fits your analysis better. 
+  
+
+-  <span class="parameter">mofa:</span> 
+   -  <span class="parameter">modalities</span> `String` (Comma separated), Default: rna,prot,atac<br>
+   -  <span class="parameter">fliter_by_hgv</span> `Boolean`, Default: True<br>
+   -  <span class="parameter">n_factors</span> `Integer`, Default: 10<br>
+   -  <span class="parameter">n_iterations</span> `Integer`, Default: 1000<br>
+   -  <span class="parameter">convergence_mode</span> `String`, Default: fast<br>
     Choice between fast, medium, and slow
-      -  <span class="parameter">save_parameters</span> `Boolean`, Default: False<br>
-      -  <span class="parameter">outfile</span> `String`, Default: path/to/h5ad/to_save_model_to <br> (CHHHHECCCKKKKKKKKK)
+   -  <span class="parameter">save_parameters</span> `Boolean`, Default: False<br>
+   -  <span class="parameter">outfile</span> `String`, Default: `path/to/h5ad/to_save_model_to`<br> 
 
+### WNN
 
+**Requires at least two modalities, however can run with all three**
 
-  - <span class="parameter">WNN:</span> 
-   These are the basic WNN parameters required, you can add more if it fits your analysis better. 
-
-      -  <span class="parameter">modalities</span> `String` (Comma separated), Default: rna, prot, atac <br>
-      -  <span class="parameter">batch_corrected</span> `String`, Default: None<br>
-Set the modality to one method ("bbknn", "scVI", "harmony", "scanorama"), if left None, a default de novo calculation of neighbours on non-corrected data for that modality using specified parameters
-          -  <span class="parameter">rna</span> `String`, Default: None<br>
+ These are the basic WNN parameters required, you can add more if it fits your analysis better. 
+ 
+- <span class="parameter">WNN:</span> 
+  -  <span class="parameter">modalities</span> `String` (Comma separated), Default: rna, prot, atac <br>
+  -  <span class="parameter">batch_corrected</span> `String`, Default: None<br>
+  
+    Set the modality to one method ("bbknn", "scVI", "harmony", "scanorama"), if left None, a default de novo calculation of neighbours on non-corrected data for that modality using specified parameters
+     -  <span class="parameter">rna</span> `String`, Default: None<br>
         Options here include "bbknn" and "harmony"
 
-          -  <span class="parameter">prot</span> `String`, Default: None<br>
+     -  <span class="parameter">prot</span> `String`, Default: None<br>
         Options here include "harmony"
 
-          -  <span class="parameter">atac</span> `String`, Default: None<br>
+     -  <span class="parameter">atac</span> `String`, Default: None<br>
    
-      - <span class="parameter">knn:</span> 
-          -  <span class="parameter">rna</span> `String`, Default: *rna_neighbors<br>
-          -  <span class="parameter">prot</span> `String`, Default: *prot_neighbors<br>
-          -  <span class="parameter">atac</span> `String`, Default: *atac_neighbors<br>
+  - <span class="parameter">knn:</span> 
+      -  <span class="parameter">rna</span> `String`, Default: *rna_neighbors<br>
+      -  <span class="parameter">prot</span> `String`, Default: *prot_neighbors<br>
+      -  <span class="parameter">atac</span> `String`, Default: *atac_neighbors<br>
 
-
-      - <span class="parameter">n_neighbors</span> `String`, Default: "leave blank"<br>
+   - <span class="parameter">n_neighbors</span> `String`, Default: "leave blank"<br>
   Leave blank to arithmetic mean across modalities neighbors 
 
-      - <span class="parameter">n_bandwidth_neighbors</span> `Integer`, Default: 20<br>
+   - <span class="parameter">n_bandwidth_neighbors</span> `Integer`, Default: 20<br>
 
-      - <span class="parameter">n_multineighbors</span> `Integer`, Default: 200<br>
+   - <span class="parameter">n_multineighbors</span> `Integer`, Default: 200<br>
 
-      - <span class="parameter">metric</span> `String`, Default: euclidean<br>
+   - <span class="parameter">metric</span> `String`, Default: euclidean<br>
 
-      - <span class="parameter">low_memory</span> `Boolean`, Default: True<br>
+   - <span class="parameter">low_memory</span> `Boolean`, Default: True<br>
 
 
   - <span class="parameter">neighbors:</span> 
       -  <span class="parameter">npcs</span> `Integer`, Default: 30<br>
 
-The number of principal components to calculate for neighbors and umap. If no correction is applied PCA will be calculated and used to run the UMAP. If harmony is chosen it will use the following components to create a corrected dimensionality reduction 
-
+    The number of principal components to calculate for neighbors and umap. If no correction is applied PCA will be calculated and used to run the UMAP. If harmony is chosen it will use the following components to create a corrected dimensionality reduction 
      -  <span class="parameter">k</span> `Integer`, Default: 30<br>
      -  <span class="parameter">metric</span> `String`, Default: euclidean<br>
    Options include euclidean and cosine
@@ -380,14 +406,18 @@ Grouping must be a categorical variable
 
    -  <span class="parameter">rna</span> `String`, Default: rna:total_counts<br>
    -  <span class="parameter">prot</span> `String`, Default: prot:total_counts<br>
-   -  <span class="parameter">atac</span>  (CHHEECCKKKKKK)
+   -  <span class="parameter">atac</span>  `String`, Default: atac:total_counts<br>
    -  <span class="parameter">multimodal</span> `String`, Default: rna:total_counts<br>
 
 
 
 ### Make final object 
 
-Leave this final option blank until you have reviewed the results from running `papipes integration make full`. This step will produce a mudata object with one layer and one correction per modality, and one multimodal layer. For unimodal integration select the uncorrected version and use "no_correction" then run `panpipes integration make merge_integration`. 
+Leave this final option blank until you have reviewed the results from running `papipes integration make full`. 
+
+This step will produce a mudata object with one layer and one correction per modality, and one multimodal layer. For unimodal integration select the uncorrected version and use "no_correction". 
+
+**Then run**`panpipes integration make merge_integration`
 
 - <span class="parameter">final_obj:</span> 
    -  <span class="parameter">rna:</span>
@@ -404,59 +434,3 @@ Leave this final option blank until you have reviewed the results from running `
 
       -  <span class="parameter">include</span> `Boolean`, Default: True<br>
       -  <span class="parameter">bc_choice</span> `String`, Default: totalvi<br>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-   
-
-
-
-
-
-
-
-
-
- 
-
-
-
-
-
-
-
-
- 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
-
- 
