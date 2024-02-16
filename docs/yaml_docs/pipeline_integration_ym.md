@@ -21,67 +21,64 @@ You can download the different integration pipeline.yml files here:
 
 ## Compute resources options
 
-* <p class="parameter">resources</p>
-  
-    Computing resources to use, specifically the number of threads used for parallel jobs.
-    Specified by the following three parameters:
+<span class="parameter">resources</span>
+Computing resources to use, specifically the number of threads used for parallel jobs.
+Specified by the following three parameters:
 
-  - <p class="parameter">threads_high</p> Integer, Default: 1
-        Number of threads used for high intensity computing tasks. 
-        For each thread, there must be enough memory to load your MuData object which was created in the preprocessing step of the workflow.
-        </p><br>
+  - <span class="parameter">threads_high</span> `Integer`, Default: 1<br>
+    Number of threads used for high intensity computing tasks. 
+    For each thread, there must be enough memory to load your MuData object which was created in the preprocessing step of the workflow.
+     
   
-  - <p class="parameter">threads_medium</p> Integer, Default: 1
-        <p>Number of threads used for medium intensity computing tasks.
-        For each thread, there must be enough memory to load your mudata and do computationally light tasks.
-        </p><br>
-  
-  - <p class="parameter">threads_low</p> Integer, Default: 1
-  	    <p>Number of threads used for low intensity computing tasks.
-        For each thread, there must be enough memory to load text files and do plotting, requires much less memory than the other two.
-        </p><br>
+  - <span class="parameter">threads_medium</span> `Integer`, Default: 1<br>
+    Number of threads used for medium intensity computing tasks.
+    For each thread, there must be enough memory to load your mudata and do computationally light tasks.
 
-  - <p class="parameter">threads_gou</p> Integer, Default: 2
-        <p>Number of gpu used for computing tasks.
-        For each thread, there must be enough memory to compute the tasks above. (ASKKKKKKKKKKKKKKK)
-
-* <p class="parameter">condaenv</p> String
   
-    Path to conda environment that should be used to run panpipes.
-    Leave blank if running native or your cluster automatically inherits the login node environment
+   - <span class="parameter">threads_low</span> `Integer`, Default: 1<br>
+  	 Number of threads used for low intensity computing tasks.
+     For each thread, there must be enough memory to load text files and do plotting, requires much less memory than the other two.
+    
+
+ - <span class="parameter">threads_gou</span> `Integer`, Default: 2<br>
+   Number of gpu used for computing tasks.
+   For each thread, there must be enough memory to compute the tasks above. (ASKKKKKKKKKKKKKKK)
+
+<span class="parameter">condaenv</span> `String`<br>
+  Path to conda environment that should be used to run panpipes.
+  Leave blank if running native or your cluster automatically inherits the login node environment
 
 ## Loading and merging data options
 ### Data format
 
 
-* <p class="parameter">sample_prefix</p> String, Default: "test"
-    
-    Prefix for the sample that comes out of the filtering/ preprocessing steps of the workflow.
+<span class="parameter">sample_prefix</span> `String`, Default: test<br>
+Prefix for the sample that comes out of the filtering/ preprocessing steps of the workflow.
 
-* <p class="parameter">preprocessed_obj</p> String, Mandatory parameter
-    
-    Path to the output file from preprocessing (e.g. ../preprocess/test.h5mu).
-    Ensure that the submission file must be in the right format and that the right path is provided.
+<span class="parameter">preprocessed_obj</span> `String`, Mandatory parameter<br>
+ Path to the output file from preprocessing (e.g. ../preprocess/test.h5mu).
+ Ensure that the submission file must be in the right format and that the right path is provided.
 
 ### Batch correction
 
-* <p class="parameter">rna:</p> 
+<span class="parameter">rna:</span> 
   Batch correction is specified by the following parameters:
   
-   - <p class="parameter">run</p> Boolean, Default: True 
-        <p>Defines if you want the batch correction to run 
-          </p><br>
-   - <p  class="parameter">tools</p> String (comma-separated), Default: harmony,bbknn,scanorama,scvi 
-          <p>Defines the method used to run batch correction, multiple can be selected.
-           choices: harmony,bbknn,scanorama,scvi
-           </p><br>
-    - <p class="parameter">column</p> String (comma-separated), Default: sample_id
+    
+  - <span class="parameter">run</span> `Boolean`, Default: True<br>
+    Defines if you want the batch correction to run 
+        
+  - <span class="parameter">tools</span> `String` (comma-separated), Default: harmony,bbknn,scanorama,scvi<br> 
+    Defines the method used to run batch correction, multiple can be selected.
+    choices: harmony,bbknn,scanorama,scvi
+       
+   - <span class="parameter">column</span> `String` (comma-separated), Default: sample_id<br>
 
      The column you want to batch correct on, if a comma-separated list is specified then all will be used simultaneously
  
   ### Harmony arguments
   
-- <span class="parameter">harmony:</p>
+- <span class="parameter">harmony:</span>
     Basic parameters required to run harmony:
    
     - <span class="parameter">sigma</span> Float, Default: 0.1<br>
@@ -91,7 +88,8 @@ You can download the different integration pipeline.yml files here:
   
   ### BBKNN arguments
 Check https://bbknn.readthedocs.io/en/latest/ for more information 
-   <span class="parameter">exclude_mt_genes:</span> 
+   
+<span class="parameter">exclude_mt_genes:</span> (CHHEECCKKKKKK)
 
   ### SCVI arguments
    <span class="parameter">rna</span>
@@ -109,17 +107,17 @@ Check https://bbknn.readthedocs.io/en/latest/ for more information
     
        - <span class="parameter">gene_likelihood:</span> `String`, Default: zinb
     
-    <span class="parameter">training_agrs</p>:
+    <span class="parameter">training_agrs</p>
     Training argument parameters:
-       - <span class="parameter">max_epochs:</span> `Integer`, Default: 400
+       - <span class="parameter">max_epochs</span> `Integer`, Default: 400
          
        - <span class="parameter">train_size</span> `Float`, Default: 0.9
          
        - <span class="parameter">early_stopping:</span> `Boolean`, Default: True
     
-    <span class="parameter">training_plan:</p>:
+    <span class="parameter">training_plan</p>
     Training plan parameters:
-       - <span class="parameter">lr:</span> `Float`, Default:0.001
+       - <span class="parameter">lr</span> `Float`, Default:0.001
          
        - <span class="parameter">n_epochs_kl_warmup:</span> `Integer`, Default: 40
          
@@ -160,7 +158,8 @@ Check https://bbknn.readthedocs.io/en/latest/ for more information
  <span class="parameter">totalvi:</span> 
    These are the basic totalvi parameters required, you can add more if it fits your analysis better. 
 
-   -  <span class="parameter">modalities</span> `String`(Comma separated), Default: rna, prot <br>
+   -  <span class="parameter">modalities</span> `String`(Comma separated), Default: rna, prot<br>
+ 
   totalvi has to run on both rna and protein data
   
    -  <span class="parameter">exclude_mt_genes</span> `Boolean`, Default: True<br>
@@ -181,7 +180,7 @@ Check https://bbknn.readthedocs.io/en/latest/ for more information
  <span class="parameter">MultiVI:</span>
   These are the basic MultiVI parameters required, you can add more if it fits your analysis better. Leave arguments blank for default
   
-  -  <span class="parameter">lowmen</span> `Boolean`, Default: True<br
+  -  <span class="parameter">lowmen</span> `Boolean`, Default: True<br>
 
 By setting lowmen to True it will subset the atac to the top 25k HVF which is recommended to deal with concatenation of atac,rna on large datasets which at the moment is suboptimally required by scvitool. Note that >100GB of RAM are required to concatenate atac,rna with 15k cells and 120k total features (union rna,atac).
 
@@ -223,64 +222,103 @@ By setting lowmen to True it will subset the atac to the top 25k HVF which is re
   <span class="parameter">mofa:</span> 
    These are the basic mofa parameters required, you can add more if it fits your analysis better. 
 
-  -  <span class="parameter">modalities</span> `String` (Comma separated), Default: rna, prot, atac <br
-  -  <span class="parameter">fliter_by_hgv</span> `Boolean`, Default: True<br
-  -  <span class="parameter">n_factors</span> `Integer`, Default: 10<br
-  -  <span class="parameter">n_iterations</span> `Integer`, Default: 1000<br
-  -  <span class="parameter">convergence_mode</span> `String`, Default: fast<br
+  -  <span class="parameter">modalities</span> `String` (Comma separated), Default: rna, prot, atac <br>
+  -  <span class="parameter">fliter_by_hgv</span> `Boolean`, Default: True<br>
+  -  <span class="parameter">n_factors</span> `Integer`, Default: 10<br>
+  -  <span class="parameter">n_iterations</span> `Integer`, Default: 1000<br>
+  -  <span class="parameter">convergence_mode</span> `String`, Default: fast<br>
     Choice between fast, medium, and slow
 
-  -  <span class="parameter">save_parameters</span> `Boolean`, Default: False<br
-  -  <span class="parameter">outfile</span> `String`, Default: path/to/h5ad/to_save_model_to <be (CHHHHECCCKKKKKKKKK)
+  -  <span class="parameter">save_parameters</span> `Boolean`, Default: False<br>
+  -  <span class="parameter">outfile</span> `String`, Default: path/to/h5ad/to_save_model_to <br> (CHHHHECCCKKKKKKKKK)
 
 
 
 <span class="parameter">WNN:</span> 
    These are the basic WNN parameters required, you can add more if it fits your analysis better. 
 
-  -  <span class="parameter">modalities</span> `String` (Comma separated), Default: rna, prot, atac <br
-  -  <span class="parameter">batch_corrected</span> `String`, Default: None<br
+  -  <span class="parameter">modalities</span> `String` (Comma separated), Default: rna, prot, atac <br>
+  -  <span class="parameter">batch_corrected</span> `String`, Default: None<br>
 Set the modality to one method ("bbknn", "scVI", "harmony", "scanorama"), if left None, a default de novo calculation of neighbours on non-corrected data for that modality using specified parameters
-      -  <span class="parameter">rna</span> `String`, Default: None<br
+      -  <span class="parameter">rna</span> `String`, Default: None<br>
         Options here include "bbknn" and "harmony"
 
-      -  <span class="parameter">prot</span> `String`, Default: None<br
+      -  <span class="parameter">prot</span> `String`, Default: None<br>
         Options here include "harmony"
 
-      -  <span class="parameter">atac</span> `String`, Default: None<br
+      -  <span class="parameter">atac</span> `String`, Default: None<br>
    
 <span class="parameter">knn:</span> 
-  -  <span class="parameter">rna</span> `String`, Default: *rna_neighbors<br
-  -  <span class="parameter">prot</span> `String`, Default: *prot_neighbors<br
-  -  <span class="parameter">atac</span> `String`, Default: *atac_neighbors<br
+  -  <span class="parameter">rna</span> `String`, Default: *rna_neighbors<br>
+  -  <span class="parameter">prot</span> `String`, Default: *prot_neighbors<br>
+  -  <span class="parameter">atac</span> `String`, Default: *atac_neighbors<br>
 
 
-<span class="parameter">n_neighbors</span> `String`, Default: "leave blank"<br
+<span class="parameter">n_neighbors</span> `String`, Default: "leave blank"<br>
   Leave blank to arithmetic mean across modalities neighbors 
 
-<span class="parameter">n_bandwidth_neighbors</span> `Integer`, Default: 20<br 
+<span class="parameter">n_bandwidth_neighbors</span> `Integer`, Default: 20<br>
 
-<span class="parameter">n_multineighbors</span> `Integer`, Default: 200<br 
+<span class="parameter">n_multineighbors</span> `Integer`, Default: 200<br>
 
-<span class="parameter">metric</span> `String`, Default: euclidean<br 
+<span class="parameter">metric</span> `String`, Default: euclidean<br>
 
-<span class="parameter">low_memory</span> `Boolean`, Default: True<br 
+<span class="parameter">low_memory</span> `Boolean`, Default: True<br>
 
 
 <span class="parameter">neighbors:</span> 
--  <span class="parameter">npcs</span> `Integer`, Default: 30<br 
+-  <span class="parameter">npcs</span> `Integer`, Default: 30<br>
 
 The number of principal components to calculate for neighbors and umap. If no correction is applied PCA will be calculated and used to run the UMAP. If harmony is chosen it will use the following components to create a corrected dimensionality reduction 
 
- -  <span class="parameter">k</span> `Integer`, Default: 30<br 
- -  <span class="parameter">metric</span> `String`, Default: euclidean<br
+ -  <span class="parameter">k</span> `Integer`, Default: 30<br>
+ -  <span class="parameter">metric</span> `String`, Default: euclidean<br>
    Options include euclidean and cosine
 
- - <span class="parameter">method</span> `String`, Default: scanpy<br
+ - <span class="parameter">method</span> `String`, Default: scanpy<br>
    Options include scanpy and hnsw
 
 
 ### Plot 
+
+<span class="parameter">plotqc:</span> 
+Grouping must be a categorical variable
+   -  <span class="parameter">grouping_var</span> `String`, Default: sample_id<br>
+   -  <span class="parameter">all</span> `String`, Default: rep:receptor_subtype<br>
+
+ Any metrics you may want to plot on all modality umaps should go under all
+
+   -  <span class="parameter">rna</span> `String`, Default: rna:total_counts<br>
+   -  <span class="parameter">prot</span> `String`, Default: prot:total_counts<br>
+   -  <span class="parameter">atac</span>  (CHHEECCKKKKKK)
+   -  <span class="parameter">multimodal</span> `String`, Default: rna:total_counts<br>
+
+
+
+### Make final object 
+
+Leave this final option blank until you have reviewed the results from running `papipes integration make full`. This step will produce a mudata object with one layer and one correction per modality, and one multimodal layer. For unimodal integration select the uncorrected version and use "no_correction" then run `panpipes integration make merge_integration`. 
+
+<span class="parameter">final_obj:</span> 
+   -  <span class="parameter">rna:</span>
+      -  <span class="parameter">include</span> `Boolean`, Default: True<br>
+      -   <span class="parameter">bc_choice</span> `String`, Default: harmony<br>
+   - <span class="parameter">prot:</span>
+      -  <span class="parameter">include</span> `Boolean`, Default: True<br>
+      -  <span class="parameter">bc_choice</span> `String`, Default: harmony<br>
+   - <span class="parameter">atac:</span>
+      -  <span class="parameter">include</span> `Boolean`, Default: False<br>
+      -  <span class="parameter">bc_choice</span> `Boolean`, Default: harmony<br>
+     
+   - <span class="parameter">multimodal:</span>
+
+      -  <span class="parameter">include</span> `Boolean`, Default: True<br>
+      -  <span class="parameter">bc_choice</span> `String`, Default: totalvi<br>
+
+
+
+
+
 
 
 
