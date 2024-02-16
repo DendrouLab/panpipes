@@ -58,6 +58,10 @@ Prefix for the sample that comes out of the filtering/ preprocessing steps of th
 
 ## Batch correction
 
+**Unimodal: correct each modality independently**
+
+## RNA modality
+
 <span class="parameter">rna:</span> 
   Batch correction for the rna modality is specified by the following parameters:
   
