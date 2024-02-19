@@ -41,7 +41,7 @@ Specified by the following three parameters:
   	    Number of threads used for low intensity computing tasks.
         For each thread, there must be enough memory to load text files and do plotting, requires much less memory than the other two.
 
-<span class="parameter">condaenv</span> `String` (Path)<br>
+<span class="parameter">condaenv</span> `String`<br>
     Path to conda environment that should be used to run panpipes.
     Leave blank if running native or your cluster automatically inherits the login node environment
 
@@ -79,6 +79,7 @@ The following parameters specify the QC metrics to plot in violin and spatial em
 <span class="parameter">plotqc</span><br>
   - <span class="parameter">grouping_var</span> `String`, Default: None<br>
         Comma-separated string without spaces, e.g. _sample_id,batch_ of categorical columns in `.obs`. One violin will be created for each group in the violin plot. Not mandatory, can be left empty.
+        
   - <span class="parameter">spatial_metrics</span> `String`, Default: None<br>
         Comma-separated string without spaces, e.g. _total_counts,n_genes_by_counts_ of columns in `.obs` or `.var`. <br>Specifies which metrics to plot. If metric is present in both, `.obs` and `.var`, **both will be plotted.**
 
