@@ -26,7 +26,7 @@ classifiers = [
     "Programming Language :: R"
     ]
 
-requires-python = ">= 3.9"
+requires-python = ">= 3.8"
 
 dependencies = [
     "anndata>=0.8.0",
@@ -36,15 +36,15 @@ dependencies = [
     "drmaa",
     "gevent",
     "harmonypy",
-    "jax",
-    "jaxlib",
+    "jax<=0.4.23",
+    "jaxlib<=0.4.23",
     "leidenalg",
     "louvain",
     "matplotlib<=3.7.3",
     "mofapy2",
     "mudata>=0.2.1",
     "muon",
-    "numpy>=1.22.4",
+    "numpy==1.22.4",
     "openpyxl",
     "packaging",
     "pandas>=1.0",
@@ -62,7 +62,7 @@ dependencies = [
     "scikit-misc",
     "scirpy",
     "scrublet",
-    "scvi-tools>=1.1.0.post2",
+    "scvi-tools>=0.16.3",
     "sqlalchemy"]
 
 [project.optional-dependencies]
