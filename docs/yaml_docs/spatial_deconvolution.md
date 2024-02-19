@@ -47,6 +47,7 @@ Specified by the following three parameters:
 ## 1. Input Options
 With the `deconvolution_spatial` workflow, one or multiple spatial slides can be deconvoluted in one run. For that, a `MuData` object for each slide is expected, with the spatial data saved in `mdata.mod["spatial"]`. The spatial slides are deconvoluted **using the same reference**. For the reference, one `MuData` with the gene expression data saved in `mdata.mod["rna"]` is expected as input. Please note, that the same parameter setting is used for each slide. <br> For the **spatial** input, the workflow, therefore, reads in **all `.h5mu` objects of a directory** (see below). **The spatial and single-cell data thus need to be saved in different folders.**
 <br>
+
 <span class="parameter">input</span><br>
   - <span class="parameter">spatial</span> `String`, Mandatory parameter<br>
         Path to folder containing one or multiple `MuDatas` of spatial data. The pipeline is reading in all `MuData` files in that folder and assuming that they are `MuDatas` of spatial slides.
@@ -59,6 +60,7 @@ With the `deconvolution_spatial` workflow, one or multiple spatial slides can be
 
 For each deconvolution method you can specify whether to run it or not: 
 <br>
+
 <span class="parameter">run</span> `Boolean`, Default: None<br>
     Whether to run Cell2location
 
@@ -67,6 +69,7 @@ For each deconvolution method you can specify whether to run it or not:
 
 You can select genes that are used for deconvolution in two ways. The first option is to provide a reduced feature set as a csv-file that is then used for deconvolution. The second option is to perform gene selection [according to Cell2Location](https://cell2location.readthedocs.io/en/latest/cell2location.utils.filtering.html). <br> Please note, that gene selection is **not optional**. If no csv-file is provided, feature selection [according to Cell2Location.](https://cell2location.readthedocs.io/en/latest/cell2location.utils.filtering.html) is performed. 
 <br>
+
 <span class="parameter">feature_selection</span><br>
   - <span class="parameter">gene_list</span> `String`, Default: None<br>
     Path to a csv file containing a reduced feature set. A header in the csv is expected in the first row. All genes of that gene list need to be present in both, spatial slides and scRNA-Seq reference.
@@ -138,10 +141,12 @@ You can select genes that are used for deconvolution in two ways. The first opti
     Whether to use GPU for training.
 
 
-###
 <br>
-You can specify whether both models should be saved with the following parameter:
+
+
+You can specify whether both models (spatial and reference) should be saved with the following parameter:
 <br>
+
 <span class="parameter">save_models</span>, Default: False<br>
     Whether to save the reference & spatial mapping models.
 
@@ -151,6 +156,7 @@ You can specify whether both models should be saved with the following parameter
 
 For each deconvolution method you can specify whether to run it or not: 
 <br>
+
 <span class="parameter">run</span> `Boolean`, Default: None<br>
     Whether to run Tangram
 
@@ -159,6 +165,7 @@ For each deconvolution method you can specify whether to run it or not:
 
 You can select genes that are used for deconvolution in two ways. The first option is to provide a reduced feature set as a csv-file that is then used for deconvolution. The second option is to perform gene selection via [scanpy.tl.rank_genes_groups](https://scanpy.readthedocs.io/en/stable/generated/scanpy.tl.rank_genes_groups.html) **on the reference scRNA-Seq data**, as [suggested by Tangram](https://tangram-sc.readthedocs.io/en/latest/tutorial_sq_link.html#Pre-processing). The top `n_genes` of each group make up the reduced gene set. <br> Please note, that gene selection is **not optional**. If no csv-file is provided, feature selection via [scanpy.tl.rank_genes_groups](https://scanpy.readthedocs.io/en/stable/generated/scanpy.tl.rank_genes_groups.html) is performed. 
 <br>
+
 <span class="parameter">feature_selection</span><br>
   - <span class="parameter">gene_list</span> `String`, Default: None<br>
     Path to a csv file containing a reduced feature set. A header in the csv is expected in the first row. All genes of that gene list need to be present in both, spatial slides and scRNA-Seq reference.
