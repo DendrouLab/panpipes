@@ -1,25 +1,23 @@
-Preprocessing spatial data
-==========================
+# Preprocessing spatial data
 
-The `preprocess_spatial` workflow filters the data and preprocesses the data by normalization, HVG selection, and PCA computation. Multiple `MuData` objects of the same assay (`Visium` or `Vizgen`), each with a `spatial` modality, can be filtered and preprocessed in one run. 
+The `preprocess_spatial` workflow filters the data and preprocesses the data by normalization, HVG selection, and PCA computation. Multiple `MuData` objects of the same assay (`Visium` or `Vizgen`), each with a `spatial` modality, can be filtered and preprocessed in one run.
 
 ## Steps
-If multiple `MuData` objects are provided, the following steps are run for each **with the same parameter setting.** 
+
+If multiple `MuData` objects are provided, the following steps are run for each **with the same parameter setting.**
 
 - `MuData` object is filtered by the specified thresholds in the pipeline.yml.  Note, that the filtering step is **optional**. You can avoid filtering by setting the `run` parameter in the pipeline.yml under `filtering` to `False`.
 - Post-filter plotting is performed (only when data was filtered, i.e. `run: True`). Specified metrics in the pipeline.yml are plotted in violin and spatial embedding plots. Plots are saved into the `./figures/spatial` directory.
-- Data is normalized  and HVGs are selected. 
+- Data is normalized  and HVGs are selected.
   Before normalization, raw counts are saved into `.layers["raw_counts"]`, if not present already. Normalized counts are saved into `.X` and `.layers["lognorm"]` or `.layers["norm_pearson_resid"]`, depending on the chosen normalization. HVGs are saved into `.var["highly_variable"]`.
 - PCA is computed and plotted. PCA plots are also saved into the `./figures/spatial` directory.
 - Final `MuData` object is saved into the `./filtered.data` directory
 
-
-
 ## Steps to run
 
-1.  Activate conda environment `conda activate pipeline_env`
-2.  Generate yaml and log file `panpipes preprocess_spatial config`
-3.  Specify the parameter setting in the pipeline.yml file 
-4.  Run complete preprocess workflow with `panpipes preprocess_spatial make full --local`
+1. Activate conda environment `conda activate pipeline_env`
+2. Generate yaml and log file `panpipes preprocess_spatial config`
+3. Specify the parameter setting in the pipeline.yml file
+4. Run complete preprocess workflow with `panpipes preprocess_spatial make full --local`
 
-The [Preprocessing spatial data](https://panpipes-tutorials.readthedocs.io/en/latest/preprocess_spatial_data/preprocess_spatial_data_with_panpipes.html) tutorial guides you through the preprocessing step by step. 
+The [Preprocessing spatial data](https://panpipes-tutorials.readthedocs.io/en/latest/preprocess_spatial_data/preprocess_spatial_data_with_panpipes.html) tutorial guides you through the preprocessing step by step.

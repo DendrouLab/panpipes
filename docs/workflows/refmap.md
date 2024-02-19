@@ -1,31 +1,30 @@
-Reference Mapping (refmap)
-======
+# Reference Mapping (refmap)
 
 The reference mapping pipeline `panpipes refmap` implements scvi-tools reference mapping tools `scvi`, `totalvi` and `scanvi`.
-You can supply an query anndata/mudata containing RNA, and the reference model `path_to_model\model.pt`. Since reference and query have to work from the same subset of genes, you can also supply the reference anndata/mudata containing RNA or RNA+PROT (for `totalvi`) so the genes selection can be unified and the resulting plots include the reference cells together with the query. 
+You can supply an query anndata/mudata containing RNA, and the reference model `path_to_model\model.pt`. Since reference and query have to work from the same subset of genes, you can also supply the reference anndata/mudata containing RNA or RNA+PROT (for `totalvi`) so the genes selection can be unified and the resulting plots include the reference cells together with the query.
 Note that you can even use a reference scvi model created previously by `panpipes integration`.
 
-Steps:
-------
+## Steps
 
-1.  In a new folder, generate config file for integration,
+1. In a new folder, generate config file for integration,
     `panpipes refmap config` and edit the pipeline.yml file.
-2.  Run complete refmap pipeline with `panpipes refmap make full`
+2. Run complete refmap pipeline with `panpipes refmap make full`
 
 For a full tutorial on refmap please check the [tutorials](https://panpipes-pipelines.readthedocs.io/en/latest/tutorials/index.html) section.
 
 ## Expected structure of MuData object
-The ideal way to run `panpipes refmap` is to use the output mudata file from `panpipes preprocess`, as this will make sure the MuData object has correctly names layers and slots. 
 
-## Formatting query data 
+The ideal way to run `panpipes refmap` is to use the output `MuData` file from `panpipes preprocess`, as this will make sure the `MuData` object has correctly names layers and slots.
+
+## Formatting query data
 
 The reference mapping models used in `panpipes` require that the query is formatted in a special way to match some of the features in the reference. It is for example common practice to share the list of the highly variable genes (or the equivalent set of features) that was used to build the reference, alongside the model itself. We had already formatted the data for this tutorial, but if you're interested in using your own query you should pay special attention to this.
 
-Since each reference model has likely a different structure, at the moment we don't provide standardised code to format the reference and query. 
+Since each reference model has likely a different structure, at the moment we don't provide standard code to format the reference and query.
 
 For example, the reference and query data we used for the paper looks like this:
 
-```
+```python
 > reference
 
 AnnData object with n_obs × n_vars = 152094 × 4000
@@ -46,12 +45,13 @@ AnnData object with n_obs × n_vars = 57669 × 4000
 ```
 
 In this case, we had to make sure to format the query so that:
+
 - it contains the same 4000 HVG as the reference
 - it contains the protein counts in the `.obsm['protein_counts']` layer
 - the protein names matched the names of the protein reference (and when not matching we padded the array with 0s to allow imputation of missing features)
-- the query has a column matching the reference's celltype labels we want to transfer,  filled with `Unknown` 
+- the query has a column matching the reference's celltype labels we want to transfer,  filled with `Unknown`
 
-```
+```python
 query.obs["celltype.l2"]
 
 AAACCCACACCAGCGT-1    Unknown
@@ -68,4 +68,3 @@ TTTGTTGTCTTCTGTA-1    Unknown
 Name: celltype.l2, Length: 57669, dtype: category
 Categories (1, object): ['Unknown']
 ```
-

@@ -5,9 +5,9 @@ In `panpipes preprocess` a completely customisable filtering process is implemen
 
 The filtering process in panpipes is sequential as it goes through the filtering dictionary in the `pipeline.yml`.
 
-Within the yml file the filtering dictionary has this basic structure:
+Within the yaml file the filtering dictionary has this basic structure:
 
-```
+```yaml
 rna/prot/atac:
   obs:
     max:
@@ -20,21 +20,25 @@ rna/prot/atac:
   
 ```
 
-For each modality, starting with rna, panpipes will first filter on `obs` and then `var`.
-Each modality has a dictionary which must be fully customised to the columns in your the mudata.obs or var object. 
+For each modality, starting with RNA, panpipes will first filter on `obs` and then `var`.
+Each modality has a dictionary which must be fully customised to the columns in your the `mudata.obs` or `.var` object.
+
 **When specifying a column name, make sure it exactly matches the column name in the h5mu object.** 
-You can review this by loaing up your h5mu object in python: 
+
+You can review this by loading up your h5mu object in Python:
+
 ```python
 import muon as mu; mu.read(filepath).obs.columns
 ```
 
+Firstly, to filter for the covariates in the columns of `mdata['mod'].obs`, where `mod` is your modality (i.e. `rna`,`prot`, etc.)
 
-Firstly for columns in `mdata['mod'].obs`.
-Under "max" you list any columns which you want to run a maximum filter for e.g. total_counts, under "min" you list any columns you want to run a minimum filter and under "bool" list any boolean columns you want to filter on e.g. "is_doublet"
-Then repeat for columns in `mdata['mod'].var`.
+Under "max" you list any columns which you want to run a maximum filter for e.g. total_counts, followed by the threshold. Specify under "min" any columns you want to run a minimum filter, followed by the threshold. Finally, under "bool" list any boolean columns you want to filter on e.g. "is_doublet"
+Then repeat the same for columns in `mdata['mod'].var`.
+
 For example:
 
-```
+```yaml
 rna:
   obs:
     min:  
@@ -51,6 +55,4 @@ rna:
 
 In this example, the cells are filtered to contain more than 500 genes, less than 20000 counts, less than 20% mitochondrial content, and where is_doublet is False. Then genes are filtered to contain at least 3 cells with >0 reads.
 
-You can use this notation to expand filtering to any set of columns you have in any modality. 
-
-
+You can use this notation to expand filtering to any set of columns you have in any modality.
