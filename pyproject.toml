@@ -62,7 +62,7 @@ dependencies = [
     "scikit-misc",
     "scirpy",
     "scrublet",
-    "scvi-tools>=0.16.3",
+    "scvi-tools>=1.1.0.post2",
     "sqlalchemy"]
 
 [project.optional-dependencies]
