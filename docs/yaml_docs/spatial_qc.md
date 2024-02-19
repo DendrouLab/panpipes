@@ -75,11 +75,12 @@ This part of the workflow allows to generate additional QC metrics that can be u
 
 <br>
 The following parameters specify the QC metrics to plot in violin and spatial embedding plots. Plots are generated for each slide specified in the submission file separately. 
+<br>
 
 <span class="parameter">plotqc</span><br>
   - <span class="parameter">grouping_var</span> `String`, Default: None<br>
         Comma-separated string without spaces, e.g. _sample_id,batch_ of categorical columns in `.obs`. One violin will be created for each group in the violin plot. Not mandatory, can be left empty.
-        
+
   - <span class="parameter">spatial_metrics</span> `String`, Default: None<br>
         Comma-separated string without spaces, e.g. _total_counts,n_genes_by_counts_ of columns in `.obs` or `.var`. <br>Specifies which metrics to plot. If metric is present in both, `.obs` and `.var`, **both will be plotted.**
 
