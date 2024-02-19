@@ -4,9 +4,9 @@ on:
   push:
     branches:
       - main
-  # pull_request:
-  #   branches:
-  #     - main
+  pull_request:
+    branches:
+      - main
 
 env:
   debug: 'true'
@@ -26,7 +26,7 @@ jobs:
       - name: File tree
         if: env.debug == 'true'
         run: tree
-      
+
       - uses: conda-incubator/setup-miniconda@v3
         with:
           miniforge-version: latest
@@ -42,7 +42,7 @@ jobs:
         run: |
           pip install -e .
           conda list
-          
+
       - name: Conda info
         if: env.debug == 'true'
         shell: bash -el {0}
@@ -109,7 +109,7 @@ jobs:
       - name: File tree
         if: env.debug == 'true'
         run: tree teaseq
-        
+
       - uses: actions/upload-artifact@v4
         with:
           name: teaseq_unfilt.h5mu
