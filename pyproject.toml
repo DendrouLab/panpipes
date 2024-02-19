@@ -26,7 +26,7 @@ classifiers = [
     "Programming Language :: R"
     ]
 
-requires-python = ">= 3.9"
+requires-python = ">= 3.11"
 
 dependencies = [
     "anndata>=0.8.0",
