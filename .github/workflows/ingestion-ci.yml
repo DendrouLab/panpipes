@@ -1,4 +1,4 @@
-name: Run tutorials
+name: Run tutorials (ingestion)
 
 on:
   push:

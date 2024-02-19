@@ -1,4 +1,4 @@
-name: Run tutorials
+name: Run tutorials (integration)
 
 on:
   push:
