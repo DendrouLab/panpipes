@@ -74,7 +74,7 @@ This part of the workflow allows to generate additional QC metrics that can be u
     Comma-separated string without spaces, e.g. _mito,hp,rp_. <br> For which groups of the csv-file specified in `custom_genes_file`  to run [scanpy.tl.score_genes](https://scanpy.readthedocs.io/en/stable/generated/scanpy.tl.score_genes.html) 
 
 <br>
-The following parameters specify the QC metrics to plot in violin and spatial embedding plots. Plots are generated for each slide specified in the submission file separately. 
+The following parameters specify the QC metrics to plot in violin and spatial embedding plots. Plots are generated for each slide specified in the submission file separately. <br>
 <br>
 
 <span class="parameter">plotqc</span><br>

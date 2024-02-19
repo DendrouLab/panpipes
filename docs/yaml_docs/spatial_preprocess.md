@@ -100,7 +100,7 @@ The parameters below specify which metrics of the filtered data to plot. As for 
 
 ## 4. Normalization, HVG Selection, and PCA Options
 
-### **4.1 Normalization and HVG Selection** <br>
+### **4.1 Normalization and HVG Selection**
 `Panpipes` offers two different normalization and HVG selection flavours, `'seurat'` and `'squidpy'`. <br> The `'seurat'`  flavour first selects HVGs on the raw counts using analytic Pearson residuals, i.e. [scanpy.experimental.pp.highly_variable_genes](https://scanpy.readthedocs.io/en/stable/generated/scanpy.experimental.pp.highly_variable_genes.html). Afterwards, analytic Pearson residual normalization is applied, i.e. [scanpy.experimental.pp.normalize_pearson_residuals](https://scanpy.readthedocs.io/en/stable/generated/scanpy.experimental.pp.normalize_pearson_residuals.html). Parameters of both functions can be specified by the user in the yaml file. <br>The `'squidpy'` flavour runs the basic scanpy normalization and HVG selection functions, i.e. [scanpy.pp.normalize_total](https://scanpy.readthedocs.io/en/stable/generated/scanpy.pp.normalize_total.html), [scanpy.pp.log1p](https://scanpy.readthedocs.io/en/stable/generated/scanpy.pp.log1p.html), and [scanpy.pp.highly_variable_genes](https://scanpy.readthedocs.io/en/stable/generated/scanpy.pp.highly_variable_genes.html). 
 <br> 
 
@@ -109,6 +109,7 @@ The parameters below specify which metrics of the filtered data to plot. As for 
 <br>
 
 ___Parameters for `norm_hvg_flavour` == `'squidpy'`___ <br>
+
 <span class="parameter">squidpy_hvg_flavour</span>[`'seurat'`,`'cellranger'`,`'seurat_v3'`], Default: 'seurat'<br>
     Flavour to select HVGs, i.e.`flavor` parameter of the function [scanpy.pp.highly_variable_genes](https://scanpy.readthedocs.io/en/stable/generated/scanpy.pp.highly_variable_genes.html).
 
@@ -122,6 +123,7 @@ ___Parameters for `norm_hvg_flavour` == `'squidpy'`___ <br>
     Parameter in [scanpy.pp.highly_variable_genes](https://scanpy.readthedocs.io/en/stable/generated/scanpy.pp.highly_variable_genes.html).
 
 ___Parameters for `norm_hvg_flavour` == `'seurat'`___ <br>
+
 <span class="parameter">theta</span>`Float`, Default: 100<br>
     The negative binomial overdispersion parameter for pearson residuals. The same value is used for [HVG selection]((https://scanpy.readthedocs.io/en/stable/generated/scanpy.experimental.pp.highly_variable_genes.html)) and [normalization](https://scanpy.readthedocs.io/en/stable/generated/scanpy.experimental.pp.normalize_pearson_residuals.html). 
 
@@ -129,6 +131,7 @@ ___Parameters for `norm_hvg_flavour` == `'seurat'`___ <br>
     Specifies clipping of the residuals. <br>`clip` can be specified as: <br> <ul><li> <u>None</u>: residuals are clipped to the interval [-sqrt(n_obs), sqrt(n_obs)] </li><li><u>A float value</u>: if float c specified: clipped to the interval [-c, c]</li> <li> <u>np.Inf</u>: no clipping</li></ul> 
 
 ___Parameters for both `norm_hvg_flavour` flavours___ <br>
+
 <span class="parameter">n_top_genes</span>`Integer`, Default: 2000<br>
     Number of genes to select. Mandatory for `norm_hvg_flavour='seurat'` and `squidpy_hvg_flavour='seurat_v3'`.
 
