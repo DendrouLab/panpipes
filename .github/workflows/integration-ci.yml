@@ -1,4 +1,4 @@
-name: Tutorials CI
+name: Run tutorials
 
 on:
   push:
