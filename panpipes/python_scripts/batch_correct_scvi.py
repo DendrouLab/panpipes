@@ -159,7 +159,7 @@ vae.save(os.path.join("batch_correction", "scvi_model"),
 vae.history["elbo_train"].plot()
 plt.savefig(os.path.join(args.figdir, "scvi_elbo_train.png"))
 
-fig, axs = plt.subplots(nrows=3, ncols=4, figsize=(16,8))
+fig, axs = plt.subplots(nrows=4, ncols=4, figsize=(16,10))
 axs = axs.ravel()
 for i, kk in enumerate(vae.history.keys()):
     vae.history[kk].plot(ax=axs[i])
