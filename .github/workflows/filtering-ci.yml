@@ -57,7 +57,7 @@ jobs:
       - name: Preparing the data
         run: |
           mkdir -p teaseq/preprocessing && cd  teaseq/preprocessing
-          # curl -L -o teaseq_unfilt.h5mu https://figshare.com/ndownloader/files/44639302
+          curl -L -o teaseq_unfilt.h5mu https://figshare.com/ndownloader/files/44639302
 
       # Note: we run the following to test that the commands works
       # However, the following task will replacing the file anyway
