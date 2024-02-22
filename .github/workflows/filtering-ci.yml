@@ -57,13 +57,7 @@ jobs:
       - name: Preparing the data
         run: |
           mkdir -p teaseq/preprocessing && cd  teaseq/preprocessing
-          # curl -L -o TODO https://figshare.com/ndownloader/files/TODO
-
-      - name: Preparing the data (artifact)
-        uses: actions/download-artifact@v3
-        with:
-          name: teaseq_unfilt.h5mu
-          path: teaseq/preprocessing/teaseq_unfilt.h5mu
+          # curl -L -o teaseq_unfilt.h5mu https://figshare.com/ndownloader/files/44639302
 
       # Note: we run the following to test that the commands works
       # However, the following task will replacing the file anyway
@@ -78,26 +72,26 @@ jobs:
           cd teaseq/preprocessing
           curl -o pipeline.yml https://panpipes-tutorials.readthedocs.io/en/latest/_downloads/efb55f083a8aeb1bc12f18ac61f6637b/pipeline.yml
 
-      # - name: Replace template contents in configuration file
-      #   run: |
-      #     cd teaseq/preprocessing
-      #     sed -i 's+/Users/fabiola.curion/Documents/devel/miniconda3/envs/pipeline_env+pipeline_env+g' pipeline.yml
+      - name: Replace template contents in configuration file
+        run: |
+          cd teaseq/preprocessing
+          sed -i 's+/Users/fabiola.curion/Documents/devel/miniconda3/envs/pipeline_bbknn+pipeline_env+g' pipeline.yml
 
       - name: File tree
         if: env.debug == 'true'
         run: tree teaseq
 
-      # - name: Review pipeline tasks
-      #   shell: bash -el {0}
-      #   run: |
-      #     cd teaseq/preprocessing
-      #     panpipes preprocessing show full --local
+      - name: Review pipeline tasks
+        shell: bash -el {0}
+        run: |
+          cd teaseq/preprocessing
+          panpipes preprocess show full --local
 
-      # - name: Run pipeline tasks
-      #   shell: bash -el {0}
-      #   run: |
-      #     cd teaseq/preprocessing
-      #     panpipes preprocessing make full --local
+      - name: Run pipeline tasks
+        shell: bash -el {0}
+        run: |
+          cd teaseq/preprocessing
+          panpipes preprocess make full --local
 
       - name: File tree
         if: env.debug == 'true'
