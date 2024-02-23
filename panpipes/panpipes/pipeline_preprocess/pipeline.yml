@@ -1,21 +1,18 @@
 # ============================================================
 # Preprocess workflow Panpipes (pipeline_preprocess.py)
 # ============================================================
-# written by Charlotte Rich-Griffin and Fabiola Curion
+# This file contains the parameters for the ingest workflow.
+# For full descriptions of the parameters, see the documentation at https://panpipes-pipelines.readthedocs.io/en/latest/yaml_docs/pipeline_preprocess_yml.html
 
 
-# ------------------------
-# compute resource options
-# ------------------------
+#--------------------------
+# Compute resources options
+#--------------------------
 resources:
-  # Number of threads used for parallel jobs
-  # this must be enough memory to load your mudata and do computationally intensive tasks
   threads_high: 2
-  # this must be enough memory to load your mudata and do computationally light tasks
   threads_medium: 2
-  # this must be enough memory to load text files and do plotting, requires much less memory than the other two
   threads_low: 1
-# path to conda env, leave blank if running native or your cluster automatically inherits the login node environment
+
 condaenv:
 
 # allows for tweaking where the jobs get submitted, in case there is a special queue for long jobs or you have access to a gpu
