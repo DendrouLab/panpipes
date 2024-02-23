@@ -14,6 +14,7 @@ If you're not familiar with the format please check out these useful links:
 
 ## How we use YAML files to configure panpipes actions
 
+### How does panpipes read the configuration files?
 
 `panpipes` reads the whole `pipeline.yml` as `PARAMS` at the beginning of each pipeline execution:
 
@@ -26,7 +27,7 @@ PARAMS = P.get_parameters(
 
 ```
 
-### 1. Understanding indentations
+### Understanding mapping blocks and indentations
 
 YAML works with mapping blocks, which are started and closed by a new indentation level.
 Therefore, the indentations in the files are essential for the pipeline to understand which are the blocks that it needs to parse correctly.
@@ -75,9 +76,7 @@ prot:
 
 
 
-
-
-
+### Anchors and Scalars
 
 
  to reuse these params, (for example for WNN) please use anchors (&) and scalars (*) in the relevant place
