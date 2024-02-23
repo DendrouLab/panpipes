@@ -4,6 +4,7 @@
 In this documentation, the parameters of the `preprocess_spatial` yaml file are explained. 
 This file is generated running `panpipes preprocess_spatial config`. In general, the user can leave parameters empty to use defaults. <br> The individual steps run by the pipeline are described in the [spatial preprocess workflow](../workflows/preprocess_spatial.md). 
 
+For more information on functionalities implemented in `panpipes` to read the configuration files, such as reading blocks of parameters and reusing blocks with  `&anchors` and `*scalars`, please check [our documentation](./useful_info_on_yml.md)
 
 
 ## 0. Compute Resource Options

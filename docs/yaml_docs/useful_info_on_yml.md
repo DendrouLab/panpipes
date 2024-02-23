@@ -5,8 +5,9 @@
 The configuration files are YAML files, which are the backbone of the system's setup and operation, defining parameters, settings, and structures in a human-readable format. These files allow for easy modification and sharing of configurations, promoting a clear and efficient way to manage the `panpipes` behavior and its various components.
 
 
-If you're not familiar with the format please check out these useful links:
+If you're not familiar with the format please check out these resources:
 
+## Useful links
 - [YAML basics](https://www.tutorialspoint.com/yaml/yaml_basics.htm) 
 - [YAML beginner's guide](https://www.redhat.com/sysadmin/yaml-beginners)
 - [Reading and writing YAML with Python](https://python.land/data-processing/python-yaml#What_is_YAML)
@@ -72,14 +73,75 @@ prot:
     method: scanpy
 ```
 
-`panpipes` reads the whole `pipeline.yml` as `PARAMS` and these parameters as `prot_params = PARAMS['prot']`
+`panpipes` reads the whole `pipeline.yml` as `PARAMS`. 
 
+Therefore `PARAMS['prot_run']` will inherit the value it was assigned in the yaml, `True`.
+Similarly, `PARAMS['prot_tools']` will be interpreted as `harmony`.
 
+When the block gets deeper in indentations, it may be good to read all the block in one go, for example `prot_params = PARAMS['prot']`.
+Therefore, `PARAMS['prot']['neighbors']` is the equivalent of `prot_params['neighbors']`
+
+You can read the `pipeline.yml` configuration file in python and check how the commands are parsed using
+
+```
+from panpipes.funcs.io import read_yaml
+
+PARAMS = read_yaml("pipeline.yml")
+```
 
 ### Anchors and Scalars
 
+YAML files offer a lot of functionalities to fill and parse blocks of text avoiding to repeat entire sections. 
+One example are anchors (&) and scalars (*) (check the [documentation links](#useful-links) for more information on the terminology)
 
- to reuse these params, (for example for WNN) please use anchors (&) and scalars (*) in the relevant place
+Let's look at an example from the same excerpt as before:
+In this block, we configure the parameters to construct the knn connectivity graph on the protein modality.
 
- i.e. &rna_neighbors will be called by *rna_neighbors where referenced
-neighbors: &rna_neighbors 
+```yaml
+neighbors: &prot_neighbors
+  # number of Principal Components to calculate for neighbours and umap:
+  #   -if no correction is applied, PCA will be calculated and used to run UMAP and clustering on
+  #   -if Harmony is the method of choice, it will use these components to create a corrected dim red.)
+  # note: scvelo default is 30
+  npcs: 30
+  # number of neighbours
+  k: 30
+  # metric: euclidean | cosine
+  metric: euclidean
+  # scanpy | hnsw (from scvelo)
+  method: scanpy
+```
+
+It may be useful to reuse the same parameters for other sections of the yaml without having to re-write them (Number of PCs `npcs:30`, number of k neighbours `k:30` , euclidean distance with `metric: euclidean`)
+
+For these cases, we anchor the block of code associated to the `neighbors` block with the following syntax:
+
+```yaml
+neighbors: &prot_neighbors
+```
+
+This simple syntax allows us to reuse the `prot_neighbors` params when referencing it using a scalar `*prot_neighbors` in a place where the same parameters are expected.
+Looking further down in the pipeline.yml file, we have used this notation to reuse the KNN graph computation parameters for all the modalities:
+
+```yaml
+WNN:
+    # muon implementation of WNN 
+    modalities: rna,prot,atac 
+    # run wnn on batch corrected unimodal data, set each of the modalities you want to use to calc WNN to ONE method.
+    # leave to None and it will default to de novo calculation of neighbours on non corrected data for that modality using specified params 
+    batch_corrected:
+      # options are: "bbknn", "scVI", "harmony", "scanorama"
+      rna: None
+      # options are "harmony", "bbknn"
+      prot: None
+      # options are "harmony"
+      atac: None 
+    # please use anchors (&) and scalars (*) in the relevant place
+    # i.e. &rna_neighbors will be called by *rna_neighbors where referenced
+    knn:
+      rna: *rna_neighbors
+      prot: *prot_neighbors
+      atac: *atac_neighbors
+  
+```
+
