@@ -50,7 +50,7 @@ the workflow.
 ### Data format
 
 
-<span class="parameter">sample_prefix</span> `String`, Default: test<br>
+<span class="parameter">sample_prefix</span> `String`, Mandatory parameter, Default: test<br>
 Prefix for the sample that comes out of the filtering/ preprocessing steps of the workflow.
 
 <span class="parameter">preprocessed_obj</span> `String`, Mandatory parameter<br>
@@ -64,19 +64,20 @@ Prefix for the sample that comes out of the filtering/ preprocessing steps of th
 ## RNA modality
 
 <span class="parameter">rna:</span> 
-  Batch correction for the rna modality is specified by the following parameters:
+  Batch correction for the RNA modality is specified by the following parameters:
   
     
   - <span class="parameter">run</span> `Boolean`, Default: True<br>
-    Defines if you want the batch correction to run 
+    Defines if you want the batch correction to run. If set to `False`, `PCA` with default parameters is calculated. 
         
-  - <span class="parameter">tools</span> `String` (comma-separated), Default: harmony,bbknn,scanorama,scvi<br> 
-    Defines the method used to run batch correction, multiple can be selected.
-    choices: harmony, bbknn, scanorama, scvi
+  - <span class="parameter">tools</span> `String` (comma-separated), Default: `harmony,bbknn,scanorama,scvi`<br> 
+    Defines the method used to run batch correction, multiple can be selected and run simultaneously.
+
+    Choices: `harmony`, `bbknn`, `scanorama`, `scvi`
        
    - <span class="parameter">column</span> `String` (comma-separated), Default: sample_id<br>
 
-     The column you want to batch correct on, if a comma-separated list is specified then all will be used simultaneously
+     The column name of the covariate you want want to batch correct on, if a comma-separated list is specified then all will be used simultaneously.
  
 ### Harmony arguments
   
@@ -87,11 +88,14 @@ Prefix for the sample that comes out of the filtering/ preprocessing steps of th
     - <span class="parameter">theta</span> `Float`, Default: 1.0<br>
     - <span class="parameter">npcs</span> `Integer`, Default: 30<br>
 
-  For more information on harmony check https://portals.broadinstitute.org/harmony/reference/RunHarmony.html
+  For more information on `harmony` check the [harmony documentation](https://portals.broadinstitute.org/harmony/reference/RunHarmony.html)
+
 ### BBKNN arguments
-Check https://bbknn.readthedocs.io/en/latest/ for more information 
+
 - <span class="parameter">bbknn:</span>  
   - <span class="parameter">neighbors_within_batch:</span> `Integer`, Default: 3<br>
+
+For more information on `bbknn` check the [bbknn documentation](https://bbknn.readthedocs.io/en/latest/) 
 
 ### SCVI arguments
   -  <span class="parameter">scvi</span>: SCVI parameters are specified as
@@ -127,10 +131,12 @@ Check https://bbknn.readthedocs.io/en/latest/ for more information
          
          - <span class="parameter">lr_factor</span> `Float`, Default: 0.1<br>
          
-  For more information check https://docs.scvi-tools.org/en/stable/api/reference/scvi.model.SCVI.html  
+  For more information on `scvi` check the [scvi documentation](https://docs.scvi-tools.org/en/stable/api/reference/scvi.model.SCVI.html)
 
 ### Find neighbour parameters 
-- <span class="parameter">neighbors:</span> `String`, Default: &rna_neighbors<br>
+Parameters to compute the connectivity graph on RNA
+
+- <span class="parameter">neighbors:</span> `String`<br>
  
   - <span class="parameter">npcs</span> `Integer`, Default: 30<br>   
    Number of principal components to calculate for neighbors and Umap
@@ -141,7 +147,7 @@ Check https://bbknn.readthedocs.io/en/latest/ for more information
   -  <span class="parameter">metric</span> `String`, Default: euclidean<br>
    Metric can be either euclidean or cosine
   
-  -  <span class="parameter">methof</span> `String`, Default: scanpy<br>
+  -  <span class="parameter">method</span> `String`, Default: scanpy<br>
     The method can either be scanpy or hnsw
 
 
@@ -151,7 +157,7 @@ Check https://bbknn.readthedocs.io/en/latest/ for more information
   
     
   - <span class="parameter">run</span> `Boolean`, Default: True<br>
-    Defines if you want the batch correction to run 
+    Defines if you want the batch correction to run on the Protein modality.If set to `False`, `PCA` with default parameters is calculated. 
         
   - <span class="parameter">tools</span> `String` (comma-separated), Default: harmony<br> 
     Defines the method used to run batch correction, multiple can be selected.
@@ -170,15 +176,21 @@ Check https://bbknn.readthedocs.io/en/latest/ for more information
     - <span class="parameter">theta</span> `Float`, Default: 1.0<br>
     - <span class="parameter">npcs</span> `Integer`, Default: 30<br>
 
-  For more information on harmony check https://portals.broadinstitute.org/harmony/reference/RunHarmony.html
+  For more information on `harmony` check the [harmony documentation](https://portals.broadinstitute.org/harmony/reference/RunHarmony.html)
+
   
 ### BBKNN arguments
 
-Check https://bbknn.readthedocs.io/en/latest/ for more information 
+
 - <span class="parameter">bbknn:</span>  
   - <span class="parameter">neighbors_within_batch:</span> `Integer`, Default: 3<br>
 
+For more information on `bbknn` check the [bbknn documentation](https://bbknn.readthedocs.io/en/latest/) 
+
 ### Find neighbour parameters 
+
+Parameters to compute the connectivity graph on Protein
+
 - <span class="parameter">neighbors:</span> `String`, Default: &prot_neighbors<br>
  
   - <span class="parameter">npcs</span> `Integer`, Default: 30<br>   
@@ -197,13 +209,13 @@ Check https://bbknn.readthedocs.io/en/latest/ for more information
 ## ATAC modality 
 
 <span class="parameter">atac:</span> 
-  Batch correction for the protein modality is specified by the following parameters:
+  Batch correction for the ATAC modality is specified by the following parameters:
 
   - <span class="parameter">run</span> `Boolean`, Default: False<br>
-    Defines if you want the batch correction to run
+    Defines if you want the batch correction to run. If set to `False`, `PCA` with default parameters is calculated. 
     
   - <span class="parameter">dimred</span> `String`, Default: PCA<br>
-    Defines if you which dimensionality reduction to use, PCA or LSI 
+    Defines if which dimensionality reduction to use, PCA or LSI 
     
   - <span class="parameter">tools</span> `String` (comma-separated), Default: harmony<br> 
     Defines the method used to run batch correction, multiple can be selected.
@@ -222,20 +234,23 @@ Check https://bbknn.readthedocs.io/en/latest/ for more information
     - <span class="parameter">theta</span> `Float`, Default: 1.0<br>
     - <span class="parameter">npcs</span> `Integer`, Default: 30<br>
 
-  For more information on harmony check https://portals.broadinstitute.org/harmony/reference/RunHarmony.html
+  For more information on `harmony` check the [harmony documentation](https://portals.broadinstitute.org/harmony/reference/RunHarmony.html)
+
   
 ### BBKNN arguments
 
-Check https://bbknn.readthedocs.io/en/latest/ for more information 
+
 
 - <span class="parameter">bbknn:</span>  
 
   - <span class="parameter">neighbors_within_batch:</span> `Integer`, Default: 3<br>
+
+For more information on `bbknn` check the [bbknn documentation](https://bbknn.readthedocs.io/en/latest/)
   
 
 ### Find neighbour parameters 
 
-- <span class="parameter">neighbors:</span> `String`, Default: &atac_neighbors<br>
+- <span class="parameter">neighbors:</span> `String` <br>
  
   - <span class="parameter">npcs</span> `Integer`, Default: 30<br>   
    Number of principal components to calculate for neighbors and Umap
@@ -246,7 +261,7 @@ Check https://bbknn.readthedocs.io/en/latest/ for more information
   -  <span class="parameter">metric</span> `String`, Default: euclidean<br>
    Metric can be either euclidean or cosine
   
-  -  <span class="parameter">methof</span> `String`, Default: scanpy<br>
+  -  <span class="parameter">method</span> `String`, Default: scanpy<br>
     The method can either be scanpy or hnsw
 
 
@@ -257,7 +272,7 @@ Check https://bbknn.readthedocs.io/en/latest/ for more information
  Leave False if you don't want to run multimodal integration 
 
  - <span class="parameter">tools</span> `String`(Comma separated), Default: "WNN"<br>
- Method you want to use to run batch correction. Options include: WNN, totalvi and multiVI. You can specify mutiple. 
+ Method you want to use to run batch correction. Options include: WNN, totalvi and multiVI. You can specify mutiple methods and they will be run simultaneously. 
 
  - <span class="parameter">column_categorical</span> `String`(Comma separated), Default: sample_id<br>
  This is the column you want to run a batch correction on, multiple can be selected simultaneously. 
@@ -292,11 +307,11 @@ Check https://bbknn.readthedocs.io/en/latest/ for more information
 
 ### MultiVI arguments
 
-  **totalvi has to run on both rna and atac data**
+  **MultiVI has to run on both rna and atac data**
 
    These are the basic multivi parameters required, you can add more if it fits your analysis better. 
    
-   By setting lowmen to True it will subset the atac to the top 25k HVF which is recommended to deal with concatenation of atac,rna on large datasets which at the moment is suboptimally required by scvitool. Note that >100GB of RAM are required to concatenate atac,rna with 15k cells and 120k total features (union rna,atac)
+   By setting lowmen to True it will subset the atac to the top 25k HVF which is recommended to deal with the concatenation of atac and rna on large datasets which at the moment is required by `scvi-tools`. Note that >100GB of RAM are required to concatenate atac,rna with 15k cells and 120k total features (union rna,atac)
 
  -  <span class="parameter">MultiVI:</span>
   
@@ -332,7 +347,7 @@ Check https://bbknn.readthedocs.io/en/latest/ for more information
   
 ### Mofa
 
-**Requires at least two modalities, however can run with all three**
+**Requires at least two modalities, can run with three**
   
   These are the basic mofa parameters required, you can add more if it fits your analysis better. 
   
@@ -349,7 +364,7 @@ Check https://bbknn.readthedocs.io/en/latest/ for more information
 
 ### WNN
 
-**Requires at least two modalities, however can run with all three**
+**Requires at least two modalities, can run with three**
 
  These are the basic WNN parameters required, you can add more if it fits your analysis better. 
  
@@ -402,7 +417,7 @@ Grouping must be a categorical variable
    -  <span class="parameter">grouping_var</span> `String`, Default: sample_id<br>
    -  <span class="parameter">all</span> `String`, Default: rep:receptor_subtype<br>
 
- Any metrics you may want to plot on all modality umaps should go under all
+ Any metrics you may want to plot on all modality umaps should be listed under all the modalities
 
    -  <span class="parameter">rna</span> `String`, Default: rna:total_counts<br>
    -  <span class="parameter">prot</span> `String`, Default: prot:total_counts<br>
