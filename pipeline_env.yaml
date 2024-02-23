@@ -3,7 +3,7 @@ channels:
   - conda-forge
   - defaults
 dependencies:
-  - python=3.9
+  - python=3.11
   - r-base=4.3.0
   - r-clustree
   - r-ggforce
