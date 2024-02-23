@@ -5,6 +5,7 @@ Workflows configuration files
     :maxdepth: 1
 
     pipeline_ingestion_yml
+    pipeline_integration_yml
     spatial_qc
     spatial_preprocess
     spatial_deconvolution
