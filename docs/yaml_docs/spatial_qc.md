@@ -21,6 +21,7 @@ You can download the different ingestion pipeline.yml files here:
 - `pipeline.yml` file for [Ingesting 10X Visium data Tutorial](https://panpipes-tutorials.readthedocs.io/en/latest/ingesting_visium_data/Ingesting_visium_data_with_panpipes.html): [Download here](https://github.com/DendrouLab/panpipes-tutorials/blob/main/docs/ingesting_visium_data/pipeline.yml)
 - `pipeline.yml` file for [Ingesting MERFISH data Tutorial](https://panpipes-tutorials.readthedocs.io/en/latest/ingesting_merfish_data/Ingesting_merfish_data_with_panpipes.html): [Download here](https://github.com/DendrouLab/panpipes-tutorials/blob/main/docs/ingesting_merfish_data/pipeline.yml)
 
+For more information on functionalities implemented in `panpipes` to read the configuration files, such as reading blocks of parameters and reusing blocks with  `&anchors` and `*scalars`, please check [our documentation](./useful_info_on_yml.md)
 
 
 ## 0. Compute Resource Options

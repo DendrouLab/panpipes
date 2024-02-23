@@ -13,12 +13,16 @@
 In this documentation, the parameters of the `preprocess_spatial` configuration yaml file are explained. 
 This file is generated running `panpipes preprocess_spatial config`.  <br> The individual steps run by the pipeline are described in the [spatial preprocessing workflow](../workflows/preprocess_spatial.md). 
 
+
+For more information on functionalities implemented in `panpipes` to read the configuration files, such as reading blocks of parameters and reusing blocks with  `&anchors` and `*scalars`, please check [our documentation](./useful_info_on_yml.md)
+
 When running the preprocess workflow, panpipes provides a basic `pipeline.yml` file.
 To run the workflow on your own data, you need to specify the parameters described below in the `pipeline.yml` file to meet the requirements of your data.
 However, we do provide pre-filled versions of the `pipeline.yml` file for individual [tutorials](https://panpipes-pipelines.readthedocs.io/en/latest/tutorials/index.html).
 You can download the different preprocess pipeline.yml files here:
 - Basic `pipeline.yml` file (not prefilled) that is generated when calling `panpipes preprocess_spatial config`: [Download here](https://github.com/DendrouLab/panpipes/blob/main/panpipes/panpipes/pipeline_preprocess_spatial/pipeline.yml)
 - `pipeline.yml` file for [Preprocessing spatial data Tutorial](https://panpipes-tutorials.readthedocs.io/en/latest/preprocess_spatial_data/preprocess_spatial_data_with_panpipes.html): [Download here](https://github.com/DendrouLab/panpipes-tutorials/blob/main/docs/preprocess_spatial_data/pipeline.yml)
+
 
 
 ## 0. Compute Resource Options

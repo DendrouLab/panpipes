@@ -20,6 +20,7 @@ You can download the different deconvolution pipeline.yml files here:
 - Basic `pipeline.yml` file (not prefilled) that is generated when calling `panpipes deconvolution_spatial config`: [Download here](https://github.com/DendrouLab/panpipes/blob/main/panpipes/panpipes/pipeline_deconvolution_spatial/pipeline.yml)
 - `pipeline.yml` file for [Deconvoluting spatial data Tutorial](https://panpipes-tutorials.readthedocs.io/en/latest/deconvolution/deconvoluting_spatial_data_with_panpipes.html): [Download here](https://github.com/DendrouLab/panpipes-tutorials/blob/main/docs/deconvolution/pipeline.yml)
 
+For more information on functionalities implemented in `panpipes` to read the configuration files, such as reading blocks of parameters and reusing blocks with  `&anchors` and `*scalars`, please check [our documentation](./useful_info_on_yml.md)
 
 
 ## 0. Compute Resource Options
