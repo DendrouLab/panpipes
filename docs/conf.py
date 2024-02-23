@@ -6,8 +6,8 @@ project = 'Panpipes'
 copyright = '2023, Rich-Griffin & Curion'
 author = 'Charlotte Rich-Griffin & Fabiola Curion'
 
-release = '0.1'
-version = '0.1.0'
+release = '0.4'
+version = '0.4.1'
 
 # -- General configuration
 
