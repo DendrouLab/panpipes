@@ -85,11 +85,6 @@ jobs:
           cd teaseq/ingest
           curl -o qc_genelist_1.0.csv https://panpipes-tutorials.readthedocs.io/en/latest/_downloads/fd38f25644105ea357a26e78a59139bb/qc_genelist_1.0.csv
 
-      - name: Replace template contents in configuration file
-        run: |
-          cd teaseq/ingest
-          sed -i 's+panpipes-tutorials/tutorials/ingesting_data/qc_genelist_1.0.csv+qc_genelist_1.0.csv+g' pipeline.yml
-
       - name: File tree
         if: env.debug == 'true'
         run: tree teaseq
