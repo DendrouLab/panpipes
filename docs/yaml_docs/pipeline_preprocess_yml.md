@@ -28,11 +28,11 @@ You can download the different preprocess `pipeline.yml` files here:
 <span class="parameter">resources</span><br>
 Computing resources to use, specifically the number of threads used for parallel jobs.
 Specified by the following three parameters:
-  - <span class="parameter">threads_high</span> `Integer`, Default: 1<br>
+  - <span class="parameter">threads_high</span> `Integer`, Default: 2<br>
         Number of threads used for high intensity computing tasks. 
         For each thread, there must be enough memory to load all your input files at once and create the MuData object.
 
-  - <span class="parameter">threads_medium</span> `Integer`, Default: 1<br>
+  - <span class="parameter">threads_medium</span> `Integer`, Default: 2<br>
         Number of threads used for medium intensity computing tasks.
         For each thread, there must be enough memory to load your mudata and do computationally light tasks.
 
@@ -42,4 +42,107 @@ Specified by the following three parameters:
 
 <span class="parameter">condaenv</span> `String` (Path)<br>
     Path to conda environment that should be used to run panpipes.
-    Leave blank if running native or your cluster automatically inherits the login node environment
+    Leave blank if running native or your cluster automatically inherits the login node environment.
+
+## General project specifications
+
+<span class="parameter">sample_prefix</span> `String`<br>
+    Prefix for sample names.
+
+<span class="parameter">unfiltered_obj</span> `String`<br>
+    If running this on prefiltered data, complete the following steps:
+        1. Leave `unfiltered_obj` (this parameter) blank
+        2. Rename your filtered file so that it matches the format PARAMS['sample_prefix'] + '.h5mu'
+        3. Put the renamed file in the same folder as the `pipeline.yml`
+        4. Set `filtering run` to `False` below
+
+<span class="parameter">modalities</span><br>
+    Specify which modalities are included in the data by setting the respective modality to True.
+    Leave empty (None) or False to signal this modality is not part of the experiment.
+    The modalities are processed in the order of the following list:
+  - <span class="parameter">rna</span> `Boolean`, Default: True<br>
+
+  - <span class="parameter">prot</span> `Boolean`, Default: False<br>
+
+  - <span class="parameter">rep</span> `Boolean`, Default: False<br>
+
+  - <span class="parameter">atac</span> `Boolean`, Default: False<br>
+
+## Filtering Cells and Features
+Filtering in panpipes is done sequentially for all modalities, filtering first cells and then features.
+For each modality, the pipeline.yml file contains a dictionary with the following structure:
+
+```yaml
+MODALITY:
+    obs:
+        min:
+        max:
+        bool:
+    var:
+        min:
+        max:
+        bool:
+```
+
+This format can be applied to any modality by editing the filtering dictionary  
+You are not restricted by the columns given as default.
+
+This is fully customizable to any columns in the mudata.obs or var object.
+When specifying a column name, make sure it exactly matches the column name in the h5mu object.
+
+Example:
+```yaml
+rna:
+  obs:
+    min:  # Any column for which you want to run a minimum filter
+      n_genes_by_counts: 500  # i.e. will filter out cells with a value less than 500 in the n_genes_by_counts column
+    max:  # Any column for which you want to run a maximum filter
+      pct_counts_mt: 20  # i.e. each cell may have a maximum of 25 in the pct_counts_mt column
+                         # be careful with any columns named after gene sets. 
+                         # The column will be named based on the gene list input file, 
+                         # so if the mitochondrial genes are in group "mt" 
+                         # as in the example given in the resource file,
+                         # then the column will be named "pct_counts_mt".
+    bool: 
+       is_doublet: False  # if you have any boolean columns you want to filter on, 
+                          # then use this section of the modality dictionary
+                          # in this case any obs['is_doublet'] that are False will be retained in the dataset.
+```
+
+<span class="parameter">filtering</span><br>
+  - <span class="parameter">run</span> `Boolean`, Default: True<br>
+    If set to False, no filtering is applied to the `MuData` object.
+
+  - <span class="parameter">keep_barcodes</span> `String` (Path)<br>
+    Path to a file containing specific cell barcodes you want to keep; leave blank if not applicable.
+
+  - <span class="parameter">rep</span> `Boolean`, Default: False<br>
+
+### RNA-specific filtering
+<span class="parameter">obs</span><br>
+    Parameters for obs, i.e. cell level filtering:
+
+  - <span class="parameter">min</span><br>
+    Filtering cells based on a minimum value in a column. Leave parameters blank if you do not want to filter by them.
+
+    - <span class="parameter">n_genes_by_counts</span> `Integer`<br>
+      Minimum number of genes by counts per cell.
+      For instance, setting the parameter to 500, will filter out cells with a value less than 500 in the n_genes_by_counts column.
+
+  - <span class="parameter">max</span><br>
+    Filtering cells based on a maximum value in a column. Leave parameters blank if you do not want to filter by them.
+    
+    - <span class="parameter">total_counts</span> `Integer`<br>
+        Cells with a total count greater than this value will be filtered out.
+    
+    - <span class="parameter">n_genes_by_counts</span> `Integer`<br>
+      Maximum number of genes by counts per cell.
+
+    - <span class="parameter">pct_counts_mt</span> `Integer` (in Percent)<br>
+      Percent of counts that are mitochondrial genes. Cells with a value greater than this will be filtered out.
+      Should be a value between 0 and 100 (%).
+
+
+
+
+

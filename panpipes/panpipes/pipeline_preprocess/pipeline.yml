@@ -18,16 +18,11 @@ condaenv:
 # allows for tweaking where the jobs get submitted, in case there is a special queue for long jobs or you have access to a gpu
 # leave as is if you do not want to use the alternative queues
 
-# --------------------------
-# Start
-# --------------------------
+#-------------------------------
+# General project specifications
+#-------------------------------
 sample_prefix: 
 unfiltered_obj: 
-# if running this on prefiltered data then
-#1. set unfiltered obj (above) to blank
-#2. rename your filtered file to match, the format PARAMS['sample_prefix'] + '.h5mu'
-#3. put renamed file in the same folder as this yml.
-#4. set filtering run: to False below.
 
 modalities:
   rna:  True
@@ -35,60 +30,20 @@ modalities:
   rep: False
   atac: False
 
-# --------------------------
+# ----------------------------
 # Filtering Cells and Features
-# --------------------------
+# ----------------------------
+# Filtering is done sequentially for all modalities, filtering first cells and then features.
+# In the following, you can specify the filtering parameters for each modality.
 
-# the filtering process in panpipes is sequential as it goes through the filtering dictionary.
-# for each modality, starting with rna, it will first filter on obs and then vars.
-# each modality has a dictionary in the following format. 
-
-# MODALITY
-# obs:
-  # min:
-  # max:
-  # bool
-# var:
-  # min:
-  # max:
-  # bool
-
-# This format can be applied to any modality by editing the filtering dictionary  
-# You are not restricted by the columns given as default.
-
-# This is fully customizable to any columns in the mudata.obs or var object.
-# When specifying a column name, make sure it exactly matches the column name in the h5mu object.
-
-#Example:
-
-#------------------
-# rna:
-#------------------
-  # obs:
-    # min: <-- Any column for which you want to run a minimum filter, 
-     # n_genes_by_counts: 500 <--- i.e. each cell must have a minimum of 500 in the n_genes_by_counts column
-    # max: <-- Any column for which you want to run a maximum filter
-     # pct_counts_mt: 20 <-- i.e. each cell may have a maximum of 25 in the pct_counts_mt column
-                              # be careful with any columns named after gene sets. 
-                              # The column will be named based on the gene list input file, 
-                              # so if the mitochondrial genes are in group "mt" 
-                              # as in the example given in the resource file
-                              # then the column will be named "pct_counts_mt" .
-
-    # bool: 
-      # is_doublet: False  <--- if you have any boolean columns you want to filter on, 
-                              # then use this section of the modality dictionary
-                              # in this case any obs['is_doublet'] that are False will be retained in the dataset.
-# --------------------------------------------------------------------------------------
 filtering:
-  # if set to false no filtering is applied to the mudata object
   run: True
-  # a file containing only cell barcodes you want to keep, leave blank if not applicable
   keep_barcodes:
-  #------------------------------------------------------
+
+  #------------------------
+  # RNA-specific filtering
   rna:
-  #------------------------------------------------------
-    ## obs filtering: cell level filtering here
+    # obs, i.e. cell level filtering
     obs:
       min:
         n_genes_by_counts: 
