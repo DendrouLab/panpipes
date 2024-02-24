@@ -46,70 +46,63 @@ filtering:
     # obs, i.e. cell level filtering
     obs:
       min:
-        n_genes_by_counts: 
+        n_genes_by_counts:
       max:
         total_counts: 
-        n_genes_by_counts: 
-        # percent filtering: 
-        # this should be a value between 0 and 100%. 
-        # leave blank or set to 100 to avoid filtering for any of these param
+        n_genes_by_counts:
         pct_counts_mt: 
         pct_counts_rp:
-        # either one score for all samples e.g. 0.25, 
-        # or a csv file with two columns sample_id, and cut off
-        # if you want to apply a custom scrublet threshold per input sample you can specify it as a max value here
         doublet_scores:
-      # you could add a new column to the mudata['rna'].obs with True False values, and list
-      # that column under bool:, you can do this for any modality
       bool:
-    ## var filtering: (feature) gene level filtering here
+
+    # var, i.e. gene (feature) level filtering
     var:
       min:
         n_cells_by_counts: 
       max:
         total_counts:
         n_cells_by_counts:
-  #------------------------------------------------------
+
+  #------------------------
+  # Protein-specific filtering
   prot:
-  #------------------------------------------------------
-    ## obs filtering: cell level filtering here
+    # obs, i.e. cell level filtering
     obs:  
       max:
         total_counts:
-    ##var filtering: (feature) protein level filtering here
+
+    # var, i.e. gene (feature) level filtering
     var:
       max:
       min:
-  #------------------------------------------------------
+
+  #------------------------
+  # ATAC-specific filtering
   atac:
-  #------------------------------------------------------
-    ## obs filtering: cell level filtering here
+    # obs, i.e. cell level filtering
     obs:  
       max:
-    ## var filtering: (feature) fragment level filtering here
+
+    # var, i.e. gene (feature) level filtering
     var:    
       nucleosome_signal:
 
-# ----------------------
+
+# ---------------------------
 # Intersecting cell barcodes
-# ----------------------
+# ---------------------------
 # Subset observations (cells) in-place by intersect
-# taking observations present only in modalities listed in mods, or all modalities if mods is None.  
-# set a comma separated list where you want to keep only the intersection of barcodes. e.g. rna,prot 
+
 intersect_mods: 
 
-# ----------------------
+
+# ---------------------------
 # Downsampling cell barcodes
-# ----------------------
-# how many cells to downsample to, leave blank to keep all cells.
-downsample_n: 
-# if we want to equalise by dataset or sample_id then specifiy a column in obs
-# then the data will be subset to n cells **per** downsample_col value.
-downsample_col: 
-#  which modalities do we want to subsample
-# comma separated string e.g. rna,prot
-# if more than 1 modality is added then these will be intersected.
+# ---------------------------
+downsample_n:
+downsample_col:
 downsample_mods: 
+
 
 # ----------------------
 # Plotting variables

@@ -97,7 +97,7 @@ rna:
     min:  # Any column for which you want to run a minimum filter
       n_genes_by_counts: 500  # i.e. will filter out cells with a value less than 500 in the n_genes_by_counts column
     max:  # Any column for which you want to run a maximum filter
-      pct_counts_mt: 20  # i.e. each cell may have a maximum of 25 in the pct_counts_mt column
+      pct_counts_mt: 20  # i.e. each cell may have a maximum of 20 in the pct_counts_mt column
                          # be careful with any columns named after gene sets. 
                          # The column will be named based on the gene list input file, 
                          # so if the mitochondrial genes are in group "mt" 
@@ -118,7 +118,7 @@ rna:
 
   - <span class="parameter">rep</span> `Boolean`, Default: False<br>
 
-### RNA-specific filtering
+### RNA-specific filtering (rna)
 <span class="parameter">obs</span><br>
     Parameters for obs, i.e. cell level filtering:
 
@@ -133,7 +133,7 @@ rna:
     Filtering cells based on a maximum value in a column. Leave parameters blank if you do not want to filter by them.
     
     - <span class="parameter">total_counts</span> `Integer`<br>
-        Cells with a total count greater than this value will be filtered out.
+      Cells with a total count greater than this value will be filtered out.
     
     - <span class="parameter">n_genes_by_counts</span> `Integer`<br>
       Maximum number of genes by counts per cell.
@@ -141,8 +141,64 @@ rna:
     - <span class="parameter">pct_counts_mt</span> `Integer` (in Percent)<br>
       Percent of counts that are mitochondrial genes. Cells with a value greater than this will be filtered out.
       Should be a value between 0 and 100 (%).
+    
+    - <span class="parameter">pct_counts_rp</span> `Integer` (in Percent)<br>
+      Percent of counts that are ribosomal genes. Cells with a value greater than this will be filtered out.
+      Should be a value between 0 and 100 (%).
 
+    - <span class="parameter">doublet_scores</span> `Integer`<br>
+      If you want to apply a custom scrublet threshold per input sample you can specify it here.
+      Provide either as one score for all samples (e.g. 0.25), or a csv file with two columns sample_id, and cut off.
 
+  - <span class="parameter">bool</span><br>
+      You can add a new column to the mudata['rna'].obs with boolean (True/False) values, and then list
+      that column under this bool section. This can be done for any modality.
 
+<span class="parameter">var</span><br>
+    Parameters for var, i.e. gene (feature) level filtering:
+
+  - <span class="parameter">min</span><br>
+
+    - <span class="parameter">n_cells_by_counts</span> `Integer`<br>
+
+  - <span class="parameter">max</span><br>
+
+    - <span class="parameter">total_counts</span> `Integer`<br>
+
+    - <span class="parameter">n_cells_by_counts</span> `Integer`<br>
+
+### Protein-specific filtering (prot)
+<span class="parameter">obs</span><br>
+    Parameters for obs, i.e. cell level filtering:
+
+  - <span class="parameter">max</span><br>
+    Filtering cells based on a maximum value in a column. Leave parameters blank if you do not want to filter by them.
+    
+    - <span class="parameter">total_counts</span> `Integer`<br>
+      Cells with a total count greater than this value will be filtered out.
+    
+### ATAC-specific filtering (atac)
+<span class="parameter">var</span><br>
+    Parameters for var, i.e. gene (feature) level filtering:
+
+  - <span class="parameter">nucleosome_signal</span><br>
+
+## Intersecting cell barcodes
+<span class="parameter">intersect_mods</span> `String`<br>
+    Taking observations present only in modalities listed in mods, or all modalities if set to None.  
+    Provide a comma separated list where you want to keep only the intersection of barcodes. e.g. rna,prot 
+
+## Downsampling cell barcodes
+<span class="parameter">downsample_n</span> `Integer`<br>
+    Number of cells to downsample to, leave blank to keep all cells.
+
+<span class="parameter">downsample_col</span> `String`<br>
+    If you want to equalise by dataset or sample_id, then specifiy a column in obs of the adata to downsample by here.
+    If specified, the data will be subset to n cells **per** downsample_col value.
+
+<span class="parameter">downsample_mods</span> `String` (comma separated)<br>
+    Specify which modalities you want to subsample.
+    If more than one modality is added then these will be intersected.
+    Provide as a comma separated String, e.g.: rna,prot
 
 
