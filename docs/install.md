@@ -16,7 +16,7 @@ conda config --add channels conda-forge
 conda config --set channel_priority strict
 # you should remove the strict priority afterwards!
 conda search r-base
-conda create --name pipeline_env python=3.9 r-base=4.3.0
+conda create --name pipeline_env python=3.11 r-base=4.3.0
 ```
 
 now we activate the environment
