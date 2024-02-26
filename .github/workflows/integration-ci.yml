@@ -1,4 +1,4 @@
-name: Run tutorials (ingestion)
+name: Run tutorials (integration)
 
 on:
   push:
@@ -12,7 +12,7 @@ env:
   debug: 'true'
 
 jobs:
-  ingestion:
+  integration:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -56,34 +56,26 @@ jobs:
       # Note: all three files are renamed during the download to trim the "subsample_" prefix
       - name: Preparing the data
         run: |
-          mkdir -p teaseq/ingest/data.dir
-          cd teaseq/ingest/data.dir
-          curl -L -o adt.h5ad https://figshare.com/ndownloader/files/41671551
-          curl -L -o atac.h5ad https://figshare.com/ndownloader/files/41671554
-          curl -L -o rna.h5ad https://figshare.com/ndownloader/files/41671557
+          mkdir -p teaseq/integration && cd  teaseq/integration
+          curl -L -o teaseq.h5mu https://figshare.com/ndownloader/files/44471927
 
       # Note: we run the following to test that the commands works
       # However, the following task will replacing the file anyway
       - name: Preparing the configuration file
         shell: bash -el {0}
         run: |
-          cd teaseq/ingest
-          panpipes ingest config
+          cd teaseq/integration
+          panpipes integration config
 
       - name: Edit the submission file
         run: |
-          cd teaseq/ingest
-          curl -o pipeline.yml https://panpipes-tutorials.readthedocs.io/en/latest/_downloads/9a4fcbc3c0a4fdc8e6578d086a88730f/pipeline.yml
+          cd teaseq/integration
+          curl -o pipeline.yml https://panpipes-tutorials.readthedocs.io/en/latest/_downloads/f834fdb0a65979b0e4d11d6d75188a8e/pipeline.yml
 
-      - name: Preparing the submission file
+      - name: Replace template contents in configuration file
         run: |
-          cd teaseq/ingest
-          curl -o sample_file_qc.txt https://panpipes-tutorials.readthedocs.io/en/latest/_downloads/40ed291bf9a7ff73c4f396ec63cff2f7/sample_file_qc.txt
-
-      - name: Preparing the QC gene lists
-        run: |
-          cd teaseq/ingest
-          curl -o qc_genelist_1.0.csv https://panpipes-tutorials.readthedocs.io/en/latest/_downloads/fd38f25644105ea357a26e78a59139bb/qc_genelist_1.0.csv
+          cd teaseq/integration
+          sed -i 's+/Users/fabiola.curion/Documents/devel/miniconda3/envs/pipeline_env+pipeline_env+g' pipeline.yml
 
       - name: File tree
         if: env.debug == 'true'
@@ -92,21 +84,15 @@ jobs:
       - name: Review pipeline tasks
         shell: bash -el {0}
         run: |
-          cd teaseq/ingest
-          panpipes ingest show full --local
+          cd teaseq/integration
+          panpipes integration show full --local
 
       - name: Run pipeline tasks
         shell: bash -el {0}
         run: |
-          cd teaseq/ingest
-          panpipes ingest make full --local
+          cd teaseq/integration
+          panpipes integration make full --local
 
       - name: File tree
         if: env.debug == 'true'
         run: tree teaseq
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: teaseq_unfilt.h5mu
-          path: teaseq/ingest/teaseq_unfilt.h5mu
-          retention-days: 1
