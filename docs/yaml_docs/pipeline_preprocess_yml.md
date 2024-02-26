@@ -201,4 +201,87 @@ rna:
     If more than one modality is added then these will be intersected.
     Provide as a comma separated String, e.g.: rna,prot
 
+## Plotting variables
+<span class="parameter">plotqc</span><br>
+    All metrics in this section should be provided as a comma separated string without spaces e.g. a,b,c
+    Leave blank to avoid plotting.
+
+  - <span class="parameter">grouping_var</span> `String` (comma separated), Default: sample_id<br>
+        Use these categorical variables to plot/split by.
+
+  - <span class="parameter">rna_metrics</span> `String` (comma separated), Default: pct_counts_mt,pct_counts_rp,pct_counts_hb,pct_counts_ig,doublet_scores<br>
+        Specify the metrics in the metadata of the RNA modality to plot.
+
+  - <span class="parameter">prot_metrics</span> `String` (comma separated), Default: total_counts,log1p_total_counts,n_prot_by_counts,pct_counts_isotype<br>
+        Specify the metrics in the metadata of the Protein modality to plot.
+
+  - <span class="parameter">atac_metrics</span> `String` (comma separated)<br>
+        Specify the metrics in the metadata of the ATAC modality to plot.
+
+  - <span class="parameter">rep_metrics</span> `String` (comma separated)<br>
+        Specify the metrics in the metadata of the Rep modality to plot.
+
+## RNA preprocessing steps
+Currently, only standard preprocessing steps (sc.pp.normalize_total followed by sc.pp.log1p) is offered for the RNA modality.
+
+<span class="parameter">log1p</span> `Boolean`, Default: True<br>
+    If set to False, the log1p transformation is not applied to the RNA modality.
+
+<span class="parameter">hvg</span><br>
+Options for the detection of highly variable genes (HVGs) in the RNA modality.
+
+  - <span class="parameter">flavor</span> `String`, Default: seurat<br>
+        Choose one of the supported hvg_flavor options: "seurat", "cell_ranger", "seurat_v3".
+        For the dispersion based methods "seurat" and "cell_ranger", you can specify parameters: `min_mean`, `max_mean`, `min_disp`(listed below).
+        For "seurat_v3" a different method is used, and you need to specify how many variable genes to find by specifying the parameter `n_top_genes`.
+        If you specify `n_top_genes`, then the other parameters (`min_mean`, `max_mean`, `min_disp`) are nulled.
+        For further reading on this, please refer to the [scanpy API](https://scanpy.readthedocs.io/en/stable/api/scanpy.pp.highly_variable_genes.html).
+
+    - <span class="parameter">batch_key</span> `String`<br>
+        If `batch_key` is specified, highly-variable genes are selected within each batch separately and merged.
+        For details on this, please refer to the [scanpy API](https://scanpy.readthedocs.io/en/stable/generated/scanpy.pp.highly_variable_genes.html#:~:text=or%20return%20them.-,batch_key,-%3A%20Optional%5B).
+        If you want to use more than one obs column as covariates, specify this as as "covariate1,covariate2" (comma separated list).
+        Leave blank if no batch should be accounted for in the HVG detection (default behavior).
+
+    - <span class="parameter">n_top_genes</span> `Integer`, Default: 2000<br>
+        Number of highly-variable genes to keep. You must specify this parameter if flavor is "seurat_v3".
+    
+    - <span class="parameter">min_mean</span> `Float`<br>
+        Minimum mean expression of genes to be considered as highly variable genes.
+        Ignored if `n_top_genes` is specified or if flavor is set to "seurat_v3".
+    
+    - <span class="parameter">max_mean</span> `Float`<br>
+        Maximum mean expression of genes to be considered as highly variable genes.
+        Ignored if `n_top_genes` is specified or if flavor is set to "seurat_v3".
+    
+    - <span class="parameter">min_disp</span> `Float`<br>
+        Minimum dispersion of genes to be considered as highly variable genes.
+        Ignored if `n_top_genes` is specified or if flavor is set to "seurat_v3".
+
+    - <span class="parameter">exclude_file</span> `String` (Path)<br>
+        It may be useful to exclude some genes from the HVG selection.
+        In this case, you can provide a file with a list of genes to exclude.
+        We provide an example for genes that could be excluded when analyzing immune cells [here](https://github.com/DendrouLab/panpipes/blob/main/panpipes/resources/qc_genelist_1.0.csv).
+        When examining this file, you will note that it has three columns, the first specifying the modality, the second one the gene id and the third the groups to which the respective gene belongs.
+        This workflow will exclude the genes that are marked accordingly by their group name.
+        By default, the workflows will remove the genes that are flagged as "exclude" in the group column from HVG detection.
+        You can customize the gene list and change the name of the gene group in the `exclude:` parameter (see below) accordingly.
+
+    - <span class="parameter">exclude</span> `String`<br>
+        This variable defines the group name tagging the genes to be excluded in file specified in the previous parameter.
+        Leave empty if you don't want to exclude genes from HVG detection.
+
+    - <span class="parameter">filter</span> `Booleab`, Default: False<br>
+        Set to True if you want to filter the object to retain only Highly Variable Genes.
+
+<span class="parameter">regress_variables</span> `String` <br>
+    Regression variables, specify the variables you want to regress out.
+    Leave blank if you don't want to regress out anything.
+    We recommend not regressing out anything unless you have good reason to.
+
+## Scaling
+
+
+
+
 
