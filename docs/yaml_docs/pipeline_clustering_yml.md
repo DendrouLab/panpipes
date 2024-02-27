@@ -46,7 +46,7 @@ Specified by the following three parameters:
     Path to conda environment that should be used to run panpipes.
     Leave blank if running native or your cluster automatically inherits the login node environment
 
-## Loading and merging data options
+## Loading data 
 ### Data format
 
 - <span class="parameter">sample_prefix</span> `String`, Mandatory parameter, Default: mdata<br>
@@ -55,7 +55,7 @@ Prefix for the sample that comes out of the filtering/ preprocessing steps of th
 
 - <span class="parameter">scaled_obj</span> `String`, Mandatory parameter, Default: mdata_scaled.h5mu<br>
  Path to the output file from preprocessing (e.g. `../preprocess/mdata_scaled.h5mu`).
- Ensure that the submission file must be in the right format and that the right path is provided. In this case panpipes will use the full object to calculate rank_gene_groups and for plotting those genes. If your scaled_obj contains all the genes then leave full_obj blank
+ Ensure that the submission file must be in the right format and that the right path is provided. In this case, panpipes will use the full object to calculate rank_gene_groups and for plotting those genes. If your scaled_obj contains all the genes then leave full_obj blank
 
 - <span class="parameter">full_obj</span> `String`, Default: <br>
 
@@ -71,4 +71,79 @@ Prefix for the sample that comes out of the filtering/ preprocessing steps of th
   - <span class="parameter">integration_method</span> `String`, Default: WNN<br>
   Options here include WNN, moda, and totalVI, and it tells us where to look for.
 
-### Parameters for finding neighbours 
+## Parameters for finding neighbours 
+
+- <span class="parameter">neighors:</span> 
+ Sets the number of neighbors to use when calculating the graph for clustering and umap.
+  - <span class="parameter">rna:</span> 
+
+     - <span class="parameter">use_existing </span> `Boolean`, Default: True<br>
+     - <span class="parameter">dim_red </span> `String`, Default: X_pca<br>
+       Defines which representation in .obsm to use for nearest neighbors
+     - <span class="parameter">n_dim_red</span> `Integer`, Default: 30<br>
+       Number of components to use for clustering
+     - <span class="parameter">k</span> `Integer`, Default: 30<br>
+       Number of neighbours
+     - <span class="parameter">metric</span> `String`, Default: euclidean<br>
+       Options here include euclidean and cosine
+     - <span class="parameter">method</span> `String`, Default: scanpy<br>
+       Options include scanpy and hnsw (from scvelo)
+      
+     
+  - <span class="parameter">prot:</span> 
+
+     - <span class="parameter">use_existing </span> `Boolean`, Default: True<br>
+     - <span class="parameter">dim_red </span> `String`, Default: X_pca<br>
+       Defines which representation in .obsm to use for nearest neighbors
+     - <span class="parameter">n_dim_red</span> `Integer`, Default: 30<br>
+       Number of components to use for clustering
+     - <span class="parameter">k</span> `Integer`, Default: 30<br>
+       Number of neighbours
+     - <span class="parameter">metric</span> `String`, Default: euclidean<br>
+       Options here include euclidean and cosine
+     - <span class="parameter">method</span> `String`, Default: scanpy<br>
+       Options include scanpy and hnsw (from scvelo)
+
+
+  - <span class="parameter">atac:</span> 
+
+     - <span class="parameter">use_existing </span> `Boolean`, Default: True<br>
+     - <span class="parameter">dim_red </span> `String`, Default: X_lsi<br>
+       Defines which representation in .obsm to use for nearest neighbors
+     - <span class="parameter">n_dim_red</span> `Integer`, Default: 1<br>
+       Number of components to use for clustering
+     - <span class="parameter">k</span> `Integer`, Default: 30<br>
+       Number of neighbours
+     - <span class="parameter">metric</span> `String`, Default: euclidean<br>
+       Options here include euclidean and cosine
+     - <span class="parameter">method</span> `String`, Default: scanpy<br>
+       Options include scanpy and hnsw (from scvelo)
+  
+
+
+  - <span class="parameter">spatial:</span> 
+
+     - <span class="parameter">use_existing </span> `Boolean`, Default: False<br>
+     - <span class="parameter">dim_red </span> `String`, Default: X_pca<br>
+       Defines which representation in .obsm to use for nearest neighbors
+     - <span class="parameter">n_dim_red</span> `Integer`, Default: 30<br>
+       Number of components to use for clustering
+     - <span class="parameter">k</span> `Integer`, Default: 30<br>
+       Number of neighbours
+     - <span class="parameter">metric</span> `String`, Default: euclidean<br>
+       Options here include euclidean and cosine
+     - <span class="parameter">method</span> `String`, Default: scanpy<br>
+       Options include scanpy and hnsw (from scvelo)
+  
+## Parameters for umap calculation 
+
+
+  - <span class="parameter">umap:</span> 
+
+     - <span class="parameter">run </span> `Boolean`, Default: True<br>
+     - <span class="parameter">rna:</span>
+         - <span class="parameter">mindist </span> `Float`, Default: 0.25  0.5<br> (AAAAAAAAAASSSSSSKKKKKKK) 
+         
+
+
+
