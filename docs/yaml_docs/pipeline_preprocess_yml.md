@@ -21,8 +21,8 @@ For more information on functionalities implemented in `panpipes` to read the co
 
 
 You can download the different preprocess `pipeline.yml` files here:
-- Basic `pipeline.yml` file (not prefilled) that is generated when calling `panpipes preprocess config: [Download here]
-- 
+- Basic `pipeline.yml` file (not prefilled) that is generated when calling `panpipes preprocess config: [Download here](https://github.com/DendrouLab/panpipes/blob/main/panpipes/panpipes/pipeline_preprocess/pipeline.yml).
+- Prefilled `pipeline.yml` file for the [preprocess tutorial](https://panpipes-tutorials.readthedocs.io/en/latest/filtering_data/filtering_data_with_panpipes.html): [Download here](https://github.com/DendrouLab/panpipes-tutorials/blob/main/docs/filtering_data/pipeline.yml).
 
 ## Compute resources options
 
@@ -116,8 +116,6 @@ rna:
 
   - <span class="parameter">keep_barcodes</span> `String` (Path)<br>
     Path to a file containing specific cell barcodes you want to keep; leave blank if not applicable.
-
-  - <span class="parameter">rep</span> `Boolean`, Default: False<br>
 
 ### RNA-specific filtering (rna)
 <span class="parameter">obs</span><br>
@@ -238,42 +236,42 @@ Options for the detection of highly variable genes (HVGs) in the RNA modality.
         If you specify `n_top_genes`, then the other parameters (`min_mean`, `max_mean`, `min_disp`) are nulled.
         For further reading on this, please refer to the [scanpy API](https://scanpy.readthedocs.io/en/stable/api/scanpy.pp.highly_variable_genes.html).
 
-    - <span class="parameter">batch_key</span> `String`<br>
-        If `batch_key` is specified, highly-variable genes are selected within each batch separately and merged.
-        For details on this, please refer to the [scanpy API](https://scanpy.readthedocs.io/en/stable/generated/scanpy.pp.highly_variable_genes.html#:~:text=or%20return%20them.-,batch_key,-%3A%20Optional%5B).
-        If you want to use more than one obs column as covariates, specify this as as "covariate1,covariate2" (comma separated list).
-        Leave blank if no batch should be accounted for in the HVG detection (default behavior).
+  - <span class="parameter">batch_key</span> `String`<br>
+      If `batch_key` is specified, highly-variable genes are selected within each batch separately and merged.
+      For details on this, please refer to the [scanpy API](https://scanpy.readthedocs.io/en/stable/generated/scanpy.pp.highly_variable_genes.html#:~:text=or%20return%20them.-,batch_key,-%3A%20Optional%5B).
+      If you want to use more than one obs column as covariates, specify this as as "covariate1,covariate2" (comma separated list).
+      Leave blank if no batch should be accounted for in the HVG detection (default behavior).
 
-    - <span class="parameter">n_top_genes</span> `Integer`, Default: 2000<br>
-        Number of highly-variable genes to keep. You must specify this parameter if flavor is "seurat_v3".
+  - <span class="parameter">n_top_genes</span> `Integer`, Default: 2000<br>
+      Number of highly-variable genes to keep. You must specify this parameter if flavor is "seurat_v3".
     
-    - <span class="parameter">min_mean</span> `Float`<br>
-        Minimum mean expression of genes to be considered as highly variable genes.
-        Ignored if `n_top_genes` is specified or if flavor is set to "seurat_v3".
+  - <span class="parameter">min_mean</span> `Float`<br>
+      Minimum mean expression of genes to be considered as highly variable genes.
+      Ignored if `n_top_genes` is specified or if flavor is set to "seurat_v3".
     
-    - <span class="parameter">max_mean</span> `Float`<br>
-        Maximum mean expression of genes to be considered as highly variable genes.
-        Ignored if `n_top_genes` is specified or if flavor is set to "seurat_v3".
+  - <span class="parameter">max_mean</span> `Float`<br>
+      Maximum mean expression of genes to be considered as highly variable genes.
+      Ignored if `n_top_genes` is specified or if flavor is set to "seurat_v3".
     
-    - <span class="parameter">min_disp</span> `Float`<br>
-        Minimum dispersion of genes to be considered as highly variable genes.
-        Ignored if `n_top_genes` is specified or if flavor is set to "seurat_v3".
+  - <span class="parameter">min_disp</span> `Float`<br>
+      Minimum dispersion of genes to be considered as highly variable genes.
+      Ignored if `n_top_genes` is specified or if flavor is set to "seurat_v3".
 
-    - <span class="parameter">exclude_file</span> `String` (Path)<br>
-        It may be useful to exclude some genes from the HVG selection.
-        In this case, you can provide a file with a list of genes to exclude.
-        We provide an example for genes that could be excluded when analyzing immune cells [here](https://github.com/DendrouLab/panpipes/blob/main/panpipes/resources/qc_genelist_1.0.csv).
-        When examining this file, you will note that it has three columns, the first specifying the modality, the second one the gene id and the third the groups to which the respective gene belongs.
-        This workflow will exclude the genes that are marked accordingly by their group name.
-        By default, the workflows will remove the genes that are flagged as "exclude" in the group column from HVG detection.
-        You can customize the gene list and change the name of the gene group in the `exclude:` parameter (see below) accordingly.
+  - <span class="parameter">exclude_file</span> `String` (Path)<br>
+      It may be useful to exclude some genes from the HVG selection.
+      In this case, you can provide a file with a list of genes to exclude.
+      We provide an example for genes that could be excluded when analyzing immune cells [here](https://github.com/DendrouLab/panpipes/blob/main/panpipes/resources/qc_genelist_1.0.csv).
+      When examining this file, you will note that it has three columns, the first specifying the modality, the second one the gene id and the third the groups to which the respective gene belongs.
+      This workflow will exclude the genes that are marked accordingly by their group name.
+      By default, the workflows will remove the genes that are flagged as "exclude" in the group column from HVG detection.
+      You can customize the gene list and change the name of the gene group in the `exclude:` parameter (see below) accordingly.
 
-    - <span class="parameter">exclude</span> `String`<br>
-        This variable defines the group name tagging the genes to be excluded in file specified in the previous parameter.
-        Leave empty if you don't want to exclude genes from HVG detection.
+  - <span class="parameter">exclude</span> `String`<br>
+      This variable defines the group name tagging the genes to be excluded in file specified in the previous parameter.
+      Leave empty if you don't want to exclude genes from HVG detection.
 
-    - <span class="parameter">filter</span> `Boolean`, Default: False<br>
-        Set to True if you want to filter the object to retain only Highly Variable Genes.
+  - <span class="parameter">filter</span> `Boolean`, Default: False<br>
+      Set to True if you want to filter the object to retain only Highly Variable Genes.
 
 <span class="parameter">regress_variables</span> `String` <br>
     Regression variables, specify the variables you want to regress out.
@@ -425,7 +423,7 @@ Whether applying scaling or not is still a matter of debate, as stated in the [L
   - <span class="parameter">color_by</span> `String`, Default: sample_id<br>
         Specify the covariate you want to use to color the dimensionality reduction plot.
 
-  - <span class="parameter">dim_remove</span> `X`, Default: X<br>
+  - <span class="parameter">dim_remove</span> `TODO`<br>
         Whether to remove the component(s) associated to technical artifacts.
         For instance, it is common to remove the first LSI component, as it is often associated with batch effects.
         Leave blank to avoid removing any.
