@@ -64,3 +64,11 @@ Prefix for the sample that comes out of the filtering/ preprocessing steps of th
   - <span class="parameter">prot</span> `Boolean`, Default: True<br>
   - <span class="parameter">atac</span> `Boolean`, Default: False<br>
   - <span class="parameter">spatial</span> `Boolean`, Default: False<br>
+  Run clustering on each individual modality.
+
+- <span class="parameter">moltimodal</span><br>
+  - <span class="parameter">rna_clustering</span> `Boolean`, Default: True<br>
+  - <span class="parameter">integration_method</span> `String`, Default: WNN<br>
+  Options here include WNN, moda, and totalVI, and it tells us where to look for.
+
+### Parameters for finding neighbours 
