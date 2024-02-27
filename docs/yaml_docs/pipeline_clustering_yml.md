@@ -26,3 +26,22 @@ You can download the different clustering pipeline.yml files here:
 
 ## Compute resources options
 
+- <span class="parameter">resources</span><br>
+Computing resources to use, specifically the number of threads used for parallel jobs.
+Specified by the following three parameters:
+  - <span class="parameter">threads_high</span> `Integer`, Default: 2<br>
+        Number of threads used for high intensity computing tasks. 
+        For each thread, there must be enough memory to load all your input files at once and create the MuData object.
+
+  - <span class="parameter">threads_medium</span> `Integer`, Default: 2<br>
+        Number of threads used for medium intensity computing tasks.
+        For each thread, there must be enough memory to load your mudata and do computationally light tasks.
+
+  - <span class="parameter">threads_low</span> `Integer`, Default: 2<br>
+  	    Number of threads used for low intensity computing tasks.
+        For each thread, there must be enough memory to load text files and do plotting, requires much less memory than the other two.
+  - <span class="parameter">fewer_jobs</span> `Boolean`, Default: True<br>
+  
+  - <span class="parameter">condaenv</span> `String` (Path)<br>
+    Path to conda environment that should be used to run panpipes.
+    Leave blank if running native or your cluster automatically inherits the login node environment
