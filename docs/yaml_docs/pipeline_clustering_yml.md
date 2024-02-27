@@ -45,3 +45,22 @@ Specified by the following three parameters:
   - <span class="parameter">condaenv</span> `String` (Path)<br>
     Path to conda environment that should be used to run panpipes.
     Leave blank if running native or your cluster automatically inherits the login node environment
+
+## Loading and merging data options
+### Data format
+
+- <span class="parameter">sample_prefix</span> `String`, Mandatory parameter, Default: mdata<br>
+Prefix for the sample that comes out of the filtering/ preprocessing steps of the workflow.
+
+
+- <span class="parameter">scaled_obj</span> `String`, Mandatory parameter, Default: mdata_scaled.h5mu<br>
+ Path to the output file from preprocessing (e.g. `../preprocess/mdata_scaled.h5mu`).
+ Ensure that the submission file must be in the right format and that the right path is provided. In this case panpipes will use the full object to calculate rank_gene_groups and for plotting those genes. If your scaled_obj contains all the genes then leave full_obj blank
+
+- <span class="parameter">full_obj</span> `String`, Default: <br>
+
+- <span class="parameter">modalities</span><br>
+  - <span class="parameter">rna</span> `Boolean`, Default: True<br>
+  - <span class="parameter">prot</span> `Boolean`, Default: True<br>
+  - <span class="parameter">atac</span> `Boolean`, Default: False<br>
+  - <span class="parameter">spatial</span> `Boolean`, Default: False<br>
