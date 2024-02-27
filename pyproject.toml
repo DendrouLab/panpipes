@@ -26,7 +26,6 @@ dependencies = [
     "drmaa",
     "gevent",
     "harmonypy",
-    "leidenalg",
     "mofapy2",
     "muon",
     "openpyxl",
