@@ -10,62 +10,47 @@ description = "Panpipes - multimodal single cell pipelines"
 readme = "README.md"
 
 classifiers = [
-    # Pick your license as you wish
     "License :: OSI Approved :: BSD License",
-
-    # Optional
-    # How mature is this project? Common values are
-    #   3 - Alpha
-    #   4 - Beta
-    #   5 - Production/Stable
     "Development Status :: 3 - Alpha",
-
-    # Indicate who your project is intended for
     "Intended Audience :: Science/Research",
     "Programming Language :: Python :: 3",
     "Programming Language :: R"
     ]
 
-requires-python = ">= 3.11"
+requires-python = ">= 3.10"
 
 dependencies = [
-    "anndata>=0.8.0",
     "apsw",
     "bbknn",
     "cgatcore",
     "drmaa",
     "gevent",
     "harmonypy",
-    "jax",
-    "jaxlib",
     "leidenalg",
-    "louvain",
-    "matplotlib<=3.7.3",
     "mofapy2",
-    "mudata>=0.2.1",
     "muon",
-    "numpy>=1.22.4",
     "openpyxl",
-    "packaging",
-    "pandas>=1.0",
     "paramiko",
-    "pep8",
     "pysam",
-    "pynndescent",
-    "pytest",
     "pyyaml",
     "ruffus",
     "scanorama",
-    "scanpy>=1.9.1",
+    "scanpy>=1.9.1[louvain,leiden]",
     "scib",
-    "seaborn<=0.12.2",
     "scikit-misc",
     "scirpy",
     "scrublet",
     "scvi-tools>=1.1.1",
-    "sqlalchemy"]
+    "sqlalchemy"
+    ]
 
 [project.optional-dependencies]
+dev = [
+    "packaging",
+    "pytest",
+    "twine",
+    "build"
+]
 notebook = [
     "jupyter",
     "jupyterlab"
@@ -75,29 +60,13 @@ spatial = [
     "cell2location",
     "tangram-sc"
 ]
-pypi_upload = [
-    "twine",
-    "build"
-]
-
-# The following would provide a command line executable called `sample`
-# which executes the function `entry` from this package when invoked.
-[project.scripts]  # Optional
+[project.scripts]
 panpipes = "panpipes:entry.main"
 
-# This is configuration specific to the `setuptools` build backend.
-# If you are using a different build backend, you will need to change this.
 [tool.setuptools]
-# If there are data files included in your packages that need to be
-# installed, specify them here.
 package-data = {"panpipes" = ["panpipes/*/*.yml", "R_scripts/*.R", "resources/*"]}
 
 
 [build-system]
-# These are the assumed default build requirements from pip:
-# https://pip.pypa.io/en/stable/reference/pip/#pep-517-and-518-support
 requires = ["setuptools>=43.0.0", "wheel"]
 build-backend = "setuptools.build_meta"
-
-
-#template for this file from https://github.com/pypa/sampleproject/blob/main/pyproject.toml
