@@ -185,3 +185,84 @@ Prefix for the sample that comes out of the filtering/ preprocessing steps of th
           - <span class="parameter">algorithm</span> `String`, Default: leiden<br>
             Options include louvain or leiden. 
 
+## Parameters for finding marker genes 
+If pseudo_suerat is set to false then we run [scanpy](https://scanpy.readthedocs.io/en/stable/generated/scanpy.tl.rank_genes_groups.html). 
+When pseudo_seurat is set to true then a python implementation of Suerat runs (Seurat::FindMarkers written by CRG)
+
+  - <span class="parameter">markerspecs:</span> <br>
+     - <span class="parameter">rna:</span><br>
+       - <span class="parameter">run </span> `Boolean`, Default: True<br>
+       - <span class="parameter">layer </span> `String`, Default: logged_counts<br>
+       - <span class="parameter">method </span> `String`, Default: t-test_overestim_var<br>
+       Options include: ‘logreg’, ‘t-test’, ‘wilcoxon’, ‘t-test_overestim_var’
+       - <span class="parameter">mincels </span> `Integer`, Default: t-10<br>
+       If the number of clusters contains less than the number of cells maker analysis is not necessary.
+       - <span class="parameter">pseudo_seurat </span> `Boolean`, Default: False<br>
+       - <span class="parameter">minpct </span> `Float`, Default: 0.1<br>
+       This parameter only matters if pseudo_seurat is set to True 
+       - <span class="parameter">threshuse </span> `Float`, Default: 0.25<br>
+       This parameter only matters if pseudo_seurat is set to True 
+
+ - <span class="parameter">prot:</span><br>
+   - <span class="parameter">run </span> `Boolean`, Default: True<br>
+   - <span class="parameter">layer </span> `String`, Default: clr<br>
+       Options include clr and dsb. 
+   - <span class="parameter">mincels </span> `Integer`, Default: t-10<br>
+       If the number of clusters contains less than the number of cells maker analysis is not necessary.
+   - <span class="parameter">method </span> `String`, Default: wilcoxon<br>
+   - <span class="parameter">pseudo_seurat </span> `Boolean`, Default: False<br>
+   - <span class="parameter">minpct </span> `Float`, Default: 0.1<br>
+       This parameter only matters if pseudo_seurat is set to True 
+   - <span class="parameter">threshuse </span> `Float`, Default: 0.25<br>
+       This parameter only matters if pseudo_seurat is set to True 
+
+ - <span class="parameter">atac:</span><br>
+    - <span class="parameter">run </span> `Boolean`, Default: False<br>
+    - <span class="parameter">layer </span> `String`, Default: logged_counts<br>
+       Options include logged_counts, signac_norm , and logTF_norm,logIDF_norm
+    - <span class="parameter">mincels </span> `Integer`, Default: t-10<br>
+       If the number of clusters contains less than the number of cells maker analysis is not necessary.
+    - <span class="parameter">method </span> `String`, Default: wilcoxon<br>
+        Options include: ‘logreg’, ‘t-test’, ‘wilcoxon’, ‘t-test_overestim_var’
+    - <span class="parameter">pseudo_seurat </span> `Boolean`, Default: False<br>
+    - <span class="parameter">minpct </span> `Float`, Default: 0.1<br>
+       This parameter only matters if pseudo_seurat is set to True 
+    - <span class="parameter">threshuse </span> `Float`, Default: 0.25<br>
+       This parameter only matters if pseudo_seurat is set to True 
+
+
+ - <span class="parameter">multimodal:</span><br>
+   - <span class="parameter">mincels </span> `Integer`, Default: t-10<br>
+       If the number of clusters contains less than the number of cells maker analysis is not necessary.
+    - <span class="parameter">method </span> `String`, Default: wilcoxon<br>
+        Options include: ‘logreg’, ‘t-test’, ‘wilcoxon’, ‘t-test_overestim_var’
+    - <span class="parameter">pseudo_seurat </span> `Boolean`, Default: False<br>
+    - <span class="parameter">minpct </span> `Float`, Default: 0.1<br>
+       This parameter only matters if pseudo_seurat is set to True 
+    - <span class="parameter">threshuse </span> `Float`, Default: 0.25<br>
+       This parameter only matters if pseudo_seurat is set to True
+
+
+ - <span class="parameter">spatial:</span><br>
+   - <span class="parameter">run </span> `Boolean`, Default: True<br>
+   - <span class="parameter">layer </span> `String`, Default: norm_pearson_resid<br>
+       Options include logged_counts, signac_norm , and logTF_norm,logIDF_norm
+   - <span class="parameter">method </span> `String`, Default: t-test_overestim_var<br>
+        Options include: ‘logreg’, ‘t-test’, ‘wilcoxon’, ‘t-test_overestim_var’
+   - <span class="parameter">mincels </span> `Integer`, Default: t-10<br>
+       If the number of clusters contains less than the number of cells maker analysis is not necessary.
+   - <span class="parameter">pseudo_seurat </span> `Boolean`, Default: False<br>
+   - <span class="parameter">minpct </span> `Float`, Default: 0.1<br>
+       This parameter only matters if pseudo_seurat is set to True 
+   - <span class="parameter">threshuse </span> `Float`, Default: 0.25<br>
+       This parameter only matters if pseudo_seurat is set to True
+
+## Plot specifications
+Used to define which metadata columns are used in the visualisations 
+ - <span class="parameter">plotspecs:</span><br>
+   - <span class="parameter">layers: </span><br>
+     - <span class="parameter">rna </span> `String`, Default: logged_counts<br>
+     - <span class="parameter">prot </span> `String`, Default: clr<br>
+     - <span class="parameter">atac </span> `String`, Default: signac_norm<br>
+     - <span class="parameter">spacial </span> `?`, Default: ?<br> (CHEEECKKKKK)
+  - <span class="parameter">top_n_markers </span> `Integer`, Default: 10<br>
