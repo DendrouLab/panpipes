@@ -67,9 +67,6 @@ parser.add_argument("--color_by",
 
 
 args, opt = parser.parse_known_args()
-# args = argparse.Namespace(filtered_mudata='test.h5mu', 
-# bg_mudata='/well/cartography/users/zsj686/non_cart_projects/005-multimodal_scpipelines/ingest/test_raw.h5mu', 
-# channel_col=None, normalisation_methods='clr,dsb', clr_margin='0', quantile_clipping='True', figpath='./figures/prot', save_mtx=False, save_mudata_path='test.h5mu')
 save_mtx=pnp.pp.check_for_bool(args.save_mtx)
 
 norm_methods = args.normalisation_methods.split(',')
@@ -85,9 +82,7 @@ sc.settings.figdir = figdir
 sc.set_figure_params(scanpy=True, fontsize=14, dpi=300, facecolor='white', figsize=(5,5))
 
 
-
 # load filtered data - if use_muon is True this will return a mudata object, else returns an mudata object
-
 L.info("reading filtered mudata object")
 try:
     all_mdata = mu.read(args.filtered_mudata)
