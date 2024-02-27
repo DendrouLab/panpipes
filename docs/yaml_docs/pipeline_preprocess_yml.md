@@ -271,7 +271,7 @@ Options for the detection of highly variable genes (HVGs) in the RNA modality.
         This variable defines the group name tagging the genes to be excluded in file specified in the previous parameter.
         Leave empty if you don't want to exclude genes from HVG detection.
 
-    - <span class="parameter">filter</span> `Booleab`, Default: False<br>
+    - <span class="parameter">filter</span> `Boolean`, Default: False<br>
         Set to True if you want to filter the object to retain only Highly Variable Genes.
 
 <span class="parameter">regress_variables</span> `String` <br>
@@ -279,7 +279,99 @@ Options for the detection of highly variable genes (HVGs) in the RNA modality.
     Leave blank if you don't want to regress out anything.
     We recommend not regressing out anything unless you have good reason to.
 
-## Scaling
+### Scaling
+Scaling has the effect that all genes are weighted equally for downstream analysis.
+Whether applying scaling or not is still a matter of debate, as stated in the [Leucken et al Best Practices paper](https://doi.org/10.15252/msb.20188746):
+> "There is currently no consensus on whether or not to perform normalization over genes. 
+    While the popular Seurat tutorials (Butler et al, 2018) generally apply gene scaling, 
+    the authors of the Slingshot method opt against scaling over genes in their tutorial (Street et al, 2018). 
+    The preference between the two choices revolves around whether all genes should be weighted equally for downstream analysis, 
+    or whether the magnitude of expression of a gene is an informative proxy for the importance of the gene."
+
+
+<span class="parameter">run_scale</span> `Boolean`, Default: True <br>
+    Set to False if you do not want to scale the data.
+
+<span class="parameter">scale_max_value</span> `Float`<br>
+    Clip to this value after scaling.
+    If left blank, scaling is run with default parameters, as described in the [scanpy API](https://scanpy.readthedocs.io/en/stable/api/scanpy.pp.scale.html).
+
+### RNA Dimensionality Reduction
+<span class="parameter">pca</span><br>
+    Parameters for PCA dimensionality reduction.
+
+  - <span class="parameter">n_pcs</span> `Integer`, Default: 50<br>
+        Number of principal components to compute.
+
+  - <span class="parameter">solver</span> `String`, Default: default<br>
+        Setting this parameter to "default" will use the `arpack` solver.
+        If you want to use a different solver, you can specify it as described in the [scanpy API](https://scanpy.readthedocs.io/en/stable/generated/scanpy.tl.pca.html).
+  
+  - <span class="parameter">color_by</span> `String`, Default: sample_id<br>
+      The variable to color the PCA plot by. Should be a column in the obs of the adata.
+
+
+## Protein (PROT) preprocessing steps
+<span class="parameter">prot</span><br>
+    Parameters for the preprocessing of the protein modality.
+
+  - <span class="parameter">normalisation_methods</span> `String` (comma-separated), Default: clr,dsb<br>
+        Comma separated string of normalisation options.
+        Available options are: dsb,clr .
+        For more details, please refer to the [muon documentation](https://muon.readthedocs.io/en/latest/omics/citeseq.html).
+        Muon also provides separate information on [dsb normalisation](https://muon.readthedocs.io/en/latest/api/generated/muon.prot.pp.dsb.html) 
+        and [clr normalisation](https://muon.readthedocs.io/en/latest/api/generated/muon.prot.pp.clr.html) methods.
+        The normalised count matrices are stored in layers called 'clr' and 'dsb', along with a layer called 'raw_counts'. 
+        If you choose to run both (dsb and clr), then 'dsb' is stored in X as default.
+        For downstream visualisation, you can either specify the layer, or take the default stored in X.
+
+  - <span class="parameter">clr_margin</span> `Integer` (0 or 1), Default: 0<br>
+        Parameter for CLR normalisation.
+        The CLR margin determines whether you normalise per cell (as you would normalise RNA data), or by feature (recommended, due to the variable nature of protein assays). 
+        Hence, CLR margin 0 is recommended for informative qc plots in this pipeline.
+    - 0 = normalise column-wise (per feature)
+    - 1 = normalise row-wise (per cell)
+  
+  - <span class="parameter">background_obj</span> `String` (Path)<br>
+        Parameter for DSB normalisation.
+        You must specify the path to the background `MuData` (h5mu) object created in the ingest pipeline in order to run dsb normalisation.
+
+  - <span class="parameter">quantile_clipping</span> `Boolean`, Default: True<br>
+        Parameter for DSB normalisation.
+        Whether to perform quantile clipping on the normalised data.
+        Despite normalisation, some cells get extreme outliers which can be clipped as discussed [here](https://github.com/niaid/dsb).
+        The maximum value will be set at the 99.5% quantile value, applied per feature.
+        Please note that this feature is in the default muon `mu.pp.dsb` code, but manually implemented in this code.
+
+  - <span class="parameter">store_as_X</span> `String`<br>
+        If you choose to run more than one normalisation method, specify which normalisation method should be stored in the X slot.
+        If left blank, 'dsb' is the default that will be stored in X.
+
+  - <span class="parameter">save_norm_prot_mtx</span> `Boolean`, Default: False<br>
+       Specify if you want to save the prot normalised assay additionally as a txt file.
+
+  - <span class="parameter">pca</span> `Boolean`, Default: False<br>
+       Specify if you want to run PCA on the normalised protein data. This might be useful, when you have more than 50 features in your protein assay.
+
+  - <span class="parameter">n_pcs</span> `Integer`, Default: 50<br>
+       Number of principal components to compute. Specify at least n_pcs <= number of features -1.
+
+  - <span class="parameter">solver</span> `String`, Default: default<br>
+       Which solver to use for PCA. If set to "default", the 'arpack' solver is used. 
+
+  - <span class="parameter">color_by</span> `String`, Default: sample_id<br>
+       Column to be fetched from the protein layer .obs to color the PCA plot by.
+
+## ATAC steps preprocessing steps
+<span class="parameter">atac</span><br>
+    Parameters for the preprocessing of the ATAC modality.
+
+
+
+
+
+
+
 
 
 

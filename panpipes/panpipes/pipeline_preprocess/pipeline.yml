@@ -138,83 +138,46 @@ regress_variables:
 
 #---------
 # Scaling
-#---------
-# This scaling has the effect that all genes are weighted equally for downstream analysis. 
-# discussion from Leucken et al Best Practices paper: https://doi.org/10.15252/msb.20188746
-# "There is currently no consensus on whether or not to perform normalization over genes. 
-# While the popular Seurat tutorials (Butler et al, 2018) generally apply gene scaling, 
-# the authors of the Slingshot method opt against scaling over genes in their tutorial (Street et al, 2018). 
-# The preference between the two choices revolves around whether all genes should be weighted equally for downstream analysis, 
-# or whether the magnitude of expression of a gene is an informative proxy for the importance of the gene."
 run_scale: True
-# if blank defaults scale, clip values as per: https://scanpy.readthedocs.io/en/stable/api/scanpy.pp.scale.html
 scale_max_value: 
 
-#----------------------------
-# RNA Dimensionality reduction
-#----------------------------
+
+#-----------------------------
+# RNA Dimensionality Reduction
 pca:
-  # number of components to compute
   n_pcs: 50
-  # set "default" will use 'arpack'. 
-  # Otherwise specify a different solver, see https://scanpy.readthedocs.io/en/stable/generated/scanpy.tl.pca.html
-  solver: default 
-  # color to use when plotting the PCA
+  solver: default
   color_by: sample_id
 
-# --------------------------------------------------------------------------------------------------------
-# Protein (PROT) steps
-# --------------------------------------------------------------------------------------------------------
+
+# ----------------------------------
+# Protein (PROT) preprocessing steps
+# ----------------------------------
 prot:
-  # comma separated string of normalisation options
-  # options: dsb,clr 
-  # more details in this vignette https://muon.readthedocs.io/en/latest/omics/citeseq.html
-  # dsb https://muon.readthedocs.io/en/latest/api/generated/muon.prot.pp.dsb.html
-  # clr https://muon.readthedocs.io/en/latest/api/generated/muon.prot.pp.clr.html
   normalisation_methods: clr,dsb
-  # the normalised matrices are stored in layers called 'clr' and 'dsb', along with a layer called 'raw_counts' 
-  # if you choose to run both then 'dsb' is stored in X as default.
-  # In downstream visualisation, you can either specify the layer, or take the default.
 
   # CLR parameters:
-  # margin determines whether you normalise per cell (as you would RNA norm), 
-  # or by feature (recommended, due to the variable nature of prot assays). 
-  # CLR margin 0 is recommended for informative qc plots in this pipeline
-  # 0 = normalise colwise (per feature)
-  # 1 = normalise rowwise (per cell)
+  # 0 = normalise column-wise (per feature, recommended)
+  # 1 = normalise row-wise (per cell)
   clr_margin: 0
 
   # DSB parameters:
-  # you must specify the path to the background h5mu created in pipeline ingest in order to run dsb.
   background_obj:
-  # quantile clipping, 
-  # even with normalisation, some cells get extreme outliers which can be clipped as discussed https://github.com/niaid/dsb
-  # maximum value will be set at the value of the 99.5% quantile, applied per feature
-  # note that this feature is in the default muon mu.pp.dsb code, but manually implemented in this code.
   quantile_clipping: True
-  
-  # which normalisation method to be stored in the X slot. If you choose to run more than one normalisation method,
-  # which one to you want to store in the X slot, if not specified 'dsb' is the default when run.
-  store_as_X: 
 
-  # do you want to save the prot normalised assay additionally as a txt file:
+  store_as_X:
   save_norm_prot_mtx: False
+
   #----------------------------
-  # Prot Dimensionality reduction
-  #----------------------------
-  # it may be useful to run PCA on the protein assay, when you have more than 50 features.
-  # Set to False by default
+  # Protein Dimensionality reduction
   pca: False
-  # number of components. Specify at least n_pcs <= number of features -1 
   n_pcs: 50
-  # which solver to use, set "default" will use 'arpack'. 
   solver: default
-  # column to be fetched from the protein layer .obs
   color_by: sample_id
 
-# --------------------------------------------------------------------------------------------------------
-# ATAC steps
-# --------------------------------------------------------------------------------------------------------
+# ------------------------------
+# ATAC steps preprocessing steps
+# ------------------------------
 atac:
   binarize: False
   normalize: TFIDF # "log1p" or "TFIDF"
