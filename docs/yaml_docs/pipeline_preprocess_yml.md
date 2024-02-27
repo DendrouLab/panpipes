@@ -17,11 +17,12 @@ When running the preprocess workflow, panpipes provides a basic `pipeline.yml` f
 To run the workflow on your own data, you need to specify the parameters described below in the `pipeline.yml` file to meet the requirements of your data.
 However, we do provide pre-filled versions of the `pipeline.yml` file for individual [tutorials](https://panpipes-pipelines.readthedocs.io/en/latest/tutorials/index.html).
 
-For more information on functionalities implemented in `panpipes` to read the configuration files, such as reading blocks of parameters and reusing blocks with  `&anchors` and `*scalars`, please check [our documentation](./useful_info_on_yml.md)
+For more information on functionalities implemented in `panpipes` to read the configuration files, such as reading blocks of parameters and reusing blocks with  `&anchors` and `*scalars`, please check [our documentation](./useful_info_on_yml.md).
 
 
 You can download the different preprocess `pipeline.yml` files here:
 - Basic `pipeline.yml` file (not prefilled) that is generated when calling `panpipes preprocess config: [Download here]
+- 
 
 ## Compute resources options
 
@@ -362,13 +363,72 @@ Whether applying scaling or not is still a matter of debate, as stated in the [L
   - <span class="parameter">color_by</span> `String`, Default: sample_id<br>
        Column to be fetched from the protein layer .obs to color the PCA plot by.
 
-## ATAC steps preprocessing steps
+## ATAC preprocessing steps
 <span class="parameter">atac</span><br>
     Parameters for the preprocessing of the ATAC modality.
 
+  - <span class="parameter">binarize</span> `Boolean`, Default: False<br>
+        If set to True, the data will be binarized.
 
+  - <span class="parameter">normalize</span> `String`, Default: TFIDF<br>
+        What normalisation method to use. Available options are "log1p" or "TFIDF".
 
+  - <span class="parameter">TFIDF_flavour</span> `String`, Default: signac<br>
+        TFIDF normalisation flavor. Leave blank if you don't use TFIDF normalisation.
+        Available options are: "signac", "logTF" or "logIDF".
 
+  - <span class="parameter">feature_selection_flavour</span> `String`, Default: signac<br>
+        Flavor for selecting highly variable features (HVF).
+        HVF selection either with scanpy's `pp.highly_variable_genes()` function or a `pseudo-FindTopFeatures()` function of the signac package.
+        Accordingly, available options are: "signac" or "scanpy".
+
+  - <span class="parameter">min_mean</span> `Float`, Default: 0.05<br>
+        Applicable if `feature_selection_flavour` is set to "scanpy".
+        You can leave this parameter blank if you want to use the default value.
+
+  - <span class="parameter">max_mean</span> `Float`, Default: 1.5<br>
+        Applicable if `feature_selection_flavour` is set to "scanpy".
+        You can leave this parameter blank if you want to use the default value.
+
+  - <span class="parameter">min_disp</span> `Float`, Default: 0.5<br>
+        Applicable if `feature_selection_flavour` is set to "scanpy".
+        You can leave this parameter blank if you want to use the default value.
+
+  - <span class="parameter">n_top_features</span> `Integer`<br>
+        Applicable if `feature_selection_flavour` is set to "scanpy".
+        Number of highly-variable features to keep.
+        If specified, overwrites previous defaults for HVF selection.
+
+  - <span class="parameter">filter_by_hvf</span> `Boolean`, Default: False<br>
+        Applicable if `feature_selection_flavour` is set to "scanpy".
+        Set to True if you want to filter the ATAC layer to retain only HVFs.
+
+  - <span class="parameter">min_cutoff</span> `String`, Default: q5<br>
+        Applicable if `feature_selection_flavour` is set to "signac".
+        Can be specified as follows:
+    - "q[x]": "q" followed by the minimum percentile, e.g. q5 will set the top 95% most common features as higly variable.
+    - "c[x]": "c" followed by a minimum cell count, e.g. c100 will set features present in > 100 cells as highly variable.
+    - "tc[x]": "tc" followed by a minimum total count, e.g. tc100 will set features with total counts > 100 as highly variable.
+    - "NULL": All features are assigned as highly variable.
+    - "NA": Highly variable features won't be changed.
+
+  - <span class="parameter">dimred</span> `String`, Default: LSI<br>
+        Available options are: PCA or LSI.
+        LSI will only be computed if TFIDF normalisation was used.
+
+  - <span class="parameter">n_comps</span> `Integer`, Default: 50<br>
+        Number of components to compute.
+
+  - <span class="parameter">solver</span> `String`, Default: default<br>
+        If using PCA, which solver to use. Setting this parameter to "default", will use the 'arpack' solver.
+
+  - <span class="parameter">color_by</span> `String`, Default: sample_id<br>
+        Specify the covariate you want to use to color the dimensionality reduction plot.
+
+  - <span class="parameter">dim_remove</span> `X`, Default: X<br>
+        Whether to remove the component(s) associated to technical artifacts.
+        For instance, it is common to remove the first LSI component, as it is often associated with batch effects.
+        Leave blank to avoid removing any.
 
 
 

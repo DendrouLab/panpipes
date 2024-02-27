@@ -168,53 +168,36 @@ prot:
   store_as_X:
   save_norm_prot_mtx: False
 
-  #----------------------------
+  #---------------------------------
   # Protein Dimensionality reduction
   pca: False
   n_pcs: 50
   solver: default
   color_by: sample_id
 
-# ------------------------------
-# ATAC steps preprocessing steps
-# ------------------------------
+# ------------------------
+# ATAC preprocessing steps
+# ------------------------
 atac:
   binarize: False
-  normalize: TFIDF # "log1p" or "TFIDF"
-  # if normalize = "TFIDF", else leave blank:
-  TFIDF_flavour: signac # "signac", "logTF" or "logIDF"
-  # highly variable feature selection:
-  # HVF selection either with scanpy's pp.highly_variable_genes() function or a pseudo-FindTopFeatures() function of the signac package
-  feature_selection_flavour: signac  # "signac" or "scanpy"
-  # parameters for HVF flavour == "scanpy", leave the below blank to use defaults
-  min_mean: #default 0.05
-  max_mean: #default 1.5
-  min_disp: #default 0.5
-  # if n_top_features is specified, it overwrites previous defaults for HVF selection
-  n_top_features:
-  # Filter the atac layer to retain only HVF 
+  normalize: TFIDF  #"log1p" or "TFIDF"
+  TFIDF_flavour: signac  #"signac", "logTF" or "logIDF"
+  feature_selection_flavour: signac  #"signac" or "scanpy"
+
+  # parameters for feature_selection_flavour == "scanpy", leave blank to use defaults
+  min_mean:  #default 0.05
+  max_mean:  #default 1.5
+  min_disp:  #default 0.5
+  n_top_features:  #if specified, overwrites previous defaults for HVF selection
   filter_by_hvf: False
-  # parameter for HVF flavour == "signac"
+
+  # parameter for feature_selection_flavour == "signac"
   min_cutoff: q5
-  # min_cutoff can be specified as follows:
-  #   "q[x]": "q" followed by the minimum percentile, e.g. q5 will set the top 95% most common features as higly variable
-  #   "c[x]": "c" followed by a minimum cell count, e.g. c100 will set features present in > 100 cells as highly variable
-  #   "tc[x]": "tc" followed by a minimum total count, e.g. tc100 will set features with total counts > 100 as highly variable
-  #   "NULL": All features are assigned as highly variable
-  #   "NA": Highly variable features won't be changed
-  #----------------------------
+
+  #------------------------------
   # ATAC Dimensionality reduction
-  #----------------------------
-  dimred: LSI #PCA or LSI (LSI will only be computed if the normalize param is set to TFIDF)
-  n_comps: 50 # how many components to compute
-  # which dimension to exclude from further processing (sometimes useful to remove PC/LSI_1  if it's associated to tech factors)
-  # leave blank to retain all 
-  # if using PCA, which solver to use. Default == 'arpack'
+  dimred: LSI  #PCA or LSI
+  n_comps: 50
   solver: default
-  # what covariate to use to color the dimensionality reduction
   color_by: sample_id
-  # whether to remove the component(s) associated to technical effects, common to remove 1 for LSI
-  # leave blank to avoid removing any
   dim_remove: 
-
-
