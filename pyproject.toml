@@ -43,7 +43,8 @@ dependencies = [
     "scirpy",
     "scrublet",
     "scvi-tools>=1.1.1",
-    "sqlalchemy"
+    "sqlalchemy",
+    "matplotlib<=3.7.3"  # pin to be removed in the future
     ]
 
 [project.optional-dependencies]
