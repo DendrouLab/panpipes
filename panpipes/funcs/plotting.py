@@ -313,7 +313,7 @@ def ridgeplot(adata, features, layer=None, splitplot=3, bandwidth=0.1):
         for tick in ax.get_yticklabels():
             tick.set_fontsize(10)
         for tick in ax.yaxis.get_major_ticks():
-            tick.label.set_verticalalignment("bottom")
+            tick.label1.set_verticalalignment("bottom")
 
     fig.tight_layout()
     return fig, ax
