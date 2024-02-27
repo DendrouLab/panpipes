@@ -142,7 +142,7 @@ Prefix for the sample that comes out of the filtering/ preprocessing steps of th
 
      - <span class="parameter">run </span> `Boolean`, Default: True<br>
      - <span class="parameter">rna:</span>
-         - <span class="parameter">mindist </span> `Float`, Default: 0.25  0.5<br>
+         - <span class="parameter">mindist </span> `Float`, Default: 0.25,  0.5<br>
            Use both values as defaults. 
       - <span class="parameter">prot:</span>
          - <span class="parameter">mindist </span> `Float`, Default: 0.1<br>
@@ -151,9 +151,37 @@ Prefix for the sample that comes out of the filtering/ preprocessing steps of th
       - <span class="parameter">multimodal:</span>
          - <span class="parameter">mindist </span> `Float`, Default: 0.5<br>
       - <span class="parameter">rna:</span>
-         - <span class="parameter">mindist </span> `Float`, Default: 0.25  0.5<br>
+         - <span class="parameter">mindist </span> `Float`, Default: 0.25,  0.5<br>
             Use both values as defaults. 
 
+## Parameters for clustering 
 
+  - <span class="parameter">clusterspecs:</span>
+      - <span class="parameter">rna:</span>
+          - <span class="parameter">resolutions </span> `Float`, Default: 0.2, 0.6, 1<br>
+           Use all values as defaults.
+          - <span class="parameter">algorithm</span> `String`, Default: leiden<br>
+            Options include louvain or leiden. 
+      - <span class="parameter">prot:</span>
+          - <span class="parameter">resolutions </span> `Float`, Default: 0.2, 0.6, 1<br>
+           Use all values as defaults.
+          - <span class="parameter">algorithm</span> `String`, Default: leiden<br>
+            Options include louvain or leiden.
 
+      - <span class="parameter">atac:</span>
+          - <span class="parameter">resolutions </span> `Float`, Default: 0.2, 0.6, 1<br>
+           Use all values as defaults.
+          - <span class="parameter">algorithm</span> `String`, Default: leiden<br>
+            Options include louvain or leiden. 
+      - <span class="parameter">multimmodal:</span>
+          - <span class="parameter">resolutions </span> `Float`, Default: 0.5, 0.7<br>
+           Use all values as defaults.
+          - <span class="parameter">algorithm</span> `String`, Default: leiden<br>
+            Options include louvain or leiden.
+
+      - <span class="parameter">spatial:</span>
+          - <span class="parameter">resolutions </span> `Float`, Default: 0.2, 0.6, 1<br>
+           Use all values as defaults.
+          - <span class="parameter">algorithm</span> `String`, Default: leiden<br>
+            Options include louvain or leiden. 
 
