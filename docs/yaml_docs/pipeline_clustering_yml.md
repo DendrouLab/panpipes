@@ -269,5 +269,5 @@ Used to define which metadata columns are used in the visualisations
      - <span class="parameter">rna </span> `String`, Default: logged_counts<br>
      - <span class="parameter">prot </span> `String`, Default: clr<br>
      - <span class="parameter">atac </span> `String`, Default: signac_norm<br>
-     - <span class="parameter">spacial </span> `?`, Default: ?<br> 
+     - <span class="parameter">spatial </span> `?`, Default: ?<br> 
   - <span class="parameter">top_n_markers </span> `Integer`, Default: 10<br>
