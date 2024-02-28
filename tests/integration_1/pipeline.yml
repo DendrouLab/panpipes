@@ -40,7 +40,7 @@ preprocessed_obj: teaseq.h5mu
 # unimodal: correct each modality independently
 rna:
   # True or false depending on whether you want to run batch correction
-  run: True 
+  run: False 
   # what method(s) to use to run batch correction, you can specify multiple 
   # choices: harmony,bbknn,scanorama,scvi (comma-seprated string, no spaces)
   tools: harmony,scvi,bbknn
@@ -109,7 +109,7 @@ rna:
 #--------------------------
 prot:
   # True or false depending on whether you want to run batch correction
-  run: True 
+  run: False 
   # what method(s) to use to run batch correction, you can specify multiple 
   # choices: harmony,bbknn,combat
   tools: harmony
@@ -177,7 +177,7 @@ atac:
   # BBKNN args # https://bbknn.readthedocs.io/en/latest/
   #-----------------------------
   bbknn:
-    neighbors_within_batch: 
+    neighbors_within_batch: 30
   #----------------------------
   # find neighbour parameters
   #-----------------------------
@@ -204,8 +204,7 @@ multimodal:
   # choices: totalvi, mofa, MultiVI, WNN
   # list e.g. below
   tools: 
-    - WNN
-    - totalvi
+    - MultiVI
 
   # this is the column you want to batch correct on. if you specify a comma separated list, 
   # they will be all used simultaneosly. if you want to test correction for one at a time, 
