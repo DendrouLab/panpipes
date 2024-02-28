@@ -191,13 +191,16 @@ Prefix for the sample that comes out of the filtering/ preprocessing steps of th
             Options include louvain or leiden. 
 
 ## Parameters for finding marker genes 
-If pseudo_suerat is set to false then we run [scanpy](https://scanpy.readthedocs.io/en/stable/generated/scanpy.tl.rank_genes_groups.html). 
-When pseudo_seurat is set to true then a python implementation of Suerat runs (Seurat::FindMarkers written by CRG)
+
+In this part of the analysis we define parameters to run marker analysis. 
+By default, pseudo_seurat is set to False, and we run [scanpy.tl.rank_genes_groups](https://scanpy.readthedocs.io/en/stable/generated/scanpy.tl.rank_genes_groups.html). 
+When pseudo_seurat is set to True then a [python implementation](https://github.com/DendrouLab/panpipes/blob/main/panpipes/python_scripts/run_find_markers_multi.py) of `Seurat:::FindMarkers` is run
 
   - <span class="parameter">markerspecs:</span> <br>
      - <span class="parameter">rna:</span><br>
        - <span class="parameter">run </span> `Boolean`, Default: True<br>
        - <span class="parameter">layer </span> `String`, Default: logged_counts<br>
+         Which layer stores counts for differential expression test.
        - <span class="parameter">method </span> `String`, Default: t-test_overestim_var<br>
        Options include: ‘logreg’, ‘t-test’, ‘wilcoxon’, ‘t-test_overestim_var’
        - <span class="parameter">mincels </span> `Integer`, Default: t-10<br>
@@ -211,7 +214,7 @@ When pseudo_seurat is set to true then a python implementation of Suerat runs (S
  - <span class="parameter">prot:</span><br>
    - <span class="parameter">run </span> `Boolean`, Default: True<br>
    - <span class="parameter">layer </span> `String`, Default: clr<br>
-       Can specify an array to compute in parallel: clr, dsb
+       Which layer stores counts for differential expression test.
    - <span class="parameter">mincels </span> `Integer`, Default: t-10<br>
        If the number of clusters contains less than the number of cells maker analysis is not necessary.
    - <span class="parameter">method </span> `String`, Default: wilcoxon<br>
@@ -224,6 +227,7 @@ When pseudo_seurat is set to true then a python implementation of Suerat runs (S
  - <span class="parameter">atac:</span><br>
     - <span class="parameter">run </span> `Boolean`, Default: False<br>
     - <span class="parameter">layer </span> `String`, Default: logged_counts<br>
+      Which layer stores counts for differential expression test. 
        Options include logged_counts, signac_norm , and logTF_norm,logIDF_norm
     - <span class="parameter">mincels </span> `Integer`, Default: t-10<br>
        If the number of clusters contains less than the number of cells maker analysis is not necessary.
@@ -231,9 +235,9 @@ When pseudo_seurat is set to true then a python implementation of Suerat runs (S
         Options include: ‘logreg’, ‘t-test’, ‘wilcoxon’, ‘t-test_overestim_var’
     - <span class="parameter">pseudo_seurat </span> `Boolean`, Default: False<br>
     - <span class="parameter">minpct </span> `Float`, Default: 0.1<br>
-       This parameter only matters if pseudo_seurat is set to True 
+       This parameter is mandatory if pseudo_seurat is set to True 
     - <span class="parameter">threshuse </span> `Float`, Default: 0.25<br>
-       This parameter only matters if pseudo_seurat is set to True 
+       This parameter is mandatory if pseudo_seurat is set to True 
 
 
  - <span class="parameter">multimodal:</span><br>
@@ -243,9 +247,9 @@ When pseudo_seurat is set to true then a python implementation of Suerat runs (S
         Options include: ‘logreg’, ‘t-test’, ‘wilcoxon’, ‘t-test_overestim_var’
     - <span class="parameter">pseudo_seurat </span> `Boolean`, Default: False<br>
     - <span class="parameter">minpct </span> `Float`, Default: 0.1<br>
-       This parameter only matters if pseudo_seurat is set to True 
+       This parameter is mandatory if pseudo_seurat is set to True 
     - <span class="parameter">threshuse </span> `Float`, Default: 0.25<br>
-       This parameter only matters if pseudo_seurat is set to True
+       This parameter is mandatory if pseudo_seurat is set to True
 
 
  - <span class="parameter">spatial:</span><br>
