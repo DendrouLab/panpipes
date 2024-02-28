@@ -207,10 +207,9 @@ When pseudo_seurat is set to True then a [python implementation](https://github.
        If the number of clusters contains less than the number of cells maker analysis is not necessary.
        - <span class="parameter">pseudo_seurat </span> `Boolean`, Default: False<br>
        - <span class="parameter">minpct </span> `Float`, Default: 0.1<br>
-       This parameter only matters if pseudo_seurat is set to True 
+       This parameter is mandatory if pseudo_seurat is set to True 
        - <span class="parameter">threshuse </span> `Float`, Default: 0.25<br>
-       This parameter only matters if pseudo_seurat is set to True 
-
+       TThis parameter is mandatory if pseudo_seurat is set to True 
  - <span class="parameter">prot:</span><br>
    - <span class="parameter">run </span> `Boolean`, Default: True<br>
    - <span class="parameter">layer </span> `String`, Default: clr<br>
@@ -258,14 +257,13 @@ When pseudo_seurat is set to True then a [python implementation](https://github.
        Options include logged_counts, signac_norm , and logTF_norm,logIDF_norm
    - <span class="parameter">method </span> `String`, Default: t-test_overestim_var<br>
         Options include: ‘logreg’, ‘t-test’, ‘wilcoxon’, ‘t-test_overestim_var’
-   - <span class="parameter">mincels </span> `Integer`, Default: t-10<br>
+   - <span class="parameter">mincels </span> `Integer`, Default: 10<br>
        If the number of clusters contains less than the number of cells maker analysis is not necessary.
    - <span class="parameter">pseudo_seurat </span> `Boolean`, Default: False<br>
    - <span class="parameter">minpct </span> `Float`, Default: 0.1<br>
-       This parameter only matters if pseudo_seurat is set to True 
+      This parameter is mandatory if pseudo_seurat is set to True 
    - <span class="parameter">threshuse </span> `Float`, Default: 0.25<br>
-       This parameter only matters if pseudo_seurat is set to True
-
+       This parameter is mandatory if pseudo_seurat is set to True 
 ## Plot specifications
 Used to define which metadata columns are used in the visualisations 
  - <span class="parameter">plotspecs:</span><br>
