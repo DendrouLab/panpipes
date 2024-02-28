@@ -44,6 +44,7 @@ Specified by the following three parameters:
 <span class="parameter">condaenv</span> `String` (Path)<br>
     Path to conda environment that should be used to run panpipes.
     Leave blank if running native or your cluster automatically inherits the login node environment.
+    For more information on this, please refer to the detailed explanation [here](https://panpipes-pipelines.readthedocs.io/en/latest/install.html#specifying-conda-environments-to-run-panpipes).
 
 ## General project specifications
 

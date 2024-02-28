@@ -15,8 +15,6 @@ resources:
 
 condaenv:
 
-# allows for tweaking where the jobs get submitted, in case there is a special queue for long jobs or you have access to a gpu
-# leave as is if you do not want to use the alternative queues
 
 #-------------------------------
 # General project specifications
