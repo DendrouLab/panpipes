@@ -18,11 +18,12 @@ When running the clustering workflow, panpipes provides a basic `pipeline.yml` f
 To run the workflow on your own data, you need to specify the parameters described below in the `pipeline.yml` file to meet the requirements of your data.
 
 However, we do provide pre-filled versions of the `pipeline.yml` file for individual [tutorials](https://panpipes-pipelines.readthedocs.io/en/latest/tutorials/index.html).
+
 For more information on functionalities implemented in `panpipes` to read the configuration files, such as reading blocks of parameters and reusing blocks with  `&anchors` and `*scalars`, please check [our documentation](./useful_info_on_yml.md)
 
 You can download the different clustering pipeline.yml files here:
 - Basic `pipeline.yml` file (not prefilled) that is generated when calling `panpipes clustering config`: [Download here](https://github.com/DendrouLab/panpipes/blob/main/panpipes/panpipes/pipeline_clustering/pipeline.yml)
-- `pipeline.yml` for [Clustering Tutorial](https://panpipes-tutorials.readthedocs.io/en/latest/_downloads/3895aa0ba60017b15ee1aa6531dc8c25/pipeline.ym)
+- `pipeline.yml` for [Clustering Tutorial](https://panpipes-tutorials.readthedocs.io/en/latest/_downloads/3895aa0ba60017b15ee1aa6531dc8c25/pipeline.yml)
 
 ## Compute resources options
 
@@ -55,10 +56,11 @@ Prefix for the sample that comes out of the filtering/ preprocessing steps of th
 
 - <span class="parameter">scaled_obj</span> `String`, Mandatory parameter, Default: mdata_scaled.h5mu<br>
  Path to the output file from preprocessing (e.g. `../preprocess/mdata_scaled.h5mu`).
- Ensure that the submission file must be in the right format and that the right path is provided. In this case, panpipes will use the full object to calculate rank_gene_groups and for plotting those genes. If your scaled_obj contains all the genes then leave full_obj blank
+ Ensure that the path to the file is correct.  
 
 - <span class="parameter">full_obj</span> `String`, Default: <br>
-
+  Speficy the full object if your scaled_obj contains only HVG.  If your scaled_obj contains all the genes then leave full_obj blank. 
+  panpipes will use the full object to do marker genes analysis (rank_gene_groups) and for plotting those genes. 
 - <span class="parameter">modalities</span><br>
   - <span class="parameter">rna</span> `Boolean`, Default: True<br>
   - <span class="parameter">prot</span> `Boolean`, Default: True<br>
@@ -142,46 +144,49 @@ Prefix for the sample that comes out of the filtering/ preprocessing steps of th
 
      - <span class="parameter">run </span> `Boolean`, Default: True<br>
      - <span class="parameter">rna:</span>
-         - <span class="parameter">mindist </span> `Float`, Default: 0.25,  0.5<br>
-           Use both values as defaults. 
+         - <span class="parameter">mindist </span> `Float`, Default: 0.5<br>
+           Can specify an array: 0.25,0.5
       - <span class="parameter">prot:</span>
-         - <span class="parameter">mindist </span> `Float`, Default: 0.1<br>
+         - <span class="parameter">mindist </span> `Float`, Default: 0.5<br>
+           Can specify an array: 0.25,0.5,0.8
       - <span class="parameter">atac:</span>
          - <span class="parameter">mindist </span> `Float`, Default: 0.5<br>
+           Can specify an array: 0.25,0.5,0.8
       - <span class="parameter">multimodal:</span>
          - <span class="parameter">mindist </span> `Float`, Default: 0.5<br>
+           Can specify an array: 0.25,0.5,0.8
       - <span class="parameter">rna:</span>
-         - <span class="parameter">mindist </span> `Float`, Default: 0.25,  0.5<br>
-            Use both values as defaults. 
+         - <span class="parameter">mindist </span> `Float`, Default: 0.5<br>
+            Can specify an array: 0.25,0.5,0.8
 
 ## Parameters for clustering 
 
   - <span class="parameter">clusterspecs:</span>
       - <span class="parameter">rna:</span>
           - <span class="parameter">resolutions </span> `Float`, Default: 0.2, 0.6, 1<br>
-           Use all values as defaults.
+           Can specify an array: 0.2,0.6,1
           - <span class="parameter">algorithm</span> `String`, Default: leiden<br>
             Options include louvain or leiden. 
       - <span class="parameter">prot:</span>
           - <span class="parameter">resolutions </span> `Float`, Default: 0.2, 0.6, 1<br>
-           Use all values as defaults.
+           Can specify an array: 0.2,0.6,1
           - <span class="parameter">algorithm</span> `String`, Default: leiden<br>
             Options include louvain or leiden.
 
       - <span class="parameter">atac:</span>
           - <span class="parameter">resolutions </span> `Float`, Default: 0.2, 0.6, 1<br>
-           Use all values as defaults.
+           Can specify an array to compute in parallel: 0.2,0.6,1
           - <span class="parameter">algorithm</span> `String`, Default: leiden<br>
             Options include louvain or leiden. 
       - <span class="parameter">multimmodal:</span>
           - <span class="parameter">resolutions </span> `Float`, Default: 0.5, 0.7<br>
-           Use all values as defaults.
+           Can specify an array to compute in parallel: 0.2,0.6,1 
           - <span class="parameter">algorithm</span> `String`, Default: leiden<br>
             Options include louvain or leiden.
 
       - <span class="parameter">spatial:</span>
           - <span class="parameter">resolutions </span> `Float`, Default: 0.2, 0.6, 1<br>
-           Use all values as defaults.
+           Can specify an array to compute in parallel: 0.2,0.6,1 
           - <span class="parameter">algorithm</span> `String`, Default: leiden<br>
             Options include louvain or leiden. 
 
@@ -206,15 +211,15 @@ When pseudo_seurat is set to true then a python implementation of Suerat runs (S
  - <span class="parameter">prot:</span><br>
    - <span class="parameter">run </span> `Boolean`, Default: True<br>
    - <span class="parameter">layer </span> `String`, Default: clr<br>
-       Options include clr and dsb. 
+       Can specify an array to compute in parallel: clr, dsb
    - <span class="parameter">mincels </span> `Integer`, Default: t-10<br>
        If the number of clusters contains less than the number of cells maker analysis is not necessary.
    - <span class="parameter">method </span> `String`, Default: wilcoxon<br>
    - <span class="parameter">pseudo_seurat </span> `Boolean`, Default: False<br>
    - <span class="parameter">minpct </span> `Float`, Default: 0.1<br>
-       This parameter only matters if pseudo_seurat is set to True 
+       This parameter is mandatory if pseudo_seurat is set to True 
    - <span class="parameter">threshuse </span> `Float`, Default: 0.25<br>
-       This parameter only matters if pseudo_seurat is set to True 
+       This parameter is mandatory if pseudo_seurat is set to True 
 
  - <span class="parameter">atac:</span><br>
     - <span class="parameter">run </span> `Boolean`, Default: False<br>
