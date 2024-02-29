@@ -419,8 +419,8 @@ This can help to determine any inconsistencies in staining per channel and other
     Margin determines whether to normalize per cell (as you would do for RNA normalization), 
     or by feature (recommended, due to the variable nature of prot assays). 
     CLR margin 0 is recommended for informative QC plots in this pipeline.
-  - 0 = normalise rowwise (per feature, recommended)
-  - 1 = normalise colwise (per cell)
+  - 0 = normalise row-wise (per cell)
+  - 1 = normalise column-wise (per feature, recommended)
 
 ### Denoised and Scaled by Background (DSB) normalization options
  In order to run DSB you must have access to the complete raw counts, including the empty droplets from both rna and protein assays.

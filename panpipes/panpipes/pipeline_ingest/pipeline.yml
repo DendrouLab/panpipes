@@ -176,8 +176,8 @@ normalisation_methods: clr
 # margin determines whether you normalise per cell (as you would for RNA),
 # or by feature (recommended, due to the variable nature of prot assays).
 # CLR margin 0 is recommended for informative qc plots in this pipeline
-# 0 = normalise rowwise (per feature)
-# 1 = normalise colwise (per cell)
+# 0 = normalise row-wise (per cell)
+# 1 = normalise column-wise (per feature, recommended)
 clr_margin: 0
 
 #--------------------------------------------------------------
