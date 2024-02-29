@@ -211,7 +211,7 @@ multimodal:
   # specify one at a time and run the pipeline in different folders i.e. integration_by_sample, 
   # integration_by_tissue ...
   column_continuous: 
-  column_categorical: sample_id 
+  column_categorical: dataset
   # extra params:
   totalvi:
     # this is a minimal set of parameters that will be expected
@@ -269,8 +269,8 @@ multimodal:
       batch_size : 128
       #float (default: 0.001)
       weight_decay : 0.001 
-      #float (default: 1e-08)
-      eps : 1e-08 
+      #float (default: 1.0e-08)
+      eps : 1.0e-08 
       #bool (default: True)
       early_stopping : True 
       #bool (default: True)

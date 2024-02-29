@@ -36,11 +36,13 @@ jobs:
           channel-priority: strict
           activate-environment: pipeline_env
           environment-file: pipeline_env.yaml
-
+# important: this patch is only to test if multivi integration works
+# issues are not related to panpipes https://discourse.scverse.org/t/error-when-training-model-on-m3-max-mps/1896/2
+# https://discourse.scverse.org/t/macbook-m1-m2-mps-acceleration-with-scvi/2075/4
       - name: Install Panpipes
         shell: bash -el {0}
         run: |
-          pip install -e .
+          pip install '.[multivipatch]' 
           conda list
 
       - name: Conda info
