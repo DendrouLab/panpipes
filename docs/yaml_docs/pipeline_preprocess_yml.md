@@ -329,8 +329,8 @@ Whether applying scaling or not is still a matter of debate, as stated in the [L
         Parameter for CLR normalisation.
         The CLR margin determines whether you normalise per cell (as you would normalise RNA data), or by feature (recommended, due to the variable nature of protein assays). 
         Hence, CLR margin 0 is recommended for informative qc plots in this pipeline.
-    - 0 = normalise column-wise (per feature)
-    - 1 = normalise row-wise (per cell)
+    - 0 = normalise row-wise (per cell)
+    - 1 = normalise column-wise (per feature)
   
   - <span class="parameter">background_obj</span> `String` (Path)<br>
         Parameter for DSB normalisation.
