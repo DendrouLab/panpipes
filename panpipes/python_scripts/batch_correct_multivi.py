@@ -71,12 +71,11 @@ if test_script:
 # ------------------------------------------------------------------
 L.info("Running multivi")
 
-# mdata = mu.read(args.scaled_anndata)
-# rna = mdata['rna'].copy()
-# atac = mdata['atac'].copy()
-rna= mu.read(args.scaled_anndata +"/" + "rna")
-atac= mu.read(args.scaled_anndata +"/" + "atac")
+mdata = mu.read(args.scaled_anndata)
+rna = mdata['rna'].copy()
+atac = mdata['atac'].copy()
 
+del mdata
 
 if check_for_bool(params["multimodal"]["MultiVI"]["lowmem"]):
     L.info("subsetting atac to top 25k HVF")
