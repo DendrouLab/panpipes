@@ -155,8 +155,8 @@ prot:
   normalisation_methods: clr,dsb
 
   # CLR parameters:
-  # 0 = normalise column-wise (per feature, recommended)
-  # 1 = normalise row-wise (per cell)
+  # 0 = normalise row-wise (per cell)
+  # 1 = normalise column-wise (per feature, recommended)
   clr_margin: 0
 
   # DSB parameters:
