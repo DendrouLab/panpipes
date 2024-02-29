@@ -210,6 +210,7 @@ multimodal:
   # they will be all used simultaneosly. if you want to test correction for one at a time, 
   # specify one at a time and run the pipeline in different folders i.e. integration_by_sample, 
   # integration_by_tissue ...
+  column_continuous: 
   column_categorical: sample_id 
   # extra params:
   totalvi:
