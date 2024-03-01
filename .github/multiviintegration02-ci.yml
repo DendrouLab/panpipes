@@ -1,4 +1,4 @@
-name: Run integration01
+name: testing environment
 
 on:
   push:
@@ -42,7 +42,7 @@ jobs:
       - name: Install Panpipes
         shell: bash -el {0}
         run: |
-          pip install '.[multivipatch]' 
+          pip install .
           conda list
 
       - name: Conda info
@@ -58,7 +58,7 @@ jobs:
       # Note: all three files are renamed during the download to trim the "subsample_" prefix
       - name: Preparing the data
         run: |
-          mkdir -p teaseq/integration && cd teaseq/integration
+          mkdir -p teaseq/integration && cd  teaseq/integration
           curl -L -o teaseq.h5mu https://figshare.com/ndownloader/files/44796985
 
       # Note: we run the following to test that the commands works
