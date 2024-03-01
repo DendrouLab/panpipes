@@ -57,7 +57,7 @@ sc.set_figure_params(facecolor="white")
 sc.settings.autoshow = False
 sc.settings.figdir = args.figdir
 
-
+scvi.settings.seed = 1492
 # load parameters
 
 threads_available = multiprocessing.cpu_count()
