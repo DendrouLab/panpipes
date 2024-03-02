@@ -10,7 +10,7 @@
 ### fixed
 
 - fixed error in `vis`
-    - error occurred when only wanting to plot continuous or categorical variables (or neither), not both 
+    - error occurred when only wanting to plot continuous or categorical variables (or neither), not both
 
 ### dependencies
 
