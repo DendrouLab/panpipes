@@ -15,3 +15,7 @@ ro create the final object with the reduced dimension represented.<br>
 
 The ideal way to run `panpipes integration` is to use the output `MuData`file from `panpipes preprocess` since it will already be in the required format. 
 However, if using independent MuData the object should contain normalised data in the X slot of each modality, a ‘raw_counts’ layer in each modality, and a sample_id column in each slot of the obs and the outer obs.
+
+| method       | type of integration | modalities | code 
+| ------------ | ------------------- | ------------- |
+| raw counts   | "raw_counts"        | RNA/ATAC/PROT |
