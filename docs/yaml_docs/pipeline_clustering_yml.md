@@ -203,7 +203,7 @@ When pseudo_seurat is set to True then a [python implementation](https://github.
          Which layer stores counts for differential expression test.
        - <span class="parameter">method </span> `String`, Default: t-test_overestim_var<br>
        Options include: ‘logreg’, ‘t-test’, ‘wilcoxon’, ‘t-test_overestim_var’
-       - <span class="parameter">mincels </span> `Integer`, Default: t-10<br>
+       - <span class="parameter">mincels </span> `Integer`, Default: 10<br>
        If the number of clusters contains less than the number of cells maker analysis is not necessary.
        - <span class="parameter">pseudo_seurat </span> `Boolean`, Default: False<br>
        - <span class="parameter">minpct </span> `Float`, Default: 0.1<br>
