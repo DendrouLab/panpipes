@@ -15,6 +15,8 @@
   - high threads was not recognised, now fixed.
 
 ### dependencies
+- All the dependencies have been updated. 
+  - Python>=3.10 required
 
 ## v0.4.1
 
