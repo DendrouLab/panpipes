@@ -5,7 +5,7 @@
     padding: 4px;
     display: inline-block;
     font-weight: bold;
-  }
+  } 
 </style>
 
 # Clustering YAML  
