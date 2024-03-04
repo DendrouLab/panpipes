@@ -10,9 +10,13 @@
 ### fixed
 
 - fixed error in `vis`
-    - error occurred when only wanting to plot continuous or categorical variables (or neither), not both
+  - error occurred when only wanting to plot continuous or categorical variables (or neither), not both
+- fixed error in `refmap`
+  - high threads was not recognised, now fixed.
 
 ### dependencies
+- All the dependencies have been updated. 
+  - Python>=3.10 required
 
 ## v0.4.1
 
