@@ -338,8 +338,8 @@ def plot_marker_dotplots(marker_file, log_file, outfile,
     """
     data_obj=PARAMS['sample_prefix'] + "_clustered.h5mu"
     # check there is a figures directory
-    #if not os.path.exists(fig_path):
-    #    os.makedirs(fig_path)
+    if not os.path.exists(fig_path):
+        os.makedirs(fig_path)
     cmd = """
         python %(py_path)s/plot_scanpy_markers.py \
             --infile %(data_obj)s \
