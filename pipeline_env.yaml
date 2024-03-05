@@ -12,6 +12,7 @@ dependencies:
   - r-optparse
   - r-tidyverse
   - r-xtable
+  - r-cowplot
   - pip
   - pip:
     - pytest

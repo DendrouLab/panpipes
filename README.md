@@ -9,7 +9,7 @@ Panpipes allows reliable and customisable analysis and evaluation of individual 
 
 **See our [documentation](https://panpipes-pipelines.readthedocs.io/en/latest/) and our [preprint](https://www.biorxiv.org/content/10.1101/2023.03.11.532085v2)**  
 
-These workflows make use of [cgat-core](https://github.com/cgat-developers/cgat-core):
+These workflows make use of [cgat-core](https://github.com/cgat-developers/cgat-core)
 
 Available workflows:
 

@@ -41,14 +41,17 @@ args, opt = parser.parse_known_args()
 
 L.info(args)
 
-sc.settings.figdir  = "./scatters/"
+figdir = "./scatters/"
+if not os.path.exists(figdir):
+    os.mkdir(figdir)
+
+sc.settings.figdir  = figdir
 sc.set_figure_params(fontsize=12)
 
 
 mdata = mu.read(args.mdata_object)
 
 layers = read_yaml(args.layers_dict)
-
 
 df = pd.read_csv(args.scatters_csv)
 L.debug(df)
