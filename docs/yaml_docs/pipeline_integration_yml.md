@@ -16,30 +16,28 @@ When running the integration workflow, panpipes provides you with a basic `pipel
 
 You can download the different integration pipeline.yml files here:
 - Basic `pipeline.yml` file (not pre-filled) that is generated when calling `panpipes integration config`: [Download here](https://github.com/DendrouLab/panpipes/blob/main/panpipes/panpipes/pipeline_integration/pipeline.yml)
-- `pipeline.yml`for [Integration tutorial](https://panpipes-tutorials.readthedocs.io/en/latest/uni_multi_integration/pipeline_yml.html)
+- `pipeline.yml`for Integration tutorial: [View and Download here](https://panpipes-tutorials.readthedocs.io/en/latest/uni_multi_integration/pipeline_yml.html)
 
 For more information on functionalities implemented in `panpipes` to read the configuration files, such as reading blocks of parameters and reusing blocks with  `&anchors` and `*scalars`, please check [our documentation](./useful_info_on_yml.md)
 
 ## Compute resources options
 
-- <span class="parameter">resources</span>
-
+<span class="parameter">resources</span><br>
 Computing resources to use, specifically the number of threads used for parallel jobs.
 Specified by the following parameters:
-
-   - <span class="parameter">threads_high</span> `Integer`, Default: 1<br>
-    Number of threads used for high intensity computing tasks. 
-    For each thread, there must be enough memory to load your MuData object which was created in the preprocessing step of 
-the workflow.
+  - <span class="parameter">threads_high</span> `Integer`, Default: 1<br>
+   Number of threads used for high intensity computing tasks. 
+   For each thread, there must be enough memory to load your MuData object which was created in the preprocessing step of 
+   the workflow.
        
-   - <span class="parameter">threads_medium</span> `Integer`, Default: 1<br>
-    Number of threads used for medium intensity computing tasks.
-    For each thread, there must be enough memory to load your mudata and do computationally light tasks.
+  - <span class="parameter">threads_medium</span> `Integer`, Default: 1<br>
+   Number of threads used for medium intensity computing tasks.
+   For each thread, there must be enough memory to load your mudata and do computationally light tasks.
 
   - <span class="parameter">threads_low</span> `Integer`, Default: 1<br>
-  	 Number of threads used for low intensity computing tasks.
-     For each thread, there must be enough memory to load text files and do plotting, requires much less memory than the other two.  
-   - <span class="parameter">threads_gpu</span> `Integer`, Default: 2<br>
+   Number of threads used for low intensity computing tasks.
+   For each thread, there must be enough memory to load text files and do plotting, requires much less memory than the other two.  
+  - <span class="parameter">threads_gpu</span> `Integer`, Default: 2<br>
    Number of cores per gpu used for computing tasks.
    For each thread, there must be enough memory to compute the tasks above. 
 
@@ -47,9 +45,15 @@ the workflow.
   Path to conda environment that should be used to run panpipes.
   Leave blank if running native or your cluster automatically inherits the login node environment
 
+<span class="parameter">queues</span><br>
+Allows for tweaking which queues jobs get submitted to, in case there is a special queue for long jobs, or you have access to a gpu-specific queue.
+The default queue should be specified in your .cgat.yml file.
+Leave blank if you do not want to use any alternative queues.
+  - <span class="parameter">long</span><br>
+  - <span class="parameter">gpu</span><br>
+
 ## Loading and merging data options
 ### Data format
-
 
 <span class="parameter">sample_prefix</span> `String`, Mandatory parameter, Default: test<br>
 Prefix for the sample that comes out of the filtering/ preprocessing steps of the workflow.
@@ -60,9 +64,9 @@ Prefix for the sample that comes out of the filtering/ preprocessing steps of th
 
 ## Batch correction
 
-**Unimodal: correct each modality independently**
+**Batch correction is done unimodal, meaning each modality is batch corrected independently.**
 
-## RNA modality
+### RNA modality
 
 <span class="parameter">rna:</span> 
   Batch correction for the RNA modality is specified by the following parameters:
@@ -80,7 +84,7 @@ Prefix for the sample that comes out of the filtering/ preprocessing steps of th
 
      The column name of the covariate you want want to batch correct on, if a comma-separated list is specified then all will be used simultaneously.
  
-### Harmony arguments
+#### Harmony arguments
   
 - <span class="parameter">harmony:</span>
     Basic parameters required to run harmony:
@@ -91,14 +95,14 @@ Prefix for the sample that comes out of the filtering/ preprocessing steps of th
 
   For more information on `harmony` check the [harmony documentation](https://portals.broadinstitute.org/harmony/reference/RunHarmony.html)
 
-### BBKNN arguments
+#### BBKNN arguments
 
 - <span class="parameter">bbknn:</span>  
   - <span class="parameter">neighbors_within_batch:</span> `Integer`, Default: 3<br>
 
 For more information on `bbknn` check the [bbknn documentation](https://bbknn.readthedocs.io/en/latest/) 
 
-### SCVI arguments
+#### SCVI arguments
   -  <span class="parameter">scvi</span>: SCVI parameters are specified as
       - <span  class="parameter">exclude_mt_genes:</span> `Boolean`, Default: True<br>
       - <span  class="parameter">exclude_mt_genes:</span> `String`, Default: mt<br>
@@ -134,7 +138,7 @@ For more information on `bbknn` check the [bbknn documentation](https://bbknn.re
          
   For more information on `scvi` check the [scvi documentation](https://docs.scvi-tools.org/en/stable/api/reference/scvi.model.SCVI.html)
 
-### Find neighbour parameters 
+#### Find neighbour parameters 
 Parameters to compute the connectivity graph on RNA
 
 - <span class="parameter">neighbors:</span> `String`<br>
@@ -152,7 +156,7 @@ Parameters to compute the connectivity graph on RNA
     The method can either be scanpy or hnsw
 
 
-## Protein modality
+### Protein modality
 <span class="parameter">prot:</span> 
   Batch correction for the protein modality is specified by the following parameters:
   
@@ -168,34 +172,33 @@ Parameters to compute the connectivity graph on RNA
 
      The column you want to batch correct on, if a comma-separated list is specified then all will be used simultaneously
  
-### Harmony arguments
+#### Harmony arguments
   
-- <span class="parameter">harmony:</span>
-    Basic parameters required to run harmony:
-   
-    - <span class="parameter">sigma</span> `Float`, Default: 0.1<br>
-    - <span class="parameter">theta</span> `Float`, Default: 1.0<br>
-    - <span class="parameter">npcs</span> `Integer`, Default: 30<br>
+<span class="parameter">harmony</span><br>
+Basic parameters required to run harmony:
 
-  For more information on `harmony` check the [harmony documentation](https://portals.broadinstitute.org/harmony/reference/RunHarmony.html)
+- <span class="parameter">sigma</span> `Float`, Default: 0.1<br>
+- <span class="parameter">theta</span> `Float`, Default: 1.0<br>
+- <span class="parameter">npcs</span> `Integer`, Default: 30<br>
+
+For more information on `harmony` check the [harmony documentation](https://portals.broadinstitute.org/harmony/reference/RunHarmony.html)
 
   
-### BBKNN arguments
+#### BBKNN arguments
 
-
-- <span class="parameter">bbknn:</span>  
+<span class="parameter">bbknn</span><br> 
   - <span class="parameter">neighbors_within_batch:</span> `Integer`, Default: 3<br>
 
 For more information on `bbknn` check the [bbknn documentation](https://bbknn.readthedocs.io/en/latest/) 
 
-### Find neighbour parameters 
+#### Find neighbour parameters 
 
 Parameters to compute the connectivity graph on Protein
 
-- <span class="parameter">neighbors:</span> `String`, Default: &prot_neighbors<br>
+<span class="parameter">neighbors</span> `String`, Default: &prot_neighbors<br>
  
-  - <span class="parameter">npcs</span> `Integer`, Default: 30<br>   
-   Number of principal components to calculate for neighbors and Umap
+  - <span class="parameter">npcs</span> `Integer`, Default: 30<br>
+    Number of principal components to calculate for neighbors and Umap
   
   -  <span class="parameter">k</span> `Integer`, Default: 30<br>
   Number of neighbors
@@ -207,7 +210,7 @@ Parameters to compute the connectivity graph on Protein
     The method can either be scanpy or hnsw
 
 
-## ATAC modality 
+### ATAC modality 
 
 <span class="parameter">atac:</span> 
   Batch correction for the ATAC modality is specified by the following parameters:
@@ -226,7 +229,7 @@ Parameters to compute the connectivity graph on Protein
 
      The column you want to batch correct on, if a comma-separated list is specified then all will be used simultaneously
  
-### Harmony arguments
+#### Harmony arguments
   
 - <span class="parameter">harmony:</span>
     Basic parameters required to run harmony:
