@@ -415,10 +415,10 @@ This can help to determine any inconsistencies in staining per channel and other
 
 ### Centered log ratio (CLR) normalization options
 
-<span class="parameter">clr_margin</span> `Integer`, Default: 0<br>
+<span class="parameter">clr_margin</span> `Integer`, Default: 1<br>
     Margin determines whether to normalize per cell (as you would do for RNA normalization), 
     or by feature (recommended, due to the variable nature of prot assays). 
-    CLR margin 0 is recommended for informative QC plots in this pipeline.
+    CLR margin 1 is recommended for informative QC plots in this pipeline.
   - 0 = normalise row-wise (per cell)
   - 1 = normalise column-wise (per feature, recommended)
 
