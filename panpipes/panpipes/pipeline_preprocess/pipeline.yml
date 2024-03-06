@@ -157,7 +157,7 @@ prot:
   # CLR parameters:
   # 0 = normalise row-wise (per cell)
   # 1 = normalise column-wise (per feature, recommended)
-  clr_margin: 0
+  clr_margin: 1
 
   # DSB parameters:
   background_obj:

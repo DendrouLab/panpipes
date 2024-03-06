@@ -325,10 +325,10 @@ Whether applying scaling or not is still a matter of debate, as stated in the [L
         If you choose to run both (dsb and clr), then 'dsb' is stored in X as default.
         For downstream visualisation, you can either specify the layer, or take the default stored in X.
 
-  - <span class="parameter">clr_margin</span> `Integer` (0 or 1), Default: 0<br>
+  - <span class="parameter">clr_margin</span> `Integer` (0 or 1), Default: 1<br>
         Parameter for CLR normalisation.
         The CLR margin determines whether you normalise per cell (as you would normalise RNA data), or by feature (recommended, due to the variable nature of protein assays). 
-        Hence, CLR margin 0 is recommended for informative qc plots in this pipeline.
+        Hence, CLR margin 1 is recommended for informative qc plots in this pipeline.
     - 0 = normalise row-wise (per cell)
     - 1 = normalise column-wise (per feature)
   
