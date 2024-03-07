@@ -1,4 +1,4 @@
-name: Run tutorials (preprocessing)
+name: Run tutorials (visualization)
 
 on:
   push:
@@ -65,7 +65,7 @@ jobs:
         shell: bash -el {0}
         run: |
           cd teaseq/vis/data
-          panpipes preprocess config
+          panpipes vis config
 
       - name: Edit the submission file
         run: |
@@ -80,13 +80,13 @@ jobs:
         shell: bash -el {0}
         run: |
           cd teaseq/vis
-          panpipes preprocess show full --local
+          panpipes vis show full --local
 
       - name: Run pipeline tasks
         shell: bash -el {0}
         run: |
           cd teaseq/vis
-          panpipes preprocess make full --local
+          panpipes vis make full --local
 
       - name: File tree
         if: env.debug == 'true'
