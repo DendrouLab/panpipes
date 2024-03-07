@@ -71,7 +71,7 @@ jobs:
 
       - name: Replace template contents in configuration file
         run: |
-          cd teaseq/integration
+          cd teaseq/vis/data
           sed -i 's+paired_scatters: True+paired_scatters: False+g' pipeline.yml
 
       - name: File tree
