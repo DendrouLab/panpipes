@@ -24,7 +24,6 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: File tree
-        if: env.debug == 'true'
         run: tree
 
       - uses: conda-incubator/setup-miniconda@v3
@@ -44,12 +43,10 @@ jobs:
           conda list
 
       - name: Conda info
-        if: env.debug == 'true'
         shell: bash -el {0}
         run: conda info
 
       - name: Conda list
-        if: env.debug == 'true'
         shell: pwsh
         run: conda list
 
@@ -73,7 +70,6 @@ jobs:
           curl -o pipeline.yml https://panpipes-tutorials.readthedocs.io/en/latest/_downloads/29daa86241829b362152785caf30ab61/pipeline.yml
 
       - name: File tree
-        if: env.debug == 'true'
         run: tree teaseq
 
       - name: Review pipeline tasks
@@ -89,5 +85,5 @@ jobs:
           panpipes vis make full --local
 
       - name: File tree
-        if: env.debug == 'true'
+        if: always()
         run: tree teaseq
