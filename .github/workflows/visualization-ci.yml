@@ -74,7 +74,7 @@ jobs:
           cd teaseq/vis/data
           sed -i 's+paired_scatters: True+paired_scatters: False+g' pipeline.yml
       
-      -name: Check line was edited
+      - name: Check line was edited
         run: |
           cd teaseq/vis/data
           grep paired_scatters pipeline.yml
