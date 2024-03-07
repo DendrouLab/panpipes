@@ -69,6 +69,11 @@ jobs:
           cd teaseq/vis/data
           curl -o pipeline.yml https://panpipes-tutorials.readthedocs.io/en/latest/_downloads/29daa86241829b362152785caf30ab61/pipeline.yml
 
+      - name: Replace template contents in configuration file
+        run: |
+          cd teaseq/integration
+          sed -i 's+paired_scatters: True+paired_scatters: False+g' pipeline.yml
+
       - name: File tree
         run: tree teaseq
 
