@@ -159,6 +159,10 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
+# RStudio
+.Rproj.user/
+*.Rproj
+
 # panpipes specific
 .history
 panpipes/.DS_Store
