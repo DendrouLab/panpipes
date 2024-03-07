@@ -73,7 +73,7 @@ jobs:
 
       - name: Edit the submission file
         run: |
-          cd teaseq/vis/data
+          cd teaseq/vis
           curl -o pipeline.yml https://raw.githubusercontent.com/DendrouLab/panpipes-tutorials/main/docs/visualization/pipeline.yml
 
       - name: File tree
