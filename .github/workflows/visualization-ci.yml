@@ -56,6 +56,13 @@ jobs:
           mkdir -p teaseq/vis/data && cd  teaseq/vis/data
           curl -L -o teaseq_clustered.h5mu https://figshare.com/ndownloader/files/44795785
 
+      - name: Preparing the data
+        run: |
+          mkdir -p teaseq/vis && cd  teaseq/vis
+          curl -o paired_scatters.csv https://panpipes-tutorials.readthedocs.io/en/latest/_downloads/69bf8febdd6c95141c3e20de10f533c4/paired_scatters.csv
+          curl -o custom_markers.csv https://panpipes-tutorials.readthedocs.io/en/latest/_downloads/cd6f66ea922d4bd2b896050780f0d8dd/custom_markers.csv
+          curl -o paired_scatters_markers.csv https://panpipes-tutorials.readthedocs.io/en/latest/_downloads/68a767929ecdc47cf945f855f58e046a/paired_scatters_markers.csv
+
       # Note: we run the following to test that the commands works
       # However, the following task will replacing the file anyway
       - name: Preparing the configuration file
@@ -68,16 +75,6 @@ jobs:
         run: |
           cd teaseq/vis/data
           curl -o pipeline.yml https://panpipes-tutorials.readthedocs.io/en/latest/_downloads/29daa86241829b362152785caf30ab61/pipeline.yml
-
-      - name: Replace template contents in configuration file
-        run: |
-          cd teaseq/vis/data
-          sed -i 's+paired_scatters: True+paired_scatters: False+g' pipeline.yml
-      
-      - name: Check line was edited
-        run: |
-          cd teaseq/vis/data
-          grep paired_scatters pipeline.yml
 
       - name: File tree
         run: tree teaseq
