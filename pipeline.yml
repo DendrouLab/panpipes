@@ -1,0 +1,166 @@
+# ----------------------- #
+# Visualisation pipeline DendrouLab
+# ----------------------- #
+# written by Charlotte Rich-Griffin and Fabiola Curion
+
+# WARNING: Do not edit any line with the format `continuous_vars: &continuous_vars` or `continuous_vars: *continuous_vars`
+
+
+# ------------------------
+# compute resource options
+# ------------------------
+resources:
+  # Number of threads used for parallel jobs
+  # this must be enough memory to load your mudata and do computationally intensive tasks
+  threads_high: 3
+  # this must be enough memory to load your mudata and do computationally light tasks
+  threads_medium: 3
+  # this must be enough memory to load text files and do plotting, requires much less memory than the other two
+  threads_low: 3
+
+# path to conda env, leave blank if running native or your cluster automatically inherits the login node environment
+condaenv: 
+# Start
+# --------------------------
+# either one that exists already with
+sample_prefix: teaseq
+mudata_obj: data/teaseq_clustered.h5mu
+
+modalities:
+  rna: True 
+  prot: True
+  atac: True
+  rep: False
+  multimodal: False
+
+
+# on dot plots and bar plots, grouping vars are used to group other features (for categorical, continuous and feature plots)
+grouping_vars: 
+  - sample_id
+  - rna:leiden_res1
+  - atac:leiden_res0.3
+  - prot:leiden_res1
+
+#--------------------------------------------------
+# Plot markers
+#--------------------------------------------------
+custom_markers:
+  files:
+    # csv files  for full and minimal containing three columns:
+    # | mod  | feature  | group        |
+    # |------|----------|--------------|
+    # | prot | prot_CD8 | Tcellmarkers |
+    # | rna  | CD8A     | Tcellmarkers |
+    
+    # the full list will be plotted in dot plots and matrix plots, one plot per group
+    full: 
+      - custom_markers.csv
+    # the shorter list will be plotted on umaps as well as other plot types, one plot per group
+    minimal: 
+      - custom_markers.csv
+     
+    # | feature_1 | feature_2 | colour         |
+    # |-----------|-----------|----------------|
+    # | CD8A      | prot_CD8  |                |
+    # | CD4       | CD8A      | doublet_scores |
+    paired_scatters: 
+      - paired_scatters_markers.csv
+  # where different normalisation exists in a modality, choose which one to use, set X or leave blank to use the mdata[mod].X assay
+  layers:
+    rna:
+      - logged_counts
+    prot: 
+      - clr
+    atac:
+      - signac_norm
+
+
+#--------------------------------------------------
+# Plot metadata variables
+#--------------------------------------------------
+
+
+categorical_vars: &categorical_vars
+  # use mod:variable notation, 
+  # any metrics that you want to plot on all modality umaps go under "all"
+  # these variables will be plotted as categories
+  all:
+    - sample_id
+  rna:
+    - rna:leiden_res1
+    - rna:predicted_doublets
+  prot:
+    - prot:leiden_res1
+  atac:
+    - atac:leiden_res0.3
+  rep: 
+  multimodal:
+    - rna:leiden_res1
+
+continuous_vars: &continuous_vars
+  # use mod:variable notation, 
+  # any metrics that you want to plot on all modality umaps go under "all"
+  # these variables will be plotted as continous variables
+  all: 
+  rna: 
+    - rna:total_counts
+  prot: 
+    - prot:total_counts
+  atac:
+    - atac:total_counts
+  multimodal: 
+    - rna:total_counts
+   
+
+paired_scatters: 
+  - paired_scatters.csv
+
+# | feature_1 | feature_2 | colour         |
+# |-----------|-----------|----------------|
+# |rna:total_counts | prot:total_counts | doublet_scores |
+
+
+#--------------------------------------------------
+# Decide what plots to do
+#--------------------------------------------------
+
+do_plots:
+  # plot each categorical variable as a bar plot
+  # (e.g. categorical variable "cluster" on x axis and n cells on y)
+  categorical_barplots: True
+   # plot each grouping var as a bar plot, with categorical variables stacked.
+   # (e.g. grouping var "sample_id" on x axis and n cells on y and colored by categorical variable "cluster" in a stack)
+  categorical_stacked_barplots: True
+  #  # plot each continuous as a violin plot, .
+   # (e.g. grouping var "sample_id" on x axis and the continuous variable "doublet_scores" on y)
+  continuous_violin: True
+  # marker dotplots as produced by scanpy.pl.dotplot
+  marker_dotplots: True
+  # marker matrixplot as produced by scanpy.pl.matrixplot
+  marker_matrixplots: True
+  # scatter plots as define in paired_scatters csv file, 
+  # feature_1 on x, feature_2 on y and colorued by color
+  # values will be taken from the layers specified above
+  paired_scatters: True
+
+# embedding plots using the modality and embedding basis specified.
+# will plot all of minimal markers csv, and categorical and continous variables
+embedding:
+  rna: 
+    run: True
+    basis:
+      - X_umap_mindist_0.5
+      - X_pca
+  prot:
+    run: True
+    basis:
+      - X_umap_mindist_0.1
+  atac:
+    run: True
+    basis:
+      - X_umap_mindist_0.5
+
+    
+
+
+
