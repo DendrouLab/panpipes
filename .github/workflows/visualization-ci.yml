@@ -12,7 +12,7 @@ env:
   debug: 'true'
 
 jobs:
-  preprocessing:
+  visualization:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
