@@ -219,15 +219,16 @@ Parameters to compute the connectivity graph on Protein
     Defines if you want the batch correction to run. If set to `False`, `PCA` with default parameters is calculated. 
     
   - <span class="parameter">dimred</span> `String`, Default: PCA<br>
-    Defines if which dimensionality reduction to use, PCA or LSI 
+    Defines which dimensionality reduction to use. Available options are PCA and LSI.
     
   - <span class="parameter">tools</span> `String` (comma-separated), Default: harmony<br> 
-    Defines the method used to run batch correction, multiple can be selected.
-    choices: harmony, bbknn
+    Defines the method used to run batch correction.
+    Multiple can be selected by specifying them as a comma-seprated string without spaces.
+    Available options are: harmony, bbknn, and combat
        
    - <span class="parameter">column</span> `String` (comma-separated), Default: sample_id<br>
-
-     The column you want to batch correct on, if a comma-separated list is specified then all will be used simultaneously
+     The column you want to batch correct on.
+     If a comma-separated list is provided then all will be used simultaneously.
  
 #### Harmony arguments
   
@@ -241,23 +242,21 @@ Parameters to compute the connectivity graph on Protein
   For more information on `harmony` check the [harmony documentation](https://portals.broadinstitute.org/harmony/reference/RunHarmony.html)
 
   
-### BBKNN arguments
-
-
+#### BBKNN arguments
 
 - <span class="parameter">bbknn:</span>  
 
   - <span class="parameter">neighbors_within_batch:</span> `Integer`, Default: 3<br>
 
-For more information on `bbknn` check the [bbknn documentation](https://bbknn.readthedocs.io/en/latest/)
+For more information on `bbknn` check the [bbknn documentation](https://bbknn.readthedocs.io/en/latest/).
   
 
-### Find neighbour parameters 
+#### Find neighbour parameters 
 
 - <span class="parameter">neighbors:</span> `String` <br>
  
   - <span class="parameter">npcs</span> `Integer`, Default: 30<br>   
-   Number of principal components to calculate for neighbors and Umap
+   Number of principal components to calculate for neighbors and UMAP.
   
   -  <span class="parameter">k</span> `Integer`, Default: 30<br>
   Number of neighbors
@@ -273,21 +272,22 @@ For more information on `bbknn` check the [bbknn documentation](https://bbknn.re
 <span class="parameter">multimodal:</span> 
 
  - <span class="parameter">run</span> `Boolean`, Default: True<br>
- Leave False if you don't want to run multimodal integration 
+ Set to False if you don't want to run multimodal integration 
 
  - <span class="parameter">tools</span> `String`(Comma separated), Default: "WNN"<br>
  Method you want to use to run batch correction. Options include: WNN, totalvi and multiVI. You can specify mutiple methods and they will be run simultaneously. 
 
  - <span class="parameter">column_categorical</span> `String`(Comma separated), Default: sample_id<br>
- This is the column you want to run a batch correction on, multiple can be selected simultaneously. 
+ This is the column you want to run a batch correction on.
+ Mltiple columns can be selected simultaneously by providing them as a comma-separated string without spaces.
 
  Extra parameters: 
  
 ### TotalVI arguments
 
-  **totalvi has to run on both rna and protein data**
+  **TotalVI has to run on both rna and protein data**
   
-   These are the basic totalvi parameters required, you can add more if it fits your analysis better. 
+   This is the minimal set of TotalVI parameters required, you can add more if it fits your analysis better. 
 
  
  - <span class="parameter">totalvi:</span> 
@@ -296,8 +296,7 @@ For more information on `bbknn` check the [bbknn documentation](https://bbknn.re
    -  <span class="parameter">exclude_mt_genes</span> `Boolean`, Default: True<br>
    -  <span class="parameter">mt_column</span> `String`, Default: mt<br>
    -  <span class="parameter">filter_by_hvg</span> `Boolean`, Default: True<br>
-   
-   To filter manually create a column called prot_outliers in mdata['prot']
+      To filter manually create a column called prot_outliers in mdata['prot']
    
    -  <span class="parameter">filter_prot_outliers</span> `Boolean`, Default: False<br>
    -  <span class="parameter">model_args</span>:
@@ -313,9 +312,10 @@ For more information on `bbknn` check the [bbknn documentation](https://bbknn.re
 
   **MultiVI has to run on both rna and atac data**
 
-   These are the basic multivi parameters required, you can add more if it fits your analysis better. 
+   This is the minimal set of MultiVI parameters required, you can add more if it fits your analysis better. 
    
-   By setting lowmen to True it will subset the atac to the top 25k HVF which is recommended to deal with the concatenation of atac and rna on large datasets which at the moment is required by `scvi-tools`. Note that >100GB of RAM are required to concatenate atac,rna with 15k cells and 120k total features (union rna,atac)
+   Setting `lowmem` to True it will subset the ATAC data to the top 25k HVF which is recommended to deal with the concatenation of atac and rna on large datasets which at the moment is required by `scvi-tools`.
+   Note that >100GB of RAM are required to concatenate ATAC and RNA data with 15k cells and 120k total features (union rna,atac)
 
  -  <span class="parameter">MultiVI:</span>
   
@@ -331,30 +331,29 @@ For more information on `bbknn` check the [bbknn documentation](https://bbknn.re
         -  <span class="parameter">max_epochs</span> `Integer`, Default: 500<br>
         -  <span class="parameter">lr</span> `Float`, Default: 0.0001<br>
         -  <span class="parameter">use_gpu</span> `String`, Default: None<br>
-     Leave blank for default str, int and bool.
+           Leave blank for default str, int and bool.
         -  <span class="parameter">train_size</span> `Float`, Default: 0.9<br>
         -  <span class="parameter">validation_size</span> `String`, Default: None<br>
-    Leave blank for default
+           Leave blank for default
         -  <span class="parameter">batch_size</span> `Integer`, Default: 128<br>
         -  <span class="parameter">weight_decay</span> `Float`, Default: 0.001<br>
         -  <span class="parameter">eps</span> `Float`, Default: 1e-08<br>
         -  <span class="parameter">early_stopping</span> `Boolean`, Default: True<br>
         -  <span class="parameter">save_best</span> `Boolean`, Default: True<br>
         -  <span class="parameter">check_val_every_n_epoch</span> `String`, Default: None<br>
-   Leave blank for the default integer
+           Leave blank for the default integer
         -  <span class="parameter">n_steps_kl_warmup</span> `String`, Default: None<br>
-   Leave blank for the default integer
+           Leave blank for the default integer
         -  <span class="parameter">n_epochs_kl_warmup</span> `Integer`, Default: 50<br>
         -  <span class="parameter">adversarial_mixing</span> `Boolean`, Default: True<br>
   -  <span class="parameter">training_plan</span> `String`, Default: None<br>
   
   
-### Mofa
+### Mofa arguments
 
 **Requires at least two modalities, can run with three**
   
-  These are the basic mofa parameters required, you can add more if it fits your analysis better. 
-  
+  This is the minimal set of Mofa parameters required, you can add more if it fits your analysis better. 
 
 -  <span class="parameter">mofa:</span> 
    -  <span class="parameter">modalities</span> `String` (Comma separated), Default: rna,prot,atac<br>
@@ -362,21 +361,23 @@ For more information on `bbknn` check the [bbknn documentation](https://bbknn.re
    -  <span class="parameter">n_factors</span> `Integer`, Default: 10<br>
    -  <span class="parameter">n_iterations</span> `Integer`, Default: 1000<br>
    -  <span class="parameter">convergence_mode</span> `String`, Default: fast<br>
-    Choice between fast, medium, and slow
+      Choice between fast, medium, and slow
    -  <span class="parameter">save_parameters</span> `Boolean`, Default: False<br>
    -  <span class="parameter">outfile</span> `String`, Default: `path/to/h5ad/to_save_model_to`<br> 
 
-### WNN
+### WNN arguments
 
 **Requires at least two modalities, can run with three**
 
- These are the basic WNN parameters required, you can add more if it fits your analysis better. 
+ This is the minimal set of WNN parameters required, you can add more if it fits your analysis better.
+ Panpipes uses muon's implementation of WNN. 
  
-- <span class="parameter">WNN:</span> 
+- <span class="parameter">WNN:</span>
+    
   -  <span class="parameter">modalities</span> `String` (Comma separated), Default: rna, prot, atac <br>
   -  <span class="parameter">batch_corrected</span> `String`, Default: None<br>
   
-    Set the modality to one method ("bbknn", "scVI", "harmony", "scanorama"), if left None, a default de novo calculation of neighbours on non-corrected data for that modality using specified parameters
+       Set the modality to one method ("bbknn", "scVI", "harmony", "scanorama"), if left None, a default de novo calculation of neighbours on non-corrected data for that modality using specified parameters
      -  <span class="parameter">rna</span> `String`, Default: None<br>
         Options here include "bbknn" and "harmony"
 
@@ -391,7 +392,7 @@ For more information on `bbknn` check the [bbknn documentation](https://bbknn.re
       -  <span class="parameter">atac</span> `String`, Default: *atac_neighbors<br>
 
    - <span class="parameter">n_neighbors</span> `String`, Default: "leave blank"<br>
-  Leave blank to arithmetic mean across modalities neighbors 
+     Leave blank to arithmetic mean across modalities neighbors 
 
    - <span class="parameter">n_bandwidth_neighbors</span> `Integer`, Default: 20<br>
 
@@ -401,11 +402,13 @@ For more information on `bbknn` check the [bbknn documentation](https://bbknn.re
 
    - <span class="parameter">low_memory</span> `Boolean`, Default: True<br>
 
-
+### KNN calculation for multimodal analysis
   - <span class="parameter">neighbors:</span> 
       -  <span class="parameter">npcs</span> `Integer`, Default: 30<br>
-
-    The number of principal components to calculate for neighbors and umap. If no correction is applied PCA will be calculated and used to run the UMAP. If harmony is chosen it will use the following components to create a corrected dimensionality reduction 
+         The number of principal components to calculate for neighbors and UMAP.
+         If no correction is applied PCA will be calculated and used to run the UMAP.
+         If harmony is chosen it will use the following components to create a corrected dimensionality reduction.
+    
      -  <span class="parameter">k</span> `Integer`, Default: 30<br>
      -  <span class="parameter">metric</span> `String`, Default: euclidean<br>
    Options include euclidean and cosine
@@ -414,27 +417,31 @@ For more information on `bbknn` check the [bbknn documentation](https://bbknn.re
    Options include scanpy and hnsw
 
 
-### Plot 
+## Plotting parameters 
 
-- <span class="parameter">plotqc:</span> 
-Grouping must be a categorical variable
+- <span class="parameter">plotqc:</span> <br>
    -  <span class="parameter">grouping_var</span> `String`, Default: sample_id<br>
+      Column name(s) of the covariate(s) you want to group the plot on. Must be a categorical variable.
+      Must be provided as a comma-separated String, without spaces.
+   
+Specify other metrics you want to plot on each modalities embedding. One plot per group will be created.
+Use the notation mod:variable notation.
+These can be categorical or numeric variables.
+Any metrics you may want to plot on all modality UMAPs should be listed under `all`.
    -  <span class="parameter">all</span> `String`, Default: rep:receptor_subtype<br>
-
- Any metrics you may want to plot on all modality umaps should be listed under all the modalities
-
    -  <span class="parameter">rna</span> `String`, Default: rna:total_counts<br>
    -  <span class="parameter">prot</span> `String`, Default: prot:total_counts<br>
    -  <span class="parameter">atac</span>  `String`, Default: atac:total_counts<br>
    -  <span class="parameter">multimodal</span> `String`, Default: rna:total_counts<br>
 
+If you want to add any additional plots, simply remove the log file (logs/plot_batch_corrected_umaps.log) and run `panpipes integration make plot_umaps`.
 
-
-### Make final object 
+## Creating the final object 
 
 Leave this final option blank until you have reviewed the results from running `papipes integration make full`. 
 
-This step will produce a mudata object with one layer and one correction per modality, and one multimodal layer. For unimodal integration select the uncorrected version and use "no_correction". 
+This step will produce a mudata object with one layer and one correction per modality, and one multimodal layer.
+For unimodal integration select the uncorrected version and use "no_correction". 
 
 **Then run**`panpipes integration make merge_integration`
 
