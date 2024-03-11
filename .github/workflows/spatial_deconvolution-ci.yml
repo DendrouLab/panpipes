@@ -79,6 +79,7 @@ jobs:
         run: |
           cd deconvolution
           sed -i 's+condaenv:+conda_env: pipeline_env+g' pipeline.yml
+          sed -i 's+use_gpu:+use_gpu: False+g' pipeline.yml
 
       - name: File tree
         if: env.debug == 'true'
