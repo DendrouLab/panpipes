@@ -40,7 +40,6 @@ jobs:
       - name: Install Panpipes
         shell: bash -el {0}
         run: |
-          pip install -e .
           pip install .[spatial]
           conda list
 
