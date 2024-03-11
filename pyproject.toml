@@ -20,8 +20,8 @@ classifiers = [
 requires-python = ">= 3.10"
 
 dependencies = [
-    "jax==0.4.23",
-    "jaxlib==0.4.23",
+    "jax",
+    "jaxlib",
     "apsw",
     "bbknn",
     "cgatcore",
@@ -59,6 +59,8 @@ notebook = [
     "jupyterlab"
 ]
 spatial = [
+    "jax==0.4.23",
+    "jaxlib==0.4.23",
     "squidpy",
     "cell2location",
     "tangram-sc"
