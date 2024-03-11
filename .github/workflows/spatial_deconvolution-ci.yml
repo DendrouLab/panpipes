@@ -12,7 +12,7 @@ env:
   debug: 'true'
 
 jobs:
-  preprocessing:
+  spatial_deconvolution:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
