@@ -20,8 +20,8 @@ classifiers = [
 requires-python = ">= 3.10"
 
 dependencies = [
-    "jax",
-    "jaxlib",
+    "jax==0.4.23",
+    "jaxlib==0.4.23",
     "apsw",
     "bbknn",
     "cgatcore",
