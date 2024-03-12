@@ -1,76 +1,59 @@
 # ============================================================
 # Integration workflow Panpipes (pipeline_integration.py)
 # ============================================================
-# written by Charlotte Rich-Griffin, Fabiola Curion
-
-# compute resource options
-# ------------------------
-resources:
-  # Number of threads used for parallel jobs
-  # this must be enough memory to load your mudata and do computationally intensive tasks
-  threads_high: 1
-  # this must be enough memory to load your mudata and do computationally light tasks
-  threads_medium: 1
-  # this must be enough memory to load text files and do plotting, requires much less memory than the other two
-  threads_low: 1
-  # if you access to a gpu-specific queue, how many gpu threads to request, make sure to edit the queues section below,
-  # so that panpipes can find your gpu queue
-  threads_gpu: 2
-# path to conda env, leave blank if running native or your cluster automatically inherits the login node environment
-condaenv:
-
-# allows for tweaking which queues jobs get submitted to, 
-# in case there is a special queue for long jobs or you have access to a gpu-specific queue
-# the default queue should be specified in your .cgat.yml file
-# leave blank if you do not want to use the alternative queues
-queues:
-  long: 
-  gpu:  
-
-# Start
-# --------------------------
-# either one that exists already with
-sample_prefix: test
-#this is what comes out of the filtering/preprocessing
-preprocessed_obj: ../preprocess/test.h5mu
-# contains layers: raw_counts, logged_counts, and has scaled or logged counts in X 
+# This file contains the parameters for the integration workflow.
+# For full descriptions of the parameters, see the documentation at https://panpipes-pipelines.readthedocs.io/en/latest/yaml_docs/pipeline_integration_yml.html
 
 
 #--------------------------
+# Compute resources options
+#--------------------------
+resources:
+  threads_high: 1
+  threads_medium: 1
+  threads_low: 1
+
+  threads_gpu: 2
+
+condaenv:
+
+queues:
+  long:
+  gpu:
+
+# --------------------------------
+# Loading and merging data options
+# --------------------------------
+
+# ----------------------------
+# Data format
+sample_prefix: test
+preprocessed_obj: ../preprocess/test.h5mu
+
+
+#-----------------
 # Batch correction
-# -------------------------
-# unimodal: correct each modality independently
+# ----------------
+# Batch correction is done unimodal, meaning each modality is batch corrected independently
+
+# ------------
+# RNA modality
 rna:
-  # True or false depending on whether you want to run batch correction
-  run: True 
-  # what method(s) to use to run batch correction, you can specify multiple 
-  # choices: harmony,bbknn,scanorama,scvi (comma-seprated string, no spaces)
+  run: True
   tools: harmony,bbknn,scanorama,scvi
-  # this is the column you want to batch correct on. if you specify a comma separated list, 
-  # they will be all used simultaneosly. 
-  # Specifically all columns specified will be merged into one 'batch' columns.
-  # if you want to test correction for one at a time, 
-  # specify one at a time and run the pipeline in different folders i.e. integration_by_sample, 
-  # integration_by_tissue ...
   column: sample_id 
-  #-----------------------------
-  # Harmony args
-  #-----------------------------
+
+  # Harmony arguments
   harmony:
-  # sigma value, used by Harmony
-    sigma: 0.1 
-  # theta value used by Harmony, default is 1
+    sigma: 0.1
     theta: 1.0
-  # number of pcs, used by Harmony
     npcs: 30
-  #----------------------------
+
   # BBKNN args # https://bbknn.readthedocs.io/en/latest/
-  #-----------------------------
   bbknn:
     neighbors_within_batch: 
-  #-----------------------------
+
   # SCVI args
-  #-----------------------------
   scvi:
     exclude_mt_genes: True
     mt_column: mt
@@ -89,143 +72,81 @@ rna:
         lr_scheduler_metric: 
         lr_patience: 8
         lr_factor: 0.1
-  #----------------------------
-  # find neighbour parameters
-  #-----------------------------
-  # to reuse these params, (for example for WNN) please use anchors (&) and scalars (*) in the relevant place
-  # i.e. &rna_neighbors will be called by *rna_neighbors where referenced
-  neighbors: &rna_neighbors 
-  # number of Principal Components to calculate for neighbours and umap:
-  #   -if no correction is applied, PCA will be calculated and used to run UMAP and clustering on
-  #   -if Harmony is the method of choice, it will use these components to create a corrected dim red.)
-  # the maximum number of dims for neighbors calculation can only only be lower or equal to the total number of dims for PCA or Harmony
-  # note: scvelo default is 30
+
+  # Find neighbour parameters
+  neighbors: &rna_neighbors
     npcs: 30
-    # number of neighbours
     k: 30
-    # metric: euclidean | cosine
     metric: euclidean
-    # scanpy | hnsw (from scvelo)
     method: scanpy
 
-#--------------------------
+# ----------------
+# Protein modality
 prot:
-  # True or false depending on whether you want to run batch correction
-  run: True 
-  # what method(s) to use to run batch correction, you can specify multiple 
-  # choices: harmony,bbknn,combat
+  run: True
   tools: harmony
-  # this is the column you want to batch correct on. if you specify a comma separated list (no spaces), 
-  # they will be all used simultaneosly. if you want to test correction for one at a time, 
-  # specify one at a time and run the pipeline in different folders i.e. integration_by_sample, 
-  # integration_by_tissue ...
   column: sample_id 
-  #----------------------------
+
   # Harmony args
-  #-----------------------------
   harmony:
-  # sigma value, used by Harmony
-    sigma: 0.1 
-  # theta value used by Harmony, default is 1
+    sigma: 0.1
     theta: 1.0
-  # number of pcs, used by Harmony
     npcs: 30
-  #----------------------------
+
   # BBKNN args # https://bbknn.readthedocs.io/en/latest/
-  #-----------------------------
   bbknn:
     neighbors_within_batch: 
-  #----------------------------›
-  # find neighbour parameters
-  #-----------------------------
+
+  # Find neighbour parameters
   neighbors: &prot_neighbors
-    # number of Principal Components to calculate for neighbours and umap:
-    #   -if no correction is applied, PCA will be calculated and used to run UMAP and clustering on
-    #   -if Harmony is the method of choice, it will use these components to create a corrected dim red.)
-    # note: scvelo default is 30
     npcs: 30
-    # number of neighbours
     k: 30
-    # metric: euclidean | cosine
     metric: euclidean
-    # scanpy | hnsw (from scvelo)
     method: scanpy
-#--------------------------
+
+# -------------
+# ATAC modality
 atac:
-  # True or false depending on whether you want to run batch correction
   run: False
-  # which dimensionality reduction to expect, LSI or PCA
-  dimred: PCA 
-  # what method(s) to use to run batch correction, you can specify multiple 
-  # (comma-seprated string, no spaces)
-  # choices: harmony,bbknn,combat
-  tools: 
-  # this is the column you want to batch correct on. if you specify a comma separated list, 
-  # they will be all used simultaneosly. if you want to test correction for one at a time, 
-  # specify one at a time and run the pipeline in different folders i.e. integration_by_sample, 
-  # integration_by_tissue ...
+  dimred: PCA
+  tools:
   column: sample_id 
-  #----------------------------
+
   # Harmony args
-  #-----------------------------
   harmony:
-  # sigma value, used by Harmony
-    sigma: 0.1 
-  # theta value used by Harmony, default is 1
+    sigma: 0.1
     theta: 1.0
-  # number of pcs, used by Harmony
     npcs: 30
-  #----------------------------
+
   # BBKNN args # https://bbknn.readthedocs.io/en/latest/
-  #-----------------------------
   bbknn:
     neighbors_within_batch: 
-  #----------------------------
-  # find neighbour parameters
-  #-----------------------------
+
+  # Find neighbour parameters
   neighbors: &atac_neighbors
-    # number of Principal Components to calculate for neighbours and umap:
-    #   -if no correction is applied, PCA will be calculated and used to run UMAP and clustering on
-    #   -if Harmony is the method of choice, it will use these components to create a corrected dim red.)
-    # note: scvelo default is 30
     npcs: 30
-    # number of neighbours
     k: 30
-    # metric: euclidean | cosine
     metric: euclidean
-    # scanpy | hnsw (from scvelo)
     method: scanpy
-#----------------------------------------------
+
+
+#-----------------------
 # multimodal integration
+# ----------------------
 # remember to specify knn graph params in the section "neighbors"
-#----------------------------------------------
 multimodal:
-  # True or false depending on whether you want to run batch correction
-  run: True 
-  # what method(s) to use to run batch correction, you can specify multiple 
-  # choices: totalvi, mofa, MultiVI, WNN
-  # list e.g. below
+  run: True
   tools: 
     - WNN
     - totalvi
     - multiVI
-
-  # this is the column you want to batch correct on. if you specify a comma separated list, 
-  # they will be all used simultaneosly. if you want to test correction for one at a time, 
-  # specify one at a time and run the pipeline in different folders i.e. integration_by_sample, 
-  # integration_by_tissue ...
   column_categorical: sample_id 
-  # extra params:
+
+  # TotalVI arguments
   totalvi:
-    # this is a minimal set of parameters that will be expected
-    # you can add any other param from the tutorials and they will
-    # be parsed alongside the others
-  
-    # totalvi will run on rna and prot
     modalities: rna,prot
     exclude_mt_genes: True
     mt_column: mt
-    # to filter outliers manually create a column called prot_outliers in mdata['prot'].obs
     filter_by_hvg: True
     filter_prot_outliers: False
     model_args: 
@@ -235,148 +156,90 @@ multimodal:
       train_size: 0.9
       early_stopping: True
     training_plan: None
+
+  # MultiVI arguments
   MultiVI:
-    # this is a minimal set of parameters that will be expected
-    # you can add any other param from the tutorials and they will
-    # be parsed alongside the others
-    # leave arguments blank for default
     lowmem: True
-    # Set lowmem to True will subset the atac to the top 25k HVF. 
-    # This is to deal with concatenation of atac,rna on large datasets which at the moment is suboptimally required by scvitools.
-    # >100GB of RAM are required to concatenate atac,rna with 15k cells and 120k total features (union rna,atac)
     model_args:
-      # (default: None)
-      n_hidden :  
-      # (default: None)
-      n_latent :  
-      #(bool,default: True)
-      region_factors : True 
-       #{‘normal’, ‘ln’} (default: 'normal')
+      n_hidden :
+      n_latent :
+      region_factors : True
       latent_distribution : 'normal'
-      #(bool,default: False)
-      deeply_inject_covariates : False 
-      #(bool, default: False)
-      fully_paired : False 
+      deeply_inject_covariates : False
+      fully_paired : False
+
     training_args:
-      #(default: 500)
-      max_epochs : 500 
-      #float (default: 0.0001)
-      lr : 0.0001 
-      #leave blanck for default str | int | bool | None (default: None)
+      max_epochs : 500
+      lr : 0.0001
       use_gpu :
-      # float (default: 0.9)
-      train_size : 0.9 
-      # leave blanck for default, float | None (default: None)
-      validation_size : 
-      # int (default: 128)
+      train_size : 0.9
+      validation_size :
       batch_size : 128
-      #float (default: 0.001)
-      weight_decay : 0.001 
-      #float (default: 1e-08)
-      eps : 1e-08 
-      #bool (default: True)
-      early_stopping : True 
-      #bool (default: True)
+      weight_decay : 0.001
+      eps : 1e-08
+      early_stopping : True
       save_best : True
-       #leave blanck for default int | None (default: None)
       check_val_every_n_epoch :
-      #leave blanck for default int | None (default: None)
-      n_steps_kl_warmup : 
-       # int | None (default: 50)
+      n_steps_kl_warmup :
       n_epochs_kl_warmup : 50
-      #bool (default: True)
-      adversarial_mixing : True 
-       #leave blanck for default dict | None (default: None)
+      adversarial_mixing : True
     training_plan :
+
+  # Mofa arguments
   mofa:
-    # this is a minimal set of parameters that will be expected
-    # you can add any other param from the tutorials and they will
-    # be parsed alongside the others
-    #  (comma-separated string, no spaces)
     modalities: rna,prot,atac
     filter_by_hvg: True
     n_factors: 10
     n_iterations: 1000
-    #pick one among fast, medium, slow
     convergence_mode: fast
     save_parameters: False
-    #if save_parameters True, set the following, otherwise leave blank
     outfile: path/to/h5ad/to_save_model_to
+
+  # WNN arguments
   WNN:
-    # muon implementation of WNN 
-    modalities: rna,prot,atac 
-    # run wnn on batch corrected unimodal data, set each of the modalities you want to use to calc WNN to ONE method.
-    # leave to None and it will default to de novo calculation of neighbours on non corrected data for that modality using specified params 
+    modalities: rna,prot,atac
     batch_corrected:
-      # options are: "bbknn", "scVI", "harmony", "scanorama"
       rna: None
-      # options are "harmony", "bbknn"
       prot: None
-      # options are "harmony"
-      atac: None 
-    # please use anchors (&) and scalars (*) in the relevant place
-    # i.e. &rna_neighbors will be called by *rna_neighbors where referenced
+      atac: None
+
+    # please use anchors (&) and scalars (*) if necessary
     knn:
       rna: *rna_neighbors
       prot: *prot_neighbors
       atac: *atac_neighbors
-    #WNN has its own neighbors search, specify here  
-    n_neighbors: #leave blank and it will default to aritmetic mean across modalities neighbors
+
+    # WNN neighbour search
+    n_neighbors:
     n_bandwidth_neighbors: 20
     n_multineighbors: 200
     metric: 'euclidean'
     low_memory: True
-  
-  ###
-  # neighbours knn calculation for multimodal analysis. 
-  ###
+
+  # KNN calculation for multimodal analysis
   neighbors:
-    # number of Principal Components to calculate for neighbours and umap:
-    #   -if no correction is applied, PCA will be calculated and used to run UMAP and clustering on
-    #   -if Harmony is the method of choice, it will use these components to create a corrected dim red.)
-    # note: scvelo default is 30
     npcs: 30
-    # number of neighbours
     k: 30
-    # metric: euclidean | cosine
     metric: euclidean
-    # scanpy | hnsw (from scvelo)
     method: scanpy
 
 
-
-#-----------------------------
-# Plot
-#-----------------------------
+#--------------------
+# Plotting parameters
+#--------------------
 plotqc:
-  # grouping var must be a categorical varible, 
-  #  (comma-seprated strings, no spaces)
-  # umaps comparing the integration (one plot per value in the group)
-  # for each batch correction column plus any extras in grouping var
   grouping_var: sample_id
-  # what other metrics do you want to plot on each modalities embedding, (one plot per group)
-  # use mod:variable notation, 
-  # any metrics that you want to plot on all modality umaps go under "all"
-  # these can be categorical or numeric
+
   all: rep:receptor_subtype
   rna: rna:total_counts
   prot: prot:total_counts
   atac:
   multimodal: rna:total_counts
-  # if you want to add any additional plots, just remove the log file logs/plot_batch_corrected_umaps.log
-  # and run panpipes integration make plot_umaps
 
-# ----------------
-# Make final object
-# ----------------
-# Final choices: Leave blank until you have reviewed the results from running
-# panpipes integration make full
-# This step will produce a mudata object with one layer per modality with 
-# one correction per modality and one multimodal layer.
-# Choose the integration results you want to merge in the final object
-# For unimodal integration: to pick the uncorrected version use "no_correction"
-# then run
-# panpipes integration make merge_integration
+
+# -------------------------
+# Creating the final object
+# -------------------------
 final_obj:
   rna:
     include: True
@@ -390,4 +253,3 @@ final_obj:
   multimodal:
     include: True
     bc_choice: totalvi
-
