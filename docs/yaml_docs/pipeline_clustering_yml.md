@@ -12,7 +12,7 @@
 
 In this documentation, the parameters of the `clustering` configuration yaml file are explained.
 This file is generated running `panpipes clustering config`. <br>
-The individual steps run by the pipeline are described in [clustering worlfow](https://panpipes-pipelines.readthedocs.io/en/latest/workflows/clustering.html)
+The individual steps run by the pipeline are described in [clustering workflow](https://panpipes-pipelines.readthedocs.io/en/latest/workflows/clustering.html)
 
 When running the clustering workflow, panpipes provides a basic `pipeline.yml` file.
 To run the workflow on your own data, you need to specify the parameters described below in the `pipeline.yml` file to meet the requirements of your data.
@@ -55,11 +55,11 @@ Prefix for the sample that comes out of the filtering/ preprocessing steps of th
 
 
 - <span class="parameter">scaled_obj</span> `String`, Mandatory parameter, Default: mdata_scaled.h5mu<br>
- Path to the output file from preprocessing (e.g. `../preprocess/mdata_scaled.h5mu`).
+ Path to the output file from preprocessing (e.g. `../preprocessed/mdata_scaled.h5mu`).
  Ensure that the path to the file is correct.  
 
 - <span class="parameter">full_obj</span> `String`, Default: <br>
-  Speficy the full object if your scaled_obj contains only HVG.  If your scaled_obj contains all the genes then leave full_obj blank. 
+  Specify the full object if your scaled_obj contains only HVG.  If your scaled_obj contains all the genes then leave full_obj blank. 
   panpipes will use the full object to do marker genes analysis (rank_gene_groups) and for plotting those genes. 
 - <span class="parameter">modalities</span><br>
   - <span class="parameter">rna</span> `Boolean`, Default: True<br>
@@ -68,14 +68,14 @@ Prefix for the sample that comes out of the filtering/ preprocessing steps of th
   - <span class="parameter">spatial</span> `Boolean`, Default: False<br>
   Run clustering on each individual modality.
 
-- <span class="parameter">moltimodal</span><br>
+- <span class="parameter">multimodal</span><br>
   - <span class="parameter">rna_clustering</span> `Boolean`, Default: True<br>
   - <span class="parameter">integration_method</span> `String`, Default: WNN<br>
-  Options here include WNN, moda, and totalVI, and it tells us where to look for.
+  Options here include WNN, mofa, and totalVI, and it tells us where to look for.
 
 ## Parameters for finding neighbours 
 
-- <span class="parameter">neighors:</span> 
+- <span class="parameter">neighbors:</span> 
  Sets the number of neighbors to use when calculating the graph for clustering and umap.
   - <span class="parameter">rna:</span> 
 
@@ -204,18 +204,18 @@ When pseudo_seurat is set to True then a [python implementation](https://github.
        - <span class="parameter">method </span> `String`, Default: t-test_overestim_var<br>
        Options include: ‘logreg’, ‘t-test’, ‘wilcoxon’, ‘t-test_overestim_var’
        - <span class="parameter">mincels </span> `Integer`, Default: 10<br>
-       If the number of clusters contains less than the number of cells maker analysis is not necessary.
+       Minimal number of cells in a cluster. If the cluster contains less than this number of cells, the marker analysis won't be run.
        - <span class="parameter">pseudo_seurat </span> `Boolean`, Default: False<br>
        - <span class="parameter">minpct </span> `Float`, Default: 0.1<br>
        This parameter is mandatory if pseudo_seurat is set to True 
        - <span class="parameter">threshuse </span> `Float`, Default: 0.25<br>
-       TThis parameter is mandatory if pseudo_seurat is set to True 
+       This parameter is mandatory if pseudo_seurat is set to True 
  - <span class="parameter">prot:</span><br>
    - <span class="parameter">run </span> `Boolean`, Default: True<br>
    - <span class="parameter">layer </span> `String`, Default: clr<br>
        Which layer stores counts for differential expression test.
    - <span class="parameter">mincels </span> `Integer`, Default: 10<br>
-       If the number of clusters contains less than the number of cells maker analysis is not necessary.
+       Minimal number of cells in a cluster. If the cluster contains less than this number of cells, the marker analysis won't be run.
    - <span class="parameter">method </span> `String`, Default: wilcoxon<br>
    - <span class="parameter">pseudo_seurat </span> `Boolean`, Default: False<br>
    - <span class="parameter">minpct </span> `Float`, Default: 0.1<br>
@@ -229,7 +229,7 @@ When pseudo_seurat is set to True then a [python implementation](https://github.
       Which layer stores counts for differential expression test. 
        Options include logged_counts, signac_norm , and logTF_norm,logIDF_norm
     - <span class="parameter">mincels </span> `Integer`, Default: 10<br>
-       If the number of clusters contains less than the number of cells maker analysis is not necessary.
+       Minimal number of cells in a cluster. If the cluster contains less than this number of cells, the marker analysis won't be run.
     - <span class="parameter">method </span> `String`, Default: wilcoxon<br>
         Options include: ‘logreg’, ‘t-test’, ‘wilcoxon’, ‘t-test_overestim_var’
     - <span class="parameter">pseudo_seurat </span> `Boolean`, Default: False<br>
@@ -241,7 +241,7 @@ When pseudo_seurat is set to True then a [python implementation](https://github.
 
  - <span class="parameter">multimodal:</span><br>
    - <span class="parameter">mincels </span> `Integer`, Default:10<br>
-       If the number of clusters contains less than the number of cells maker analysis is not necessary.
+       If the cluster contains less than this number of cells, the marker analysis won't be run.
     - <span class="parameter">method </span> `String`, Default: wilcoxon<br>
         Options include: ‘logreg’, ‘t-test’, ‘wilcoxon’, ‘t-test_overestim_var’
     - <span class="parameter">pseudo_seurat </span> `Boolean`, Default: False<br>
@@ -258,14 +258,14 @@ When pseudo_seurat is set to True then a [python implementation](https://github.
    - <span class="parameter">method </span> `String`, Default: t-test_overestim_var<br>
         Options include: ‘logreg’, ‘t-test’, ‘wilcoxon’, ‘t-test_overestim_var’
    - <span class="parameter">mincels </span> `Integer`, Default: 10<br>
-       If the number of clusters contains less than the number of cells maker analysis is not necessary.
+       Minimal number of cells in a cluster. If the cluster contains less than this number of cells, the marker analysis won't be run.
    - <span class="parameter">pseudo_seurat </span> `Boolean`, Default: False<br>
    - <span class="parameter">minpct </span> `Float`, Default: 0.1<br>
       This parameter is mandatory if pseudo_seurat is set to True 
    - <span class="parameter">threshuse </span> `Float`, Default: 0.25<br>
        This parameter is mandatory if pseudo_seurat is set to True 
 ## Plot specifications
-Used to define which metadata columns are used in the visualisations 
+Used to define which metadata columns are used in the visualizations 
  - <span class="parameter">plotspecs:</span><br>
    - <span class="parameter">layers: </span><br>
      - <span class="parameter">rna </span> `String`, Default: logged_counts<br>
