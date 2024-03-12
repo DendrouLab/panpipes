@@ -86,7 +86,7 @@ custom_genes_file: resources/qc_genelist_1.0.csv
 
 # (for pipeline_ingest.py)
 calc_proportions: hb,mt,rp
-score_genes: MarkersNeutro
+score_genes: 
 
 # cell cycle action
 ccgenes: default
