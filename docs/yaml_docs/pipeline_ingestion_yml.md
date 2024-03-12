@@ -205,8 +205,13 @@ To calculate RNA QC metrics, we need to define a gene list providing additional 
 Additionally, we can specify what actions we want to apply to the genes, such as what metrics to calculate.
 
 <span class="parameter">custom_genes_file</span>`String`, Default: resources/qc_genelist_1.0.csv<br>
-    Path to the file containing the entire gene list. Panpipes provides such a file with standard genes, and the path to this file is set as default.
- 
+    Path to the file containing the entire human gene list. Panpipes provides such a file with standard genes, and the path to this file is set as default.
+
+However, if the input is from mouse data then the user must provide the mouse gene list as shown here: 
+
+ <span class="parameter">custom_genes_file</span>`String`, Default: qc_gene_list_mouse.csv<br>
+
+This mouse gene list can be found in the panpipes [resources](https://github.com/DendrouLab/panpipes/blob/mouse_gene_list_upload/panpipes/resources/qc_gene_list_mouse.csv)
 
 Usually, it's convenient to rely on known gene lists, as this simplifies various downstream tasks, such as evaluating the percentage of mitochondrial genes in the data, identify ribosomal genes, or excluding IGG genes from HVG selection.
 For the ingestion workflow, we retrieved the cell cycle genes used in `scanpy.score_genes_cell_cycle` [Satija et al. (2015), Nature Biotechnology](https://www.nature.com/articles/nbt.3192) and stored them in a file: panpipes/resources/cell_cicle_genes.tsv.
