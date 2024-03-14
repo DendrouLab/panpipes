@@ -1,0 +1,100 @@
+name: Run tutorials (spatial preprocessing)
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+env:
+  debug: 'true'
+
+jobs:
+  spatial_preprocessing:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ["ubuntu-latest"] # , "macos-latest", "windows-latest"
+        python-version: ["3.10"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: File tree
+        if: env.debug == 'true'
+        run: tree
+
+      - uses: conda-incubator/setup-miniconda@v3
+        with:
+          miniforge-version: latest
+          auto-activate-base: true
+          auto-update-conda: true
+          channels: conda-forge
+          channel-priority: strict
+          activate-environment: pipeline_env
+          environment-file: pipeline_env.yaml
+
+      - name: Install Panpipes
+        shell: bash -el {0}
+        run: |
+          pip install .[spatial]
+          conda list
+
+      - name: Conda info
+        if: env.debug == 'true'
+        shell: bash -el {0}
+        run: conda info
+
+      - name: Conda list
+        if: env.debug == 'true'
+        shell: pwsh
+        run: conda list
+
+
+      - name: Preparing the data
+        run: |
+          mkdir spatial spatial/preprocess spatial/preprocess/data
+          cd spatial/preprocess/data 
+          
+          curl -L -o V1_Human_Heart_unfilt.h5mu https://figshare.com/ndownloader/files/45031048
+          curl -L -o V1_Human_Lymph_Node_unfilt.h5mu https://figshare.com/ndownloader/files/45031051
+
+      # Note: we run the following to test that the commands works
+      - name: Preparing the configuration file
+        shell: bash -el {0}
+        run: |
+          cd spatial/preprocess
+          panpipes preprocess_spatial config
+
+      - name: Edit the submission file
+        run: |
+          spatial/preprocess
+          curl -o pipeline.yml https://raw.githubusercontent.com/DendrouLab/panpipes-tutorials/main/docs/preprocess_spatial_data/pipeline.yml
+
+      - name: Replace template contents in configuration file
+        run: |
+          spatial/preprocess
+          sed -i 's+../ingestion/qc.data/+./data/+g' pipeline.yml
+
+      - name: File tree
+        if: env.debug == 'true'
+        run: tree spatial/preprocess
+
+      - name: Review pipeline tasks
+        shell: bash -el {0}
+        run: |
+          spatial/preprocess
+          panpipes preprocess_spatial show full --local
+
+      - name: Run pipeline tasks
+        shell: bash -el {0}
+        run: |
+          spatial/preprocess
+          panpipes preprocess_spatial make full --local
+
+      - name: File tree
+        if: env.debug == 'true'
+        run: tree spatial/preprocess
