@@ -1,0 +1,108 @@
+name: Run tutorials (spatial ingest merfish)
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+env:
+  debug: 'true'
+
+jobs:
+  spatial_ingest_merfish:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ["ubuntu-latest"] # , "macos-latest", "windows-latest"
+        python-version: ["3.10"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: File tree
+        if: env.debug == 'true'
+        run: tree
+
+      - uses: conda-incubator/setup-miniconda@v3
+        with:
+          miniforge-version: latest
+          auto-activate-base: true
+          auto-update-conda: true
+          channels: conda-forge
+          channel-priority: strict
+          activate-environment: pipeline_env
+          environment-file: pipeline_env.yaml
+
+      - name: Install Panpipes
+        shell: bash -el {0}
+        run: |
+          pip install .[spatial]
+          conda list
+
+      - name: Conda info
+        if: env.debug == 'true'
+        shell: bash -el {0}
+        run: conda info
+
+      - name: Conda list
+        if: env.debug == 'true'
+        shell: pwsh
+        run: conda list
+
+
+      - name: Preparing the data
+        run: |
+          mkdir spatial spatial/ingestion_merfish spatial/ingestion_merfish/data
+          cd spatial/ingestion_merfish/data 
+          curl -O datasets_mouse_brain_map_BrainReceptorShowcase_Slice1_Replicate1_cell_by_gene_S1R1.csv https://figshare.com/ndownloader/files/45028624
+          curl -O datasets_mouse_brain_map_BrainReceptorShowcase_Slice1_Replicate1_cell_metadata_S1R1.csv https://figshare.com/ndownloader/files/45028621
+          mkdir images
+          cd images 
+          curl -O datasets_mouse_brain_map_BrainReceptorShowcase_Slice1_Replicate1_images_micron_to_mosaic_pixel_transform.csv https://figshare.com/ndownloader/files/45028645
+        
+
+      # Note: we run the following to test that the commands works
+      - name: Preparing the configuration file
+        shell: bash -el {0}
+        run: |
+          cd spatial/ingestion_merfish
+          panpipes qc_spatial config
+
+      - name: Preparing the submission file
+        run: |
+          cd spatial/ingestion_merfish
+          curl -o sample_file_qc_spatial.txt https://raw.githubusercontent.com/DendrouLab/panpipes-tutorials/main/docs/ingesting_merfish_data/sample_file_qc_spatial.txt
+
+      - name: Preparing the yaml file
+        run: |
+          cd spatial/ingestion_merfish
+          curl -o pipeline.yml https://raw.githubusercontent.com/DendrouLab/panpipes-tutorials/main/docs/ingesting_merfish_data/pipeline.yml
+
+      - name: Replace template contents in configuration file
+        run: |
+          cd spatial/ingestion_merfish
+          sed -i 's+condaenv:+conda_env: pipeline_env+g' pipeline.yml
+
+      - name: File tree
+        if: env.debug == 'true'
+        run: tree spatial/ingestion_merfish
+
+      - name: Review pipeline tasks
+        shell: bash -el {0}
+        run: |
+          cd spatial/ingestion_merfish
+          panpipes qc_spatial show full --local
+
+      - name: Run pipeline tasks
+        shell: bash -el {0}
+        run: |
+          cd spatial/ingestion_merfish
+          panpipes qc_spatial make full --local
+
+      - name: File tree
+        if: env.debug == 'true'
+        run: tree spatial/ingestion_merfish
