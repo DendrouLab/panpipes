@@ -71,12 +71,12 @@ jobs:
 
       - name: Edit the submission file
         run: |
-          spatial/preprocess
+          cd spatial/preprocess
           curl -o pipeline.yml https://raw.githubusercontent.com/DendrouLab/panpipes-tutorials/main/docs/preprocess_spatial_data/pipeline.yml
 
       - name: Replace template contents in configuration file
         run: |
-          spatial/preprocess
+          cd spatial/preprocess
           sed -i 's+../ingestion/qc.data/+./data/+g' pipeline.yml
 
       - name: File tree
@@ -86,13 +86,13 @@ jobs:
       - name: Review pipeline tasks
         shell: bash -el {0}
         run: |
-          spatial/preprocess
+          cd spatial/preprocess
           panpipes preprocess_spatial show full --local
 
       - name: Run pipeline tasks
         shell: bash -el {0}
         run: |
-          spatial/preprocess
+          cd spatial/preprocess
           panpipes preprocess_spatial make full --local
 
       - name: File tree
