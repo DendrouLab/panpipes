@@ -1,4 +1,4 @@
-name: Run tutorials (spatial ingest visium)
+name: Run tutorials (spatial ingest merfish)
 
 on:
   push:
@@ -12,7 +12,7 @@ env:
   debug: 'true'
 
 jobs:
-  spatial_ingest_visium:
+  spatial_ingest_merfish:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -56,51 +56,48 @@ jobs:
 
       - name: Preparing the data
         run: |
-          mkdir spatial spatial/ingestion spatial/ingestion/data
-          cd spatial/ingestion/data 
-          mkdir V1_Human_Heart V1_Human_Lymph_Node
-          cd V1_Human_Heart
-          curl -O https://cf.10xgenomics.com/samples/spatial-exp/1.0.0/V1_Human_Heart/V1_Human_Heart_filtered_feature_bc_matrix.h5
-          curl -O https://cf.10xgenomics.com/samples/spatial-exp/1.0.0/V1_Human_Heart/V1_Human_Heart_spatial.tar.gz
-          tar -xf V1_Human_Heart_spatial.tar.gz
-          cd ../V1_Human_Lymph_Node
-          curl -O https://cf.10xgenomics.com/samples/spatial-exp/1.0.0/V1_Human_Lymph_Node/V1_Human_Lymph_Node_filtered_feature_bc_matrix.h5
-          curl -O https://cf.10xgenomics.com/samples/spatial-exp/1.0.0/V1_Human_Lymph_Node/V1_Human_Lymph_Node_spatial.tar.gz
-          tar -xf V1_Human_Lymph_Node_spatial.tar.gz
+          mkdir spatial spatial/ingestion_merfish spatial/ingestion_merfish/data
+          cd spatial/ingestion_merfish/data 
+          curl -L -o datasets_mouse_brain_map_BrainReceptorShowcase_Slice1_Replicate1_cell_by_gene_S1R1.csv https://figshare.com/ndownloader/files/45028624
+          curl -L -o datasets_mouse_brain_map_BrainReceptorShowcase_Slice1_Replicate1_cell_metadata_S1R1.csv https://figshare.com/ndownloader/files/45028621
+          mkdir images
+          cd images 
+          curl -L -o datasets_mouse_brain_map_BrainReceptorShowcase_Slice1_Replicate1_images_micron_to_mosaic_pixel_transform.csv https://figshare.com/ndownloader/files/45028645
+        
 
       # Note: we run the following to test that the commands works
       - name: Preparing the configuration file
         shell: bash -el {0}
         run: |
-          cd spatial/ingestion
+          cd spatial/ingestion_merfish
           panpipes qc_spatial config
 
       - name: Preparing the submission file
         run: |
-          cd spatial/ingestion
-          curl -o sample_file_qc_spatial.txt https://raw.githubusercontent.com/DendrouLab/panpipes-tutorials/main/docs/ingesting_visium_data/sample_file_qc_spatial.txt
+          cd spatial/ingestion_merfish
+          curl -o sample_file_qc_spatial.txt https://raw.githubusercontent.com/DendrouLab/panpipes-tutorials/main/docs/ingesting_merfish_data/sample_file_qc_spatial.txt
 
       - name: Preparing the yaml file
         run: |
-          cd spatial/ingestion
-          curl -o pipeline.yml https://raw.githubusercontent.com/DendrouLab/panpipes-tutorials/main/docs/ingesting_visium_data/pipeline.yml
+          cd spatial/ingestion_merfish
+          curl -o pipeline.yml https://raw.githubusercontent.com/DendrouLab/panpipes-tutorials/main/docs/ingesting_merfish_data/pipeline.yml
 
       - name: File tree
         if: env.debug == 'true'
-        run: tree spatial/ingestion
+        run: tree spatial/ingestion_merfish
 
       - name: Review pipeline tasks
         shell: bash -el {0}
         run: |
-          cd spatial/ingestion
+          cd spatial/ingestion_merfish
           panpipes qc_spatial show full --local
 
       - name: Run pipeline tasks
         shell: bash -el {0}
         run: |
-          cd spatial/ingestion
+          cd spatial/ingestion_merfish
           panpipes qc_spatial make full --local
 
       - name: File tree
         if: env.debug == 'true'
-        run: tree spatial/ingestion
+        run: tree spatial/ingestion_merfish
