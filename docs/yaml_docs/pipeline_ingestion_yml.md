@@ -243,8 +243,8 @@ exclude: exclude these genes from the HVG selection, if they are deemed HV.
 <span class="parameter">calc_proportions</span> `String` (comma-separated), Default: hb,mt,rp<br>
     Specify what gene proportions you want to calculate for each cell (e.g. mt for mitochondrial).
     
-<span class="parameter">score_genes</span> `String`, Default: MarkersNeutro<br>
-    Specify what genes should be scored.
+<span class="parameter">score_genes</span> `String`, Default: (blank) <br>
+     Specify what genes should be scored.
 
 Furthermore, there is the possibility to define a cell cycle action:
 
