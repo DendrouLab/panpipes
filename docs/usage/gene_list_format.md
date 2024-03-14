@@ -40,8 +40,10 @@ For a typical usecase, we provide example lists on our [github page](https://git
 
 ### Cell cycle genes
 
-The cellcycle genes used in [scanpy.score_genes_cell_cycle](https://scanpy.readthedocs.io/en/stable/generated/scanpy.tl.score_genes_cell_cycle.html) 
+The human-only cellcycle genes used in [scanpy.score_genes_cell_cycle](https://scanpy.readthedocs.io/en/stable/generated/scanpy.tl.score_genes_cell_cycle.html) 
 are stored in [resources/cell_cycle_genes.csv](https://github.com/DendrouLab/panpipes/blob/main/panpipes/resources/cell_cycle_genes.tsv)
+
+However, if you are working with mouse data, we supply an alternative cellcycle gene list with murine genes, which  can be found in [resources/mouse_cell_cycle_genes.tsv](https://github.com/DendrouLab/panpipes/blob/mouse_cell_cycle/panpipes/resources/mouse_cell_cycle_genes.tsv)
 
 Differently from the other custom gene file, the cell cycle file should be a **tab separated file with two columns**:
 
@@ -67,7 +69,7 @@ If left blank, these actions will not be performed (i.e. no calculation of % of 
 
 ### Supplying custom gene lists to calculate QC metrics
 
-The custom genelist file can be supplied by the user in two workflows to perform the three main actions:
+The human custom genelist file can be supplied by the user in two workflows to perform the three main actions:
 
 1. **Ingest workflow**
 
@@ -87,6 +89,23 @@ The custom genelist file can be supplied by the user in two workflows to perform
 
 *Note that we have formatted an example file containing all genes to use in both workflows, and therefore supply the same file to both workflows but users can have independent files for each of them.*
 
+However, if the input is from mouse data then, the custom genelist file can be supplied by the user in two workflows to perform the three main actions:
+
+1. **Ingest workflow**
+
+    pipeline_ingest config file: (pipeline.yml)
+
+    ```yaml
+    custom_genes_file: resources/qc_gene_list_mouse.csv
+    ```
+
+2. **Preprocess workflow**
+
+    pipeline_preprocess config file: (pipeline.yml)
+
+    ```yaml
+    exclude_file: resources/qc_gene_list_mouse.csv
+    ```
 ### Explaining custom gene lists actions
 
 1. **Ingest workflow** (pipeline_ingest.py)
