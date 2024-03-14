@@ -60,11 +60,11 @@ Prefix for the sample that comes out of the filtering/ preprocessing steps of th
 
 <span class="parameter">preprocessed_obj</span> `String`, Mandatory parameter<br>
  Path to the output file from preprocessing (e.g. `../preprocess/test.h5mu`).
- Ensure that the submission file must be in the right format and that the right path is provided.
+ Ensure that the submission file is in the right format and that the correct path is provided.
 
 ## Batch correction
 
-**Batch correction is done unimodal, meaning each modality is batch corrected independently.**
+**Batch correction is done in unimodal mode, meaning each modality is batch corrected independently.**
 
 ### RNA modality
 
@@ -138,7 +138,7 @@ For more information on `bbknn` check the [bbknn documentation](https://bbknn.re
          
   For more information on `scvi` check the [scvi documentation](https://docs.scvi-tools.org/en/stable/api/reference/scvi.model.SCVI.html)
 
-#### Find neighbour parameters 
+#### KNN calculation on RNA modality
 Parameters to compute the connectivity graph on RNA
 
 - <span class="parameter">neighbors:</span> `String`<br>
@@ -191,7 +191,7 @@ For more information on `harmony` check the [harmony documentation](https://port
 
 For more information on `bbknn` check the [bbknn documentation](https://bbknn.readthedocs.io/en/latest/) 
 
-#### Find neighbour parameters 
+#### KNN calculation on Protein modality
 
 Parameters to compute the connectivity graph on Protein
 
@@ -251,7 +251,7 @@ Parameters to compute the connectivity graph on Protein
 For more information on `bbknn` check the [bbknn documentation](https://bbknn.readthedocs.io/en/latest/).
   
 
-#### Find neighbour parameters 
+#### KNN calculation on ATAC modality
 
 - <span class="parameter">neighbors:</span> `String` <br>
  
@@ -424,8 +424,8 @@ For more information on `bbknn` check the [bbknn documentation](https://bbknn.re
       Column name(s) of the covariate(s) you want to group the plot on. Must be a categorical variable.
       Must be provided as a comma-separated String, without spaces.
    
-Specify other metrics you want to plot on each modalities embedding. One plot per group will be created.
-Use the notation mod:variable notation.
+Specify other metrics you want to plot on each modality's embedding. One plot per group will be created.
+Use the notation `mod:variable` .
 These can be categorical or numeric variables.
 Any metrics you may want to plot on all modality UMAPs should be listed under `all`.
    -  <span class="parameter">all</span> `String`, Default: rep:receptor_subtype<br>
@@ -438,10 +438,12 @@ If you want to add any additional plots, simply remove the log file (logs/plot_b
 
 ## Creating the final object 
 
-Leave this final option blank until you have reviewed the results from running `papipes integration make full`. 
+Leave this final option blank until you have reviewed the results from running `panpipes integration make full`. 
 
-This step will produce a mudata object with one layer and one correction per modality, and one multimodal layer.
-For unimodal integration select the uncorrected version and use "no_correction". 
+This step will produce a `MuData` object with one layer for each modality, and the multimodal embeddings are stored as global view. 
+To store the embeddings resulting from batch correction algorithms applied for each modality, set the relevant `include` to `True` and specify which algorithms you want to retain. The embeddings generated from the multimodal runs are stored in the global mudata layer.
+To select the uncorrected unimodal embeddings, use "no_correction" for the relevant modalities. 
+Setting the `include` parameter to `False` for a specific modality will generate a `Mudata` without that modality.
 
 **Then run**`panpipes integration make merge_integration`
 
