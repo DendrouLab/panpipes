@@ -82,11 +82,6 @@ jobs:
           cd spatial/ingestion_merfish
           curl -o pipeline.yml https://raw.githubusercontent.com/DendrouLab/panpipes-tutorials/main/docs/ingesting_merfish_data/pipeline.yml
 
-      - name: Replace template contents in configuration file
-        run: |
-          cd spatial/ingestion_merfish
-          sed -i 's+condaenv:+conda_env: pipeline_env+g' pipeline.yml
-
       - name: File tree
         if: env.debug == 'true'
         run: tree spatial/ingestion_merfish
