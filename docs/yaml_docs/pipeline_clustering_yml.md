@@ -271,5 +271,6 @@ Used to define which metadata columns are used in the visualizations
      - <span class="parameter">rna </span> `String`, Default: logged_counts<br>
      - <span class="parameter">prot </span> `String`, Default: clr<br>
      - <span class="parameter">atac </span> `String`, Default: signac_norm<br>
-     - <span class="parameter">spatial </span> `?`, Default: ?<br> 
+     - <span class="parameter">spatial </span> `String`, Default: None<br> 
+     Options include lognorm and norm_pearson_resid depending what was selected on preprocessing. 
   - <span class="parameter">top_n_markers </span> `Integer`, Default: 10<br>
