@@ -30,7 +30,7 @@ See [installation instructions here](https://panpipes-pipelines.readthedocs.io/e
 We recommend installing panpipes in a conda environment, we provide a minimal conda config file in `pipeline_env.yaml`
 
 ```
-conda env create --file=pipeline_env.yml 
+conda env create --file=pipeline_env.yaml 
 ```
 
 In this environment, you can install nightly version of panpipes, i.e. cloning this repo and installing it from main.
