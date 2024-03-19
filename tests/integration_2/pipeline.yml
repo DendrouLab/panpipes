@@ -40,7 +40,7 @@ preprocessed_obj: teaseq.h5mu
 # unimodal: correct each modality independently
 rna:
   # True or false depending on whether you want to run batch correction
-  run: False 
+  run: True 
   # what method(s) to use to run batch correction, you can specify multiple 
   # choices: harmony,bbknn,scanorama,scvi (comma-seprated string, no spaces)
   tools: harmony,scvi
@@ -151,7 +151,7 @@ prot:
 #--------------------------
 atac:
   # True or false depending on whether you want to run batch correction
-  run: True
+  run: False
   # which dimensionality reduction to expect, LSI or PCA
   dimred: LSI 
   # what method(s) to use to run batch correction, you can specify multiple 
@@ -228,7 +228,7 @@ multimodal:
     model_args: 
       latent_distribution: "normal"
     training_args:
-      max_epochs: 100
+      max_epochs: 40
       train_size: 0.9
       early_stopping: True
     training_plan: None
