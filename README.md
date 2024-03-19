@@ -9,7 +9,7 @@ Panpipes allows reliable and customisable analysis and evaluation of individual 
 
 **See our [documentation](https://panpipes-pipelines.readthedocs.io/en/latest/) and our [preprint](https://www.biorxiv.org/content/10.1101/2023.03.11.532085v2)**  
 
-These workflows make use of [cgat-core](https://github.com/cgat-developers/cgat-core):
+These workflows make use of [cgat-core](https://github.com/cgat-developers/cgat-core)
 
 Available workflows:
 
@@ -27,13 +27,26 @@ Available workflows:
 
 See [installation instructions here](https://panpipes-pipelines.readthedocs.io/en/latest/install.html)
 
+We recommend installing panpipes in a conda environment, we provide a minimal conda config file in `pipeline_env.yaml`
+
+```
+conda env create --file=pipeline_env.yml 
+```
+
+In this environment, you can install nightly version of panpipes, i.e. cloning this repo and installing it from main.
+
+```
+git clone https://github.com/DendrouLab/panpipes.git
+cd panpipes
+pip install -e .
+```
+
+
 Oxford BMRC Rescomp users find additional advice in [docs/installation_rescomp](https://github.com/DendrouLab/panpipes/blob/main/docs/installation_rescomp.md)
 
 ## Releases
 
-`panpipes v0.4.0` is out [now](./CHANGELOG.md)!
-
-The `ingest` workflow now expects different headers for the RNA and Protein modalities.
+Since `panpipes v0.4.0` ,the `ingest` workflow expects different headers for the RNA and Protein modalities from the previous releases.
 Check the example [submission file](https://github.com/DendrouLab/panpipes/blob/main/docs/usage/sample_file_qc_mm.md) and the [documentation](https://panpipes-pipelines.readthedocs.io/en/latest/usage/setup_for_qc_mm.html) for more detailed instructions.
 
 ## Citation
@@ -45,4 +58,4 @@ bioRxiv 2023.03.11.532085; doi: https://doi.org/10.1101/2023.03.11.532085](https
 ## Contributors
 
 Created and Maintained by Charlotte Rich-Griffin and Fabiola Curion.
-Additional contributors: Sarah Ouologuem, Devika Agarwal, Lilly May, Kevin Rue-Albrecht, Lukas Heumos.
+Additional contributors: Sarah Ouologuem, Devika Agarwal, Lilly May, Kevin Rue-Albrecht, Giulia Garcia, Lukas Heumos.

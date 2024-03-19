@@ -204,7 +204,7 @@ def prot_preprocess( log_file, scaled_file, ):
             if PARAMS['prot_solver'] == "default":
                 cmd += " --pca_solver arpack"
             else:
-                cmd += " --pca_solver %(pca_solver)s"
+                cmd += " --pca_solver %(prot_solver)s"
         cmd += """ 
         --run_pca True
         --n_pcs %(prot_n_pcs)s

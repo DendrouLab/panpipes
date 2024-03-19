@@ -23,3 +23,6 @@ The flowchart indicates which tools are available for each modality out of RNA (
 The ideal way to run `panpipes integration` is to use the output `MuData` file from `panpipes preprocess`, as this will make sure the MuData object has correctly names layers and slots.
 
 The MuData object required should contain normalised data in the X slot of each modality,  a 'raw_counts' layer in each modality, and a sample_id column in each slot of the obs and the outer obs. A plus is a PCA in the obsm slot for each modality, if not it will be calculated on the flight with default parameters.
+
+ ## Algorithms supported by panpipes for uni and multimodal integration 
+ Please check [Integration methods implemented in panpipes](https://github.com/DendrouLab/panpipes/blob/docs_g/docs/usage/integration_methods.md)  for a description of the algorithms and source references for the methods used in the integration step. 

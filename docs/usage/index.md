@@ -13,4 +13,5 @@ filter_dict_instructions
 normalization_methods
 different_entry_points
 setup_for_spatial_workflows
+integration_methods
 ```
