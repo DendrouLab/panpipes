@@ -105,7 +105,7 @@ def postfilterplot_spatial(filt_file,log_file):
 
 @transform(filter_mudata,
            regex("./filtered.data/(.*)_filtered.h5(.*)"), 
-           r"./logs/st_preprocess.\1.log")
+           r"./logs/preprocess.\1.log")
 def spatial_preprocess(filt_file,log_file):
     if os.path.exists("figures/spatial") is False:
         os.mkdir("figures/spatial")
