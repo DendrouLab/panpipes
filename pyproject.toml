@@ -66,6 +66,11 @@ spatial = [
     "cell2location",
     "tangram-sc"
 ]
+
+multivipatch = [
+    "scvi-tools<=0.20.3",
+    "requests"
+]
 [project.scripts]
 panpipes = "panpipes:entry.main"
 
