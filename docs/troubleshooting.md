@@ -74,14 +74,6 @@ File "/data/leuven/344/vsc34406/Miniconda3/envs/Panpipes/lib/python3.9/site-pack
 
 
 
-
-
-
-
-
-
-
-
 ### Wrong cell_cycle gene list inputted
 **No valid genes were passed for scoring**
 
