@@ -38,6 +38,7 @@ palette_choice = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564
 # cmap_choice = "BuPu" # previous default = "viridis"
 bupu = cm.get_cmap('BuPu', 512)
 cmap_choice= ListedColormap(bupu(np.linspace(0.1, 1, 256)))
+dpi_use = 400 # previous default of 300 made the plots look blurry with high cell numbers (200k+)
 
 
 # load metadata
@@ -87,7 +88,7 @@ for mod in umaps_df['mod'].unique():
         os.mkdir(os.path.join(args.fig_dir, mod))
     L.info("plotting modality: %s" % mod)
     plt_df = umaps_df[umaps_df['mod'] == mod].copy()
-    pointsize = 10000 / plt_df.shape[0]
+    pointsize = 100000 / plt_df.shape[0]
     plt_df["method"] = plt_df["method"].astype("category")
     # put none at the top of the list
     if mod != "multimodal":
@@ -113,11 +114,11 @@ for mod in umaps_df['mod'].unique():
         #plt_df = plt_df.sort_values(by="umap_1")
         g = sns.FacetGrid(plt_df, col="method", col_wrap=3, sharex=False, sharey=False)
         g = (g.map(sns.scatterplot, "umap_1", "umap_2", col, s=pointsize, linewidth=0))
-        g.add_legend() 
+        plt.legend(loc = 'center left', bbox_to_anchor = (1, 0.5), markerscale = 20)
         g.savefig(os.path.join(args.fig_dir, mod, "umap_method_" + str(col) + ".png"))
         fig, ax = batch_scatter_two_var(plt_df, "method", col, palette_choice=palette_choice)
         if fig is not None:
-            fig.savefig(os.path.join(args.fig_dir, mod,  "umap_method_facet_" + str(col) + ".png"), dpi=300)
+            fig.savefig(os.path.join(args.fig_dir, mod,  "umap_method_facet_" + str(col) + ".png"), dpi=dpi_use)
         plt.clf()
 
     ncats  = len(plt_df['method'].unique())
@@ -165,7 +166,7 @@ for mod in umaps_df['mod'].unique():
                         cbar_ax = fig.add_axes([0.85, 0.35, 0.025, 0.35])
                         fig.colorbar(im, cbar_ax)
                     fig.suptitle(qc)
-                    plt.savefig(os.path.join(args.fig_dir, mod , "umap_method_" + qc + ".png"), dpi = 300)
+                    plt.savefig(os.path.join(args.fig_dir, mod , "umap_method_" + qc + ".png"), dpi = dpi_use)
                     plt.clf()
                 else:
                     # this is a categorical colored plot
@@ -174,10 +175,10 @@ for mod in umaps_df['mod'].unique():
                         L.info("plotting qc var (categorical) %s"%qc)
                         g = sns.FacetGrid(plt_df, col="method", col_wrap=3, sharex=False, sharey=False)
                         g = (g.map(sns.scatterplot, "umap_1", "umap_2", qc, s=pointsize, linewidth=0))
-                        g.add_legend() 
-                        g.savefig(os.path.join(args.fig_dir, mod, "umap_method_" + qc + ".png"), dpi = 300)
+                        plt.legend(loc = 'center left', bbox_to_anchor = (1, 0.5), markerscale = 20)
+                        g.savefig(os.path.join(args.fig_dir, mod, "umap_method_" + qc + ".png"), dpi = dpi_use)
                         plt.clf()
                     else:
-                        L.info('skipping plot as too many categorys %s' % qc )
+                        L.info('skipping plot as too many categories %s' % qc )
 
 L.info('done')
