@@ -202,8 +202,8 @@ scatter_files = [PARAMS['paired_scatters'], PARAMS['custom_markers_files']['pair
 scatter_files = [sc if type(sc) is list else [sc] for sc in scatter_files if sc is not None]
 scatter_files = list(set(chain(*scatter_files)))
 @follows(set_up_dirs)
-@active_if(PARAMS['do_plots_paired_scatters'])
 @active_if(len(scatter_files) != 0)
+@active_if(PARAMS['do_plots_paired_scatters'])
 @transform(scatter_files,
             formatter(), "logs/scatters__{basename[0]}.log")
 def plot_scatters(infile, log_file):
