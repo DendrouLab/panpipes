@@ -109,10 +109,9 @@ mamba install python=3.10 r-base=4.3.0
 5. Install dependencies
 
 ```bash
-mamba install -c conda-forge r-tidyverse r-optparse r-ggforce r-ggraph r-xtab
+conda install -c conda-forge r-tidyverse r-optparse r-ggforce r-ggraph r-xtable r-hdf5r r-clustree r-cowplot
 pip install panpipes
 ```
-
 
 
 ### Option 2: python venv environment
