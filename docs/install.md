@@ -81,10 +81,11 @@ Follow these steps to install pertpy on an Apple Silicon machine:
 1. Install [Homebrew]
 
 2. Install Apple Silicon version of Mambaforge (If you already have Anaconda/Miniconda installed, make sure
-   having both mamba and conda won't cause conflicts)
+   having both mamba and conda won't cause conflicts). Additionally, we need clang which is included in llvm, so we install that as well.
 
 ```bash
 brew install --cask mambaforge
+brew install llvm
 ```
 
 3. Create a new environment using mamba (here with python 3.10) and activate it
