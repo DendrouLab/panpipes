@@ -66,10 +66,48 @@ On dot plots and bar plots, grouping vars are used to group other features (for 
 ## Plot Markers 
 <span class="parameter">custom_markers</span><br>
   - <span class="parameter">files</span><br>
-    - <span class="parameter">files</span><br>
   
+The csv files for full and minimal must contain three columns:
+
+  | mod  | feature  | group        |
+  |------|----------|--------------|
+  | prot | prot_CD8 | Tcellmarkers |
+  | rna  | CD8A     | Tcellmarkers |
+
+  - <span class="parameter">full:</span><br>
+The full list will be plotted in dot plots and matrix plots, with one plot per group. 
+
+ - <span class="parameter">minimal:</span><br>
+The shorter list will be plotted on umaps as well as other plot types, with one plot per group. 
+
+ | feature_1 | feature_2 | colour         |
+ |-----------|-----------|----------------|
+ | CD8A      | prot_CD8  |                |
+ | CD4       | CD8A      | doublet_scores |
+    
+  
+- <span class="parameter">paired_scatter:</span>`String`, Default:  <br>
+  Where different normalization exists in a modality, choose which one to use, set X or leave blank to use the mdata[mod].X assay. 
+
+- <span class="parameter">layers:</span><br>
+  - <span class="parameter">rna:</span>`String`, Default: logged_counts<br>
+  - <span class="parameter">prot:</span>`String`, Default: logged_counts<br> CHEEECKKKK
+  - <span class="parameter">atac:</span>`String`, Default: logged_counts<br> CHHHHECKKK
+    
+## Plot metadata variables 
+
+- <span class="parameter">categorical_vars:</span>`String`, Default: &categorical_vars<br>
+  - <span class="parameter">all:</span>`String`, Default: rep:receptor_subtype  sample_id<br>
+Metrics to be plotted on every modality. 
+  - <span class="parameter">rna:</span>`String`, Default: rna:predicted_doublets  rna:phase<br>
+  - <span class="parameter">prot:</span>`String`, Default: prot:leiden_res0.2    prot:leiden_res1<br>
+  - <span class="parameter">atac:</span>`String`, Default: <br>
+  - <span class="parameter">rep:</span>`String`, Default: prot:rep:has_ir<br>
+  - <span class="parameter">multimodal:</span>`String`, Default: leiden_totalVI    mdata_colsr<br>
 
 
+
+STOPED AT YAML LINE 98 
 
 
 
