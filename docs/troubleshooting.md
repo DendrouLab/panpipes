@@ -98,3 +98,22 @@ ValueError: No valid genes were passed for scoring. \
 - Delete the log folders and any temp files
 - Run `panpipes ingest make ful`
 
+
+### Running preprocessed with RNA-only PlotQC error 
+**No such file or directory**
+First: check the log files to see what went wrong.
+- In this case the pipeline failed at:
+```
+FileNotFoundError: [Errno 2] No such file or directory:
+```
+ - After checking the error, check which log file to inspect by checking the Job line:
+```
+ Task = def pipeline_preprocess.filter_mudata(...): \
+ Job  = [None -> humanised_preprocessed.h5mu] \
+```
+- Before proceeding, double-check the `pipeline.yml` to see if the correct path was provided for the mudata object.
+- Once the user is sure the path is correct, the next step is to check the modalities in the `pipeline.yml`
+- In this case, the mudata object contains only RNA and that was the only modality set for `True`, however in the `plotqc` variable there are metrics for `prot_metrics` when there is no protein in the data.
+- To fix the issue, clear the metrics in `prot_metrics`
+- Delete the log folder and any temp files
+- Re-run `panpipes preprocess make full`
