@@ -78,7 +78,7 @@ This is because panpipes relies on [scvi-tools], which currently only supports e
 
 Follow these steps to install pertpy on an Apple Silicon machine:
 
-1. Install [Homebrew]
+1. Install [Homebrew](https://brew.sh/)
 
 2. Install Apple Silicon version of Mambaforge (If you already have Anaconda/Miniconda installed, make sure
    having both mamba and conda won't cause conflicts). Additionally, we need clang which is included in llvm, so we install that as well.
