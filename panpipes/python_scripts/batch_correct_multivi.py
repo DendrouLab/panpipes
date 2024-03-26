@@ -130,7 +130,7 @@ L.info("concatenating modalities to comply with multiVI")
 # adata_paired.var = pd.concat([rna.var,atac.var])
 if rna.is_view:
     L.info("RNA is view")
-    atac = rna.copy()
+    rna = rna.copy()
 if atac.is_view:
     L.info("ATAC is view")
     atac = atac.copy()
