@@ -228,6 +228,9 @@ def run_scvi(outfile):
      --figdir figures/rna/
      """
     # cannot use the normal method for importing params from yaml, because it only works up to depth 2
+    # fetch seeds
+    scvi_params =  PARAMS['rna']['scvi']
+    cmd += " --scvi_seed %s" % scvi_params['seed']
     neighbor_params = PARAMS['rna']['neighbors']
     if neighbor_params['method'] is not None:
         cmd += " --neighbors_method %s" % neighbor_params['method']
@@ -550,6 +553,10 @@ def run_totalvi(outfile):
      --output_csv %(outfile)s 
      --figdir figures/
      """
+    scvi_params =  PARAMS['multimodal']['totalvi']
+    cmd += " --scvi_seed %s" % scvi_params['seed']
+    
+
     if PARAMS['multimodal_column_categorical'] is not None:
         cmd += "--integration_col_categorical %(multimodal_column_categorical)s "
     neighbor_params = PARAMS['multimodal']['neighbors']
@@ -587,7 +594,10 @@ def run_multivi(outfile):
      --output_csv %(outfile)s 
      --figdir figures/
      """
+    scvi_params =  PARAMS['multimodal']['MultiVI']
+    cmd += " --scvi_seed %s" % scvi_params['seed']
     
+
     if PARAMS['multimodal_column_categorical'] is not None:
         cmd += "--integration_col_categorical %(multimodal_column_categorical)s "
 

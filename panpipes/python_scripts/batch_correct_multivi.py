@@ -46,6 +46,8 @@ parser.add_argument('--neighbors_k', default=30,
                     help="neighbors k")
 parser.add_argument('--neighbors_metric',default="euclidean",
                     help="neighbor metric, e.g. euclidean or cosine")
+parser.add_argument('--scvi_seed',default=None,
+                    help="set explicitly seed to make runs reproducible")
 
 
 
@@ -57,7 +59,10 @@ sc.set_figure_params(facecolor="white")
 sc.settings.autoshow = False
 sc.settings.figdir = args.figdir
 
-scvi.settings.seed = 1492
+if args.scvi_seed is not None:
+    scvi.settings.seed = int(args.scvi_seed)
+else:
+    scvi.settings.seed = 1492
 # load parameters
 
 threads_available = multiprocessing.cpu_count()
