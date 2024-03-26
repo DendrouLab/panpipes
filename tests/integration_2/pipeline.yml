@@ -70,6 +70,7 @@ rna:
   # SCVI args
   #-----------------------------
   scvi:
+    seed: 1492
     exclude_mt_genes: True
     mt_column: mt
     model_args:
@@ -214,6 +215,7 @@ multimodal:
   column_categorical: dataset
   # extra params:
   totalvi:
+    seed: 1492
     # this is a minimal set of parameters that will be expected
     # you can add any other param from the tutorials and they will
     # be parsed alongside the others
@@ -233,6 +235,7 @@ multimodal:
       early_stopping: True
     training_plan: None
   MultiVI:
+    seed: 1492
     # this is a minimal set of parameters that will be expected
     # you can add any other param from the tutorials and they will
     # be parsed alongside the others
