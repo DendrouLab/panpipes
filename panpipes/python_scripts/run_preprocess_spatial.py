@@ -108,6 +108,7 @@ elif "raw_counts" in spatial.layers :
     L.info(".layers['raw_counts'] already exists and copying it to .X")
     spatial.X = spatial.layers['raw_counts'].copy()
 else:
+    L.error("X is not raw data and 'raw_counts' layer not found")
     sys.exit("X is not raw data and 'raw_counts' layer not found")
 
 L.info("Using raw counts for HVG selection & normalization")
