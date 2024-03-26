@@ -6,6 +6,7 @@
 We recommend running panpipes within a virtual environment to prevent conflicts.
 
 ### Option 1: create conda environment (Recommended)
+>Note: For installation instructions on Apple machines with M chips, scroll down.
 
 To Run panpipes, we install it in a conda environment with R and python.
 Panpipes has a lot of dependencies, so you may want to consider the faster [`mamba`](https://mamba.readthedocs.io/en/latest/index.html) instead of `conda` for installation.
@@ -70,6 +71,49 @@ or
 ```bash
 apt-get install time
 ```
+
+#### Installation on Apple Silicon M chips
+If you intend to install panpipes via conda on a macOS machine with M-Chip, you might face issues when installing or using certain workflows of panpipes.
+This is because panpipes relies on [scvi-tools], which currently only supports execution on Apple Silicon machines when installed using a native Python version (owing to a dependency on JAX).
+
+Follow these steps to install pertpy on an Apple Silicon machine:
+
+1. Install [Homebrew](https://brew.sh/)
+
+2. Install Apple Silicon version of Mambaforge (If you already have Anaconda/Miniconda installed, make sure
+   having both mamba and conda won't cause conflicts). Additionally, we need clang which is included in llvm, so we install that as well.
+
+```bash
+brew install --cask mambaforge
+brew install llvm
+```
+
+3. Create a new environment using mamba (here with python 3.10) and activate it
+
+```bash
+conda config --add channels conda-forge
+conda config --set channel_priority strict
+# you should remove the strict priority afterwards!
+mamba search r-base
+mamba create --name pipeline_env
+mamba activate pipeline_env
+```
+
+4. Add the osx-64 channel to the environment, then install Python and R
+Because not all R packages are available via the ARM64 channel, we need to specify the osx-64 channel to install all required R packages.
+
+```bash
+conda config --env --set subdir osx-64
+mamba install python=3.10 r-base=4.3.0
+```
+
+5. Install dependencies
+
+```bash
+conda install -c conda-forge r-tidyverse r-optparse r-ggforce r-ggraph r-xtable r-hdf5r r-clustree r-cowplot
+pip install panpipes
+```
+
 
 ### Option 2: python venv environment
 
