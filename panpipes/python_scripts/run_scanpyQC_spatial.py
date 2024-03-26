@@ -80,6 +80,9 @@ if args.customgenesfile is not None:
         L.info("Reading in custom genes file from '%s'" % args.customgenesfile)
         cat_dic = {}
         customgenes = pd.read_csv(args.customgenesfile)
+        if not {'group', 'feature'}.issubset(customgenes.columns):
+            L.error("The custom genes file needs to have both columns, 'group' and 'feature'.")
+            sys.exit.error("The custom genes file needs to have both columns, 'group' and 'feature'.")
         custom_cat = list(set(customgenes['group'].tolist()))
         for cc in custom_cat:
             cat_dic[cc] = customgenes.loc[customgenes["group"] == cc,"feature"].tolist()
@@ -112,6 +115,7 @@ if args.customgenesfile is not None:
                                     use_raw=None)
         
     else:
+        L.error("The path of the custom genes file '%s' could not be found" % args.customgenesfile)
         sys.exit("The path of the custom genes file '%s' could not be found" % args.customgenesfile)
 
         
@@ -134,11 +138,15 @@ if args.ccgenes is not None:
     if os.path.exists(args.ccgenes):
         L.info("Reading in cell cycle genes tsv file from '%s'" % args.ccgenes)
         ccgenes = pd.read_csv(args.ccgenes, sep='\t')
+        if not {'cc_phase', 'gene_name'}.issubset(ccgenes.columns):
+            L.error("The cell cycle genes file needs to have both columns, 'cc_phase' and 'gene_name'.")
+            sys.exit.error("The cell cycle genes file needs to have both columns, 'cc_phase' and 'gene_name'.")
         sgenes = ccgenes[ccgenes["cc_phase"] == "s"]["gene_name"].tolist()
         g2mgenes = ccgenes[ccgenes["cc_phase"] == "g2m"]["gene_name"].tolist()
         L.info("Calculating cell cycle scores")
         sc.tl.score_genes_cell_cycle(spatial, s_genes=sgenes, g2m_genes=g2mgenes)
     else: 
+        L.error("The path of the  cell cycle genes tsv file '%s' could not be found" % args.ccgenes)
         sys.exit("The path of the  cell cycle genes tsv file '%s' could not be found" % args.ccgenes)
 
 
