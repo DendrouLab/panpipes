@@ -8,6 +8,7 @@ Workflows configuration files
     pipeline_ingestion_yml
     pipeline_preprocess_yml
     pipeline_integration_yml
+    pipeline_clustering_yml
     spatial_qc
     spatial_preprocess
     spatial_deconvolution
