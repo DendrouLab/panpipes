@@ -558,7 +558,7 @@ def run_totalvi(outfile):
     
 
     if PARAMS['multimodal_column_categorical'] is not None:
-        cmd += "--integration_col_categorical %(multimodal_column_categorical)s "
+        cmd += " --integration_col_categorical %(multimodal_column_categorical)s "
     neighbor_params = PARAMS['multimodal']['neighbors']
     if neighbor_params['method'] is not None:
         cmd += " --neighbors_method %s" % neighbor_params['method']
@@ -599,7 +599,7 @@ def run_multivi(outfile):
     
 
     if PARAMS['multimodal_column_categorical'] is not None:
-        cmd += "--integration_col_categorical %(multimodal_column_categorical)s "
+        cmd += " --integration_col_categorical %(multimodal_column_categorical)s "
 
     if PARAMS['multimodal_column_continuous'] is not None:
         cmd += "--integration_col_continuous %(multimodal_column_continuous)s "
