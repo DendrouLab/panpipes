@@ -70,7 +70,7 @@ else:
 # remove Nones for each level of filter dict
 filter_dict = map_nested_dicts_remove_none(filter_dict)
 filter_dict = dictionary_stripper(filter_dict)
-L.info("filter dictionary:\n %s" %filter_dict)
+L.info("Filter dictionary:\n %s" %filter_dict)
 
 # load mudata
 
@@ -106,17 +106,17 @@ if filter_dict['run']:
                 if marg == "obs":
                     if "max" in filter_dict[mod][marg].keys():
                         for col, n in filter_dict[mod][marg]['max'].items():
-                            L.info("Filtering cells of modality '%s' by '%s' in obs to less than %s" % (mod, col, n))
+                            L.info("Filtering cells of modality '%s' by '%s' in .obs to less than %s" % (mod, col, n))
                             mu.pp.filter_obs(mdata.mod[mod], col, lambda x: x <= n)
                             L.info("Remaining cells: %d" % mdata[mod].n_obs)
                     if "min" in filter_dict[mod][marg].keys():
                         for col, n in filter_dict[mod][marg]['min'].items():
-                            L.info("Filtering cells of modality '%s' by '%s' in obs to more than %s" % (mod, col, n))
+                            L.info("Filtering cells of modality '%s' by '%s' in .obs to more than %s" % (mod, col, n))
                             mu.pp.filter_obs(mdata.mod[mod], col, lambda x: x >= n)
                             L.info("Remaining cells: %d" % mdata[mod].n_obs)
                     if "bool" in filter_dict[mod][marg].keys():
                         for col, n in filter_dict[mod][marg]['bool'].items():
-                            L.info("Filtering cells of modality '%s' by '%s' in obs marked %s" % (mod, col, n))
+                            L.info("Filtering cells of modality '%s' by '%s' in .obs marked %s" % (mod, col, n))
                             mu.pp.filter_obs(mdata.mod[mod], col, lambda x: x == n)
                             L.info("Remaining cells: %d" % mdata[mod].n_obs)
                 if marg == "var":
