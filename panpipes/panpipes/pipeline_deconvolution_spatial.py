@@ -45,7 +45,7 @@ def run_cell2location(input_spatial, outfile_spatial, sample_prefix, input_singl
 
     figdir = "./figures/Cell2Location/" + sample_prefix
     output_dir = "./cell2location.output/" + sample_prefix
-    log_file = "Cell2Location_" + sample_prefix + ".log"
+    log_file = "1_Cell2Location_" + sample_prefix + ".log"
     cmd = """
         python %(py_path)s/run_cell2location.py
         --input_spatial %(input_spatial)s
@@ -114,7 +114,7 @@ def run_tangram(input_spatial, outfile_spatial, sample_prefix, input_singlecell)
 
     figdir = "./figures/Tangram/" + sample_prefix
     output_dir = "./tangram.output/" + sample_prefix
-    log_file = "Tangram_" + sample_prefix + ".log"
+    log_file = "2_Tangram_" + sample_prefix + ".log"
     cmd = """
         python %(py_path)s/run_tangram.py
         --input_spatial %(input_spatial)s

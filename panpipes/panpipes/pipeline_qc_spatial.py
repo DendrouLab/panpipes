@@ -108,7 +108,7 @@ def load_mudatas(spatial_path, outfile,
         --spatial_metadata %(spatial_metadata)s 
         --spatial_transformation %(spatial_transformation)s
         """
-    cmd += " > logs/make_mudatas_%(sample_id)s.log"
+    cmd += " > logs/1_make_mudatas_%(sample_id)s.log"
     print(cmd)
     job_kwargs["job_threads"] = PARAMS['resources_threads_medium']
     P.run(cmd, **job_kwargs)
@@ -121,7 +121,7 @@ def load_mudatas(spatial_path, outfile,
 @follows(mkdir("./figures"))
 @transform(load_mudatas,
            regex("./tmp/(.*)_raw.h5(.*)"), 
-           r"./logs/spatialQC_\1.log")
+           r"./logs/2_spatialQC_\1.log")
 def spatialQC(infile,log_file):
     spatial_filetype = assays[infile]
     resources_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "resources")
@@ -168,7 +168,7 @@ def run_plotqc_query(pqc_dict):
 @active_if(run_plotqc_query(PARAMS['plotqc']))
 @transform(load_mudatas, 
            regex("./tmp/(.*)_raw.h5(.*)"),
-           r"./logs/qcplot.\1.log")
+           r"./logs/3_qcplot.\1.log")
 def plotQC_spatial(unfilt_file,log_file):
     spatial_filetype = assays[unfilt_file]
     unfilt_file = unfilt_file.replace("_raw","_unfilt")
