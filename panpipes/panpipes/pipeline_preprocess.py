@@ -52,7 +52,7 @@ def filter_mudata(outfile):
             cmd += " --keep_barcodes %(filtering_keep_barcodes)s"
         if PARAMS['intersect_mods'] is not None:
             cmd += " --intersect_mods %(intersect_mods)s"
-        cmd += " > logs/filtering.log "
+        cmd += " > logs/1_filtering.log "
         job_kwargs["job_threads"] = PARAMS['resources_threads_low']
         P.run(cmd, **job_kwargs)
     else:
@@ -74,7 +74,7 @@ def run_plotqc_query(pqc_dict):
 @active_if(PARAMS['filtering_run'])
 @active_if(run_plotqc_query(PARAMS['plotqc']))
 @follows(filter_mudata)
-@originate("logs/postfilterplot.log")
+@originate("logs/2_postfilterplot.log")
 def postfilterplot(log_file):
     cell_mtd_file = PARAMS['sample_prefix'] + "_filtered_cell_metadata.tsv"
     cmd = """
@@ -102,7 +102,7 @@ def postfilterplot(log_file):
 
 @active_if(PARAMS['downsample_n'] is not None)
 @follows(filter_mudata)
-@originate("logs/downsample.log", PARAMS['mudata_file'])
+@originate("logs/3_downsample.log", PARAMS['mudata_file'])
 def downsample(log_file, filt_obj):
     if PARAMS['downsample'] is not None:
         cmd="""
@@ -125,7 +125,7 @@ def downsample(log_file, filt_obj):
 @active_if(mode_dictionary['rna'] is True)
 @follows(downsample)
 @follows(mkdir('figures/rna'))
-@transform(filter_mudata, formatter(), "logs/preprocess_rna.log")
+@transform(filter_mudata, formatter(), "logs/4_preprocess_rna.log")
 def rna_preprocess(adata_obj, log_file):
     cmd = """python %(py_path)s/run_preprocess_rna.py 
             --input_mudata %(adata_obj)s 
@@ -177,7 +177,7 @@ def rna_preprocess(adata_obj, log_file):
 
 @active_if(mode_dictionary['prot'] is True)
 @follows(rna_preprocess)
-@originate("logs/preprocess_prot.log", PARAMS['mudata_file'])
+@originate("logs/5_preprocess_prot.log", PARAMS['mudata_file'])
 def prot_preprocess( log_file, scaled_file, ):
     if os.path.exists("figures/prot") is False:
         os.mkdir("figures/prot" )
@@ -218,7 +218,7 @@ def prot_preprocess( log_file, scaled_file, ):
 @active_if(mode_dictionary['atac'] is True)
 @follows(prot_preprocess)
 # @transform(rna_preprocess,formatter(),"logs/preprocess_atac.log")
-@originate("logs/preprocess_atac.log", PARAMS['mudata_file'])
+@originate("logs/6_preprocess_atac.log", PARAMS['mudata_file'])
 def atac_preprocess(log_file, scaled_file):
     if os.path.exists("figures/atac") is False:
         os.mkdir("figures/atac" )
