@@ -40,13 +40,15 @@ Then, create the conda environment and install the nightly version of panpipes u
 
 ```
 conda env create --file=pipeline_env.yaml 
+conda activate pipeline_env
+pip install -e .
 ```
 
 Oxford BMRC Rescomp users find additional advice on the installation [here](https://github.com/DendrouLab/panpipes/blob/main/docs/installation_rescomp.md).
 
 ## Releases
 
-Since `panpipes v0.4.0` ,the `ingest` workflow expects different headers for the RNA and Protein modalities from the previous releases.
+Since `panpipes v0.4.0`, the `ingest` workflow expects different headers for the RNA and Protein modalities from the previous releases.
 Check the example [submission file](https://github.com/DendrouLab/panpipes/blob/main/docs/usage/sample_file_qc_mm.md) and the [documentation](https://panpipes-pipelines.readthedocs.io/en/latest/usage/setup_for_qc_mm.html) for more detailed instructions.
 
 ## Citation

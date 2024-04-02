@@ -29,6 +29,8 @@ Then, create the conda environment and install the nightly version of panpipes u
 
 ```
 conda env create --file=pipeline_env.yaml 
+conda activate pipeline_env
+pip install -e .
 ```
 
 #### Option 1.2: Manual conda environment creation
@@ -72,7 +74,7 @@ pip install 'panpipes[spatial]'
 ```
 The extra `[spatial]` includes squidpy, cell2location, and tangram-sc packages.
 
-##### Nightly versions of panpipes
+##### Nightly version of panpipes
 
 If you prefer to use the most recent dev version, install panpipes from Github:
 
