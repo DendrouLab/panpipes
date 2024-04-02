@@ -1,15 +1,38 @@
 
 # Installation of panpipes
 
-## Create virtual environment
+>Note: Oxford BMRC Rescomp users find additional advice on the installation [here](https://github.com/DendrouLab/panpipes/blob/main/docs/installation_rescomp.md).
+
+## Create virtual environment and install panpipes
 
 We recommend running panpipes within a virtual environment to prevent conflicts.
 
-### Option 1: create conda environment (Recommended)
+### Option 1: Installation in conda environment (Recommended)
 >Note: For installation instructions on Apple machines with M chips, scroll down.
 
-To Run panpipes, we install it in a conda environment with R and python.
+To run panpipes, we install it in a conda environment with R and python.
 Panpipes has a lot of dependencies, so you may want to consider the faster [`mamba`](https://mamba.readthedocs.io/en/latest/index.html) instead of `conda` for installation.
+Panpipes can be installed via different methods, either from PyPi or from the Github repository.
+We recommend using Option 1.1 to install the nightly version of panpipes.
+
+#### Option 1.1: Nightly panpipes version with preconfigured conda config file (Recommended)
+We recommend installing a nightly version of panpipes.
+For that, we provide a minimal conda config file in `pipeline_env.yaml`.
+First, clone this repository and navigate to the root directory of the repository:
+
+```
+git clone https://github.com/DendrouLab/panpipes.git
+cd panpipes
+```
+
+Then, create the conda environment and install the nightly version of panpipes using the following command:
+
+```
+conda env create --file=pipeline_env.yaml 
+```
+
+#### Option 1.2: Manual conda environment creation
+As an alternative to the preconfigured conda environment, you can create a conda environment manually.
 
 ```bash
 #This follows the suggestions made here: [https://www.biostars.org/p/498049/](https://www.biostars.org/p/498049/) 
@@ -20,21 +43,21 @@ conda search r-base
 conda create --name pipeline_env python=3.10 r-base=4.3.0
 ```
 
-now we activate the environment
+Next, we activate the environment:
 
 ```bash
 conda activate pipeline_env
 ```
 
-Let's first install the R packages
+Let's first install the R packages:
 
 ```bash
 conda install -c conda-forge r-tidyverse r-optparse r-ggforce r-ggraph r-xtable r-hdf5r r-clustree r-cowplot
 ```
 
-Then we can install panpipes:
+Finally, we install panpipes, which you can install either from PyPi or from the Github repository.
 
-#### 1. Installing panpipes from PyPi
+##### Installing panpipes from PyPi
 
 You can install `panpipes` directly from `PyPi` with:
 
@@ -49,9 +72,9 @@ pip install 'panpipes[spatial]'
 ```
 The extra `[spatial]` includes squidpy, cell2location, and tangram-sc packages.
 
-#### 2. Nightly versions of panpipes
+##### Nightly versions of panpipes
 
-If you prefer to use the most recent dev version, install from Github
+If you prefer to use the most recent dev version, install panpipes from Github:
 
 ```bash
 git clone https://github.com/DendrouLab/panpipes

@@ -25,24 +25,24 @@ Available workflows:
 
 ## Installation and configuration
 
-See [installation instructions here](https://panpipes-pipelines.readthedocs.io/en/latest/install.html)
+For detailed installation instructions (including those for Apple Silicon machines), refer to the [installation instructions here](https://panpipes-pipelines.readthedocs.io/en/latest/install.html).
 
-We recommend installing panpipes in a conda environment, we provide a minimal conda config file in `pipeline_env.yaml`
+We recommend installing panpipes in a conda environment.
+For that, we provide a minimal conda config file in `pipeline_env.yaml`.
+First, clone this repository and navigate to the root directory of the repository:
+
+```
+git clone https://github.com/DendrouLab/panpipes.git
+cd panpipes
+```
+
+Then, create the conda environment and install the nightly version of panpipes using the following command:
 
 ```
 conda env create --file=pipeline_env.yaml 
 ```
 
-In this environment, you can install nightly version of panpipes, i.e. cloning this repo and installing it from main.
-
-```
-git clone https://github.com/DendrouLab/panpipes.git
-cd panpipes
-pip install -e .
-```
-
-
-Oxford BMRC Rescomp users find additional advice in [docs/installation_rescomp](https://github.com/DendrouLab/panpipes/blob/main/docs/installation_rescomp.md)
+Oxford BMRC Rescomp users find additional advice on the installation [here](https://github.com/DendrouLab/panpipes/blob/main/docs/installation_rescomp.md).
 
 ## Releases
 
