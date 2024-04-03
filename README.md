@@ -31,14 +31,14 @@ We recommend installing panpipes in a conda environment.
 For that, we provide a minimal conda config file in `pipeline_env.yaml`.
 First, clone this repository and navigate to the root directory of the repository:
 
-```
+```bash
 git clone https://github.com/DendrouLab/panpipes.git
 cd panpipes
 ```
 
 Then, create the conda environment and install the nightly version of panpipes using the following command:
 
-```
+```bash
 conda env create --file=pipeline_env.yaml 
 conda activate pipeline_env
 pip install -e .

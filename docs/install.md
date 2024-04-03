@@ -3,38 +3,19 @@
 
 >Note: Oxford BMRC Rescomp users find additional advice on the installation [here](https://github.com/DendrouLab/panpipes/blob/main/docs/installation_rescomp.md).
 
-## Create virtual environment and install panpipes
-
 We recommend running panpipes within a virtual environment to prevent conflicts.
+In the following, we provide instructions on how to do this using conda, mamba, or python venv.
 
-### Option 1: Installation in conda environment (Recommended)
 >Note: For installation instructions on Apple machines with M chips, scroll down.
 
+## Option 1: Installation in manually configured conda environment
 To run panpipes, we install it in a conda environment with R and python.
 Panpipes has a lot of dependencies, so you may want to consider the faster [`mamba`](https://mamba.readthedocs.io/en/latest/index.html) instead of `conda` for installation.
-Panpipes can be installed via different methods, either from PyPi or from the Github repository.
-We recommend using Option 1.1 to install the nightly version of panpipes.
+Panpipes can be installed via different methods, either from `PyPi` or from the Github repository.
+Option 1 describes the installation via `PyPi` in a manually configured conda environment (no cloning of the repository necessary).
 
-#### Option 1.1: Nightly panpipes version with preconfigured conda config file (Recommended)
-We recommend installing a nightly version of panpipes.
-For that, we provide a minimal conda config file in `pipeline_env.yaml`.
-First, clone this repository and navigate to the root directory of the repository:
-
-```
-git clone https://github.com/DendrouLab/panpipes.git
-cd panpipes
-```
-
-Then, create the conda environment and install the nightly version of panpipes using the following command:
-
-```
-conda env create --file=pipeline_env.yaml 
-conda activate pipeline_env
-pip install -e .
-```
-
-#### Option 1.2: Manual conda environment creation
-As an alternative to the preconfigured conda environment, you can create a conda environment manually.
+### Create conda environment
+First, create a conda environment to run panpipes in:
 
 ```bash
 #This follows the suggestions made here: [https://www.biostars.org/p/498049/](https://www.biostars.org/p/498049/) 
@@ -57,13 +38,12 @@ Let's first install the R packages:
 conda install -c conda-forge r-tidyverse r-optparse r-ggforce r-ggraph r-xtable r-hdf5r r-clustree r-cowplot
 ```
 
-Finally, we install panpipes, which you can install either from PyPi or from the Github repository.
-
-##### Installing panpipes from PyPi
-
-You can install `panpipes` directly from `PyPi` with:
+### Install panpipes
+Finally, we install panpipes.
+You can install it either from `PyPi` (shown here) or a nightly version from the Github repository (shown in Option 2):
 
 ```bash
+# Install panpipes from PyPi
 pip install panpipes
 ```
 
@@ -72,15 +52,27 @@ If you intend to use panpipes for spatial analysis, instead install:
 ```bash
 pip install 'panpipes[spatial]'
 ```
-The extra `[spatial]` includes squidpy, cell2location, and tangram-sc packages.
+The extra `[spatial]` includes the `squidpy`, `cell2location`, and `tangram-sc` packages.
 
-##### Nightly version of panpipes
 
-If you prefer to use the most recent dev version, install panpipes from Github:
+## Option 2: Install nightly panpipes version with preconfigured conda config file
+
+If you prefer to use the most recent development version, install panpipes the nightly version from the Github repository.
+To make the installation easier, we provide a minimal conda config file in `pipeline_env.yaml`.
+First, clone the [panpipes repository](https://github.com/DendrouLab/panpipes) and navigate to the root directory of the repository:
+
+### Clone the repository
+```bash
+git clone https://github.com/DendrouLab/panpipes.git
+cd panpipes
+```
+
+### Create conda environment and install nightly panpipes version
+Then, create the conda environment and install the nightly version of panpipes using the following command:
 
 ```bash
-git clone https://github.com/DendrouLab/panpipes
-cd panpipes
+conda env create --file=pipeline_env.yaml 
+conda activate pipeline_env
 pip install -e .
 ```
 
@@ -97,7 +89,66 @@ or
 apt-get install time
 ```
 
-#### Installation on Apple Silicon M chips
+
+## Option 3: python venv environment
+As an alternative to conda, you can use a python virtual environment.
+Navigate to where you want to create your virtual environment and follow the steps below to create a pip virtual environment.
+
+```bash
+# Create a panpipes/venv folder
+python3 -m venv --prompt=panpipes python3-venv-panpipes/
+```
+
+Activate the environment:
+
+```bash
+source python3-venv-panpipes/bin/activate
+```
+
+As explained above, you can install panpipes from `PyPi` with:
+
+```bash
+pip install panpipes
+```
+
+Alternatively, you can install a nightly version of panpipes by cloning the Github repository (see above for instructions).
+
+### R packages installation in python venv
+
+If you are using a venv virtual environment, the pipeline will call a local R installation, so make sure R is installed and install the required packages with the command we provide below.
+(This executable requires that you specify a CRAN mirror in your `.Rprofile`).
+for example, add this line to your `.Rprofile` to automatically fetch the preferred mirror:
+
+*remember to customise with your preferred [R mirror](https://cran.r-project.org/mirrors.html).*
+
+```R
+  options(repos = c(CRAN="https://cran.uni-muenster.de/"))
+```
+
+Now, to automatically install the R dependecies, run:
+
+ ```bash
+panpipes install_r_dependencies
+ ```
+
+If you want more control over your installation use the [script on github](https://github.com/DendrouLab/panpipes/blob/main/panpipes/R_scripts/install_R_libs.R).
+Running with the option `--vanilla` or `--no-site-file` prevents R from reading your `.Renvironment` or `.Rprofile` in case you want to use different settings from you local R installation.
+You can expect the installation of R libraries to take quite some time, this is not something related to `panpipes` but how R manages their libraries and dependencies!
+
+### Check installation
+
+To check the installation was successful, run the following line:
+
+```bash
+panpipes --help
+```
+
+A list of available pipelines should appear!
+
+You're all set to run `panpipes` on your local machine.
+If you want to configure it on a HPC server, follow the next instructions.
+
+## Installation on Apple Silicon M chips
 If you intend to install panpipes via conda on a macOS machine with M-Chip, you might face issues when installing or using certain workflows of panpipes.
 This is because panpipes relies on [scvi-tools], which currently only supports execution on Apple Silicon machines when installed using a native Python version (owing to a dependency on JAX).
 
@@ -140,68 +191,11 @@ pip install panpipes
 ```
 
 
-### Option 2: python venv environment
-
-Navigate to where you want to create your virtual environment and follow the steps below to create a pip virtual environment.
-
-```bash
-python3 -m venv --prompt=panpipes python3-venv-panpipes/
-# This will create a panpipes/venv folder
-```
-
-Activate the environment
-
-```bash
-source python3-venv-panpipes/bin/activate
-```
-
-As explained in the conda installation, you can install `panpipes` with:
-
-```bash
-pip install panpipes
-```
-
-or install a nightly version of panpipes by cloning the Github repository.
-
-#### R packages installation in python venv
-
-If you are using a venv virtual environment, the pipeline will call a local R installation, so make sure R is installed and install the required packages with the command we provide below.
-(This executable requires that you specify a CRAN mirror in your `.Rprofile`).
-for example, add this line to your `.Rprofile` to automatically fetch the preferred mirror:
-
-*remember to customise with your preferred [R mirror](https://cran.r-project.org/mirrors.html).*
-
-```R
-  options(repos = c(CRAN="https://cran.uni-muenster.de/"))
-```
-
-Now, to automatically install the R dependecies, run:
-
- ```bash
-panpipes install_r_dependencies
- ```
-
-If you want more control over your installation use the [script on github](https://github.com/DendrouLab/panpipes/blob/main/panpipes/R_scripts/install_R_libs.R).
-Running with the option `--vanilla` or `--no-site-file` prevents R from reading your `.Renvironment` or `.Rprofile` in case you want to use different settings from you local R installation.
-You can expect the installation of R libraries to take quite some time, this is not something related to `panpipes` but how R manages their libraries and dependencies!
-
-#### Check installation
-
-To check the installation was successful run the following line
-
-```bash
-panpipes --help
-```
-
-A list of available pipelines should appear!
-
-You're all set to run `panpipes` on your local machine.
-If you want to configure it on a HPC server, follow the next instructions.
-
 ## Pipeline configuration for HPC clusters
 
-(For SGE or SLURM clusters)
-*Note: You only need this configuration step if you want to use an HPC to dispatch individual task as separate parallel jobs. You won't need this for a local installation of panpipes.*
+This section is for users who want to run panpipes on a High-Performance Computing (HPC) cluster with a job scheduler like SGE or SLURM.
+
+>Note: You only need this configuration step if you want to use an HPC to dispatch individual task as separate parallel jobs. You won't need this for a local installation of panpipes.
 
 Create a yml file for the cgat core pipeline software to read
 
