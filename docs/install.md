@@ -1,12 +1,12 @@
 
 # Installation of panpipes
 
->Note: Oxford BMRC Rescomp users find additional advice on the installation [here](https://github.com/DendrouLab/panpipes/blob/main/docs/installation_rescomp.md).
-
 We recommend running panpipes within a virtual environment to prevent conflicts.
 In the following, we provide instructions on how to do this using conda, mamba, or python venv.
 
->Note: For installation instructions on Apple machines with M chips, scroll down.
+> **Note**: For installation instructions on Apple machines with M chips, scroll down.
+
+> **Note**: Oxford BMRC Rescomp users find additional advice on the installation [here](https://github.com/DendrouLab/panpipes/blob/main/docs/installation_rescomp.md).
 
 ## Option 1: Installation in manually configured conda environment
 To run panpipes, we install it in a conda environment with R and python.
@@ -57,11 +57,12 @@ The extra `[spatial]` includes the `squidpy`, `cell2location`, and `tangram-sc` 
 
 ## Option 2: Install nightly panpipes version with preconfigured conda config file
 
-If you prefer to use the most recent development version, install panpipes the nightly version from the Github repository.
+If you prefer to use the most recent development version, install the nightly panpipes version from the Github repository.
 To make the installation easier, we provide a minimal conda config file in `pipeline_env.yaml`.
-First, clone the [panpipes repository](https://github.com/DendrouLab/panpipes) and navigate to the root directory of the repository:
 
 ### Clone the repository
+First, clone the [panpipes repository](https://github.com/DendrouLab/panpipes) and navigate to the root directory of the repository:
+
 ```bash
 git clone https://github.com/DendrouLab/panpipes.git
 cd panpipes
@@ -77,7 +78,8 @@ pip install -e .
 ```
 
 Panpipes requires the unix package `time`. 
-You can check if it installed with `dpkg-query -W time`. If time not already installed, you can 
+You can check if it installed with `dpkg-query -W time`.
+If `time` is not already installed, you can install it using:
 
 ```bash
 conda install time
@@ -91,8 +93,8 @@ apt-get install time
 
 
 ## Option 3: python venv environment
-As an alternative to conda, you can use a python virtual environment.
-Navigate to where you want to create your virtual environment and follow the steps below to create a pip virtual environment.
+As an alternative to a conda environment, you can also install panpipes in a python virtual environment.
+Navigate to where you want to create your virtual environment and follow the steps below to create a `pip` virtual environment.
 
 ```bash
 # Create a panpipes/venv folder
@@ -111,7 +113,7 @@ As explained above, you can install panpipes from `PyPi` with:
 pip install panpipes
 ```
 
-Alternatively, you can install a nightly version of panpipes by cloning the Github repository (see above for instructions).
+Alternatively, you can install a nightly version of panpipes by cloning the Github repository (see instructions above).
 
 ### R packages installation in python venv
 
@@ -119,7 +121,7 @@ If you are using a venv virtual environment, the pipeline will call a local R in
 (This executable requires that you specify a CRAN mirror in your `.Rprofile`).
 for example, add this line to your `.Rprofile` to automatically fetch the preferred mirror:
 
-*remember to customise with your preferred [R mirror](https://cran.r-project.org/mirrors.html).*
+> **Note:** Remember to customise with your preferred [R mirror](https://cran.r-project.org/mirrors.html).
 
 ```R
   options(repos = c(CRAN="https://cran.uni-muenster.de/"))
@@ -150,21 +152,21 @@ If you want to configure it on a HPC server, follow the next instructions.
 
 ## Installation on Apple Silicon M chips
 If you intend to install panpipes via conda on a macOS machine with M-Chip, you might face issues when installing or using certain workflows of panpipes.
-This is because panpipes relies on [scvi-tools], which currently only supports execution on Apple Silicon machines when installed using a native Python version (owing to a dependency on JAX).
+This is because panpipes relies on `scvi-tools`, which currently [only supports execution on Apple Silicon machines when installed using a native Python version](https://docs.scvi-tools.org/en/stable/installation.html#apple-silicon) (due to a dependency on JAX).
 
-Follow these steps to install pertpy on an Apple Silicon machine:
+Follow these steps to install panpipes on an Apple Silicon machine:
 
 1. Install [Homebrew](https://brew.sh/)
 
 2. Install Apple Silicon version of Mambaforge (If you already have Anaconda/Miniconda installed, make sure
-   having both mamba and conda won't cause conflicts). Additionally, we need clang which is included in llvm, so we install that as well.
+   having both mamba and conda won't cause conflicts). Additionally, we need clang which is included in llvm, so we install that as well:
 
 ```bash
 brew install --cask mambaforge
 brew install llvm
 ```
 
-3. Create a new environment using mamba (here with python 3.10) and activate it
+3. Create a new environment using mamba (here with python 3.10) and activate it:
 
 ```bash
 conda config --add channels conda-forge
@@ -176,14 +178,14 @@ mamba activate pipeline_env
 ```
 
 4. Add the osx-64 channel to the environment, then install Python and R
-Because not all R packages are available via the ARM64 channel, we need to specify the osx-64 channel to install all required R packages.
+Because not all R packages are available via the ARM64 channel, we need to specify the osx-64 channel to install all required R packages:
 
 ```bash
 conda config --env --set subdir osx-64
 mamba install python=3.10 r-base=4.3.0
 ```
 
-5. Install dependencies
+5. Install R dependencies and panpipes itself:
 
 ```bash
 conda install -c conda-forge r-tidyverse r-optparse r-ggforce r-ggraph r-xtable r-hdf5r r-clustree r-cowplot
