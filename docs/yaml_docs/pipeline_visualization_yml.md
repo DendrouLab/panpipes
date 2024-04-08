@@ -105,11 +105,26 @@ Metrics to be plotted on every modality.
   - <span class="parameter">rep:</span>`String`, Default: prot:rep:has_ir<br>
   - <span class="parameter">multimodal:</span>`String`, Default: leiden_totalVI    mdata_colsr<br>
 
+- <span class="parameter">continuous_vars:</span>`String`, Default: &continuous_vars<br>
+  - <span class="parameter">all:</span>`String`, Default:leiden_res0.5<br>
+Metrics to be plotted on every modality. 
+  - <span class="parameter">rna:</span>`String`, Default: rna:total_counts<br>
+  - <span class="parameter">prot:</span>`String`, Default: prot:total_counts<br>
+  - <span class="parameter">atac:</span>`String`, Default: <br>
+  - <span class="parameter">multimodal:</span>`String`, Default: rna:total_counts    prot:total_counts<br>
+  
+- <span class="parameter"paired_scatter:</span>`String`, Default: scatter_features.csv<br>
+The scatter_features.csv file should have the following format:
+
+ | feature_1 | feature_2 | colour         |
+ |-----------|-----------|----------------|
+ |rna:total_counts | prot:total_counts  | doublet_scores|
+
+## Plot style 
 
 
-STOPED AT YAML LINE 98 
-
-
+ 
+      
 
 
 
