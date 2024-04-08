@@ -121,6 +121,36 @@ The scatter_features.csv file should have the following format:
  |rna:total_counts | prot:total_counts  | doublet_scores|
 
 ## Plot style 
+Choose the plot type desired. 
+- <span class="parameter">do_plots:</span><br>
+  - <span class="parameter">categorical_barplots:</span>`Boolean`, Default: True<br>
+  Plot each categorical variable as a bar plot. 
+  - <span class="parameter">categorical_stacked_barplots:</span>`Boolean`, Default: True<br>
+  Plot each grouping var as a bar plot, with categorical variables stacked.
+  - <span class="parameter">continuous_violin:</span>`Boolean`, Default: True<br>
+  Plot each continuous variable as a violin plot.
+  - <span class="parameter">marker_dotplots:</span>`Boolean`, Default: True<br>
+  Plots a marker dotplots as produced by scanpy.pl.dotplot.
+  - <span class="parameter"> marker_matrixplots:</span>`Boolean`, Default: True<br>
+  Plots marker matrixplot as produced by scanpy.pl.matrixplot.
+  - <span class="parameter">paired_scatters:</span>`Boolean`, Default: True<br>
+  Plots scatter plots as defined in paired_scatters csv file (scatter_features.csv).
+
+- <span class="parameter">embedding:</span><br>
+Define all embedding for the plots and modalities.  
+  - <span class="parameter">rna:</span><br>
+    - <span class="parameter">run:</span>`Boolean`, Default:True<br>
+    - <span class="parameter">basis:</span>`String`, Default: X_umap_mindist_0.25<br>
+  - <span class="parameter">prot:</span><br>
+    - <span class="parameter">run:</span>`Boolean`, Default:True<br>
+    - <span class="parameter">basis:</span>`String`, Default:X_umap    X_pca<br>
+  
+  - <span class="parameter">atac:</span><br>
+    - <span class="parameter">run:</span>`Boolean`, Default:False<br>
+    - <span class="parameter">basis:</span>`String`, Default:X_umap<br>
+
+
+
 
 
  
