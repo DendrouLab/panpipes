@@ -80,6 +80,7 @@ if not os.path.exists(figdir):
 sc.settings.figdir = figdir
 sc.set_figure_params(scanpy=True, fontsize=14, dpi=300, facecolor='white', figsize=(5,5))
 
+L.info("Reading in MuData from '%s'" % args.input_mudata)
 mdata = mu.read(args.input_mudata)
 
 # if we have actually loaded an anndata object, make into a mudata
@@ -102,10 +103,12 @@ else:
     hvg_batch_key=None
 
 # save raw counts as a layer
+L.info("Checking if raw data is available")
 if X_is_raw(adata):
+    L.info("Saving raw counts from .X to .layers['raw_counts']")
     adata.layers['raw_counts'] = adata.X.copy()
 elif "raw_counts" in adata.layers :
-    L.info("raw_counts layer already exists")
+    L.info(".layers['raw_counts'] already exists and copying it to .X")
     adata.X = adata.layers['raw_counts'].copy()
 else:
     L.error("X is not raw data and raw_counts layer not found")
@@ -116,7 +119,7 @@ else:
 # except when flavor='seurat_v3' in which count data is expected.
 # change the order accordingly
 if X_is_raw(adata):
-    L.info("normalise, log and calculate highly variable genes")
+    L.info("Normalise, log and calculate HVGs")
     if args.flavor == "seurat_v3":
         if args.n_top_genes is None:
             raise ValueError("if seurat_v3 is used you must give a n_top_genes value")
@@ -136,11 +139,10 @@ if X_is_raw(adata):
                                     min_disp=float(args.min_disp),
                                     batch_key=hvg_batch_key)
         L.debug(adata.uns['log1p'])
+
 if "highly_variable" in adata.var: 
-    L.warning( "You have %s Highly Variable Features", np.sum(adata.var.highly_variable))
+    L.info( "You have %s HVGs", np.sum(adata.var.highly_variable))
     sc.pl.highly_variable_genes(adata,show=False, save ="_genes_highlyvar.png")
-else:
-    sys.exit("I cannot find Highly Variable Features in your RNA")
 
 if isinstance(mdata, mu.MuData):
     mdata.update()
@@ -148,7 +150,7 @@ if isinstance(mdata, mu.MuData):
 # exclude hvgs if there is an exclude file
 if args.exclude_file is not None:
     if os.path.exists(args.exclude_file):
-        L.info("exclude genes from hvg")
+        L.info("Reading in exclude_file from '%s'" % args.exclude_file)
         customgenes = pd.read_csv(args.exclude_file) 
         custom_cat = list(set(customgenes['group'].tolist()))
         cat_dic = {}
@@ -156,31 +158,29 @@ if args.exclude_file is not None:
             cat_dic[cc] = customgenes.loc[customgenes["group"] == cc,"feature"].tolist()
         exclude_action = str(args.exclude)
         excl = cat_dic[exclude_action]
-        L.info(len(excl))
-        L.info("number of hvgs prior to filtering")
-        L.info(adata.var.highly_variable.sum())
+        L.info("Number of HVGs prior to filtering: %s" % adata.var.highly_variable.sum())
         adata.var['hvg_exclude'] = [True if gg in excl else False for gg in adata.var.index]
-        L.debug("num to exclude %s" %  (adata.var['hvg_exclude'] & adata.var['highly_variable']).sum() )
-        L.debug(adata)
+        L.info("Number of genes to exclude %s" %  (adata.var['hvg_exclude'] & adata.var['highly_variable']).sum() )
+        L.info("Excluding genes from HVG")
         if any(adata.var['hvg_exclude'] & adata.var['highly_variable']):
             adata.var['highly_variable'].loc[adata.var.hvg_exclude] = False
             adata.var.loc[adata.var.hvg_exclude, 'highly_variable_rank'] = np.nan
             
-            L.info("number of hvgs after filtering")
-            L.info(adata.var.highly_variable.sum())
+            L.info("Number of HVGs after filtering: %s" % adata.var.highly_variable.sum())
             sc.pl.highly_variable_genes(adata,show=False, save ="_exclude_genes_highlyvar.png")
     else:
-        sys.exit("exclusion file %s not found, check the path and try again" % args.exclude_file)
+        L.error("Exclusion file %s not found" % args.exclude_file)
+        sys.exit("Exclusion file %s not found" % args.exclude_file)
 
 if isinstance(mdata, mu.MuData):
     mdata.update()
 
-L.debug(adata.uns['log1p'])
+
 # filter by hvgs
 filter_by_hvgs = args.filter_by_hvg
 
 if filter_by_hvgs is True:
-    L.info("filtering object to only include highly variable genes")
+    L.info("Subsetting object to only include HVGs")
     mdata.mod["rna"] = adata[:, adata.var.highly_variable]
     if isinstance(mdata, mu.MuData):
         mdata.update()
@@ -191,39 +191,39 @@ if filter_by_hvgs is True:
  
 
 adata.layers['logged_counts'] = adata.X.copy()
-L.debug(adata.uns['log1p'])
 # regress out
 if args.regress_out is not None:
+    L.info("Regressing out %s" % args.regress_out)
     regress_opts = args.regress_out.split(",")
-    L.info("regressing out %s" % regress_opts)
     sc.pp.regress_out(adata, regress_opts)
 
 
 if args.scale is True and args.scale_max_value is None:
-    L.info("scaling data with default parameters")
+    L.info("Scaling data with default parameters")
     sc.pp.scale(adata)
 elif args.scale is True:
-    L.info("scaling data to max value %i" % int(args.scale_max_value))
+    L.info("Scaling data to max value %i" % int(args.scale_max_value))
     sc.pp.scale(adata, max_value=int(args.scale_max_value))
 else:
-    L.info("not scaling data")
-    pass
+    L.info("Not scaling the data")
+    #pass
 
-L.debug(adata.uns['log1p'])
+
 # run pca
-L.info("running pca")
+L.info("Running PCA")
 
 if adata.var.shape[0] < int(args.n_pcs):
-    L.info("You have less features than number of PCs you intend to calculate")
+    L.warning("You have less features (%s) than number of PCs (%t) you intend to calculate." % (adata.var.shape[0], args.n_pcs))
     n_pcs = adata.var.shape[0] - 1
-    L.info("Setting n PCS to %i" % int(n_pcs))    
+    L.info("Setting number of PCS to %i" % int(n_pcs))    
 else:
     n_pcs = int(args.n_pcs)
 sc.tl.pca(adata, n_comps=n_pcs, 
                 svd_solver=args.pca_solver, 
                 random_state=0) 
 
-# do some plots!
+# pca plots
+L.info("Plotting PCA")
 sc.pl.pca_variance_ratio(adata, log=True, n_pcs=n_pcs, save=".png")
 
 col_variables = args.color_by.split(",")
@@ -237,8 +237,7 @@ sc.pl.pca_overview(adata, save = ".png")
 
 mdata.update()
 # save the scaled adata object
-
+L.info("Saving updated MuData to '%s'" % args.output_scaled_mudata)
 mdata.write(args.output_scaled_mudata)
-L.debug(adata.uns['log1p'])
 
-L.info("done")
+L.info("Done")

@@ -42,12 +42,12 @@ parser.add_argument('--intersect_mods', default=None,
                     help='comma separated string of modalities we want to intersect_obs on')                 
 
 
-L.warning("Running filter_mudata")
-
 parser.set_defaults(verbose=True)
 args, opt = parser.parse_known_args()
+L.info(args)
 
 # load data
+L.info("Reading in MuData from '%s'" % args.input_mudata)
 mdata = mu.read(args.input_mudata)
 
 if isinstance(mdata, AnnData):
@@ -56,7 +56,7 @@ if isinstance(mdata, AnnData):
 
 orig_obs = mdata.obs
 
-L.info("Number of cells per sample \n%s" % mdata.obs.sample_id.value_counts())
+L.info("Before downsampling: number of cells per sample \n%s" % mdata.obs.sample_id.value_counts())
 
 
 if args.downsample_col == "None":
@@ -74,7 +74,7 @@ if args.downsample_col is not None:
     mdata.obs[args.downsample_col] = mdata.obs[args.downsample_col].cat.remove_unused_categories()
 
 # do the downsample.
-
+L.info("Downsampling modalities %s" % mods)
 downsample_mudata(mdata, nn=int(args.downsample_value),
     cat_col=args.downsample_col,
     mods = mods,
@@ -83,15 +83,14 @@ print(mdata)
 
 
 mdata.update()
-    
-L.info("Number of cells per sample")
-L.info(mdata.obs.sample_id.value_counts())
+L.info("After downsampling: number of cells per sample \n%s" % mdata.obs.sample_id.value_counts())
 
 # write out the observations
-write_obs(mdata, output_prefix=re.sub("\\.(.*)", "", args.output_mudata), 
-        output_suffix="_downsampled_cell_metadata.tsv")
+prefix = re.sub("\\.(.*)", "", args.output_mudata)
+L.info("Saving updated obs in a metadata tsv file to " + prefix + "_downsampled_cell_metadata.tsv")
+write_obs(mdata, output_prefix=prefix, output_suffix="_downsampled_cell_metadata.tsv")
 
-
+L.info("Saving updated MuData to '%s'" % args.output_mudata)
 mdata.write(args.output_mudata)
-#This stage is the point (i.e. pre-normalisation) where the mdata file can be outputted so that we can extract raw matrix for the cellphonedb.
+
 L.info("Done")

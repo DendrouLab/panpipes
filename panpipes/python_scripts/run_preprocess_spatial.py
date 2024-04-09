@@ -111,7 +111,6 @@ else:
     L.error("X is not raw data and 'raw_counts' layer not found")
     sys.exit("X is not raw data and 'raw_counts' layer not found")
 
-L.info("Using raw counts for HVG selection & normalization")
 
 # Normalization + HVG selection based on flavour
 if args.norm_hvg_flavour == "squidpy":

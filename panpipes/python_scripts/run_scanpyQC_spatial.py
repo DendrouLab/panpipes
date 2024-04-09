@@ -158,7 +158,7 @@ mdata.update()
 single_id = os.path.basename(str(args.input_anndata))
 single_id = single_id.replace("_raw.h5mu","")
 
-L.info("Saving updated MuData.obs in a metadata tsv file to ./" + single_id + "_cell_metadata.tsv")
+L.info("Saving updated obs in a metadata tsv file to ./" + single_id + "_cell_metadata.tsv")
 write_obs(mdata, output_prefix=single_id, output_suffix="_cell_metadata.tsv")
 L.info("Saving updated MuData to '%s'" % args.outfile)
 mdata.write(args.outfile)

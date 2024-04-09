@@ -151,7 +151,7 @@ assert test_matching_df_ignore_cat(mdata.obs, orig_obs)
 # write out obs
 output_prefix = re.sub(".h5mu", "", os.path.basename(args.output_mudata))
 
-L.info("Saving updated MuData.obs in a metadata tsv file to './tables/" + output_prefix + "_filtered_cell_metadata.tsv'")
+L.info("Saving updated obs in a metadata tsv file to './tables/" + output_prefix + "_filtered_cell_metadata.tsv'")
 write_obs(mdata, output_prefix=os.path.join("tables/",output_prefix), output_suffix="_filtered_cell_metadata.tsv")
 
 # write out the per sample_id cell numbers 
