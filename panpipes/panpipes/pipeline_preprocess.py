@@ -177,7 +177,7 @@ def rna_preprocess(adata_obj, log_file):
 
 @active_if(mode_dictionary['prot'] is True)
 @follows(rna_preprocess)
-@originate("logs/5_preprocess_prot.log", PARAMS['mudata_file'])
+@originate("logs/4_preprocess_prot.log", PARAMS['mudata_file'])
 def prot_preprocess( log_file, scaled_file, ):
     if os.path.exists("figures/prot") is False:
         os.mkdir("figures/prot" )
@@ -218,7 +218,7 @@ def prot_preprocess( log_file, scaled_file, ):
 @active_if(mode_dictionary['atac'] is True)
 @follows(prot_preprocess)
 # @transform(rna_preprocess,formatter(),"logs/preprocess_atac.log")
-@originate("logs/6_preprocess_atac.log", PARAMS['mudata_file'])
+@originate("logs/4_preprocess_atac.log", PARAMS['mudata_file'])
 def atac_preprocess(log_file, scaled_file):
     if os.path.exists("figures/atac") is False:
         os.mkdir("figures/atac" )
