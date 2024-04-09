@@ -39,6 +39,7 @@ args, opt = parser.parse_known_args()
 L.info(args)
 
 # read data
+L.info("Reading in data from '%s'" % args.infile)
 mdata = mu.read(args.infile)
 if type(mdata) is AnnData:
     adata = mdata
@@ -55,7 +56,7 @@ uns_key=args.neighbors_key
 # check sc.pp.neihgbours has been run
 if uns_key not in adata.uns.keys():
     # sys.exit("Error: sc.pp.neighbours has not been run on this object")
-    L.warning("running neighbors with default parameters since no neighbors graph found in this data object")
+    L.warning("Running neighbors with default parameters since no neighbors graph found in this data object")
     sc.pp.neighbors(adata)
     uns_key="neighbors"
 
@@ -68,6 +69,7 @@ if uns_key not in adata.uns.keys():
 
 
 # what parameters?
+L.info("Running UMAP on neighbors_key %s" % uns_key)
 if uns_key =="wnn":
     mu.tl.umap(adata, min_dist=float(args.min_dist), neighbors_key=uns_key)
 else:
@@ -81,4 +83,5 @@ umap_coords.index = adata.obs_names
 
 # save coordinates to file
 # (note this saves values values up to 6 significant figures, because why save 20 for a plot
+L.info("Saving UMAP coordinates to csv file '%s'" % args.outfile)
 umap_coords.to_csv(args.outfile, sep = '\t')

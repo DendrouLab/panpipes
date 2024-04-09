@@ -35,20 +35,19 @@ else:
     neighbor_dict = read_yaml(args.neighbor_dict) 
 
 sc.settings.n_jobs = int(args.n_threads)
-L.info("Running with options: %s", args)
 
 # read data
-L.info("reading mudata")
+L.info("Reading in MuData from '%s'" % args.infile)
 mdata = read(args.infile)
 
 
 
 for mod in neighbor_dict.keys():
     if neighbor_dict[mod]['use_existing']:
-        L.info('using existing neighbors graph for %s' % mod)
+        L.info('Using existing neighbors graph for %s' % mod)
         pass
     else:
-        L.info("computing new neighbors for %s" % mod)
+        L.info("Computing new neighbors for %s" % mod)
         if type(mdata) is MuData:
             adata=mdata[mod]
         if (neighbor_dict[mod]['dim_red'] == "X_pca") and ("X_pca" not in adata.obsm.keys()):
@@ -82,6 +81,6 @@ for mod in neighbor_dict.keys():
 
 
 
-L.info("saving data")
+L.info("Saving updated MuData to '%s'" % args.outfile)
 mdata.write(args.outfile)
-L.info("done")
+L.info("Done")

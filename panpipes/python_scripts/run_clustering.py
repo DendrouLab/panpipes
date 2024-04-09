@@ -33,6 +33,7 @@ args, opt = parser.parse_known_args()
 L.info(args)
 
 # read data
+L.info("Reading in data from '%s'" % args.infile)
 mdata = mu.read(args.infile)
 if type(mdata) is AnnData:
     adata = mdata
@@ -45,22 +46,29 @@ uns_key=args.neighbors_key
 # check sc.pp.neihgbours has been run
 if uns_key not in adata.uns.keys():
     # sys.exit("Error: sc.pp.neighbours has not been run on this object")
+    L.warning("Running neighbors with default parameters since no neighbors graph found in this data object")
     sc.pp.neighbors(adata)
     uns_key="neighbors"
 
 
 # run command
 if args.algorithm == "louvain":
+    L.info("Running Louvain clustering")
     sc.tl.louvain(adata, resolution=float(args.resolution), key_added='clusters', neighbors_key=uns_key)
 elif args.algorithm == "leiden":
+    L.info("Running Leiden clustering")
     sc.tl.leiden(adata, resolution=float(args.resolution), key_added='clusters', neighbors_key=uns_key)
 else:
-    sys.exit("algorithm not found: please specify 'louvain' or 'leiden'")
+    L.error("Could not find clustering algorithm '%s'. Please specify 'louvain' or 'leiden'" % args.algorithm)
+    sys.exit("Could not find clustering algorithm '%s'. Please specify 'louvain' or 'leiden'"  % args.algorithm)
 
 #mdata.update()
 ## write out clusters as text file
+L.info("Saving cluster column to csv file '%s'" % args.outfile)
 clusters = pd.DataFrame(adata.obs['clusters'])
 clusters.to_csv(args.outfile, sep='\t')
+
+L.info("Saving cell numbers per cluster to csv file")
 
 tmp = clusters['clusters'].value_counts().to_frame("cell_num").reset_index().rename(columns={"index":"cluster"})
 tmp.to_csv(os.path.dirname(args.outfile) + "/cellnum_per_cluster.csv")
