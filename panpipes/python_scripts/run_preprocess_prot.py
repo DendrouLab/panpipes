@@ -83,48 +83,57 @@ sc.set_figure_params(scanpy=True, fontsize=14, dpi=300, facecolor='white', figsi
 
 
 # load filtered data - if use_muon is True this will return a mudata object, else returns an mudata object
-L.info("reading filtered mudata object")
+L.info("Reading in MuData from '%s'" % args.filtered_mudata)
 try:
     all_mdata = mu.read(args.filtered_mudata)
 except FileNotFoundError:
+    L.error("filtered_mudata file not found")
     sys.exit("filtered_mudata file not found")
 
 # load bg data
 if 'dsb' in norm_methods:
     if args.bg_mudata is not None:
-        L.info("reading bg file object")
+        L.info("Reading in background MuData from " + args.bg_mudata)
         try:
             all_mdata_bg = mu.read(args.bg_mudata)
             # subset to just the channel 
         except FileNotFoundError:
-            sys.exit("bg_mudata object not found")
+            L.error("Background MuData object not found in " + args.bg_mudata)
+            sys.exit("Background MuData object not found in " + args.bg_mudata)
     else:
-        sys.exit("must specify a bg mudata to run dsb, containing both rna and prot")
+        L.error("You must specify a background MuData to run dsb, containing both rna and prot")
+        sys.exit("You must specify a background MuData to run dsb, containing both rna and prot")
     
-    # checking that the samne proteins are in foreground and background (since foreground might have been filtered)
+    # checking that the same proteins are in foreground and background (since foreground might have been filtered)
+    L.info("Checking that the same proteins are in foreground and background")
     if len(all_mdata['prot'].var_names) != len(all_mdata_bg['prot'].var_names):
         mu.pp.filter_var(all_mdata_bg['prot'], all_mdata['prot'].var_names)
         all_mdata_bg.update()
 
 
 # find isotypes columns 
+L.info("Looking for isotypes column in .var['isotype']")
 if "isotype" in all_mdata["prot"].var.columns:
     isotypes = list(all_mdata["prot"].var_names[all_mdata["prot"].var.isotype])
     # exclude isotypes from downstream analysis by setting them as the only not highly variable genes.
+    L.info("Excluding isotypes from downstream analysis by setting them as the only not HVGs")
     all_mdata['prot'].var['highly_variable'] = ~all_mdata['prot'].var['isotype'] 
 else:
+    L.info("No isotype column found in .var")
     isotypes = None
     
-L.info("isotypes found:")
+L.info("The following isotypes were found:")
 L.info(isotypes)
 
 
 # save raw counts
+L.info("Checking if raw data is available")
 if pnp.scmethods.X_is_raw(all_mdata["prot"]):
+    L.info("Saving raw counts from .X to .layers['raw_counts']")
     all_mdata["prot"].layers["raw_counts"] = all_mdata["prot"].X.copy()
 elif "raw_counts" in all_mdata["prot"].layers :
-    L.info("raw_counts layer already exists")
-    all_mdata.X = all_mdata["prot"].layers['raw_counts'].copy()
+    L.info(".layers['raw_counts'] already exists and copying it to .X")
+    all_mdata["prot"].X = all_mdata["prot"].layers['raw_counts'].copy()
 else:
     L.error("X is not raw data and raw_counts layer not found")
     sys.exit("X is not raw data and raw_counts layer not found")
@@ -202,10 +211,12 @@ else:
         all_mdata["prot"].X = all_mdata["prot"].layers["raw_counts"].copy()
         # run normalise
         # this stores a layer named after the method as well as overwriting X
+        L.info("Normalizing data with CLR")
         pnp.scmethods.run_prot_normalise(mdata=all_mdata, 
                 mdata_bg=None,
                 method="clr",
                 clr_margin=int(args.clr_margin))
+        L.info("Plotting Ridgeplot")
         pnp.plotting.ridgeplot(all_mdata["prot"], features=plot_features, layer="clr",  splitplot=6)
         plt.savefig(os.path.join(args.figpath, "clr_ridgeplot.png"))
         if isotypes is not None:
@@ -223,15 +234,18 @@ else:
         mu.pl.histogram(all_mdata_bg["rna"], ["log10umi"], bins=50)
         plt.savefig(os.path.join(args.figpath, "all_log10umi.png"))
         # this stores a layer named after the method as well as overwriting X
+        L.info("Normalizing data with dsb")
         pnp.scmethods.run_prot_normalise(mdata=all_mdata, 
                 mdata_bg=all_mdata_bg, 
                 method="dsb",
                 isotypes=isotypes) 
         # apply quantile clipping # discussed in FAQs https://cran.r-project.org/web/packages/dsb/vignettes/dsb_normalizing_CITEseq_data.html
         if args.quantile_clipping:
+            L.info("Quantile clipping")
             all_mdata['prot'].layers['dsb'] = pnp.scmethods.quantile_clipping(all_mdata['prot'], layer="dsb", inplace=False)
             all_mdata['prot'].X = all_mdata['prot'].layers['dsb'].copy()
         # plot ridgeplot
+        L.info("Plotting Ridgeplot")
         pnp.plotting.ridgeplot(all_mdata["prot"], features=plot_features, layer="dsb",  splitplot=6)
         plt.savefig(os.path.join(args.figpath, "dsb_ridgeplot.png"))
         if isotypes is not None:
@@ -247,12 +261,12 @@ else:
     # run pca on X 
     # this basically makes no sense if you have a small panel of antibodies.
     if args.run_pca:
-        L.info("running pca")
+        L.info("Running PCA")
 
         if all_mdata['prot'].var.shape[0] < int(args.n_pcs):
-            L.info("You have less features than number of PCs you intend to calculate")
+            L.warning("You have less features (%s) than number of PCs (%t) you intend to calculate." % (all_mdata['prot'].var.shape[0], args.n_pcs))
             n_pcs = all_mdata['prot'].var.shape[0] - 1
-            L.info("Setting n PCS to %i" % int(n_pcs))
+            L.info("Setting number of PCS to %i" % int(n_pcs))
         else:
             n_pcs = int(args.n_pcs)
         sc.tl.pca(all_mdata['prot'], n_comps=n_pcs, 
@@ -260,29 +274,24 @@ else:
                         random_state=0) 
 
         # do some plots!
+        L.info("Plotting PCA")
         sc.pl.pca_variance_ratio(all_mdata['prot'], log=True, n_pcs=n_pcs, save=".png")
         
-        L.info(args.color_by)
         
         col_variables = args.color_by.split(",")
-        L.info("col_variables")
-        L.info(col_variables)
         
         col_variables = [a.strip() for a in col_variables]
-
-        L.info("col_variables now")
-        L.info(col_variables)
         
         col_use = [var for var in col_variables if var in all_mdata['prot'].obs.columns]
-        L.info("col_use")
-        L.info(col_use)
+
         sc.pl.pca(all_mdata['prot'], color=col_use, save = "_vars.png")
         sc.pl.pca_loadings(all_mdata['prot'], components="1,2,3,4,5,6", save = ".png")
         sc.pl.pca_overview(all_mdata['prot'], save = ".png")
 
     if args.save_mudata_path is not None:
         all_mdata.update()
+        L.info("Saving updated MuData to '%s'" % args.save_mudata_path)
         all_mdata.write(args.save_mudata_path)
 
 
-L.info("done")
+L.info("Done")

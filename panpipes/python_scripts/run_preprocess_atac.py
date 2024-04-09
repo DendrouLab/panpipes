@@ -88,7 +88,6 @@ parser.add_argument("--color_by", default="batch")
 
 args, opt = parser.parse_known_args()
 
-L.info("running with args:")
 L.info(args)
 
 figdir = args.figdir
@@ -99,14 +98,18 @@ if not os.path.exists(figdir):
 sc.settings.figdir = figdir
 sc.set_figure_params(scanpy=True, fontsize=14, dpi=300, facecolor='white', figsize=(5,5))
 
+L.info("Reading in MuData from '%s'" % args.input_mudata)
 mdata = mu.read(args.input_mudata)
 atac = mdata.mod['atac']
 
 # save raw counts
+L.info("Checking if raw data is available")
 if X_is_raw(atac):
+    L.info("Saving raw counts from .X to .layers['raw_counts']")
     atac.layers["raw_counts"] = atac.X.copy()
-elif "raw_counts" in atac.layers :
-    L.info("raw_counts layer already exists")
+elif "raw_counts" in atac.layers:
+    L.info(".layers['raw_counts'] already exists and copying it to .X")
+    atac.X = atac.layers['raw_counts'].copy()
 else:
     L.error("X is not raw data and raw_counts layer not found")
     sys.exit("X is not raw data and raw_counts layer not found")
@@ -115,43 +118,49 @@ else:
 # NORMALIZE
 if X_is_raw(atac):
     if args.binarize is True:
-        L.info("binarizing peak count matrix")
+        L.info("Binarizing peak count matrix")
         ac.pp.binarize(atac)    
 
     if args.normalize is not None:
+        L.info("Normalizing data")
         if args.normalize == "log1p":
             if args.binarize:
                 L.warning("Careful, you have decided to binarize data but also to normalize per cell and log1p. Not sure this is meaningful")
             sc.pp.normalize_per_cell(atac,counts_per_cell_after=1e4)
             sc.pp.log1p(atac)
+            L.info("Saving normalized counts to layer 'logged_counts'")
             atac.layers["logged_counts"] = atac.X.copy()
         elif args.normalize == "TFIDF":
             if args.TFIDF_flavour=="signac":
                 ac.pp.tfidf(atac, scale_factor=1e4, log_tfidf=True, log_tf=False, log_idf=False)
+                L.info("Saving normalized counts to layer 'signac_norm'")
                 atac.layers["signac_norm"] = atac.X.copy()
             elif args.TFIDF_flavour=="logTF":
-                ac.pp.tfidf(atac, scale_factor=1e4, log_tfidf=False, log_tf=True, log_idf=False)    
+                ac.pp.tfidf(atac, scale_factor=1e4, log_tfidf=False, log_tf=True, log_idf=False)  
+                L.info("Saving normalized counts to layer 'logTF_norm'")  
                 atac.layers["logTF_norm"] = atac.X.copy()
             elif args.TFIDF_flavour=="logIDF":
                 ac.pp.tfidf(atac, scale_factor=1e4, log_tfidf=False, log_tf=False, log_idf=True)
+                L.info("Saving normalized counts to layer 'logIDF_norm'")
                 atac.layers["logIDF_norm"] = atac.X.copy()
     else: 
-        L.error("We Require a normalization strategy for ATAC")
-        sys.exit("Exiting because no normalization was specified. If None was intended, check your pipeline.yml file")
+        L.error("A normalization strategy is needed for ATAC. For that, please specify the 'normalize' parameter in the pipeline.yml")
+        sys.exit("A normalization strategy is needed for ATAC. For that, please specify the 'normalize' parameter in the pipeline.yml")
 
 
 #highly variable feature selection
 if "highly_variable" in atac.var: 
     L.warning( "You have %s Highly Variable Features", np.sum(atac.var.highly_variable))
 else:
-
     if args.feature_selection_flavour == "scanpy":
+        L.info("Running HVF selection")
         if args.n_top_features is None:
             sc.pp.highly_variable_genes(atac, min_mean=float(args.min_mean), 
             max_mean=float(args.max_mean), min_disp=float(args.min_disp))
         else:
             sc.pp.highly_variable_genes(atac, n_top_genes=int(args.n_top_features))
     elif args.feature_selection_flavour == "signac":
+        L.info("Running HVF selection")
         findTopFeatures_pseudo_signac(atac, args.min_cutoff)
     else:
         L.warning("No highly variable feature selection was performed!")
@@ -160,10 +169,15 @@ if "highly_variable" in atac.var:
     L.warning( "You have %s Highly Variable Features", np.sum(atac.var.highly_variable))
 
 # filter by hvgs
-filter_by_hvgs = args.filter_by_hvf
+if args.filter_by_hvf == "False": 
+    filter_by_hvgs = False
+elif args.filter_by_hvf == "True":
+    filter_by_hvgs = True
+else: 
+    filter_by_hvgs = args.filter_by_hvf
 
 if filter_by_hvgs:
-    L.info("filtering object to only include highly variable features")
+    L.info("Subsetting object to only include HVGs")
     mdata.mod["atac"] = atac[:, atac.var.highly_variable]
     if isinstance(mdata, mu.MuData):
         mdata.update()
@@ -176,13 +190,17 @@ if filter_by_hvgs:
 # and were first introduced for the analysis of scATAC-seq data by Cusanovich et al. 2015.
 
 if args.dimred == "LSI" and args.normalize == "TFIDF":
+    L.info("Running LSI")
     lsi(adata=atac, num_components=int(args.n_comps))
-else:
+elif args.dimred == "LSI" and args.normalize == "log1p":
     L.info("Applying LSI on logged_counts is not recommended. Changing dimred to PCA")
     args.dimred = "PCA"
 if args.dimred == "PCA":
+    L.info("Scaling data")
     sc.pp.scale(atac)
+    L.info("Saving scaled counts to layer 'scaled_counts'")
     atac.layers["scaled_counts"] = atac.X.copy()
+    L.info("Running PCA")
     sc.tl.pca(atac, n_comps=int(args.n_comps), svd_solver=args.solver, 
     random_state=0)
 
@@ -193,11 +211,13 @@ col_use = [var for var in col_variables if var in atac.obs.columns]
 #some plotting before removing the components
 
 if args.dimred =='PCA':
+    L.info("Plotting PCA")
     sc.pl.pca_variance_ratio(atac, log=True, n_pcs=int(args.n_comps), save=".png")
     sc.pl.pca(atac, color=col_use, save = "_vars.png")
     sc.pl.pca_loadings(atac, components="1,2,3,4,5,6", save = ".png")
     sc.pl.pca_overview(atac, save = ".png")
 if args.dimred =='LSI':
+    L.info("Plotting LSI")
     sc.pl.embedding(atac, color=col_use,basis="X_lsi", save = ".png")
     correlation_df = calc_tech_corr(extract_lsi(atac), 
         tech_covariates = ['n_genes_by_counts', 'total_counts'])
@@ -209,7 +229,7 @@ if args.dimred =='LSI':
 
 
 if args.dim_remove is not None:
-    L.info("removing component from dimred")
+    L.info("Removing component %s from %s" % (args.dim_remove, args.dimred))
     dimrem=int(args.dim_remove)
     if args.dimred == "LSI":
         atac.obsm['X_lsi'] = atac.obsm['X_lsi'][:,dimrem:]
@@ -220,6 +240,7 @@ if args.dim_remove is not None:
         atac.varm["PCs"] = atac.varm["PCs"][:,dimrem:]
         
 mdata.update()
+L.info("Saving updated MuData to '%s'" % args.output_mudata)
 mdata.write(args.output_mudata)
 
 L.info("Done")

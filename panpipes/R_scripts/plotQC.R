@@ -33,7 +33,7 @@ do_violin_plot <- function(df, qc, group){
     theme(axis.text.x=element_text(size=8, angle=90),
           axis.text.y=element_text(size=8))
   if(length(unique(df[[group]])) > 10){
-    message(paste0(sc, "has too many categories, removing legend"))
+    print(paste(sc, "has too many categories, removing legend"))
     g <- g + theme(legend.position="none")
   }
   
@@ -82,15 +82,12 @@ option_list <- list(
 )
 
 
-message("Plot QC data")
 opt <- parse_args(OptionParser(option_list=option_list))
 
 if(is.null(opt$outdir)) { opt$outdir <- paste0(getwd(),"/")}
 if(!grepl("\\/$", opt$outdir)){opt$outdir <- paste(opt$outdir, "/", sep = "")}
 if(!file.exists(opt$outdir)){dir.create(opt$outdir)}
 
-print("Running with options:")
-print(opt)
 
 run<- opt$outdir
 opt[which(opt=="NULL")] <- NULL
@@ -118,16 +115,16 @@ if (!is.null(opt$groupingvar)){
   source_facet <- source_facet[source_facet %in% colnames(data_plot)]
   source_facet <- unique(c(source_facet, keep_source) )
   if(length(source_facet)>0){
-    print("Facet plotting with")
     # add sample_id as a minimum requirement if it's not there already
     source_facet = unique(c("sample_id", source_facet))
-    print(source_facet)
+    print(paste("Facet plotting with",source_facet))
   }
 }else{
-  stop("i don't have the minimum variable _sampleid_ to facet on, will stop here")
+  stop("Need the minimum variable _sampleid_ to facet on, will stop here")
 }
 # RNA plots --------------------------------------------------------------------
 
+print("RNA plots")
 
 if(opt$scanpy_or_muon=="scanpy"){
   rna_data_plot <- data_plot
@@ -162,9 +159,8 @@ rna_source_facet <- gsub("^rna\\.", "",grep("^rna.", source_facet, value = TRUE)
 rna_source_facet <- unique(c(rna_source_facet, source_facet[!grepl("^rna.", source_facet)]))
 rna_source_facet <- rna_source_facet[rna_source_facet %in% colnames(rna_data_plot)]
 for (qc in qcmetrics){
-  print(qc)
+  print(paste("Plotting violin plots of", qc))
   for (sc in rna_source_facet){ #add gsub temp here
-    print(sc)
     g <- do_violin_plot(rna_data_plot, qc, sc)
     if (uniq_sample_id  > 50){width=12}else{width=6}
     ggsave(g, filename=file.path(outpath, paste0("violin_", sc, "_rna-", qc,".png")), type="cairo", width= width, height=6)
@@ -183,23 +179,26 @@ for (sc in rna_source_facet){
   }
   # plot once per source facet
   if (all(c("total_counts","n_genes_by_counts")%in% colnames(rna_data_plot))){
+    print("Plotting scatter plot of total_counts and n_genes_by_counts")
     g <- do_scatter_plot(rna_data_plot,x="total_counts",y="n_genes_by_counts", facet=sc)
     ggsave(g, filename=file.path(outpath, paste0("scatter_", sc, "_rna-nUMI_v_rna-genes.png")), type="cairo",
            width= 3*ncols, height=3*nrows, dpi=200)
   }
   
   if (all(c("log1p_total_counts","log1p_n_genes_by_counts")%in% colnames(rna_data_plot))){
-    
+    print("Plotting scatter plot of log1p_total_counts and n_genes_by_counts")
     g <- do_scatter_plot(rna_data_plot,x="log1p_total_counts",y="log1p_n_genes_by_counts", facet=sc)
     ggsave(g, filename=file.path(outpath, paste0("scatter_", sc, "_rna-log1p_nUMI_v_rna-log1p_genes.png")), type="cairo",
            width= 3*ncols, height=3*nrows, dpi=200)
   }
   if (all(c("total_counts","pct_counts_mt")%in% colnames(rna_data_plot))){
+    print("Plotting scatter plot of total_counts and pct_counts_mt")
     g <- do_scatter_plot(rna_data_plot,x="total_counts",y="pct_counts_mt", facet=sc)
     ggsave(g, filename=file.path(outpath, paste0("scatter_", sc, "_rna-nUMI_v_rna-pct_mt.png")), type="cairo",
            width= 3*ncols, height=3*nrows, dpi=200)
   }
   if (all(c("n_genes_by_counts","doublet_scores","total_counts")%in% colnames(rna_data_plot))){
+    print("Plotting scatter plot of n_genes_by_counts and doublet_scores")
     g <- do_scatter_plot(rna_data_plot,x="n_genes_by_counts",y="doublet_scores",
                          hue="total_counts", facet=sc)
     ggsave(g, filename=file.path(outpath, paste0("scatter_", sc, "_rna-genes_rna-doublet_scores_rna-numi.png")),    
@@ -213,7 +212,10 @@ for (sc in rna_source_facet){
 # Protein plots ----------------------------------------------------------------
 
 
+
 if(!is.null(opt$prot_qc_metrics)){
+  print("Protein plots")
+
   qcmetrics <- strsplit(opt$prot_qc_metrics,",")[[1]]
   prot_data_plot <- data_plot[,grep("^prot\\.",colnames(data_plot))]
   colnames(prot_data_plot) <- gsub("^prot\\.", "", colnames(prot_data_plot))
@@ -230,7 +232,7 @@ if(!is.null(opt$prot_qc_metrics)){
   # check these qc metrics are in the file
   qcmetrics <- qcmetrics[qcmetrics %in% colnames(prot_data_plot)]
   for (qc in qcmetrics){
-    print(qc)
+    print(paste("Plotting violin plots of", qc))
     for (sc in prot_source_facet){
       g <- do_violin_plot(prot_data_plot, qc, sc)
       if (uniq_sample_id  > 50){width=12}else{width=6}
@@ -255,28 +257,33 @@ if(!is.null(opt$prot_qc_metrics)){
       nrows=1
     }
     # plot once per source facet
-    message("protein scatter plots")  
+
     if (all(c("total_counts","n_prot_by_counts")%in% colnames(prot_data_plot))){
+      print("Plotting scatter plot of total_counts and n_prot_by_counts")
       g <- do_scatter_plot(prot_data_plot,x="total_counts",y="n_prot_by_counts", facet=sc)
       ggsave(g, filename=file.path(outpath, paste0("scatter_", sc, "_prot-nUMI_v_prot-prot.png")), type="cairo",
              width= 3*ncols, height=3*nrows, dpi=200)
     }
     if (all(c("log1p_total_counts","log1p_n_prot_by_counts")%in% colnames(prot_data_plot))){
+      print("Plotting scatter plot of log1p_total_counts and log1p_n_prot_by_counts")
       g <- do_scatter_plot(prot_data_plot,x="log1p_total_counts",y="log1p_n_prot_by_counts", facet=sc)
       ggsave(g, filename=file.path(outpath, paste0("scatter_", sc, "_prot-log1p_nUMI_v_prot-log1p_prot.png")), type="cairo",
              width= 3*ncols, height=3*nrows, dpi=200)
     }
     if (all(c("total_counts","pct_counts_isotype")%in% colnames(prot_data_plot))){
+      print("Plotting scatter plot of total_counts and pct_counts_isotype")
       g <- do_scatter_plot(prot_data_plot,x="total_counts",y="pct_counts_isotype", facet=sc)
       ggsave(g, filename=file.path(outpath, paste0("scatter_", sc, "_prot-nUMI_v_prot-pct_isotype.png")), type="cairo",
              width= 3*ncols, height=3*nrows, dpi=200)
     }
     if (all(c("total_counts","total_counts_isotype")%in% colnames(prot_data_plot))){
+      print("Plotting scatter plot of total_counts and total_counts_isotype")
       g <- do_scatter_plot(prot_data_plot,x="total_counts",y="total_counts_isotype", facet=sc)
       ggsave(g, filename=file.path(outpath, paste0("scatter_", sc, "_prot-nUMI_v_prot-total_counts_isotype.png")), type="cairo",
              width= 3*ncols, height=3*nrows, dpi=200)
     }
     if (all(c("log1p_total_counts","log1p_total_counts_isotype", "isotype_exclude")%in% colnames(prot_data_plot))){
+      print("Plotting scatter plot of log1p_total_counts and log1p_total_counts_isotype")
       g <- do_scatter_plot(prot_data_plot,x="log1p_total_counts",y="log1p_total_counts_isotype", hue="isotype_exclude", facet=sc)
       ggsave(g, filename=file.path(outpath, paste0("scatter_", sc, "_prot-log1p_nUMI_v_prot-log1p_total_counts_isotype.png")), type="cairo",
              width= 3*ncols, height=3*nrows, dpi=200)
@@ -288,7 +295,7 @@ if(!is.null(opt$prot_qc_metrics)){
 
 
 if(!is.null(opt$atac_qc_metrics)){
-  message("Atac plots")
+  print("ATAC plots")
   atac_data_plot <- data_plot[,grep("^atac\\.",colnames(data_plot))]
   colnames(atac_data_plot) <- gsub("^atac\\.", "", colnames(atac_data_plot))
   atac_source_facet <- gsub("^atac\\.", "",grep("^atac.", source_facet, value = TRUE))
@@ -304,7 +311,7 @@ if(!is.null(opt$atac_qc_metrics)){
   # check these qc metrics are in the file
   qcmetrics <- qcmetrics[qcmetrics %in% colnames(atac_data_plot)]
   for (qc in qcmetrics){
-    print(qc)
+    print(paste("Plotting violin plots of", qc))
     for (sc in atac_source_facet){
       g <- do_violin_plot(atac_data_plot, qc, sc)
       if (uniq_sample_id  > 50){width=12}else{width=6}
@@ -317,7 +324,7 @@ if(!is.null(opt$atac_qc_metrics)){
 
 
 if (!is.null(opt$rep_qc_metrics)) {
-  message("Repertoire plots")
+  print("Repertoire plots")
   qcmetrics <- strsplit(opt$rep_qc_metrics,",")[[1]]
   qcmetrics <- gsub("rep:", "", qcmetrics)
   rep_data_plot <- data_plot[,grep("^rep\\.",colnames(data_plot))]
@@ -338,6 +345,7 @@ if (!is.null(opt$rep_qc_metrics)) {
   # check these qc metrics are in the file
   qcmetrics <- qcmetrics[qcmetrics %in% colnames(rep_data_plot)]
   for (qc in qcmetrics){
+    print(paste("Plotting bar plots of", qc))
     for (sc in rep_source_facet){
       g <- do_bar_plot(rep_data_plot, qc, sc)
       if (uniq_sample_id  > 50){width=12}else{width=6}
@@ -354,6 +362,7 @@ if (!is.null(opt$rep_qc_metrics)) {
 
 
 if(!is.null(opt$prot_qc_metrics)){
+print("RNA vs. Protein plots")
 
 # rna vs prot plots ----------------------------------------------------------------
   
@@ -363,8 +372,6 @@ if(!is.null(opt$prot_qc_metrics)){
   
 
   for (sc in source_facet){
-    
-    message(sc)
     uniq_source <- nrow(unique(data_plot[sc]))
     if(uniq_source >6){
       ncols=6
@@ -373,28 +380,32 @@ if(!is.null(opt$prot_qc_metrics)){
       ncols=uniq_source
       nrows=1
     }
-    message("rna v protein scatter plots")  
     if (all(c("rna.total_counts","prot.total_counts")%in% colnames(data_plot))){
+      print("Plotting scatter plot of rna.total_counts and prot.total_counts")
       g <- do_scatter_plot(data_plot,x="rna.total_counts",y="prot.total_counts", facet=sc)
       ggsave(g, filename=file.path(outpath, paste0("scatter_", sc, "-nUMI_v_rna-nUMI.png")), type="cairo",
               width= 3*ncols, height=3*nrows, dpi=200)
     }
     if (all(c("rna.log1p_total_counts","prot.log1p_total_counts")%in% colnames(data_plot))){
+      print("Plotting scatter plot of rna.log1p_total_counts and prot.log1p_total_counts")
       g <- do_scatter_plot(data_plot,x="rna.log1p_total_counts",y="prot.log1p_total_counts", facet=sc)
       ggsave(g, filename=file.path(outpath, paste0("scatter_", sc, "-log1p_nUMI_v_rna-log1p_nUMI.png")), type="cairo",
               width= 3*ncols, height=3*nrows, dpi=200)
     }
     if (all(c("rna.total_counts","prot.total_counts_isotype")%in% colnames(data_plot))){
+      print("Plotting scatter plot of rna.total_counts and prot.total_counts_isotype")
       g <-  do_scatter_plot(data_plot,x="rna.total_counts",y="prot.total_counts_isotype", facet=sc)
       ggsave(g, filename=file.path(outpath, paste0("scatter_", sc, "-nUMI_v_prot-counts_isotype.png")), type="cairo",
               width= 3*ncols, height=3*nrows, dpi=200)
     }    
     if (all(c("rna.log1p_total_counts","prot.log1p_total_counts_isotype") %in% colnames(data_plot))){
+      print("Plotting scatter plot of rna.log1p_total_counts and prot.log1p_total_counts_isotype")
       g <-  do_scatter_plot(data_plot,x="rna.log1p_total_counts",y="prot.log1p_total_counts_isotype", facet=sc)
       ggsave(g, filename=file.path(outpath, paste0("scatter_", sc, "-log1p_nUMI_v_prot-log1p_counts_isotype.png")), type="cairo",
               width= 3*ncols, height=3*nrows, dpi=200)
     }
     if (all(c("rna.doublet_scores","prot.log1p_total_counts") %in% colnames(data_plot))){
+      print("Plotting scatter plot of rna.doublet_scores and prot.log1p_total_counts")
       g <-  do_scatter_plot(data_plot,x="rna.doublet_scores",y="prot.log1p_total_counts", facet=sc)
       ggsave(g, filename=file.path(outpath, paste0("scatter_", sc, "-doublet_scores_v_prot-log1p_nUMI.png")), type="cairo",
               width= 3*ncols, height=3*nrows, dpi=200)
@@ -408,11 +419,9 @@ if(!is.null(opt$prot_qc_metrics)){
 
 
 sprefix <- opt$sampleprefix
-print(sprefix)
-message ("saving some counts tables for references")
-
 
 if(opt$prefilter){
+  print("Saving counts tables for references")
   if(all(c("pct_counts_mt", "pct_counts_hb", "n_genes_by_counts", "doublet_scores") %in% colnames(rna_data_plot))){
     f1 <- rna_data_plot %>% 
       dplyr::filter(pct_counts_mt<=20 & pct_counts_hb<=70 &n_genes_by_counts>=100 & doublet_scores<=0.25) %>%
@@ -480,7 +489,7 @@ if(opt$prefilter){
   }
   
 }else{
-  message("producing files with final counts for cells after filtering")
+  print("Producing files with final counts for cells after filtering")
   
   baseline <- rna_data_plot %>% 
     group_by_at(.vars=c(rna_source_facet)) %>% 
@@ -500,4 +509,4 @@ if(opt$prefilter){
 }
 
 
-message("done")
+print("Done")

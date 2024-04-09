@@ -92,7 +92,7 @@ adata = mdata['rna']
 if args.hvg_batch_key is not None:
     columns = [x.strip() for x in args.hvg_batch_key.split(",")]
     if len(columns) > 1: 
-        L.info("combining batch columns into one column 'hvg_batch_key'")
+        L.info("Combining batch columns into one column 'hvg_batch_key'")
         adata.obs["hvg_batch_key"] = adata.obs[columns].apply(lambda x: '|'.join(x), axis=1)
         # make sure that batch is a categorical
         adata.obs["hvg_batch_key"] = adata.obs["hvg_batch_key"].astype("category")
@@ -119,10 +119,10 @@ else:
 # except when flavor='seurat_v3' in which count data is expected.
 # change the order accordingly
 if X_is_raw(adata):
-    L.info("Normalise, log and calculate HVGs")
+    L.info("Normalize, log and calculate HVGs")
     if args.flavor == "seurat_v3":
         if args.n_top_genes is None:
-            raise ValueError("if seurat_v3 is used you must give a n_top_genes value")
+            raise ValueError("If seurat_v3 is used, you must give a n_top_genes value")
         else:
             sc.pp.highly_variable_genes(adata, flavor="seurat_v3", 
                                         n_top_genes=int(args.n_top_genes),
@@ -213,7 +213,7 @@ else:
 L.info("Running PCA")
 
 if adata.var.shape[0] < int(args.n_pcs):
-    L.warning("You have less features (%s) than number of PCs (%t) you intend to calculate." % (adata.var.shape[0], args.n_pcs))
+    L.warning("You have less features (%s) than number of PCs (%s) you intend to calculate." % (adata.var.shape[0], args.n_pcs))
     n_pcs = adata.var.shape[0] - 1
     L.info("Setting number of PCS to %i" % int(n_pcs))    
 else:
