@@ -266,6 +266,8 @@ inf_aver.to_csv(output_dir+"/Cell2Loc_inf_aver.csv")
 cell2loc_plot_QC_reference(model_ref, figdir + "/QC_reference_reconstruction_accuracy.png", figdir + "/QC_reference_expression signatures_vs_avg_expression.png")
 
 # save model and update mudata
+if adata_sc.var.index.names[0] in adata_sc.var.columns: 
+	adata_sc.var.index.names = [None]
 mdata_singlecell.mod["rna"] = adata_sc
 mdata_singlecell.update()
 if save_models is True:
@@ -301,6 +303,8 @@ sc.pl.spatial(adata_st,color=adata_st.uns["mod"]["factor_names"], show = False, 
 
 
 # save model and update mudata
+if adata_st.var.index.names[0] in adata_st.var.columns: 
+	adata_st.var.index.names = [None]
 mdata_spatial.mod["spatial"] = adata_st
 mdata_spatial.update()
 if save_models is True: 
