@@ -160,8 +160,7 @@ if args.spatial_filetype == "vizgen":
     #plt.savefig("merfish_histo.png", dpi=300)
     plt.savefig(figdir + "/histograms."+sprefix +".png", dpi=300)  # Adjust dpi as needed
     plt.close()  # Close the figure to free up memory
-
-            
+           
 
 L.info("Done")
 
