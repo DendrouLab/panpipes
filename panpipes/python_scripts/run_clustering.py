@@ -46,17 +46,17 @@ uns_key=args.neighbors_key
 # check sc.pp.neihgbours has been run
 if uns_key not in adata.uns.keys():
     # sys.exit("Error: sc.pp.neighbours has not been run on this object")
-    L.warning("Running neighbors with default parameters since no neighbors graph found in this data object")
+    L.warning("Running neighbors for modality %s with default parameters since no neighbors graph found in this data object" % args.modality)
     sc.pp.neighbors(adata)
     uns_key="neighbors"
 
 
 # run command
 if args.algorithm == "louvain":
-    L.info("Running Louvain clustering")
+    L.info("Running Louvain clustering for modality %s and resolution %s on %s", (args.modality, args.resolution, uns_key))
     sc.tl.louvain(adata, resolution=float(args.resolution), key_added='clusters', neighbors_key=uns_key)
 elif args.algorithm == "leiden":
-    L.info("Running Leiden clustering")
+    L.info("Running Leiden clustering for modality %s and resolution %s on %s", (args.modality, args.resolution, uns_key))
     sc.tl.leiden(adata, resolution=float(args.resolution), key_added='clusters', neighbors_key=uns_key)
 else:
     L.error("Could not find clustering algorithm '%s'. Please specify 'louvain' or 'leiden'" % args.algorithm)

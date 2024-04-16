@@ -56,7 +56,7 @@ uns_key=args.neighbors_key
 # check sc.pp.neihgbours has been run
 if uns_key not in adata.uns.keys():
     # sys.exit("Error: sc.pp.neighbours has not been run on this object")
-    L.warning("Running neighbors with default parameters since no neighbors graph found in this data object")
+    L.warning("Running neighbors for modality %s with default parameters since no neighbors graph found in this data object" % args.modality)
     sc.pp.neighbors(adata)
     uns_key="neighbors"
 
@@ -69,7 +69,8 @@ if uns_key not in adata.uns.keys():
 
 
 # what parameters?
-L.info("Running UMAP on neighbors_key %s" % uns_key)
+if args.modality is not None:
+    L.info("Running UMAP for modality %s on neighbors_key %s and mindist %s" % (args.modality,uns_key,args.min_dist))
 if uns_key =="wnn":
     mu.tl.umap(adata, min_dist=float(args.min_dist), neighbors_key=uns_key)
 else:

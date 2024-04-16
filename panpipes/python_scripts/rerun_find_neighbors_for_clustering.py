@@ -43,41 +43,44 @@ mdata = read(args.infile)
 
 
 for mod in neighbor_dict.keys():
-    if neighbor_dict[mod]['use_existing']:
-        L.info('Using existing neighbors graph for %s' % mod)
-        pass
-    else:
-        L.info("Computing new neighbors for %s" % mod)
-        if type(mdata) is MuData:
-            adata=mdata[mod]
-        if (neighbor_dict[mod]['dim_red'] == "X_pca") and ("X_pca" not in adata.obsm.keys()):
-            L.info("X_pca not found, computing it using default parameters")
-            sc.tl.pca(adata)
-            if (mod == "atac") and (neighbor_dict[mod]['dim_remove'] is not None):
-                dimrem = int(neighbor_dict[mod]['dim_remove'])
-                adata.obsm['X_pca'] = adata.obsm['X_pca'][:, dimrem:]
-                adata.varm["PCs"] = adata.varm["PCs"][:, dimrem:]
-        if mod == "atac":
-            if (neighbor_dict[mod]['dim_red'] == "X_lsi") and ("X_lsi" not in adata.obsm.keys()):
-                L.info("X_lsi not found, computing it using default parameters")
-                lsi(adata=adata, num_components=50)
-                if neighbor_dict[mod]['dim_remove'] is not None:
+    if mod in mdata.mod.keys():
+        if neighbor_dict[mod]['use_existing']:
+            L.info('Using existing neighbors graph for %s' % mod)
+            pass
+        else:
+            L.info("Computing new neighbors for modality %s on %s" % (mod, neighbor_dict[mod]['dim_red']))
+            if type(mdata) is MuData:
+                adata=mdata[mod]
+            if (neighbor_dict[mod]['dim_red'] == "X_pca") and ("X_pca" not in adata.obsm.keys()):
+                L.info("X_pca not found, computing it using default parameters")
+                sc.tl.pca(adata)
+                if (mod == "atac") and (neighbor_dict[mod]['dim_remove'] is not None):
                     dimrem = int(neighbor_dict[mod]['dim_remove'])
-                    adata.obsm['X_lsi'] = adata.obsm['X_lsi'][:, dimrem:]
-                    adata.varm["LSI"] = adata.varm["LSI"][:, dimrem:]
-                    adata.uns["lsi"]["stdev"] = adata.uns["lsi"]["stdev"][dimrem:]
+                    adata.obsm['X_pca'] = adata.obsm['X_pca'][:, dimrem:]
+                    adata.varm["PCs"] = adata.varm["PCs"][:, dimrem:]
+            if mod == "atac":
+                if (neighbor_dict[mod]['dim_red'] == "X_lsi") and ("X_lsi" not in adata.obsm.keys()):
+                    L.info("X_lsi not found, computing it using default parameters")
+                    lsi(adata=adata, num_components=50)
+                    if neighbor_dict[mod]['dim_remove'] is not None:
+                        L.info("Removing dimension %s from X_lsi" % neighbor_dict[mod]['dim_remove'])
+                        dimrem = int(neighbor_dict[mod]['dim_remove'])
+                        adata.obsm['X_lsi'] = adata.obsm['X_lsi'][:, dimrem:]
+                        adata.varm["LSI"] = adata.varm["LSI"][:, dimrem:]
+                        adata.uns["lsi"]["stdev"] = adata.uns["lsi"]["stdev"][dimrem:]
 
-        # run command
-        opts = dict(method=neighbor_dict[mod]['method'],
-                    n_neighbors=int(neighbor_dict[mod]['k']),
-                    n_pcs=int(neighbor_dict[mod]['n_dim_red']),
-                    metric=neighbor_dict[mod]['metric'],
-                    nthreads=args.n_threads,
-                    use_rep=neighbor_dict[mod]['dim_red'])
+            # run command
+            opts = dict(method=neighbor_dict[mod]['method'],
+                        n_neighbors=int(neighbor_dict[mod]['k']),
+                        n_pcs=int(neighbor_dict[mod]['n_dim_red']),
+                        metric=neighbor_dict[mod]['metric'],
+                        nthreads=args.n_threads,
+                        use_rep=neighbor_dict[mod]['dim_red'])
 
 
-        run_neighbors_method_choice(adata,**opts)
-        mdata.update()
+            run_neighbors_method_choice(adata,**opts)
+            mdata.mod[mod] = adata
+            mdata.update()
 
 
 
