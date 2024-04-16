@@ -65,7 +65,7 @@ On dot plots and bar plots, grouping vars are used to group other features (for 
 
 ## Plot Markers 
   
-The csv filed can be specified in the `viz` configuration file as follows:
+The csv filed can be specified in the `vis` configuration file as follows:
 
 pipeline_vis config file: (pipeline.yml)
 
