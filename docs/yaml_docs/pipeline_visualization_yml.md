@@ -11,7 +11,7 @@
 # Visualization YAML
 
 In this documentation, the parameters of the `visualization` configuration yaml file are explained. 
-This file is generated running `panpipes vis config`.  <br> The individual steps run by the pipeline are described in the [visualization workflow](WHEERREEEE)??????
+This file is generated running `panpipes vis config`.  <br> The individual steps run by the pipeline are described in the [visualization workflow](https://panpipes-pipelines.readthedocs.io/en/latest/workflows/vis.html).
 When running the visualization workflow, panpipes provides a basic `pipeline.yml` file.
 To run the workflow on your own data, you need to specify the parameters described below in the `pipeline.yml` file to meet the requirements of your data.
 However, we do provide pre-filled versions of the `pipeline.yml` file for individual [tutorials](https://panpipes-pipelines.readthedocs.io/en/latest/tutorials/index.html).
