@@ -108,7 +108,7 @@ Metrics to be plotted on every modality.
   - <span class="parameter">prot:</span>`String`, Default: prot:leiden_res0.2    prot:leiden_res1<br>
   - <span class="parameter">atac:</span>`String`, Default: <br>
   - <span class="parameter">rep:</span>`String`, Default: rep:has_ir<br>
-  - <span class="parameter">multimodal:</span>`String`, Default: leiden_totalVI    mdata_colsr<br>
+  - <span class="parameter">multimodal:</span>`String`, Default: leiden_totalVI    mdata_colsr<br> 
 
 - <span class="parameter">continuous_vars:</span>`String`, Default: &continuous_vars<br>
   - <span class="parameter">all:</span>`String`, Default:leiden_res0.5<br>
