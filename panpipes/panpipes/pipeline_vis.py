@@ -50,7 +50,7 @@ do_plot_features = (PARAMS['custom_markers']['files']['full'] is not None or PAR
 
 @follows(set_up_dirs)
 @active_if(do_plot_features)
-@transform(marker_files, formatter(), "logs/markers_by_group__{basename[0]}.log")
+@transform(marker_files, formatter(), "logs/1_plot_markers_by_group__{basename[0]}.log")
 def plot_custom_markers_per_group(marker_file, log_file):
     print(marker_file)
     print(log_file)
@@ -79,7 +79,7 @@ plot_embeddings = any([True if val['run'] is True else False for val in PARAMS["
 @active_if(plot_embeddings )
 @follows(set_up_dirs)
 @active_if(PARAMS['custom_markers']['files']['minimal'] is not None)
-@transform(PARAMS['custom_markers']['files']['minimal'], formatter(), "logs/markers_umap_{basename[0]}.log")
+@transform(PARAMS['custom_markers']['files']['minimal'], formatter(), "logs/2_plot_markers_umap_{basename[0]}.log")
 def plot_custom_markers_umap(marker_file, log_file):
     embedding_dict = PARAMS["embedding"]
     embedding_dict =  {mod:val['basis'] for mod, val in embedding_dict.items() if val['run'] is True}
@@ -106,7 +106,7 @@ def plot_custom_markers_umap(marker_file, log_file):
 # @transform(PARAMS['custom_markers']['files']['minimal'], formatter(), "logs/markers_umap__{basename[0]}.log")
 @active_if(plot_embeddings )
 @follows(set_up_dirs)
-@originate("logs/categorical_variables_umap.log")
+@originate("logs/3_plot_categorical_variables_umap.log")
 def plot_categorical_umaps(log_file):
     embedding_dict = PARAMS["embedding"]
     embedding_dict =  {mod:val['basis'] for mod, val in embedding_dict.items() if val['run'] is True}
@@ -137,7 +137,7 @@ def plot_categorical_umaps(log_file):
 
 @active_if(plot_embeddings)
 @follows(set_up_dirs)
-@originate("logs/continuous_variables_umap.log")
+@originate("logs/4_plot_continuous_variables_umap.log")
 def plot_continuous_umaps(log_file):
     embedding_dict = PARAMS["embedding"]
     embedding_dict =  {mod:val['basis'] for mod, val in embedding_dict.items() if val['run'] is True}
@@ -177,7 +177,7 @@ def write_obs(cmtd):
     cmd = """
         python %(py_path)s/write_metadata.py
         --infile %(mudata_obj)s
-        --outfile %(cmtd)s > logs/write_obs.log
+        --outfile %(cmtd)s > logs/5_write_obs.log
         """
     job_kwargs["job_threads"] = PARAMS['resources_threads_high']
     P.run(cmd, **job_kwargs)
@@ -186,7 +186,7 @@ def write_obs(cmtd):
 # Plot cluster metrics
 @follows(set_up_dirs)
 @active_if(do_plot_metrics)
-@transform(write_obs, formatter(), "logs/plot_metrics.log")
+@transform(write_obs, formatter(), "logs/6_plot_metrics.log")
 def plot_metrics(mtd, log_file):
     cmd = """
     Rscript %(r_path)s/plot_metrics.R \
@@ -205,7 +205,7 @@ scatter_files = list(set(chain(*scatter_files)))
 @active_if(PARAMS['do_plots_paired_scatters'])
 @active_if(len(scatter_files) != 0)
 @transform(scatter_files,
-            formatter(), "logs/scatters__{basename[0]}.log")
+            formatter(), "logs/7_plot_scatters__{basename[0]}.log")
 def plot_scatters(infile, log_file):
     print(infile)
     cmd = """
