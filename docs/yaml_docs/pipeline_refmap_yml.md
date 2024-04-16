@@ -6,7 +6,7 @@
     display: inline-block;
     font-weight: bold;
   }
-</style>
+</style> 
 
 # Refmap workflow 
 In this documentation, the parameters of the `refmap` configuration yaml file are explained. 
