@@ -203,8 +203,8 @@ When pseudo_seurat is set to True then a [python implementation](https://github.
          Which layer stores counts for differential expression test.
        - <span class="parameter">method </span> `String`, Default: t-test_overestim_var<br>
        Options include: ‘logreg’, ‘t-test’, ‘wilcoxon’, ‘t-test_overestim_var’
-       - <span class="parameter">mincels </span> `Integer`, Default: 10<br>
-       Minimal number of cells in a cluster. If the cluster contains less than this number of cells, the marker analysis won't be run.
+       - <span class="parameter">mincells </span> `Integer`, Default: 10<br>
+       Marker analysis is run for clusters >= mincells. If a cluster ncells < mincells , then the cluster is excluded from marker analysis
        - <span class="parameter">pseudo_seurat </span> `Boolean`, Default: False<br>
        - <span class="parameter">minpct </span> `Float`, Default: 0.1<br>
        This parameter is mandatory if pseudo_seurat is set to True 
@@ -214,8 +214,8 @@ When pseudo_seurat is set to True then a [python implementation](https://github.
    - <span class="parameter">run </span> `Boolean`, Default: True<br>
    - <span class="parameter">layer </span> `String`, Default: clr<br>
        Which layer stores counts for differential expression test.
-   - <span class="parameter">mincels </span> `Integer`, Default: 10<br>
-       Minimal number of cells in a cluster. If the cluster contains less than this number of cells, the marker analysis won't be run.
+   - <span class="parameter">mincells </span> `Integer`, Default: 10<br>
+       Marker analysis is run for clusters >= mincells. If a cluster ncells < mincells , then the cluster is excluded from marker analysis
    - <span class="parameter">method </span> `String`, Default: wilcoxon<br>
    - <span class="parameter">pseudo_seurat </span> `Boolean`, Default: False<br>
    - <span class="parameter">minpct </span> `Float`, Default: 0.1<br>
@@ -228,8 +228,8 @@ When pseudo_seurat is set to True then a [python implementation](https://github.
     - <span class="parameter">layer </span> `String`, Default: logged_counts<br>
       Which layer stores counts for differential expression test. 
        Options include logged_counts, signac_norm , and logTF_norm,logIDF_norm
-    - <span class="parameter">mincels </span> `Integer`, Default: 10<br>
-       Minimal number of cells in a cluster. If the cluster contains less than this number of cells, the marker analysis won't be run.
+    - <span class="parameter">mincells </span> `Integer`, Default: 10<br>
+       Marker analysis is run for clusters >= mincells. If a cluster ncells < mincells , then the cluster is excluded from marker analysis
     - <span class="parameter">method </span> `String`, Default: wilcoxon<br>
         Options include: ‘logreg’, ‘t-test’, ‘wilcoxon’, ‘t-test_overestim_var’
     - <span class="parameter">pseudo_seurat </span> `Boolean`, Default: False<br>
@@ -240,7 +240,7 @@ When pseudo_seurat is set to True then a [python implementation](https://github.
 
 
  - <span class="parameter">multimodal:</span><br>
-   - <span class="parameter">mincels </span> `Integer`, Default:10<br>
+   - <span class="parameter">mincells </span> `Integer`, Default:10<br>
        If the cluster contains less than this number of cells, the marker analysis won't be run.
     - <span class="parameter">method </span> `String`, Default: wilcoxon<br>
         Options include: ‘logreg’, ‘t-test’, ‘wilcoxon’, ‘t-test_overestim_var’
@@ -257,8 +257,8 @@ When pseudo_seurat is set to True then a [python implementation](https://github.
        Options include logged_counts, signac_norm , and logTF_norm,logIDF_norm
    - <span class="parameter">method </span> `String`, Default: t-test_overestim_var<br>
         Options include: ‘logreg’, ‘t-test’, ‘wilcoxon’, ‘t-test_overestim_var’
-   - <span class="parameter">mincels </span> `Integer`, Default: 10<br>
-       Minimal number of cells in a cluster. If the cluster contains less than this number of cells, the marker analysis won't be run.
+   - <span class="parameter">mincells </span> `Integer`, Default: 10<br>
+       Marker analysis is run for clusters >= mincells. If a cluster ncells < mincells , then the cluster is excluded from marker analysis
    - <span class="parameter">pseudo_seurat </span> `Boolean`, Default: False<br>
    - <span class="parameter">minpct </span> `Float`, Default: 0.1<br>
       This parameter is mandatory if pseudo_seurat is set to True 
