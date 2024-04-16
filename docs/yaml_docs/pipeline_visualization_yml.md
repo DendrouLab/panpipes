@@ -64,35 +64,39 @@ Set the modalities to True or False depending on what is present in the mudata_o
 On dot plots and bar plots, grouping vars are used to group other features (for categorical, continuous, and feature plots).
 
 ## Plot Markers 
+  
+The csv filed can be specified in the `viz` configuration file as follows:
+
+pipeline_vis config file: (pipeline.yml)
+
+```yaml
+# the full list will be plotted in dot plots and matrix plots, one plot per group
+full:
+ - long_file1.csv
+ - long_file2.csv
+# the shorter list will be plotted on umaps as well as other plot types, one plot per group
+minimal:
+ - short_file1.csv
+
+```
 <span class="parameter">custom_markers</span><br>
   - <span class="parameter">files</span><br>
   
-The csv files for full and minimal must contain three columns:
-
-  | mod  | feature  | group        |
-  |------|----------|--------------|
-  | prot | prot_CD8 | Tcellmarkers |
-  | rna  | CD8A     | Tcellmarkers |
-
-  - <span class="parameter">full:</span><br>
+    - <span class="parameter">full:</span><br>
 The full list will be plotted in dot plots and matrix plots, with one plot per group. 
 
- - <span class="parameter">minimal:</span><br>
+     - <span class="parameter">minimal:</span><br>
 The shorter list will be plotted on umaps as well as other plot types, with one plot per group. 
 
- | feature_1 | feature_2 | colour         |
- |-----------|-----------|----------------|
- | CD8A      | prot_CD8  |                |
- | CD4       | CD8A      | doublet_scores |
-    
-  
+
 - <span class="parameter">paired_scatter:</span>`String`, Default:  <br>
   Where different normalization exists in a modality, choose which one to use, set X or leave blank to use the mdata[mod].X assay. 
 
 - <span class="parameter">layers:</span><br>
   - <span class="parameter">rna:</span>`String`, Default: logged_counts<br>
-  - <span class="parameter">prot:</span>`String`, Default: clr<br> CHEEECKKKK
-  - <span class="parameter">atac:</span>`String`, Default: signac_norm<br> CHHHHECKKK
+  - <span class="parameter">prot:</span>`String`, Default: clr<br> 
+  - <span class="parameter">atac:</span>`String`, Default: signac_norm<br> 
+Check [gene_list_format.md](https://github.com/DendrouLab/panpipes/edit/clustering_g/docs/usage/gene_list_format.md) for Plot marker csv format instructions. 
 
 
 ## Plot metadata variables 
@@ -115,11 +119,7 @@ Metrics to be plotted on every modality.
   - <span class="parameter">multimodal:</span>`String`, Default: rna:total_counts    prot:total_counts<br>
   
 - <span class="parameter"paired_scatter:</span>`String`, Default: scatter_features.csv<br>
-The scatter_features.csv file should have the following format:
-
- | feature_1 | feature_2 | colour         |
- |-----------|-----------|----------------|
- |rna:total_counts | prot:total_counts  | doublet_scores|
+Check [gene_list_format.md](https://github.com/DendrouLab/panpipes/edit/clustering_g/docs/usage/gene_list_format.md) for metadata csv format instructions. 
 
 ## Plot style 
 Choose the plot type desired. 
