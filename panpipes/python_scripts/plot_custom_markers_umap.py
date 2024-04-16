@@ -46,7 +46,7 @@ parser.add_argument("--base_figure_dir", default="figures/",
                     help="figures path")
 
 args, opt = parser.parse_known_args()
-L.info("running with:")
+
 L.info(args)
 sc.settings.figdir = args.base_figure_dir
 
@@ -65,17 +65,16 @@ def main(adata, mod, layer_choice, df, basis):
         fetches = df[df['group'] == gc]['feature']
         plot_features = [gg for gg in fetches if gg in adata.var_names]
         plot_features = list(set(plot_features))
-        L.info("plotting")
-        L.info(plot_features)
+        L.info("Plotting embedding %s of modality %s with layer %s" % (basis, mod, layer_choice))
         sc.settings.figdir  = os.path.join(args.base_figure_dir, mod)
         mu.pl.embedding(adata, basis=basis, layer=layer_choice, color=plot_features, save = fname_prefix + ".png")
 
 
-L.debug("load data")
+L.info("Reading in MuData from '%s'" % args.infile)
 mdata = mu.read(args.infile)
 modalities = args.modalities.split(',')
 
-L.debug("load marker file")
+L.info("Reading in marker file from %s" % args.marker_file)
 df = pd.read_csv(args.marker_file )
 
 # get layer
@@ -102,7 +101,6 @@ if type(mdata) is AnnData:
 else:
     # we have multimodal object
     for mod in modalities:
-        print(mod)
         df_sub = df[df['mod'] == mod]
         mdata.update_obs()
         try:
@@ -115,7 +113,6 @@ else:
             bb = []
         if len(bb) > 0 :
             for basis, layer in product(bb, ll):
-                print(basis,layer)
                 main(adata=mdata[mod], 
                     mod=mod,
                     layer_choice = layer,

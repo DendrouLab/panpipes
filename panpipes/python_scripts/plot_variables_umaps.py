@@ -45,7 +45,7 @@ parser.add_argument("--fig_suffix", default="variables.png",
                     help="figures path")
 args, opt = parser.parse_known_args()
 
-L.info("running with:")
+
 L.info(args)
 # args = argparse.Namespace(infile='../run_clustering_mm/mdata_clustered.h5mu',
 #  basis_dict="{'prot': ['X_umap', 'X_pca']}", 
@@ -56,15 +56,14 @@ def main(adata, mod, plot_features,  basis, fig_suffix):
     # define file name
     fname_prefix = "_".join(["_" + mod,  fig_suffix])
     # get features
-    L.info("plotting")
-    L.info(plot_features)
     sc.settings.figdir  = os.path.join(args.base_figure_dir, mod)
     plot_features = [pf for pf in plot_features if pf in mdata.obs.columns]
     pointsize = 120000 / adata.shape[0]
+    L.info("Plotting embedding %s for modality %s coloured by %s" % (basis, mod, plot_features))
     mu.pl.embedding(adata, basis=basis, color=plot_features, size=pointsize, save = fname_prefix + ".png")
 
 
-L.debug("load data")
+L.info("Reading in MuData from '%s'" % args.infile)
 mdata = mu.read(args.infile)
 
 
@@ -78,6 +77,7 @@ if args.categorical_variables is not None:
     # make sure they are categories
     mdata.obs[uniq_discrete] = mdata.obs[uniq_discrete].apply(lambda x: x. astype('category'))
 else:
+    L.warning("No categorical variables were provided")
     cat_vars = {}
 
 
@@ -89,6 +89,7 @@ if args.continuous_variables is not None:
         # there is probably a better solution
         cont_vars = args.continuous_variable_dict
 else:
+    L.warning("No continuous variables were provided")
     cont_vars = {}
 
 
@@ -101,16 +102,14 @@ for mod in ['rna', 'prot', 'atac', 'multimodal']:
     try:
         basis_list = basis_dict[mod]
     except KeyError:
-        L.info("no basis given for mod: %s, no plot's produced" % mod)
+        L.warning("No basis given for mod: %s, no plot's produced" % mod)
         continue
     params_dict['plot_features'] = []
     if mod in cat_vars.keys():
         params_dict['plot_features'] = cat_vars[mod]
     if mod in cont_vars.keys():
-        params_dict['plot_features'] = params_dict['plot_features'] +  cont_vars[mod]
+        params_dict['plot_features'] = params_dict['plot_features'] + cont_vars[mod]
     params_dict['fig_suffix'] = args.fig_suffix
-    L.info("plotting with params")
-    L.info(params_dict)
     if len(basis_list) > 0:
         for basis in basis_list:
             main(adata=mdata, basis = mod + ":" + basis, **params_dict)

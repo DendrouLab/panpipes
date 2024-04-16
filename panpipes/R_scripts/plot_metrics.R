@@ -71,8 +71,7 @@ option_list <- list(
 )
 
 opt <- parse_args(OptionParser(option_list=option_list))
-message("Running with options:")
-print(opt)
+
 
 # load_data ----------------------------------------------------------------
 
@@ -93,11 +92,10 @@ cmtd <- parse_cell_metadata(cmtd, cat_vars, grp_vars)
 if( PARAMS$do_plots$categorical_barplots & !is.null(cat_vars)){
     for( mod in unique(cat_vars$mod)){
         if (!dir.exists(file.path(mod))) dir.create(file.path(mod))
-        print(mod)
+        print(paste("Plotting barplots for modality", mod))
         uniq_cat_vars = cat_vars[cat_vars$mod == mod, 'variable']
         
         for (cat_v in uniq_cat_vars){
-            print(cat_v)
             plt_title <- cat_v
             plot_dat = cmtd %>% 
                 mutate(!! cat_v  := factor(!! rlang::sym(cat_v))) %>% 
@@ -118,7 +116,7 @@ if( PARAMS$do_plots$categorical_barplots & !is.null(cat_vars)){
                 p1 <- p1 + coord_flip()
             }
         
-        print(paste0("saving to: ", file.path(mod, paste0("bar_", cat_v, ".png"))))
+        print(paste0("Saving plot to: ", file.path(mod, paste0("bar_", cat_v, ".png"))))
         save_plot(filename=file.path(mod, paste0("bar_", cat_v, ".png")),
                             plot=p1, ncol=1, 
                             nrow=1,base_asp = 1.3, base_height = 5) 
@@ -129,18 +127,17 @@ if( PARAMS$do_plots$categorical_barplots & !is.null(cat_vars)){
 if( PARAMS$do_plots$categorical_stacked_barplots & !is.null(cat_vars) & !is.null(grp_vars)){
 
     for( mod in unique(cat_vars$mod)){
-        print(mod)
+        print(paste("Plotting stacked barplots for modality", mod))
         uniq_cat_vars = cat_vars[cat_vars$mod == mod, 'variable']
         
         for( gv in grp_vars$variable){
-            print(gv)
             if (!dir.exists(file.path(mod, gv))) dir.create(file.path(mod, gv), recursive=T)
             stacked_barplots <- list()
         
             for (cat_v in uniq_cat_vars){
                 
                 if( gv == cat_v){
-                    print("skipping")
+                    #print("skipping")
                     next
                 }
                 
@@ -170,6 +167,7 @@ if( PARAMS$do_plots$categorical_stacked_barplots & !is.null(cat_vars) & !is.null
                     p2 <- p2 + coord_flip()
                 }
                 pg <- cowplot::plot_grid(p1, p2)
+                print(paste0("Saving plot to: ", file.path(mod, gv, paste0("stackedbar_", cat_v, ".png"))))
                 save_plot(filename=file.path(mod, gv, paste0("stackedbar_", cat_v, ".png")),
                                     plot=pg, ncol=2, 
                                     nrow=1, base_height = 5, 
@@ -186,11 +184,10 @@ if( PARAMS$do_plots$continuous_violin & !is.null(cont_vars) & !is.null(grp_vars)
 
 
     for( mod in unique(cont_vars$mod)){
-        print(mod)
+        print(paste("Plotting violin plots for modality", mod))
         uniq_cont_vars = cont_vars[cont_vars$mod == mod, 'variable']
         
         for( gv in grp_vars$variable){
-            print(gv)
             if (!dir.exists(file.path(mod, gv))) dir.create(file.path(mod, gv), recursive=T)
 
             stacked_barplots <- list()
@@ -217,7 +214,7 @@ if( PARAMS$do_plots$continuous_violin & !is.null(cont_vars) & !is.null(grp_vars)
                 if (flip_axes){
                     p1 <- p1 + coord_flip()
                 }
-
+                print(paste0("Saving plot to: ", file.path(mod, gv, paste0("violin_", cont_v, ".png"))))
                 save_plot(filename=file.path(mod, gv, paste0("violin_", cont_v, ".png")),
                                     plot=p1, ncol=1, 
                                     nrow=1, base_height = 5, 

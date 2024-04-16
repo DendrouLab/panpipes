@@ -47,7 +47,6 @@ parser.add_argument("--base_figure_dir", default="figures/",
 
 
 args, opt = parser.parse_known_args()
-L.info("running with:")
 L.info(args)
 sc.settings.figdir = args.base_figure_dir
 
@@ -67,10 +66,12 @@ def main(adata, mod, df, grouping_var, pfx, layer_choice=None):
         plot_features = list(set(plot_features))
         # do PCA if it is missing, (prerequisite for dendrogram)
         if "X_pca" not in adata.obsm.keys():
+            L.warning("X_pca was not found for modality %s, but is required for the dendogram. Computing PCA with default parameters." % mod)
             sc.pp.pca(adata)
         use_dendrogram=True
         if len(adata.obs[grouping_var].unique()) > 2:
             try:
+                L.info("Plotting dendogram for modality %s and group %s on X_pca" % (mod, gc))
                 sc.tl.dendrogram(adata, grouping_var, use_rep="X_pca",linkage_method="average")
                 use_dendrogram=True
             except ValueError: 
@@ -79,6 +80,7 @@ def main(adata, mod, df, grouping_var, pfx, layer_choice=None):
         sc.settings.figdir  = os.path.join(args.base_figure_dir, mod ,  re.sub(":", "_", grouping_var))
         fname_prefix = "_".join([layer_string, pfx, gc ])
         fname_prefix = re.sub(":", "_", fname_prefix)
+        L.info("Plotting dotplot for modality %s, group %s, and layer %s" % (mod, gc, layer_choice))
         sc.pl.dotplot(adata,
                         var_names=plot_features,
                         groupby=grouping_var,
@@ -86,6 +88,7 @@ def main(adata, mod, df, grouping_var, pfx, layer_choice=None):
                         dendrogram=use_dendrogram,
                         save=fname_prefix + '.png',
                         figsize=(24, 5))
+        L.info("Plotting matrix plot for modality %s, group %s, and layer %s" % (mod, gc, layer_choice))
         sc.pl.matrixplot(adata,
                         var_names=plot_features,
                         groupby=grouping_var,
@@ -94,18 +97,20 @@ def main(adata, mod, df, grouping_var, pfx, layer_choice=None):
                         save=fname_prefix + '.png',
                         figsize=(24, 5))
 
-L.debug("load data")
+
+L.info("Reading in MuData from '%s'" % args.infile)
 mdata = mu.read(args.infile)
 modalities = args.modalities.split(',')
 
-L.debug("load marker file")
-df = pd.read_csv(args.marker_file )
+L.info("Reading in marker file from %s" % args.marker_file)
+df = pd.read_csv(args.marker_file)
 
 pfx = re.sub(".csv", "csv", os.path.basename(args.marker_file))
 # write out the features that are not found in adata var (due to filtering, or incorrect name)
 not_found = [gg for gg in df['feature'] if gg not in mdata.var_names]
 not_found_file = re.sub(".csv", "_features_not_found.txt", os.path.basename(args.marker_file))
 if len(not_found) > 0 :
+    L.info("Writing features from %s that were not found in MuData to file '%s'" % (args.marker_file, not_found_file))
     with open(not_found_file, 'w') as f:
         for item in not_found:
             f.write("%s\n" % item)
@@ -128,7 +133,6 @@ if type(mdata) is AnnData:
 else:
     # we have multimodal object
     for mod in modalities:
-        print(mod)
         df_sub = df[df['mod'] == mod]
         for gv in group_vars:
             mdata[mod].obs[gv] = mdata.obs.loc[mdata[mod].obs_names,gv].astype('category')
@@ -139,7 +143,6 @@ else:
             ll = [None]
         if len(group_vars) > 0 and ll is not None:
             for gv, layer in product(group_vars, ll):
-                print(gv, layer)
                 main(adata=mdata[mod], 
                     mod=mod,
                     layer_choice = layer,
