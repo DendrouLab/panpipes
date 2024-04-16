@@ -76,7 +76,6 @@ def load_and_merge_clusters(adata, cluster_file):
 def get_header():
     # write out the correct header before we start, need to werite it out before, because we use append mode for the multimodal find markers
     # and we don't wantto end up with a new header half
-    L.info(sc.__version__)
     if sc.__version__ < "1.07.0":
         markers_columns = ['cluster', 'scores', 'gene', 'avg_logFC', 'pvals', 'p.adj.bonferroni']
     elif sc.__version__ >= "1.07.0":
@@ -173,7 +172,6 @@ def main(adata,
                                         pseudo_seurat=pseudo_seurat)
     # make sure all files have consitent headers
     all_markers.columns = get_header()
-    L.info(get_header())
     all_markers['mod'] = mod
     L.info("Saving all markers to " + output_file_prefix + ".txt")
     all_markers.to_csv(output_file_prefix + ".txt", index=False, sep='\t')
