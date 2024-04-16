@@ -91,9 +91,10 @@ The shorter list will be plotted on umaps as well as other plot types, with one 
 
 - <span class="parameter">layers:</span><br>
   - <span class="parameter">rna:</span>`String`, Default: logged_counts<br>
-  - <span class="parameter">prot:</span>`String`, Default: logged_counts<br> CHEEECKKKK
-  - <span class="parameter">atac:</span>`String`, Default: logged_counts<br> CHHHHECKKK
-    
+  - <span class="parameter">prot:</span>`String`, Default: clr<br> CHEEECKKKK
+  - <span class="parameter">atac:</span>`String`, Default: signac_norm<br> CHHHHECKKK
+
+
 ## Plot metadata variables 
 
 - <span class="parameter">categorical_vars:</span>`String`, Default: &categorical_vars<br>
