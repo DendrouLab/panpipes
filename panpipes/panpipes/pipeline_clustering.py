@@ -53,7 +53,7 @@ def run_neighbors(outfile):
     if  any([PARAMS['neighbors'][mod]['use_existing'] is False for mod in mods]):
         # this means we want to rerun neighbors for at least one assay
         #we want to replace thhe scaled obj with the new neighbors
-        log_file="logs/run_single_mod_neighbors.log"
+        log_file="logs/1_run_neighbors.log"
         cmd="""
         python %(py_path)s/rerun_find_neighbors_for_clustering.py \
             --infile %(scaled_obj)s \
@@ -88,7 +88,7 @@ def gen_umap_jobs():
         for md in PARAMS['umap'][mod]['mindist']:
             if PARAMS['umap'][mod]['mindist'] is not None:
                 output_file = os.path.join(mod,  'md' + str(md) +"_umap.txt.gz")
-                log_file = os.path.join("logs","_".join([mod,  'md' + str(md) +"_umap.log"]))
+                log_file = os.path.join("logs","_".join(["2_run_UMAP", mod + '_md' + str(md) + ".log"]))
                 yield [infile, output_file, mod, md, log_file]
 
 @follows(run_neighbors)
@@ -132,7 +132,7 @@ def gen_cluster_jobs():
             if PARAMS['clusterspecs'][mod]['resolutions'] is not None:
                 alg = PARAMS['clusterspecs'][mod]['algorithm']
                 output_file = os.path.join(mod, 'alg' + alg + '_res' + str(res), "clusters.txt.gz")
-                log_file = os.path.join("logs", "_".join([mod, 'alg' + alg + '_res' + str(res), "clusters.log"]))
+                log_file = os.path.join("logs", "_".join(["3_run_clustering_", mod + '_alg' + alg + '_res' + str(res), ".log"]))
                 yield [infile, output_file, mod, res, alg, log_file]
 
 @follows(set_up_dirs)
@@ -160,13 +160,11 @@ def calc_cluster(infile, outfile,  mod, res, alg, log_file):
          regex("(.*)/(.*)/clusters.txt.gz"),
          r"\1/all_res_clusters_list.txt.gz")
 def aggregate_clusters(infiles, outfile):
-    print(infiles)
-    print(outfile)
     infiles_str = ','.join(infiles)
     cmd = "python %(py_path)s/aggregate_csvs.py \
                --input_files_str %(infiles_str)s \
                --output_file %(outfile)s \
-               --clusters_or_markers clusters > logs/aggregate_clusters.log"
+               --clusters_or_markers clusters > logs/4_aggregate_clusters.log"
     job_kwargs["job_threads"] = PARAMS['resources_threads_low']           
     P.run(cmd, **job_kwargs)
 
@@ -197,14 +195,14 @@ def collate_mdata(infiles,outfile):
         cmd += "--input_mudata %(mdata_in)s"
     else:
         cmd += "--input_mudata  %(full_obj)s"
-    cmd += " > logs/collate_data.log"
+    cmd += " > logs/5_collate_data.log"
     job_kwargs["job_threads"] = PARAMS['resources_threads_medium']
     P.run(cmd, **job_kwargs)
 
 
 @transform(collate_mdata, 
             formatter(""),
-            'logs/plot_clusters_umaps.log')
+            'logs/6_plot_clusters_umaps.log')
 def plot_cluster_umaps(infile, log_file,):
     # get associated umap
     mods =  [key for key, value in PARAMS['modalities'].items() if value is True]
@@ -219,8 +217,9 @@ def plot_cluster_umaps(infile, log_file,):
     job_kwargs["job_threads"] = PARAMS['resources_threads_medium']
     P.run(cmd, jobs_limit=1, **job_kwargs)
 
+
 @transform(aggregate_clusters, regex("(.*)/all_res_clusters_list.txt.gz"),
-            r'logs/\1_clustree.log',
+            r'logs/7_\1_run_clustree.log',
             r'\1/figures/clustree.png', ) 
 def plot_clustree(infile, log_file, outfile):
     # convert infiles to comma sep. string
@@ -260,7 +259,7 @@ def gen_marker_jobs(infile, outfile, base_dir):
 @follows(collate_mdata)
 @transform(gen_marker_jobs,
            regex("(.*)/(.*)/(.*)_markers.txt"),
-           r"logs/\1_\2_\3_markers.log",
+           r"logs/8_find_markers_\1_\2_\3.log",
            r"\1/\2/\3_markers",
            r"\1",
            r"\1/\2",
@@ -324,7 +323,7 @@ def find_markers(infile, log_file, outfile_prefix, base_mod, cluster_dir, data_m
 @follows(find_markers)
 @transform(gen_marker_jobs,
             regex(r"(.*)/alg(.*)/(.*)_markers.txt"),
-            r"logs/cluster\1_alg\2_exprs_\3_dotplots.log",
+            r"logs/9_plot_markers_\1_alg\2_exprs_\3.log",
             r"\1/alg\2/figures/dotplot_top_markers_\3.png",
             r"\1/alg\2/figures",
              r"\1", r"\2", r"\3")
