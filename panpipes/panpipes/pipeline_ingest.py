@@ -20,6 +20,14 @@ import warnings
 
 import yaml
 
+import logging
+L = logging.getLogger('panpipes')
+L.setLevel(logging.INFO)
+log_handler = logging.FileHandler("pipeline.log")
+log_formatter = logging.Formatter('%(asctime)s: %(levelname)s - %(message)s')
+log_handler.setFormatter(log_formatter)
+L.addHandler(log_handler)
+
 
 PARAMS = P.get_parameters(
     ["%s/pipeline.yml" % os.path.splitext(__file__)[0],
@@ -141,9 +149,17 @@ def load_mudatas(rna_path, outfile,
     if bcr_path is not None and pd.notna(bcr_path):
         cmd += " --bcr_filtered_contigs %(bcr_path)s"
         cmd += " --bcr_filetype %(bcr_filetype)s"
+    logfile = f"logs/load_mudatas_{sample_id}.log"
     cmd += " > logs/load_mudatas_%(sample_id)s.log"
     # print(cmd)
     job_kwargs["job_threads"] = PARAMS['resources_threads_medium']
+    L.info(
+            "Task: 'load_mudatas'" + "\n" +
+            f"sample_id: {sample_id}" + "\n" +
+            f"Output file(s): {outfile}" + "\n" +
+            f"Log file: {logfile}" + "\n" +
+            "In case of error, please refer to the log file(s) above for more information."
+        )
     P.run(cmd, **job_kwargs)
 
 
