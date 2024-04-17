@@ -23,7 +23,7 @@ import yaml
 import logging
 L = logging.getLogger('panpipes')
 L.setLevel(logging.INFO)
-log_handler = logging.FileHandler("pipeline.log")
+log_handler = logging.StreamHandler(sys.stdout)
 log_formatter = logging.Formatter('%(asctime)s: %(levelname)s - %(message)s')
 log_handler.setFormatter(log_formatter)
 L.addHandler(log_handler)
