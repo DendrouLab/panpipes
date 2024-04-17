@@ -15,12 +15,11 @@ from panpipes.funcs.io import dictionary_stripper
 
 # import pandas as pd
 
-import logging
 L = logging.getLogger('panpipes')
 L.setLevel(logging.INFO)
 log_handler = logging.FileHandler("pipeline.log")
-formatter = logging.Formatter('%(asctime)s: %(levelname)s - %(message)s')
-log_handler.setFormatter(formatter)
+log_formatter = logging.Formatter('%(asctime)s: %(levelname)s - %(message)s')
+log_handler.setFormatter(log_formatter)
 L.addHandler(log_handler)
 
 PARAMS = P.get_parameters(
