@@ -64,7 +64,7 @@ def filter_mudata(outfile):
         job_kwargs["job_threads"] = PARAMS['resources_threads_low']
         L.info(
             "Task: 'filter_mudata'" + "\n" +
-            f"Input file(s): {unfiltered_obj}" + "\n" +
+            f"Input file(s): {PARAMS["unfiltered_obj"]}" + "\n" +
             f"Output file(s): {outfile}" + "\n" +
             f"Log file: {logfile}" + "\n" +
             "In case of error, please refer to the log file(s) above for more information."
