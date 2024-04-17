@@ -15,13 +15,6 @@ from panpipes.funcs.io import dictionary_stripper
 
 # import pandas as pd
 
-L = logging.getLogger('panpipes')
-L.setLevel(logging.INFO)
-log_handler = logging.FileHandler("pipeline.log")
-log_formatter = logging.Formatter('%(asctime)s: %(levelname)s - %(message)s')
-log_handler.setFormatter(log_formatter)
-L.addHandler(log_handler)
-
 PARAMS = P.get_parameters(
     ["%s/pipeline.yml" % os.path.splitext(__file__)[0],
      "pipeline.yml"])
@@ -59,16 +52,8 @@ def filter_mudata(outfile):
             cmd += " --keep_barcodes %(filtering_keep_barcodes)s"
         if PARAMS['intersect_mods'] is not None:
             cmd += " --intersect_mods %(intersect_mods)s"
-        logfile = "logs/filtering.log"
-        cmd += f" >  {logfile}"
+        cmd += " > logs/filtering.log "
         job_kwargs["job_threads"] = PARAMS['resources_threads_low']
-        L.info(
-            "Task: 'filter_mudata'" + "\n" +
-            f"Input file(s): {PARAMS["unfiltered_obj"]}" + "\n" +
-            f"Output file(s): {outfile}" + "\n" +
-            f"Log file: {logfile}" + "\n" +
-            "In case of error, please refer to the log file(s) above for more information."
-        )
         P.run(cmd, **job_kwargs)
     else:
         try:
