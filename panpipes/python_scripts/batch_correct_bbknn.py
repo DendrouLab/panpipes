@@ -44,15 +44,14 @@ parser.add_argument('--modality', default='',
 args, opt = parser.parse_known_args()
 
 
+L.info(args)
 
-L.info("reading data and starting integration pipeline with script: ")
-L.info(os.path.basename(__file__))
-L.info("Running with options: %s", args)
 
 #adata = read_anndata(args.input_anndata, use_muon=use_muon, modality="rna")
+L.info("Reading in MuData from '%s'" % args.input_anndata)
 mdata = mu.read(args.input_anndata)
 adata = mdata.mod[args.modality] 
-L.info("read files")
+
 nnb = int(args.neighbors_within_batch)
 # bbknn can't integrate on 2+ variables, so create a fake column with combined information
 columns = [x.strip() for x in args.integration_col.split(",")]
@@ -61,47 +60,54 @@ if args.modality =="atac":
     if "scaled_counts" in adata.layers.keys():
         pass
     else:
-        L.info("to run BBKNN on atac we need to compute PCA. Computing on the flight now")
+        L.info("To run BBKNN on ATAC, PCA is needed. Computing PCA now.")
+        L.info("Scaling data and saving scaled counts to .layers['scaled_counts']")
         sc.pp.scale(adata)
         adata.layers["scaled_counts"] = adata.X.copy()
+        L.info("Computing PCA")
         sc.tl.pca(adata, n_comps=min(50,adata.var.shape[0]-1), svd_solver='arpack', random_state=0) 
 
 if "X_pca" not in adata.obsm:
-    L.info("i need a dimred to start, computing pca with default param")
+    L.info("X_pca could not be found in adata.obsm. Computing PCA with default parameters.")
     n_pcs = 50
     if adata.var.shape[0] < n_pcs:
         L.info("You have less features than number of PCs you intend to calculate")
         n_pcs = adata.var.shape[0] - 1
-        L.info("Setting n PCS to %i" % int(n_pcs))    
+        L.info("Setting n PCS to %i" % int(n_pcs))   
+    L.info("Scaling data") 
     sc.pp.scale(adata)
+    L.info("Computing PCA")
     sc.tl.pca(adata, n_comps=n_pcs, 
                     svd_solver='arpack', 
                     random_state=0) 
 
 
-L.info("preparing for integration")
+
 if len(columns) > 1:
-    L.info("using 2 columns to integrate on more variables")
+    L.info("Using 2 columns to integrate on more variables.")
     # comb_columns = "_".join(columns)
     adata.obs["comb_columns"] = adata.obs[columns].apply(lambda x: '|'.join(x), axis=1)
 
     # make sure that batch is a categorical
     adata.obs["comb_columns"] = adata.obs["comb_columns"].astype("category")
     # run bbknn
+    L.info("Running BBKNN")
     adata = sc.external.pp.bbknn(adata, batch_key="comb_columns", copy=True, neighbors_within_batch=nnb)
 else:
     adata.obs[args.integration_col] = adata.obs[args.integration_col].astype("category")
     # run bbknn
+    L.info("Running BBKNN")
     adata = sc.external.pp.bbknn(adata,
                         batch_key=args.integration_col,
                         copy=True,
                         n_pcs = int(args.neighbors_n_pcs),
                         neighbors_within_batch=nnb)  # calculates the neighbours
 
-L.info("integration run now calculate umap")
+L.info("Calculating UMAP")
 sc.tl.umap(adata)
-L.info("done umap, saving stuff")
+
 # write out
+L.info("Saving UMAP coordinates to csv file '%s" % args.output_csv)
 umap = pd.DataFrame(adata.obsm['X_umap'], adata.obs.index)
 umap.to_csv(args.output_csv)
 
@@ -110,7 +116,7 @@ umap.to_csv(args.output_csv)
 # save full bbknn anndata in tmp, cause need more than just neighbors to work 
 outfiletmp = ("tmp/bbknn_scaled_adata_" + args.modality + ".h5ad" )
 
-L.info("saving bbknn corrected adata")
+L.info("Saving AnnData to '%s'" % outfiletmp)
 write_anndata(adata, outfiletmp, use_muon=False, modality=args.modality)
 
 L.info("Done")

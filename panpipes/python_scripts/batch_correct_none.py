@@ -48,9 +48,8 @@ parser.add_argument('--neighbors_metric',
                     help="neighbor metric, e.g. euclidean or cosine")
 
 args, opt = parser.parse_known_args()
+L.info(args)
 
-L.info("reading data and starting integration pipeline with script: ")
-L.info(os.path.basename(__file__))
 
 
 # Scanorama is designed to be used in scRNA-seq pipelines downstream of noise-reduction methods,
@@ -58,6 +57,8 @@ L.info(os.path.basename(__file__))
 
 # adata = sc.read(args.input_anndata)
 #adata = read_anndata(args.input_anndata, use_muon=True, modality=args.modality)
+adata_path = args.input_anndata +"/" + args.modality
+L.info("Reading in data from '%s'" % adata_path)
 adata = mu.read(args.input_anndata +"/" + args.modality)
 # adata = mdata.mod[args.modality] 
 
@@ -89,13 +90,15 @@ else:
 
 
 if dimred not in adata.obsm:
-    L.info("i need a dimred to start, computing pca with default param")
+    L.warning("Dimred '%s' could not be found in adata.obsm. Computing PCA with default parameters." % dimred)
     n_pcs = 50
     if adata.var.shape[0] < n_pcs:
         L.info("You have less features than number of PCs you intend to calculate")
         n_pcs = adata.var.shape[0] - 1
         L.info("Setting n PCS to %i" % int(n_pcs))    
+    L.info("Scaling data")
     sc.pp.scale(adata)
+    L.info("Computing PCA")
     sc.tl.pca(adata, n_comps=n_pcs, 
                     svd_solver='arpack', 
                     random_state=0) 
@@ -103,29 +106,27 @@ if dimred not in adata.obsm:
     pc_kwargs['n_pcs'] = n_pcs
 
 
-
+L.info("Computing neighbors")
 run_neighbors_method_choice(adata, 
     method=args.neighbors_method, 
     n_neighbors=int(args.neighbors_k), 
     metric=args.neighbors_metric, 
     nthreads=max([threads_available, 6]), **pc_kwargs)
 
-L.info("done n_neighbours, saving stuff")
 
+L.info("Computing UMAP")
 sc.tl.umap(adata)
 
-L.info("done umap, saving stuff")
 #write out
+L.info("Saving UMAP coordinates to csv file '%s'" % args.output_csv)
 umap = pd.DataFrame(adata.obsm['X_umap'], adata.obs.index)
 umap.to_csv(args.output_csv)
-
-L.info("done")
 
 
 outfiletmp = ("tmp/no_correction_scaled_adata_" + args.modality + ".h5ad" )
 
-L.info("saving harmony corrected adata")
+L.info("Saving AnnData to '%s" % outfiletmp)
 write_anndata(adata, outfiletmp, use_muon=False, modality=args.modality)
 
-L.info("done")
+L.info("Done")
 

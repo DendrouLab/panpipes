@@ -45,39 +45,38 @@ parser.add_argument('--modality',
 
 args, opt = parser.parse_known_args()
 
+L.info(args)
 
-
-L.info("reading data and starting integration pipeline with script: ")
-L.info(os.path.basename(__file__))
-L.info("Running with options: %s", args)
-L.info("threads available: %s", threads_available)
 # this should be an object that contains the full log normalised data (adata_log1p.h5ad)
 # prior to hvgs and filtering
 #adata = read_anndata(args.input_anndata, use_muon=use_muon, modality="rna")
+L.info("Reading in MuData from '%s'" % args.input_anndata)
 mdata = mu.read(args.input_anndata)
 adata = mdata.mod[args.modality] 
 
 # combat can't integrate on 2+ variables, so create a fake column with combined information
 columns = [x.strip() for x in args.integration_col.split(",")]
 if len(columns) > 1: 
-    L.info("using 2 columns to integrate on more variables")
+    L.info("Using 2 columns to integrate on more variables")
     #comb_columns = "_".join(columns)
     adata.obs["comb_columns"] = adata.obs[columns].apply(lambda x: '|'.join(x), axis=1)
 
     # make sure that batch is a categorical
     adata.obs["comb_columns"] = adata.obs["comb_columns"].astype("category")
     # run combat
+    L.info("Running combat")
     sc.pp.combat(adata, key="comb_columns")
     
 else:
-
     # run combat
+    L.info("Running combat")
     sc.pp.combat(adata, key=args.integration_col)
 
-L.info("integration run now calculate umap")
+L.info("Computing PCA")
 sc.pp.pca(adata, use_highly_variable=True, svd_solver='arpack') #use same args as plot_pca.py
 
-# run neighbours and umap 
+# run neighbours and umap
+L.info("Computing neighbors") 
 run_neighbors_method_choice(adata, 
     method=args.neighbors_method, 
     n_neighbors=int(args.neighbors_k), 
@@ -87,12 +86,16 @@ run_neighbors_method_choice(adata,
     nthreads=max([threads_available, 6]))
 
 
+L.info("Computing UMAP")
 sc.tl.umap(adata)
-L.info("done umap, saving stuff")
+
 #write out
+L.info("Saving UMAP coordinates to csv file '%s" % args.output_csv)
 umap = pd.DataFrame(adata.obsm['X_umap'], adata.obs.index)
 umap.to_csv(args.output_csv)
 
+outfiletmp = "tmp/combat_scaled_adata_" + args.modality + ".h5ad"
+L.info("Saving AnnData to '%s'" % outfiletmp)
 adata.write("tmp/combat_scaled_adata_" + args.modality + ".h5ad")
 
 
