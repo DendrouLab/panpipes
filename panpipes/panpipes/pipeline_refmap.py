@@ -62,7 +62,7 @@ def gen_refmap_jobs():
                 file_name= "umap_" + model_name + "_" + latent_choice
                 outfile = os.path.join("./refmap/",(file_name + ".csv"))
 
-                log_file = os.path.join('logs/', out_prefix + ".log")
+                log_file = os.path.join('logs/', "1_"+out_prefix + ".log")
                 yield infile, outfile, log_file, ref_architecture
                 
 
@@ -135,7 +135,7 @@ def run_refmap_scvi(infile, outfile, log_file, ref_architecture ):
 @active_if(PARAMS["scib_run"])
 @transform(run_refmap_scvi,
            regex(r"refmap/umap_(.*).csv"),
-           r'logs/refmapscib_\1.log')
+           r'logs/2_refmapscib_\1.log')
 def run_scib_refmap(infile,logfile):
     str_use = os.path.splitext(os.path.basename(infile).replace("umap_", "").replace(".csv", ""))[0]
     mudata_input= "query_to_reference_" + str_use + ".h5mu"
