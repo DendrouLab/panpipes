@@ -46,38 +46,44 @@ if args.covariate is not None:
     covariates_use = args.covariate.split(",")
     covariates_use = [a.strip() for a in covariates_use]
 else:
-    sys.exit("i don't have covariates to calculate metrics on")
+    L.error("Covariates need to be specified.")
+    sys.exit("Covariates need to be specified.")
 
 
 repuse = str(args.repuse)
 
+L.info("Reading in query data from '%s'" % args.query_data)
 mdata = mu.read(args.query)
+
 if type(mdata) is mu.MuData:
     if "rna" not in mdata.mod.keys():
-        sys.exit("we only support querying using RNA but your mdata doesn't contain rna")
+        L.error("Modality 'rna' could not be found in MuData '%s'. We only support querying using RNA." % args.query_data)
+        sys.exit("Modality 'rna' could not be found in MuData '%s'. We only support querying using RNA." % args.query_data)
     else:
         input_adata = mdata["rna"].copy()
 del mdata
 
 
 adata_query = input_adata[input_adata.obs['is_reference'] == 'Query'].copy()
-L.info("repuse is %s" %(repuse))
+L.info("Repuse is %s" %(repuse))
 if repuse not in adata_query.obsm.keys():
-    sys.exit("the latent representation is not in the obsm.keys of this query")
+    L.error("The latent representation '%s' could not be found in the obsm.keys of query '%s'" % (repuse, args.query_data))
+    sys.exit("The latent representation '%s' could not be found in the obsm.keys of query '%s'" % (repuse, args.query_data))
 
-L.info("query is:")
+L.info("The query AnnData is:")
 print(adata_query)
 
-L.info("Calculating scib metrics using ground truth covariates:")
+L.info("Calculating scib metrics using ground truth covariates: ")
 print(covariates_use)
 
 if args.cluster_key is None:
     cluster_key = "leiden_" + repuse 
-    L.info("you didn't specify cluster_key, so i'm using %s " % cluster_key)
+    L.warning("No cluster key specified. Using %s " % cluster_key)
 else:
     cluster_key = str(args.cluster_key)
     L.info("cluster_key used is: %s" %cluster_key)
 
+L.info("Calculating scIB metrics")
 results = {}
 for labelk in covariates_use:
     m={"ASW_scaled":scib.metrics.silhouette(adata_query, labelk, repuse, metric='euclidean', scale=True),
@@ -91,10 +97,9 @@ for labelk in covariates_use:
 
 file_name= os.path.splitext(os.path.basename(args.query).replace("query_to_reference_", "").replace(".h5mu", ""))[0]
 #"query_to_reference_" + model_name + "_" + latent_choice + ".h5mu"
-L.info("saving file output")
-file_out = os.path.join(args.outdir,("scib.query_"+ file_name+".csv"))
-print(file_out)
+file_out = os.path.join(args.outdir,("scib.query_"+ file_name+".tsv"))
 #save file to txt
 pres = pd.DataFrame.from_dict(results,orient='index')
+L.info("Saving output to tsv file '%s'" % file_out)
 pres.to_csv(file_out, sep="\t")
-L.info("Finished scib")
+L.info("Done")
