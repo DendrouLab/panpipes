@@ -57,16 +57,12 @@ parser.add_argument('--modality',
 
 args, opt = parser.parse_known_args()
 
-
-
-L.info("Running with options: %s", args)
+L.info(args)
 
 # Scanorama is designed to be used in scRNA-seq pipelines downstream of noise-reduction methods,
 # including those for imputation and highly-variable gene filtering.
-L.info("reading data and starting integration pipeline with script: ")
-L.info(os.path.basename(__file__))
-
 #adata = read_anndata(args.input_anndata, use_muon=use_muon, modality="rna")
+L.info("Reading in MuData from '%s'" % args.input_anndata)
 mdata = mu.read(args.input_anndata)
 adata = mdata.mod[args.modality] 
 bcs = adata.obs_names.tolist()
@@ -74,7 +70,7 @@ bcs = adata.obs_names.tolist()
 # scanorama can't integrate on 2+ variables, so create a fake column with combined information
 columns = [x.strip() for x in args.integration_col.split(",")]
 if len(columns) > 1:
-    L.info("using 2 columns to integrate on more variables")
+    L.info("Using 2 columns to integrate on more variables")
     # comb_columns = "_".join(columns)
     adata.obs["comb_columns"] = adata.obs[columns].apply(lambda x: '|'.join(x), axis=1)
 
@@ -86,22 +82,22 @@ else:
         adata.obs['batch'] = adata.obs[args.integration_col]
 
 batches = adata.obs['batch'].unique()
-L.info("define scanorama inputs based on batches and number of PCs")
 # need contiguous batches
 scanorama_input = adata[adata.obs.sort_values(by="batch").index.tolist(), :]
 
 # filter by HVGs to make it equivalent to the old scripts,
 # which inputted the scaled object after filtering by hvgs.
+L.info("Filtering data by HVGs")
 scanorama_input = scanorama_input[:, scanorama_input.var.highly_variable]
 #also filter the X_PCA to be the number of PCs we actually want to use
+L.info("Subsetting X_pca to %s PCs" % args.neighbors_n_pcs)
 scanorama_input.obsm['X_pca'] = scanorama_input.obsm['X_pca'][:,0:int(args.neighbors_n_pcs)]
 
 
 # run scanoramam using the scanpy integrated approach
-L.info("run_scanorama")
+L.info("Running scanorama")
 
 sce.pp.scanorama_integrate(scanorama_input, key='batch', batch_size=int(args.batch_size))
-L.info("scanorama done")
 
 # not integrated
 
@@ -118,22 +114,22 @@ L.info("scanorama done")
 scanorama_input = scanorama_input[bcs, :]
 # check it worked
 if all(scanorama_input.obs_names == bcs):
-    L.info("barcode order is correct")
+    L.info("Barcode order is correct")
 else:
-    L.debug("barcode order in  batch corrected object is incorrect")
-    sys.exit("barcode order in  batch corrected object is incorrect")
+    L.error("Barcode order in  batch corrected object is incorrect")
+    sys.exit("Barcode order in  batch corrected object is incorrect")
 
-L.info(adata)
+L.info("Saving scanorama embedding to X_scanorama")
 # add to the AnnData object
 adata.obsm["X_scanorama"] = scanorama_input.obsm["X_scanorama"]
 
-L.info("integration run now calculate umap")
 
 if int(args.neighbors_n_pcs) > adata.obsm['X_scanorama'].shape[1]:
     L.warn(f"N PCs is larger than X_scanorama dimensions, reducing n PCs to  {adata.obsm['X_scanorama'].shape[1] -1}")
 n_pcs= min(int(args.neighbors_n_pcs), adata.obsm['X_scanorama'].shape[1]-1)
 
 # run neighbours and umap 
+L.info("Computing neighbors")
 run_neighbors_method_choice(adata, 
     method=args.neighbors_method, 
     n_neighbors=int(args.neighbors_k), 
@@ -142,15 +138,17 @@ run_neighbors_method_choice(adata,
     use_rep='X_scanorama',
     nthreads=max([threads_available, 6]))
 
-
+L.info("Computing UMAP")
 sc.tl.umap(adata)
-L.info("done umap, saving stuff")
+
 # write out
 umap = pd.DataFrame(adata.obsm['X_umap'], adata.obs.index)
+L.info("Saving UMAP coordinates to csv file '%s" % args.output_csv)
 umap.to_csv(args.output_csv)
 
 # save the scanorama dim reduction in case scanorama is our favourite
+L.info("Saving AnnData to 'tmp/scanorama_scaled_adata.h5ad'")
 adata.write("tmp/scanorama_scaled_adata.h5ad")
 
-L.info("done")
+L.info("Done")
 

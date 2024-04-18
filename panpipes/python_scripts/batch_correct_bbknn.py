@@ -68,7 +68,7 @@ if args.modality =="atac":
         sc.tl.pca(adata, n_comps=min(50,adata.var.shape[0]-1), svd_solver='arpack', random_state=0) 
 
 if "X_pca" not in adata.obsm:
-    L.info("X_pca could not be found in adata.obsm. Computing PCA with default parameters.")
+    L.warning("X_pca could not be found in adata.obsm. Computing PCA with default parameters.")
     n_pcs = 50
     if adata.var.shape[0] < n_pcs:
         L.info("You have less features than number of PCs you intend to calculate")
@@ -103,7 +103,7 @@ else:
                         n_pcs = int(args.neighbors_n_pcs),
                         neighbors_within_batch=nnb)  # calculates the neighbours
 
-L.info("Calculating UMAP")
+L.info("Computing UMAP")
 sc.tl.umap(adata)
 
 # write out
