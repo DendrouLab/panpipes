@@ -36,7 +36,7 @@ dependencies = [
     "pyyaml",
     "ruffus",
     "scanorama",
-    "scanpy>=1.9.1",
+    "scanpy",
     "leidenalg",
     "louvain",
     "scib",
@@ -59,9 +59,10 @@ notebook = [
     "jupyterlab"
 ]
 spatial = [
-    "jax==0.4.23",
-    "jaxlib==0.4.23",
-    "scvi-tools==1.0.4",
+    "jax",
+    "jaxlib",
+    "scvi-tools",
+    "scipy",
     "squidpy",
     "cell2location",
     "tangram-sc"
