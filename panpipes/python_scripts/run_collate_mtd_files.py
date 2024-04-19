@@ -28,8 +28,8 @@ parser.add_argument("--output_combined_umaps_tsv")
 parser.add_argument("--output_batch_yml")
 args, opt = parser.parse_known_args()
 L.info(args)
-L.info("reading in files")
 
+L.info("Reading in data from '%s'" % args.input_mudata)
 cell_meta_df = mu.read(args.input_mudata).obs
 mtd_columns = cell_meta_df.columns.to_list()
 
@@ -90,29 +90,26 @@ for k in batch_dict.keys():
                 if mod_meta_df[col1].equals(mod_meta_df[col2]):
                     identical_column_pairs.append((col1, col2))
         if identical_column_pairs:
-            print("Identical column pairs:")
             for col1, col2 in identical_column_pairs:
                 print(f"{col1} and {col2} are identical.")
             batch_dict[k].append(col1)
         else:
-            print("No identical columns found.")
             cell_meta_df[str(k)+ ":bc_batch"] = mod_meta_df.apply(lambda x: '|'.join(x), axis=1)
             batch_dict[k].append(k+ ":bc_batch")
-    L.info("batch values %s" %(batch_dict[k]))
+    L.info("Batch values %s" %(batch_dict[k]))
 
 for k in batch_dict.keys():
     unique_values = list(set(batch_dict[k]))
     batch_dict[k] = unique_values
 
-L.info("saving batch dictionary")
-print(batch_dict)
-
+L.info("Saving cell metadata to csv file '%s'" % args.output_cell_metadata_csv)
 cell_meta_df.to_csv(args.output_cell_metadata_csv)
 
+L.info("Saving batch dictionary to '%s'" % args.output_batch_yml)
 with open(args.output_batch_yml, 'w') as outfile:
     yaml.dump(batch_dict, outfile, default_flow_style=False)
 
-L.info("reading in all umaps")
+L.info("Reading in all UMAP coordinates")
 # load files
 input_files = args.input_umap_files.split(",")
 umaps_list = [pd.read_csv(x, index_col=0) for x in input_files]
@@ -134,10 +131,10 @@ move_column_inplace(umaps_df, "method", 1)
 umaps_df = umaps_df.sort_values(by=['mod','method'])
 
 # save umap df to file
-L.info("save umap df to file")
+L.info("Saving combined UMAP dataframe to file '%s'" % args.output_combined_umaps_tsv)
 umaps_df = umaps_df.iloc[:,0:4]
 umaps_df['cellbarcode'] = umaps_df.index
 umaps_df.to_csv(args.output_combined_umaps_tsv, sep="\t")
 
-L.info("done")
+L.info("Done")
 

@@ -53,6 +53,7 @@ if args.atac_correction_choice is not None:
     uni_mod_paths['atac'] = "tmp/" + args.atac_correction_choice + "_scaled_adata_atac.h5ad"
 uni_mod_paths
 
+L.info("Reading in data from '%s'" % base_object)
 base_obj = mu.read(base_object)
 
 
@@ -67,14 +68,15 @@ if multi_mod=="totalvi":
 
 # this overwrites the old modalities
 for k,v in uni_mod_paths.items():
+    L.info("Reading in data from '%s'" % v)
     mod_replace = mu.read(v)
     if mod_replace.shape[1] == base_obj[k].shape[1]:
-        L.info('replacing the whole anndata object with batch corrected')
+        L.info('Replacing the whole anndata object with batch corrected')
         base_obj.mod[k] = mod_replace
     else:
         # in this situation the vars in the mod has been subset but the 
         # original object contains all the genes.
-        L.info("number of genes does not match base object, only integrating obsp and obsm into full mdata[%s] object" % k)
+        L.info("Number of genes does not match base object, only integrating obsp and obsm into full mdata[%s] object" % k)
         base_obj.mod[k].obsm = mod_replace.obsm
         base_obj.mod[k].obsp = mod_replace.obsp
         base_obj.mod[k].uns = mod_replace.uns
@@ -90,6 +92,7 @@ if multi_mod=="totalvi":
             base_obj[k].obsm[ w] = totalvi_extra_obsm_keep[k][w]
 
 base_obj.update()
+L.info("Writing MuData to '%s'" % args.output_mudata)
 base_obj.write(args.output_mudata)
 
 L.info("Done")
