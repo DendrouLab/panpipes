@@ -70,6 +70,7 @@ rna:
   # SCVI args
   #-----------------------------
   scvi:
+    seed: 1492
     exclude_mt_genes: True
     mt_column: mt
     model_args:
@@ -217,7 +218,7 @@ multimodal:
     # this is a minimal set of parameters that will be expected
     # you can add any other param from the tutorials and they will
     # be parsed alongside the others
-  
+    seed: 1492
     # totalvi will run on rna and prot
     modalities: rna,prot
     exclude_mt_genes: True
@@ -237,6 +238,7 @@ multimodal:
     # you can add any other param from the tutorials and they will
     # be parsed alongside the others
     # leave arguments blank for default
+    seed: 1492
     lowmem: True
     # Set lowmem to True will subset the atac to the top 25k HVF. 
     # This is to deal with concatenation of atac,rna on large datasets which at the moment is suboptimally required by scvitools.
