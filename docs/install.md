@@ -76,6 +76,11 @@ conda env create --file=pipeline_env.yaml
 conda activate pipeline_env
 pip install -e .
 ```
+To install the spatial dependencies from the repo, use
+
+```bash
+pip install .[spatial]
+```
 
 Panpipes requires the unix package `time`. 
 You can check if it installed with `dpkg-query -W time`.
@@ -147,8 +152,6 @@ panpipes --help
 
 A list of available pipelines should appear!
 
-You're all set to run `panpipes` on your local machine.
-If you want to configure it on a HPC server, follow the next instructions.
 
 ## Installation on Apple Silicon M chips
 If you intend to install panpipes via conda on a macOS machine with M-Chip, you might face issues when installing or using certain workflows of panpipes.
@@ -191,7 +194,8 @@ mamba install python=3.10 r-base=4.3.0
 conda install -c conda-forge r-tidyverse r-optparse r-ggforce r-ggraph r-xtable r-hdf5r r-clustree r-cowplot
 pip install panpipes
 ```
-
+You're all set to run `panpipes` on your local machine.
+If you want to configure it on a HPC server, follow the next instructions.
 
 ## Pipeline configuration for HPC clusters
 
