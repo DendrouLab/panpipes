@@ -4,9 +4,9 @@
 We recommend running panpipes within a virtual environment to prevent conflicts.
 In the following, we provide instructions on how to do this using conda, mamba, or python venv.
 
-> **Note**: For installation instructions on Apple machines with M chips, scroll down.
-
-> **Note**: Oxford BMRC Rescomp users find additional advice on the installation [here](https://github.com/DendrouLab/panpipes/blob/main/docs/installation_rescomp.md).
+> **Note**: For installation instructions on **Apple machines with M chips**, scroll down.
+> If you are working on a **Windows** machine, please use Windows Subsystem for Linux (WSL) to run panpipes in order to have access to the latest r-base version.
+> **Oxford BMRC Rescomp** users find additional advice on the installation [here](https://github.com/DendrouLab/panpipes/blob/main/docs/installation_rescomp.md).
 
 ## Option 1: Installation in manually configured conda environment
 To run panpipes, we install it in a conda environment with R and python.
