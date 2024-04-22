@@ -152,7 +152,7 @@ def load_mudatas(rna_path, outfile,
     if bcr_path is not None and pd.notna(bcr_path):
         cmd += " --bcr_filtered_contigs %(bcr_path)s"
         cmd += " --bcr_filetype %(bcr_filetype)s"
-    logfile = f"logs/load_mudatas_{sample_id}.log"
+    logfile = f"load_mudatas_{sample_id}.log"
     cmd += f" > logs/{logfile}"
     # print(cmd)
     job_kwargs["job_threads"] = PARAMS['resources_threads_medium']
