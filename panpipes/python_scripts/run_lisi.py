@@ -28,9 +28,9 @@ L.info(args)
 # load metadata
 L.info("Reading in cell metadata from '%s'" % args.cell_meta_df)
 cell_meta_df = pd.read_csv(args.cell_meta_df, index_col=0)
-L.info("Reading in batch dictionary from '%s" % args.batch_dict)
+L.info("Reading in batch dictionary from '%s" % args.integration_dict)
 batch_dict = read_yaml(args.integration_dict)
-L.info("Reading in UMAP coordinates from '%s'" % args.combined_umaps_tsv)
+L.info("Reading in UMAP coordinates from '%s'" % args.combined_umaps_df)
 umaps = pd.read_csv(args.combined_umaps_df, sep="\t", index_col=0)
 
 for k in batch_dict.keys():
