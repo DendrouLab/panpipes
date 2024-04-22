@@ -82,7 +82,7 @@ if args.customgenesfile is not None:
         customgenes = pd.read_csv(args.customgenesfile)
         if not {'group', 'feature'}.issubset(customgenes.columns):
             L.error("The custom genes file needs to have both columns, 'group' and 'feature'.")
-            sys.exit.error("The custom genes file needs to have both columns, 'group' and 'feature'.")
+            sys.exit("The custom genes file needs to have both columns, 'group' and 'feature'.")
         custom_cat = list(set(customgenes['group'].tolist()))
         for cc in custom_cat:
             cat_dic[cc] = customgenes.loc[customgenes["group"] == cc,"feature"].tolist()
@@ -140,7 +140,7 @@ if args.ccgenes is not None:
         ccgenes = pd.read_csv(args.ccgenes, sep='\t')
         if not {'cc_phase', 'gene_name'}.issubset(ccgenes.columns):
             L.error("The cell cycle genes file needs to have both columns, 'cc_phase' and 'gene_name'.")
-            sys.exit.error("The cell cycle genes file needs to have both columns, 'cc_phase' and 'gene_name'.")
+            sys.exit("The cell cycle genes file needs to have both columns, 'cc_phase' and 'gene_name'.")
         sgenes = ccgenes[ccgenes["cc_phase"] == "s"]["gene_name"].tolist()
         g2mgenes = ccgenes[ccgenes["cc_phase"] == "g2m"]["gene_name"].tolist()
         L.info("Calculating cell cycle scores")
