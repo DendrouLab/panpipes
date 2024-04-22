@@ -4,7 +4,7 @@ The panpipes integration pipeline implements a variety of tools to batch correct
 
 ![integration_flowchart](../img/integration_coloured.drawio.png)
 
-The flowchart indicates which tools are available for each modality out of RNA (also referred to as GEX), PROT (also referred to as ADT) and ATAC. You can run as many of these tools as you choose and then you can run `panpipes integration make merge_batch_correction` to create a final object containing one reduced dimension representation and one nearest neighbor graph per modality. This can be used as input to the clustering pipeline.
+The flowchart indicates which tools are available for each modality out of RNA (also referred to as GEX), PROT (also referred to as ADT) and ATAC. You can run as many of these tools as you choose and then you can run `panpipes integration make merge_integration` to create a final object containing one reduced dimension representation and one nearest neighbor graph per modality. This can be used as input to the clustering pipeline.
 
 ## Steps to run
 
@@ -16,7 +16,7 @@ The flowchart indicates which tools are available for each modality out of RNA (
 3. Use pipeline outputs to decide on the best batch correction method
 4. Edit the integration pipeline yml with your preferred batch
     correction
-5. Run `panpipes integration make merge_correction`
+5. Run `panpipes integration make merge_integration`
 
 ## Expected structure of MuData object
 
