@@ -52,8 +52,8 @@ L.info(args)
 
 figdir = args.figdir
 
-if not os.path.exists(figdir):
-    os.mkdir(figdir)
+# if not os.path.exists(figdir):
+#     os.mkdir(figdir)
 
 sc.settings.figdir = figdir
 sc.set_figure_params(scanpy=True, fontsize=14, dpi=300, facecolor='white', figsize=(5,5))
