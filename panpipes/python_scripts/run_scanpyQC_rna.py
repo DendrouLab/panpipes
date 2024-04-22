@@ -61,14 +61,9 @@ parser.add_argument("--score_genes",
                     help="which list of genes to use to scanpy.tl.score_genes per cell?")
 
 args, opt = parser.parse_known_args()
-
-L.info("Running scanpy rna qc pipeline")
+L.info("Running with params: %s", args)
 
 sc.settings.verbosity = 3
-
-
-L.info("running with args:")
-L.info(args)
 figdir = args.figdir
 
 if not os.path.exists(figdir):
@@ -78,16 +73,16 @@ sc.settings.figdir = figdir
 sc.set_figure_params(scanpy=True, fontsize=14, dpi=300, facecolor='white', figsize=(5,5))
 
 
-L.info("reading in data")
+L.info("Reading in MuData from '%s'" % args.input_anndata)
 
 mdata = mu.read(args.input_anndata)
 rna = mdata['rna']
 
 
-L.info("merge in the scrublet scores")
 # load the scrublet scores into the anndata (if they have been run)
 if args.scrubletdir is not None:
     scrub_dir = args.scrubletdir
+    L.info("Merging in the scrublet scores from directory '%s'" % args.scrubletdir)
     sample_ids = rna.obs[['sample_id']].drop_duplicates()
     [scrub_dir + '/' + ss + '_scrublet_scores.txt' for ss in sample_ids.sample_id]
     doubletscores = [pd.read_csv(scrub_dir + '/' + ss + '_scrublet_scores.txt', sep="\t", header=0) for ss in sample_ids.sample_id]
@@ -107,7 +102,11 @@ qc_vars = []
 if args.customgenesfile is not None:
     if os.path.exists(args.customgenesfile):
         cat_dic = {}
+        L.info("Reading in custom genes csv file from '%s'" % args.customgenesfile)
         customgenes = pd.read_csv(args.customgenesfile)
+        if not {'group', 'feature'}.issubset(customgenes.columns):
+            L.error("The custom genes file needs to have both columns, 'group' and 'feature'.")
+            sys.exit("The custom genes file needs to have both columns, 'group' and 'feature'.")
         custom_cat = list(set(customgenes['group'].tolist()))
         for cc in custom_cat:
             cat_dic[cc] = customgenes.loc[customgenes["group"] == cc,"feature"].tolist()
@@ -115,16 +114,16 @@ if args.customgenesfile is not None:
             calc_proportions = args.calc_proportions.split(",")
             calc_proportions = [a.strip() for a in calc_proportions]
         else:
-            L.warn("I don't have genes to calc proportions for")
+            L.warning("No genes to calculate proportions for")
             
         if args.score_genes is not None:
             score_genes = args.score_genes.split(",")
             score_genes = [a.strip() for a in score_genes]
         else:
-            L.warn("I don't have genes to calc scores for")    
+            L.warning("No genes to calculate scores for")    
         
     else:
-
+        L.error("You have not provided a list of custom genes to use for QC purposes")
         sys.exit("You have not provided a list of custom genes to use for QC purposes")
 
 for kk in calc_proportions:
@@ -133,10 +132,15 @@ for kk in calc_proportions:
     rna.var[xname] = [x in gene_list for x in rna.var_names] # annotate the group of hb genes as 'hb'
     qc_vars.append(xname)
 
+qc_info = ""
+if qc_vars != []:
+    qc_info = " and calculating proportions for '%s'" % qc_vars
+L.info("Calculating QC metrics with scanpy.pp.calculate_qc_metrics()" + qc_info)
 sc.pp.calculate_qc_metrics(rna, qc_vars=qc_vars, percent_top=None,log1p=True, inplace=True)
 
 if args.score_genes is not None:
     for kk in score_genes:
+        L.info("Computing gene scores for '%s'" % kk)
         xname= kk
         gene_list = cat_dic[kk]
         sc.tl.score_genes(rna, gene_list , 
@@ -150,22 +154,24 @@ if args.score_genes is not None:
 
 
 if args.ccgenes is not None:
+    L.info("Reading in cell cycle genes tsv file from '%s'" % args.ccgenes)
     ccgenes = pd.read_csv(args.ccgenes, sep='\t')
+    if not {'cc_phase', 'gene_name'}.issubset(ccgenes.columns):
+        L.error("The cell cycle genes file needs to have both columns, 'cc_phase' and 'gene_name'.")
+        sys.exit("The cell cycle genes file needs to have both columns, 'cc_phase' and 'gene_name'.")
     sgenes = ccgenes[ccgenes["cc_phase"] == "s"]["gene_name"].tolist()
     g2mgenes = ccgenes[ccgenes["cc_phase"] == "g2m"]["gene_name"].tolist()
+    L.info("Calculating cell cycle scores")
     sc.tl.score_genes_cell_cycle(rna, s_genes=sgenes, g2m_genes=g2mgenes)
 
 
-
-L.info("calculated scores and metrics")
-
 mdata.update()
 
-L.info("saving anndata and obs in a metadata tsv file")
+L.info("Saving updated obs in a metadata tsv file to ./" + args.sampleprefix + "_cell_metadata.tsv")
 write_obs(mdata, output_prefix=args.sampleprefix, 
         output_suffix="_cell_metadata.tsv")
-
+L.info("Saving updated MuData to '%s'" % args.outfile)
 mdata.write(args.outfile)
 
-L.info("done")
+L.info("Done")
 
