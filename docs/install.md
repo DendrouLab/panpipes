@@ -15,10 +15,9 @@ Panpipes can be installed via different methods, either from `PyPi` or from the 
 Option 1 describes the installation via `PyPi` in a manually configured conda environment (no cloning of the repository necessary).
 
 ### Create conda environment
-First, create a conda environment to run panpipes in:
+First, create a conda environment to run panpipes in. For that, we replicate the suggestions made [here](https://www.biostars.org/p/498049/):
 
-```bash
-#This follows the suggestions made here: [https://www.biostars.org/p/498049/](https://www.biostars.org/p/498049/) 
+```bash 
 conda config --add channels conda-forge
 conda config --set channel_priority strict
 # you should remove the strict priority afterwards!
