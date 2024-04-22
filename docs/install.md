@@ -194,6 +194,8 @@ mamba install python=3.10 r-base=4.3.0
 conda install -c conda-forge r-tidyverse r-optparse r-ggforce r-ggraph r-xtable r-hdf5r r-clustree r-cowplot
 pip install panpipes
 ```
+
+
 You're all set to run `panpipes` on your local machine.
 If you want to configure it on a HPC server, follow the next instructions.
 
