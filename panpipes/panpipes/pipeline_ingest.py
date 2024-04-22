@@ -153,7 +153,7 @@ def load_mudatas(rna_path, outfile,
         cmd += " --bcr_filtered_contigs %(bcr_path)s"
         cmd += " --bcr_filetype %(bcr_filetype)s"
     logfile = f"logs/load_mudatas_{sample_id}.log"
-    cmd += " > logs/load_mudatas_%(sample_id)s.log"
+    cmd += f" > logs/{logfile}"
     # print(cmd)
     job_kwargs["job_threads"] = PARAMS['resources_threads_medium']
     log_msg = f"TASK: 'load_mudatas'" + f" IN CASE OF ERROR, PLEASE REFER TO : '{logfile}' FOR MORE INFORMATION."
@@ -187,8 +187,11 @@ def concat_filtered_mudatas(infiles, outfile):
         cmd += " --protein_var_table %(protein_metadata_table)s"
     if PARAMS['index_col_choice'] is not None:
         cmd += " --protein_new_index_col %(index_col_choice)s"
-    cmd += " > logs/concat_filtered_mudatas.log"
+    logfile = "logs/concat_filtered_mudatas.log"
+    cmd += f" > {logfile}"
     job_kwargs["job_threads"] = PARAMS['resources_threads_high']
+    log_msg = f"TASK: 'concat_filtered_mudatas'" + f" IN CASE OF ERROR, PLEASE REFER TO : '{logfile}' FOR MORE INFORMATION."
+    get_logger().info(log_msg)
     P.run(cmd, **job_kwargs)
     # P.run("rm tmp/*", job_threads=PARAMS['resources_threads_low'])
 
@@ -268,8 +271,11 @@ def load_bg_mudatas(rna_path, outfile,
         cmd += " --protein_var_table %(protein_metadata_table)s"  #check which of these 2 needs to stay!!!
     if PARAMS['index_col_choice'] is not None:
         cmd += " --protein_new_index_col %(index_col_choice)s"
-    cmd += " > logs/load_bg_mudatas_%(sample_id)s.log"
+    logfile = f"logs/load_bg_mudatas_%(sample_id)s.log"
+    cmd += " > {logfile}"
     job_kwargs["job_threads"] = PARAMS['resources_threads_medium']
+    log_msg = f"TASK: 'load_bg_mudatas'" + f" IN CASE OF ERROR, PLEASE REFER TO : '{logfile}' FOR MORE INFORMATION."
+    get_logger().info(log_msg)
     P.run(cmd, **job_kwargs)
 
 
@@ -287,6 +293,7 @@ def downsample_bg_mudatas(infile, outfile):
     --downsample_value 20000  > %(outfile)s
     """
     job_kwargs["job_threads"] = PARAMS['resources_threads_medium']
+    # TODO: add log file?
     P.run(cmd, **job_kwargs)
 
 
@@ -315,8 +322,11 @@ def concat_bg_mudatas(infiles, outfile):
   #  if PARAMS["barcode_mtd_include"] is True:
    #     cmd += " --barcode_mtd_df %(barcode_mtd_path)s"
     #    cmd += " --barcode_mtd_metadatacols %(barcode_mtd_metadatacols)s"
-    cmd += " > logs/concat_bg_mudatas.log"
+    logfile = "logs/concat_bg_mudatas.log"
+    cmd += " > {logfile}"
     job_kwargs["job_threads"] = PARAMS['resources_threads_high']
+    log_msg = f"TASK: 'concat_bg_mudatas'" + f" IN CASE OF ERROR, PLEASE REFER TO : '{logfile}' FOR MORE INFORMATION."
+    get_logger().info(log_msg)
     P.run(cmd, **job_kwargs)
     # P.run("rm tmp/*", job_threads=PARAMS['resources_threads_low'])
 
@@ -358,8 +368,11 @@ def run_scrublet(infile, outfile, sample_id):
         cmd += " --use_thr %(scr_use_thr)s"
     if PARAMS['scr_call_doublets_thr'] is not None:
         cmd += " --call_doublets_thr %(scr_call_doublets_thr)s"
-    cmd += " > logs/run_scrublet_" + sample_id + ".log"
+    logfile = "run_scrublet_" + sample_id + ".log"
+    cmd += f" > logs/{logfile}"
     job_kwargs["job_threads"] = PARAMS['resources_threads_medium']
+    log_msg = f"TASK: 'run_scrublet'" + f" IN CASE OF ERROR, PLEASE REFER TO : '{logfile}' FOR MORE INFORMATION."
+    get_logger().info(log_msg)
     P.run(cmd,**job_kwargs)
     IOTools.touch_file(outfile)
 
@@ -405,6 +418,8 @@ def run_rna_qc(log_file, outfile, unfilt_file):
     # add log file
     cmd += " > %(log_file)s"
     job_kwargs["job_threads"] = PARAMS['resources_threads_high']
+    log_msg = f"TASK: 'run_rna_qc'" + f" IN CASE OF ERROR, PLEASE REFER TO : '{log_file}' FOR MORE INFORMATION."
+    get_logger().info(log_msg)
     P.run(cmd, **job_kwargs)
     if os.path.exists("cache"):
         P.run("rm -r cache")
@@ -451,6 +466,8 @@ def run_scanpy_prot_qc(log_file, outfile, unfilt_file):
     # add log file
     cmd += " > %(log_file)s"
     job_kwargs["job_threads"] = PARAMS['resources_threads_high']
+    log_msg = f"TASK: 'run_scanpy_prot_qc'" + f" IN CASE OF ERROR, PLEASE REFER TO : '{log_file}' FOR MORE INFORMATION."
+    get_logger().info(log_msg)
     P.run(cmd, **job_kwargs)
     pass
 
@@ -481,6 +498,8 @@ def run_dsb_clr(outfile, unfilt_file, bg_file):
         cmd += " --bg_mudata %(bg_file)s"
     cmd += " > %(outfile)s"
     job_kwargs["job_threads"] = PARAMS['resources_threads_high']
+    log_msg = f"TASK: 'run_dsb_clr'" + f" IN CASE OF ERROR, PLEASE REFER TO : '{outfile}' FOR MORE INFORMATION."
+    get_logger().info(log_msg)
     P.run(cmd, **job_kwargs)
 
 @follows(run_scanpy_prot_qc, run_dsb_clr)
@@ -507,6 +526,8 @@ def run_repertoire_qc(logfile, unfilt_file):
           """
     cmd += " > %(logfile)s"
     job_kwargs["job_threads"] = PARAMS['resources_threads_low']
+    log_msg = f"TASK: 'run_repertoire_qc'" + f" IN CASE OF ERROR, PLEASE REFER TO : '{outfile}' FOR MORE INFORMATION."
+    get_logger().info(log_msg)
     P.run(cmd, **job_kwargs)
 
 # -----------------------------------------------------------------------------------------------
@@ -552,6 +573,8 @@ def run_atac_qc(log_file, outfile, unfilt_file):
 
     cmd += " > %(log_file)s"
     job_kwargs["job_threads"] = PARAMS['resources_threads_low']
+    log_msg = f"TASK: 'run_atac_qc'" + f" IN CASE OF ERROR, PLEASE REFER TO : '{log_file}' FOR MORE INFORMATION."
+    get_logger().info(log_msg)
     P.run(cmd, **job_kwargs)
 
 @follows(run_rna_qc, run_prot_qc, run_repertoire_qc, run_atac_qc)
@@ -587,6 +610,8 @@ def plot_qc(log_file, cell_file):
             cmd += " --rep_qc_metrics %(pqrm)s"
     cmd += " > %(log_file)s"
     job_kwargs["job_threads"] = PARAMS['resources_threads_low']
+    log_msg = f"TASK: 'plot_qc'" + f" IN CASE OF ERROR, PLEASE REFER TO : '{log_file}' FOR MORE INFORMATION."
+    get_logger().info(log_msg)
     P.run(cmd, **job_kwargs)
 
 
@@ -609,6 +634,8 @@ def run_assess_background(log_file, unfilt_file, bg_file):
     """
     cmd += " > %(log_file)s"
     job_kwargs["job_threads"] = PARAMS['resources_threads_high']
+    log_msg = f"TASK: 'run_assess_background'" + f" IN CASE OF ERROR, PLEASE REFER TO : '{log_file}' FOR MORE INFORMATION."
+    get_logger().info(log_msg)
     P.run(cmd, **job_kwargs)
 
 
