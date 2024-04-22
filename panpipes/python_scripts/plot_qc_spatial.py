@@ -144,7 +144,7 @@ if args.spatial_filetype == "vizgen":
 
     axs[2].set_title("Transcripts per FOV")
     sns.histplot(
-        spatial.obs.groupby("fov").sum()["total_counts"],
+        spatial.obs.groupby('fov')[['total_counts']].sum(),
         kde=False,
         ax=axs[2],
     )
@@ -160,8 +160,8 @@ if args.spatial_filetype == "vizgen":
     #plt.savefig("merfish_histo.png", dpi=300)
     plt.savefig(figdir + "/histograms."+sprefix +".png", dpi=300)  # Adjust dpi as needed
     plt.close()  # Close the figure to free up memory
-
-            
+     
+           
 
 L.info("Done")
 
