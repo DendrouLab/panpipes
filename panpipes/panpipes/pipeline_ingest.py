@@ -156,16 +156,8 @@ def load_mudatas(rna_path, outfile,
     cmd += " > logs/load_mudatas_%(sample_id)s.log"
     # print(cmd)
     job_kwargs["job_threads"] = PARAMS['resources_threads_medium']
-    log_msg = f"Output file '{outfile}' => Log file '{logfile}'"
+    log_msg = f"TASK: 'load_mudatas'" + f"IN CASE OF ERROR, PLEASE REFER TO : '{logfile}' FOR MORE INFORMATION."
     get_logger().info(log_msg)
-    # get_logger().info(
-    #         "Log"
-    #         "Task: 'load_mudatas'" + "\n" +
-    #         f"sample_id: {sample_id}" + "\n" +
-    #         f"Output file(s): {outfile}" + "\n" +
-    #         f"Log file: {logfile}" + "\n" +
-    #         "In case of error, please refer to the log file(s) above for more information."
-    #     )
     P.run(cmd, **job_kwargs)
 
 
