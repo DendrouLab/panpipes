@@ -21,12 +21,15 @@ import warnings
 import yaml
 
 import logging
-L = logging.getLogger('panpipes')
-L.setLevel(logging.INFO)
-log_handler = logging.StreamHandler(sys.stdout)
-log_formatter = logging.Formatter('%(asctime)s: %(levelname)s - %(message)s')
-log_handler.setFormatter(log_formatter)
-L.addHandler(log_handler)
+# L = logging.getLogger('panpipes')
+# L.setLevel(logging.INFO)
+# log_handler = logging.StreamHandler(sys.stdout)
+# log_formatter = logging.Formatter('%(asctime)s: %(levelname)s - %(message)s')
+# log_handler.setFormatter(log_formatter)
+# L.addHandler(log_handler)
+
+def get_logger():
+    return logging.getLogger("cgatcore.pipeline")
 
 
 PARAMS = P.get_parameters(
@@ -153,13 +156,16 @@ def load_mudatas(rna_path, outfile,
     cmd += " > logs/load_mudatas_%(sample_id)s.log"
     # print(cmd)
     job_kwargs["job_threads"] = PARAMS['resources_threads_medium']
-    L.info(
-            "Task: 'load_mudatas'" + "\n" +
-            f"sample_id: {sample_id}" + "\n" +
-            f"Output file(s): {outfile}" + "\n" +
-            f"Log file: {logfile}" + "\n" +
-            "In case of error, please refer to the log file(s) above for more information."
-        )
+    log_msg = f"Output file '{outfile}' => Log file '{logfile}'"
+    get_logger().info(log_msg)
+    # get_logger().info(
+    #         "Log"
+    #         "Task: 'load_mudatas'" + "\n" +
+    #         f"sample_id: {sample_id}" + "\n" +
+    #         f"Output file(s): {outfile}" + "\n" +
+    #         f"Log file: {logfile}" + "\n" +
+    #         "In case of error, please refer to the log file(s) above for more information."
+    #     )
     P.run(cmd, **job_kwargs)
 
 
