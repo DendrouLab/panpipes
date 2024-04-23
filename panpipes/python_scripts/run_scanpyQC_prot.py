@@ -70,12 +70,9 @@ parser.add_argument("--per_prot_metrics",
 
 
 args, opt = parser.parse_known_args()
+L.info("Running with params: %s", args)
 
-L.info("Scanpy qc pipeline")
 sc.settings.verbosity = 3
-
-L.info("running with args:")
-L.info(args)
 figdir = args.figdir
 
 if not os.path.exists(figdir):
@@ -85,7 +82,7 @@ sc.settings.figdir = figdir
 sc.set_figure_params(scanpy=True, fontsize=14, dpi=300, facecolor='white', figsize=(5,5))
 
 
-
+L.info("Reading in MuData from '%s'" % args.input_anndata)
 mdata = mu.read(args.input_anndata)
 prot = mdata['prot']
 
@@ -97,26 +94,31 @@ if args.per_cell_metrics is not None:
 
 
 
-
 # work out if we already have isotype column, if not try to infer from index.
+L.info("Looking for 'isotype' column in .var")
 if 'isotype' not in prot.var.columns:
     # this means that isotype column was not included in the protein conversion table 
     # so we are going to have a wwhack at identifying them
+    L.info("No 'isotype' column found in .var, adding 'isotype' column.")
     prot.var['isotype'] = prot.var_names.str.contains("isotype")
 else:
     # there is already an isotype column in var
-    L.info("isotype column already in var")
+    L.info("Isotype column found in var")
     pass
 
 # are there any actual isotypes though?
 isotypes = list(prot.var_names[prot.var.isotype].unique())
-L.info("n isotypes found in data %i" % len(isotypes))
+L.info("Number of isotypes found in data %i" % len(isotypes))
 if len(isotypes) > 0:
+    L.info("Including isotypes in QC metrics call")
     qc_vars=["isotype"]
 else:
+    L.info("Not including isotypes in QC metrics call")
     qc_vars=[]
 # if isotypes are found then include them in the caluclate qc metrics call.
 # this calculates standard metrics 
+
+L.info("Calculating QC metrics with scanpy.pp.calculate_qc_metrics()")
 sc.pp.calculate_qc_metrics(prot,
                         var_type="prot",  
                         qc_vars=qc_vars, 
@@ -125,7 +127,7 @@ sc.pp.calculate_qc_metrics(prot,
 ## let's assess the isotype outlier cells. 
 #(Cells with an excessive amount of isotype indicating stickiness)
 if (len(isotypes) > 0) & check_for_bool(args.identify_isotype_outliers):
-    L.info("identifying isotype outliers")
+    L.info("Identifying isotype outliers")
     # this measn we found some isotypes earlier
     # we identify outliers on a per channel basis 
     # using the groupby argument
@@ -137,10 +139,11 @@ if (len(isotypes) > 0) & check_for_bool(args.identify_isotype_outliers):
 mdata.update()
 
 # write out the cell_metadata
-logging.info("saving mudata and obs in a metadata tsv file")
+L.info("Saving updated obs in a metadata tsv file to ./" + args.sampleprefix + "_cell_metadata.tsv")
 write_obs(mdata, output_prefix=args.sampleprefix, 
         output_suffix="_cell_metadata.tsv")
 # write out whole object data.
+L.info("Saving updated MuData to '%s'" % args.outfile)
 mdata.write(args.outfile)
 
 
@@ -157,9 +160,10 @@ mdata.write(args.outfile)
 
 channel_col = args.channel_col # TO DO why is this just not simply sample_id 
 
+L.info("Calculating per channel metrics for channel '%s'" % channel_col)
+
 out = {}
 for si in prot.obs[channel_col].unique():
-    L.info(si)
     obs_df, var_df = sc.pp.calculate_qc_metrics(prot[prot.obs[channel_col]==si],
                             var_type="prot", 
                             qc_vars=qc_vars, 
@@ -178,6 +182,7 @@ if args.per_prot_metrics is not None:
     per_prot_metrics = [a.strip() for a in per_prot_metrics]
 
     # let's make some boxplot figures.
+    L.info("Plotting per channel metrics in boxplots")
     for qcp in per_prot_metrics:
         fig, ax = plt.subplots(nrows=1,figsize=(24,6))
         sns.boxplot(data=var_dat, x=prot_id_col, y=qcp, ax=ax)
@@ -187,6 +192,7 @@ if args.per_prot_metrics is not None:
     plt.close()
 
     # write out the per channel metrics in a separate csv.
+    L.info("Saving per channel metrics to csv file '"+ args.sampleprefix + "_prot_qc_metrics_per_" + channel_col + ".csv'")
     var_dat.to_csv(args.sampleprefix + "_prot_qc_metrics_per_" + channel_col + ".csv")
 
 L.info("Done")

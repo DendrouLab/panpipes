@@ -74,7 +74,6 @@ sc.set_figure_params(scanpy=True, fontsize=14, dpi=300, facecolor='white', figsi
 
 
 L.info("Reading in MuData from '%s'" % args.input_anndata)
-
 mdata = mu.read(args.input_anndata)
 rna = mdata['rna']
 
