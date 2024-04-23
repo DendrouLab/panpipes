@@ -441,7 +441,7 @@ def run_rna_qc(log_file, outfile, unfilt_file):
 @active_if(PARAMS['modalities_prot'])
 @follows(mkdir('figures/prot'))
 @follows(concat_filtered_mudatas, run_rna_qc)
-@originate("logs/4_run_scanpy_qc_prot.log", orfile(), unfilt_file())
+@originate("logs/3_run_scanpy_qc_prot.log", orfile(), unfilt_file())
 def run_scanpy_prot_qc(log_file, outfile, unfilt_file):
     # infile = submission file
     cmd = """
@@ -473,7 +473,7 @@ def run_scanpy_prot_qc(log_file, outfile, unfilt_file):
 
 @active_if(PARAMS['modalities_prot'])
 @follows(run_scanpy_prot_qc, concat_filtered_mudatas, concat_bg_mudatas)
-@originate("logs/5_run_dsb_clr.log", unfilt_file(), bg_file())
+@originate("logs/3_run_dsb_clr.log", unfilt_file(), bg_file())
 def run_dsb_clr(outfile, unfilt_file, bg_file):
     print(unfilt_file)
     # infile = mdata_unfilt
@@ -514,7 +514,7 @@ def run_prot_qc():
 @active_if(PARAMS['modalities_bcr'] or PARAMS['modalities_tcr']  )
 @follows(mkdir('figures/rep'))
 @follows(run_rna_qc, run_prot_qc)
-@originate("logs/6_run_scanpy_qc_rep.log", unfilt_file())
+@originate("logs/3_run_scanpy_qc_rep.log", unfilt_file())
 def run_repertoire_qc(logfile, unfilt_file):
     cmd = """python %(py_path)s/run_scanpyQC_rep.py
           --sampleprefix %(sample_prefix)s
@@ -536,7 +536,7 @@ def run_repertoire_qc(logfile, unfilt_file):
 @active_if(PARAMS['modalities_atac'])
 @mkdir('figures/atac')
 @follows(run_rna_qc, run_prot_qc, run_repertoire_qc)
-@originate("logs/7_run_scanpy_qc_atac.log", orfile(), unfilt_file())
+@originate("logs/3_run_scanpy_qc_atac.log", orfile(), unfilt_file())
 def run_atac_qc(log_file, outfile, unfilt_file):
     # if this is a multiple samples project
     # they should be run together upfront 
@@ -587,7 +587,7 @@ def run_qc():
 # -----------------------------------------------------------------------------------------------
 
 @follows(run_qc)
-@originate("logs/8_plot_qc.log", orfile())
+@originate("logs/4_plot_qc.log", orfile())
 def plot_qc(log_file, cell_file):
     qcmetrics = PARAMS['plotqc_rna_metrics']
     cmd = """
@@ -623,7 +623,7 @@ def plot_qc(log_file, cell_file):
 @follows(mkdir("figures/background"))
 @follows(run_qc)
 @follows(concat_bg_mudatas)
-@originate("logs/9_assess_background.log", unfilt_file(), bg_file())
+@originate("logs/5_assess_background.log", unfilt_file(), bg_file())
 def run_assess_background(log_file, unfilt_file, bg_file):
     cmd = """
     python %(py_path)s/assess_background.py
