@@ -50,7 +50,7 @@ mode_dictionary = PARAMS["modalities"]
 @follows(mkdir('figures'))
 @follows(mkdir('figures/tenx_metrics'))
 @follows(mkdir("logs"))
-@originate("logs/tenx_metrics_multi_aggregate.log")
+@originate("logs/0_tenx_metrics_multi_aggregate.log")
 def aggregate_tenx_metrics_multi(outfile):
     """this is to aggregate all the cellranger multi metric_summary files
     it also does some plotting
@@ -141,7 +141,7 @@ def load_mudatas(rna_path, outfile,
     if bcr_path is not None and pd.notna(bcr_path):
         cmd += " --bcr_filtered_contigs %(bcr_path)s"
         cmd += " --bcr_filetype %(bcr_filetype)s"
-    cmd += " > logs/load_mudatas_%(sample_id)s.log"
+    cmd += " > logs/1_load_mudatas_%(sample_id)s.log"
     # print(cmd)
     job_kwargs["job_threads"] = PARAMS['resources_threads_medium']
     P.run(cmd, **job_kwargs)
@@ -173,7 +173,7 @@ def concat_filtered_mudatas(infiles, outfile):
         cmd += " --protein_var_table %(protein_metadata_table)s"
     if PARAMS['index_col_choice'] is not None:
         cmd += " --protein_new_index_col %(index_col_choice)s"
-    cmd += " > logs/concat_filtered_mudatas.log"
+    cmd += " > logs/1_concat_filtered_mudatas.log"
     job_kwargs["job_threads"] = PARAMS['resources_threads_high']
     P.run(cmd, **job_kwargs)
     # P.run("rm tmp/*", job_threads=PARAMS['resources_threads_low'])
@@ -254,7 +254,7 @@ def load_bg_mudatas(rna_path, outfile,
         cmd += " --protein_var_table %(protein_metadata_table)s"  #check which of these 2 needs to stay!!!
     if PARAMS['index_col_choice'] is not None:
         cmd += " --protein_new_index_col %(index_col_choice)s"
-    cmd += " > logs/load_bg_mudatas_%(sample_id)s.log"
+    cmd += " > logs/1_load_bg_mudatas_%(sample_id)s.log"
     job_kwargs["job_threads"] = PARAMS['resources_threads_medium']
     P.run(cmd, **job_kwargs)
 
@@ -264,7 +264,7 @@ def load_bg_mudatas(rna_path, outfile,
 @follows(load_bg_mudatas)
 @transform(load_bg_mudatas, 
            regex("./tmp/(.*)_raw.h5(.*)"), 
-           r"./logs/\1_bg_downsampled.log")
+           r"./logs/1_\1_bg_downsampled.log")
 def downsample_bg_mudatas(infile, outfile):
     cmd = """
     python %(py_path)s/downsample.py 
@@ -301,7 +301,7 @@ def concat_bg_mudatas(infiles, outfile):
   #  if PARAMS["barcode_mtd_include"] is True:
    #     cmd += " --barcode_mtd_df %(barcode_mtd_path)s"
     #    cmd += " --barcode_mtd_metadatacols %(barcode_mtd_metadatacols)s"
-    cmd += " > logs/concat_bg_mudatas.log"
+    cmd += " > logs/1_concat_bg_mudatas.log"
     job_kwargs["job_threads"] = PARAMS['resources_threads_high']
     P.run(cmd, **job_kwargs)
     # P.run("rm tmp/*", job_threads=PARAMS['resources_threads_low'])
@@ -344,7 +344,7 @@ def run_scrublet(infile, outfile, sample_id):
         cmd += " --use_thr %(scr_use_thr)s"
     if PARAMS['scr_call_doublets_thr'] is not None:
         cmd += " --call_doublets_thr %(scr_call_doublets_thr)s"
-    cmd += " > logs/run_scrublet_" + sample_id + ".log"
+    cmd += " > logs/2_run_scrublet_" + sample_id + ".log"
     job_kwargs["job_threads"] = PARAMS['resources_threads_medium']
     P.run(cmd,**job_kwargs)
     IOTools.touch_file(outfile)
@@ -354,7 +354,7 @@ def run_scrublet(infile, outfile, sample_id):
 @follows(mkdir("figures"))
 @follows(mkdir("figures/rna"))
 @follows(concat_filtered_mudatas, run_scrublet)
-@originate("logs/run_scanpy_qc_rna.log", orfile(), unfilt_file())
+@originate("logs/3_run_scanpy_qc_rna.log", orfile(), unfilt_file())
 def run_rna_qc(log_file, outfile, unfilt_file):
     # infile = submission file
     resources_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "resources")
@@ -412,7 +412,7 @@ def run_rna_qc(log_file, outfile, unfilt_file):
 @active_if(PARAMS['modalities_prot'])
 @follows(mkdir('figures/prot'))
 @follows(concat_filtered_mudatas, run_rna_qc)
-@originate("logs/run_scanpy_qc_prot.log", orfile(), unfilt_file())
+@originate("logs/4_run_scanpy_qc_prot.log", orfile(), unfilt_file())
 def run_scanpy_prot_qc(log_file, outfile, unfilt_file):
     # infile = submission file
     cmd = """
@@ -442,7 +442,7 @@ def run_scanpy_prot_qc(log_file, outfile, unfilt_file):
 
 @active_if(PARAMS['modalities_prot'])
 @follows(run_scanpy_prot_qc, concat_filtered_mudatas, concat_bg_mudatas)
-@originate("logs/run_dsb_clr.log", unfilt_file(), bg_file())
+@originate("logs/5_run_dsb_clr.log", unfilt_file(), bg_file())
 def run_dsb_clr(outfile, unfilt_file, bg_file):
     print(unfilt_file)
     # infile = mdata_unfilt
@@ -481,7 +481,7 @@ def run_prot_qc():
 @active_if(PARAMS['modalities_bcr'] or PARAMS['modalities_tcr']  )
 @follows(mkdir('figures/rep'))
 @follows(run_rna_qc, run_prot_qc)
-@originate("logs/run_scanpy_qc_rep.log", unfilt_file())
+@originate("logs/6_run_scanpy_qc_rep.log", unfilt_file())
 def run_repertoire_qc(logfile, unfilt_file):
     cmd = """python %(py_path)s/run_scanpyQC_rep.py
           --sampleprefix %(sample_prefix)s
@@ -501,7 +501,7 @@ def run_repertoire_qc(logfile, unfilt_file):
 @active_if(PARAMS['modalities_atac'])
 @mkdir('figures/atac')
 @follows(run_rna_qc, run_prot_qc, run_repertoire_qc)
-@originate("logs/run_scanpy_qc_atac.log", orfile(), unfilt_file())
+@originate("logs/7_run_scanpy_qc_atac.log", orfile(), unfilt_file())
 def run_atac_qc(log_file, outfile, unfilt_file):
     # if this is a multiple samples project
     # they should be run together upfront 
@@ -550,7 +550,7 @@ def run_qc():
 # -----------------------------------------------------------------------------------------------
 
 @follows(run_qc)
-@originate("logs/plot_qc.log", orfile())
+@originate("logs/8_plot_qc.log", orfile())
 def plot_qc(log_file, cell_file):
     qcmetrics = PARAMS['plotqc_rna_metrics']
     cmd = """
@@ -584,7 +584,7 @@ def plot_qc(log_file, cell_file):
 @follows(mkdir("figures/background"))
 @follows(run_qc)
 @follows(concat_bg_mudatas)
-@originate("logs/assess_background.log", unfilt_file(), bg_file())
+@originate("logs/9_assess_background.log", unfilt_file(), bg_file())
 def run_assess_background(log_file, unfilt_file, bg_file):
     cmd = """
     python %(py_path)s/assess_background.py
