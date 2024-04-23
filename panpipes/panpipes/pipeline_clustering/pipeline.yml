@@ -138,7 +138,6 @@ markerspecs:
     layer: logged_counts
     method: t-test_overestim_var
     mincells: 10 
-    # agrs https://scanpy.readthedocs.io/en/stable/generated/scanpy.tl.rank_genes_groups.html
     pseudo_seurat: False
     minpct: 0.1
     threshuse: 0.25
@@ -170,11 +169,11 @@ markerspecs:
     threshuse: 0.25
 
   spatial:
+    # args for spatial https://scanpy.readthedocs.io/en/stable/generated/scanpy.tl.rank_genes_groups.html
     run: True
     layer: norm_pearson_resid
     method: t-test_overestim_var
     mincells: 10 
-    # args for spatial https://scanpy.readthedocs.io/en/stable/generated/scanpy.tl.rank_genes_groups.html
     pseudo_seurat: False
     minpct: 0.1
     threshuse: 0.25
