@@ -76,7 +76,7 @@ Provide path to totalvi saved model.
 Transform_batch is a batch-covariate specific to totalvi, allows the model to use the batch information in the query to mitigate 
 differences in protein sequencing depth.
 - <span class="parameter">scvi</span> `String`, Default:path/to/scvi<br>
-- <span class="parameter">sacnvi</span> `String`, Default:path/to/scanvi<br>
+- <span class="parameter">scanvi</span> `String`, Default:path/to/scanvi<br>
 - <span class="parameter">run_randomforest</span> `Boolean`, Default:False<br>
 Set to true if the reference model has a trained random forest classifier. 
 
