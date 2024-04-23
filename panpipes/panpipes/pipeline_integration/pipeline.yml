@@ -26,7 +26,8 @@ queues:
 # --------------------------------
 
 # ----------------------------
-# Data format
+# Data input
+# ----------------------------
 sample_prefix: test
 preprocessed_obj: ../preprocess/test.h5mu
 
@@ -34,7 +35,7 @@ preprocessed_obj: ../preprocess/test.h5mu
 #-----------------
 # Batch correction
 # ----------------
-# Batch correction is done unimodal, meaning each modality is batch corrected independently
+# Batch correction, unimodal correction: meaning each modality is batch corrected independently.
 
 # ------------
 # RNA modality
@@ -55,6 +56,7 @@ rna:
 
   # SCVI args
   scvi:
+    seed: 1492
     exclude_mt_genes: True
     mt_column: mt
     model_args:
@@ -144,6 +146,7 @@ multimodal:
 
   # TotalVI arguments
   totalvi:
+    seed: 1492
     modalities: rna,prot
     exclude_mt_genes: True
     mt_column: mt
@@ -159,6 +162,7 @@ multimodal:
 
   # MultiVI arguments
   MultiVI:
+    seed: 1492
     lowmem: True
     model_args:
       n_hidden :

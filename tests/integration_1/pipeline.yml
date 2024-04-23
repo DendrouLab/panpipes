@@ -70,6 +70,7 @@ rna:
   # SCVI args
   #-----------------------------
   scvi:
+    seed: 1492
     exclude_mt_genes: True
     mt_column: mt
     model_args:
@@ -214,10 +215,11 @@ multimodal:
   column_categorical: dataset
   # extra params:
   totalvi:
+    seed: 1492
     # this is a minimal set of parameters that will be expected
     # you can add any other param from the tutorials and they will
     # be parsed alongside the others
-  
+    seed: 1492
     # totalvi will run on rna and prot
     modalities: rna,prot
     exclude_mt_genes: True
@@ -233,10 +235,12 @@ multimodal:
       early_stopping: True
     training_plan: None
   MultiVI:
+    seed: 1492
     # this is a minimal set of parameters that will be expected
     # you can add any other param from the tutorials and they will
     # be parsed alongside the others
     # leave arguments blank for default
+    seed: 1492
     lowmem: True
     # Set lowmem to True will subset the atac to the top 25k HVF. 
     # This is to deal with concatenation of atac,rna on large datasets which at the moment is suboptimally required by scvitools.
@@ -373,6 +377,7 @@ plotqc:
 # Choose the integration results you want to merge in the final object
 # For unimodal integration: to pick the uncorrected version use "no_correction"
 # then run
+
 # panpipes integration make merge_integration
 final_obj:
   rna:

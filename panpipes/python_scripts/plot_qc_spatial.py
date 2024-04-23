@@ -51,8 +51,8 @@ L.info(args)
 
 figdir = args.figdir
 
-if not os.path.exists(figdir):
-    os.mkdir(figdir)
+# if not os.path.exists(figdir):
+#     os.mkdir(figdir)
 
 sc.settings.figdir = figdir
 sc.set_figure_params(scanpy=True, fontsize=14, dpi=300, facecolor='white', figsize=(5,5))
@@ -149,7 +149,7 @@ if args.spatial_filetype == "vizgen":
 
     axs[2].set_title("Transcripts per FOV")
     sns.histplot(
-        spatial.obs.groupby("fov").sum()["total_counts"],
+        spatial.obs.groupby('fov')[['total_counts']].sum(),
         kde=False,
         ax=axs[2],
     )
@@ -165,8 +165,8 @@ if args.spatial_filetype == "vizgen":
     #plt.savefig("merfish_histo.png", dpi=300)
     plt.savefig(figdir + "/histograms."+sprefix +".png", dpi=300)  # Adjust dpi as needed
     plt.close()  # Close the figure to free up memory
-
-            
+     
+           
 
 L.info("Done")
 
