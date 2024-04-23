@@ -244,6 +244,8 @@ plotqc:
 # -------------------------
 # Creating the final object
 # -------------------------
+
+#To make the final object please run: panpipes integration make merge_integration
 final_obj:
   rna:
     include: True
