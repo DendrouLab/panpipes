@@ -11,3 +11,4 @@ Workflows configuration files
     spatial_qc
     spatial_preprocess
     spatial_deconvolution
+    pipeline_clustering_yml.md
