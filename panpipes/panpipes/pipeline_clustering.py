@@ -16,6 +16,11 @@ from itertools import chain, product
 import glob
 
 from panpipes.funcs.processing import extract_parameter_from_fname
+
+
+def get_logger():
+    return logging.getLogger("cgatcore.pipeline")
+
 PARAMS = P.get_parameters(
     ["%s/pipeline.yml" % os.path.splitext(__file__)[0],
      "pipeline.yml"])
@@ -63,6 +68,8 @@ def run_neighbors(outfile):
             """
         cmd += " > %(log_file)s"
         job_kwargs["job_threads"] = PARAMS['resources_threads_high']
+        log_msg = f"TASK: 'run_neighbors'" + f" IN CASE OF ERROR, PLEASE REFER TO : '{log_file}' FOR MORE INFORMATION."
+        get_logger().info(log_msg)        
         P.run(cmd, **job_kwargs)
     else:
         P.run('ln -s %(scaled_obj)s %(outfile)s', without_cluster=True)
@@ -110,6 +117,8 @@ def calc_sm_umaps(infile, outfile, mod, mindist, log_file):
             cmd += " --neighbors_key wnn"
     cmd += " > %(log_file)s"
     job_kwargs["job_threads"] = PARAMS['resources_threads_high']
+    log_msg = f"TASK: 'run_umap'" + f" IN CASE OF ERROR, PLEASE REFER TO : '{log_file}' FOR MORE INFORMATION."
+    get_logger().info(log_msg)
     P.run(cmd, **job_kwargs)
 
 
@@ -153,6 +162,8 @@ def calc_cluster(infile, outfile,  mod, res, alg, log_file):
             cmd += " --neighbors_key wnn"
     cmd += " > %(log_file)s"
     job_kwargs["job_threads"] = PARAMS['resources_threads_medium']
+    log_msg = f"TASK: 'run_clustering'" + f" IN CASE OF ERROR, PLEASE REFER TO : '{log_file}' FOR MORE INFORMATION."
+    get_logger().info(log_msg)
     P.run(cmd, **job_kwargs)
 
 
@@ -164,8 +175,12 @@ def aggregate_clusters(infiles, outfile):
     cmd = "python %(py_path)s/aggregate_csvs.py \
                --input_files_str %(infiles_str)s \
                --output_file %(outfile)s \
-               --clusters_or_markers clusters > logs/4_aggregate_clusters.log"
-    job_kwargs["job_threads"] = PARAMS['resources_threads_low']           
+               --clusters_or_markers clusters"
+    logfile = "4_aggregate_clusters.log"
+    cmd += f" > logs/{logfile}"
+    job_kwargs["job_threads"] = PARAMS['resources_threads_low'] 
+    log_msg = f"TASK: 'aggregate_clusters'" + f" IN CASE OF ERROR, PLEASE REFER TO : '{logfile}' FOR MORE INFORMATION."
+    get_logger().info(log_msg)          
     P.run(cmd, **job_kwargs)
 
 
@@ -195,8 +210,11 @@ def collate_mdata(infiles,outfile):
         cmd += "--input_mudata %(mdata_in)s"
     else:
         cmd += "--input_mudata  %(full_obj)s"
-    cmd += " > logs/5_collate_data.log"
+    logfile = "5_collate_data.log"
+    cmd += f" > logs/{logfile}"
     job_kwargs["job_threads"] = PARAMS['resources_threads_medium']
+    log_msg = f"TASK: 'collate_mdata'" + f" IN CASE OF ERROR, PLEASE REFER TO : '{logfile}' FOR MORE INFORMATION."
+    get_logger().info(log_msg)  
     P.run(cmd, **job_kwargs)
 
 
@@ -215,6 +233,8 @@ def plot_cluster_umaps(infile, log_file,):
     """
     cmd += " >> %(log_file)s"
     job_kwargs["job_threads"] = PARAMS['resources_threads_medium']
+    log_msg = f"TASK: 'plot_cluster_umaps'" + f" IN CASE OF ERROR, PLEASE REFER TO : '{log_file}' FOR MORE INFORMATION."
+    get_logger().info(log_msg)  
     P.run(cmd, jobs_limit=1, **job_kwargs)
 
 
@@ -231,6 +251,8 @@ def plot_clustree(infile, log_file, outfile):
         --outfile %(outfile)s > %(log_file)s"
     
     job_kwargs["job_threads"] = PARAMS['resources_threads_low']
+    log_msg = f"TASK: 'clustree'" + f" IN CASE OF ERROR, PLEASE REFER TO : '{log_file}' FOR MORE INFORMATION."
+    get_logger().info(log_msg)  
     P.run(cmd,  **job_kwargs)
 
 
@@ -293,6 +315,8 @@ def find_markers(infile, log_file, outfile_prefix, base_mod, cluster_dir, data_m
         """
     cmd += " > %(log_file)s "
     job_kwargs["job_threads"] = PARAMS['resources_threads_high']
+    log_msg = f"TASK: 'find_markers'" + f" IN CASE OF ERROR, PLEASE REFER TO : '{log_file}' FOR MORE INFORMATION."
+    get_logger().info(log_msg)  
     P.run(cmd, **job_kwargs)
 
 
@@ -355,6 +379,8 @@ def plot_marker_dotplots(marker_file, log_file, outfile,
     cmd += " --layer %(layer_choice)s"
     cmd += " > %(log_file)s "
     job_kwargs["job_threads"] = PARAMS['resources_threads_medium']
+    log_msg = f"TASK: 'plot_markers'" + f" IN CASE OF ERROR, PLEASE REFER TO : '{log_file}' FOR MORE INFORMATION."
+    get_logger().info(log_msg)  
     P.run(cmd, **job_kwargs)
 
 
