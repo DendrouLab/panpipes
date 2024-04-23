@@ -17,6 +17,7 @@
 ### dependencies
 - All the dependencies have been updated. 
   - Python>=3.10 required
+- added seeds to all scvi tasks for reproducibility
 
 ## v0.4.1
 

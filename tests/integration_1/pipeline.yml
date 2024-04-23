@@ -215,6 +215,7 @@ multimodal:
   column_categorical: dataset
   # extra params:
   totalvi:
+    seed: 1492
     # this is a minimal set of parameters that will be expected
     # you can add any other param from the tutorials and they will
     # be parsed alongside the others
@@ -234,6 +235,7 @@ multimodal:
       early_stopping: True
     training_plan: None
   MultiVI:
+    seed: 1492
     # this is a minimal set of parameters that will be expected
     # you can add any other param from the tutorials and they will
     # be parsed alongside the others
@@ -375,6 +377,7 @@ plotqc:
 # Choose the integration results you want to merge in the final object
 # For unimodal integration: to pick the uncorrected version use "no_correction"
 # then run
+
 # panpipes integration make merge_integration
 final_obj:
   rna:
