@@ -30,22 +30,22 @@ You can download the different refmap `pipeline.yml` files here:
 Computing resources to use, specifically the number of threads used for parallel jobs.
 Specified by the following three parameters:
   - <span class="parameter">threads_high</span> `Integer`, Default: 1<br>
-        Number of threads used for high intensity computing tasks. 
-        For each thread, there must be enough memory to load all your input files at once and create the MuData object.
+Number of threads used for high intensity computing tasks. 
+For each thread, there must be enough memory to load all your input files at once and create the MuData object.
 
   - <span class="parameter">threads_medium</span> `Integer`, Default: 1<br>
-        Number of threads used for medium intensity computing tasks.
-        For each thread, there must be enough memory to load your mudata and do computationally light tasks.
+Number of threads used for medium intensity computing tasks.
+For each thread, there must be enough memory to load your mudata and do computationally light tasks.
 
   - <span class="parameter">threads_low</span> `Integer`, Default: 1<br>
-  	    Number of threads used for low intensity computing tasks.
-        For each thread, there must be enough memory to load text files and do plotting, requires much less memory than the other two.
+Number of threads used for low intensity computing tasks.
+For each thread, there must be enough memory to load text files and do plotting, requires much less memory than the other two.
 
   - <span class="parameter">condaenv</span> `String` (Path)<br>
-    Path to conda environment that should be used to run panpipes.
+Path to conda environment that should be used to run panpipes.
 
   - <span class="parameter">queues:</span> `String` (Path)<br>
-    In case a special queue is required for long jobs or if the user has access to a GPU-specific queue. Otherwise, leave it blank. 
+In case a special queue is required for long jobs or if the user has access to a GPU-specific queue. Otherwise, leave it blank. 
     - <span class="parameter">long:</span> `String` (Path)<br>
     - <span class="parameter">gpu:</span> `String` (Path)<br>
 
