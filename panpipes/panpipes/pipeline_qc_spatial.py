@@ -14,12 +14,15 @@ warnings.simplefilter(action='ignore', category=FutureWarning)
 warnings.filterwarnings("ignore", category=DeprecationWarning) 
 
 import warnings
+import logging
 
 # warnings.simplefilter('ignore', category=NumbaDeprecationWarning)
 # warnings.simplefilter('ignore', category=NumbaPendingDeprecationWarning)
 
 import yaml
 
+def get_logger():
+    return logging.getLogger("cgatcore.pipeline")
 
 PARAMS = P.get_parameters(
     ["%s/pipeline.yml" % os.path.splitext(__file__)[0],
@@ -109,8 +112,9 @@ def load_mudatas(spatial_path, outfile,
         --spatial_transformation %(spatial_transformation)s
         """
     cmd += " > logs/1_make_mudatas_%(sample_id)s.log"
-    print(cmd)
     job_kwargs["job_threads"] = PARAMS['resources_threads_medium']
+    log_msg = f"TASK: 'load_mudatas'" + f" IN CASE OF ERROR, PLEASE REFER TO : 'logs/1_make_mudatas_{sample_id}.log' FOR MORE INFORMATION."
+    get_logger().info(log_msg)
     P.run(cmd, **job_kwargs)
 
 
@@ -151,8 +155,9 @@ def spatialQC(infile,log_file):
     if PARAMS['calc_proportions'] is not None:
         cmd += " --calc_proportions %(calc_proportions)s"
     cmd += " > %(log_file)s"
-
     job_kwargs["job_threads"] = PARAMS['resources_threads_medium']
+    log_msg = f"TASK: 'spatialQC'" + f" IN CASE OF ERROR, PLEASE REFER TO : '{log_file}' FOR MORE INFORMATION."
+    get_logger().info(log_msg)
     P.run(cmd, **job_kwargs)
 
 
@@ -185,6 +190,8 @@ def plotQC_spatial(unfilt_file,log_file):
         cmd += " --spatial_qc_metrics %(plotqc_spatial_metrics)s"
     cmd += " > %(log_file)s "
     job_kwargs["job_threads"] = PARAMS['resources_threads_low']
+    log_msg = f"TASK: 'plotQC_spatial'" + f" IN CASE OF ERROR, PLEASE REFER TO : '{log_file}' FOR MORE INFORMATION."
+    get_logger().info(log_msg)
     P.run(cmd, **job_kwargs)
 
     

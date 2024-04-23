@@ -8,6 +8,10 @@ import cgatcore.iotools as IOTools
 import re
 from itertools import chain
 import glob
+import logging
+
+def get_logger():
+    return logging.getLogger("cgatcore.pipeline")
 
 
 PARAMS = P.get_parameters(
@@ -85,7 +89,9 @@ def run_no_batch_umap(outfile):
     
     if PARAMS['queues_long'] is not None:
         job_kwargs["job_queue"] = job_queue=PARAMS['queues_long']
-    job_kwargs["job_threads"] = PARAMS['resources_threads_high']    
+    job_kwargs["job_threads"] = PARAMS['resources_threads_high']  
+    log_msg = f"TASK: 'run_no_batch_correct_rna'" + f" IN CASE OF ERROR, PLEASE REFER TO : 'logs/1_rna_no_correct.log' FOR MORE INFORMATION."
+    get_logger().info(log_msg)  
     P.run(cmd, **job_kwargs) 
 
 
@@ -112,6 +118,8 @@ def run_bbknn_rna(outfile):
     if PARAMS['queues_long'] is not None:
         job_kwargs["job_queue"] = job_queue=PARAMS['queues_long']
     job_kwargs["job_threads"] = PARAMS['resources_threads_high']
+    log_msg = f"TASK: 'run_bbknn_rna'" + f" IN CASE OF ERROR, PLEASE REFER TO : 'logs/1_rna_bbknn.log' FOR MORE INFORMATION."
+    get_logger().info(log_msg)  
     P.run(cmd, **job_kwargs) 
 
 
@@ -144,6 +152,8 @@ def run_combat(outfile):
         job_kwargs["job_queue"] = job_queue=PARAMS['queues_long']
 
     job_kwargs["job_threads"] = PARAMS['resources_threads_high']
+    log_msg = f"TASK: 'run_combat_rna'" + f" IN CASE OF ERROR, PLEASE REFER TO : 'logs/1_rna_combat.log' FOR MORE INFORMATION."
+    get_logger().info(log_msg)
     P.run(cmd, **job_kwargs) 
 
 # rna HARMONY
@@ -182,6 +192,8 @@ def run_harmony(outfile):
     if PARAMS['queues_long'] is not None:
         job_kwargs["job_queue"] = job_queue=PARAMS['queues_long']
     job_kwargs["job_threads"] = PARAMS['resources_threads_high']
+    log_msg = f"TASK: 'run_harmony_rna'" + f" IN CASE OF ERROR, PLEASE REFER TO : 'logs/1_rna_harmony.log' FOR MORE INFORMATION."
+    get_logger().info(log_msg)
     P.run(cmd, **job_kwargs)
 
 # rna SCANORAMA
@@ -213,6 +225,8 @@ def run_scanorama(outfile):
     if PARAMS['queues_long'] is not None:
         job_kwargs["job_queue"] = job_queue=PARAMS['queues_long']
     job_kwargs["job_threads"] = PARAMS['resources_threads_high']
+    log_msg = f"TASK: 'run_scanorama_rna'" + f" IN CASE OF ERROR, PLEASE REFER TO : 'logs/1_rna_scanorama.log' FOR MORE INFORMATION."
+    get_logger().info(log_msg)
     P.run(cmd, **job_kwargs)
 
 # rna scvi
@@ -250,6 +264,8 @@ def run_scvi(outfile):
             job_kwargs["job_threads"] = int(PARAMS['resources_threads_high'])
     else:
         job_kwargs["job_threads"] = int(PARAMS['resources_threads_high'])
+    log_msg = f"TASK: 'run_scvi_rna'" + f" IN CASE OF ERROR, PLEASE REFER TO : 'logs/1_rna_scvi.log' FOR MORE INFORMATION."
+    get_logger().info(log_msg)
     P.run(cmd, **job_kwargs)
 
 # rna scib
@@ -316,6 +332,8 @@ def run_no_batch_umap_prot(outfile):
     if PARAMS['queues_long'] is not None:
         job_kwargs["job_queue"] = job_queue=PARAMS['queues_long']
     job_kwargs["job_threads"] = PARAMS['resources_threads_high']
+    log_msg = f"TASK: 'run_no_batch_correct_prot'" + f" IN CASE OF ERROR, PLEASE REFER TO : 'logs/2_prot_no_correct.log' FOR MORE INFORMATION."
+    get_logger().info(log_msg)
     P.run(cmd, **job_kwargs) 
 
 # prot HARMONY
@@ -353,6 +371,8 @@ def run_harmony_prot( outfile):
     if PARAMS['queues_long'] is not None:
         job_kwargs["job_queue"] = job_queue=PARAMS['queues_long']
     job_kwargs["job_threads"] = PARAMS['resources_threads_high']
+    log_msg = f"TASK: 'run_harmony_prot'" + f" IN CASE OF ERROR, PLEASE REFER TO : 'logs/2_prot_harmony.log' FOR MORE INFORMATION."
+    get_logger().info(log_msg)
     P.run(cmd, **job_kwargs)
 
 
@@ -379,6 +399,8 @@ def run_bbknn_prot(outfile):
     if PARAMS['queues_long'] is not None:
         job_kwargs["job_queue"] = job_queue=PARAMS['queues_long']
     job_kwargs["job_threads"] = PARAMS['resources_threads_high']
+    log_msg = f"TASK: 'run_bbknn_prot'" + f" IN CASE OF ERROR, PLEASE REFER TO : 'logs/2_prot_bbknn.log' FOR MORE INFORMATION."
+    get_logger().info(log_msg)
     P.run(cmd, **job_kwargs) 
 
 
@@ -411,6 +433,8 @@ def run_combat_prot(outfile):
         job_kwargs["job_queue"] = PARAMS['queues_long']
 
     job_kwargs["job_threads"] = PARAMS['resources_threads_high']
+    log_msg = f"TASK: 'run_combat_prot'" + f" IN CASE OF ERROR, PLEASE REFER TO : 'logs/2_prot_combat.log' FOR MORE INFORMATION."
+    get_logger().info(log_msg)
     P.run(cmd, **job_kwargs) 
     
 
@@ -455,6 +479,8 @@ def run_no_batch_umap_atac(outfile):
     if PARAMS['queues_long'] is not None:
         job_kwargs["job_queue"] = job_queue=PARAMS['queues_long']
     job_kwargs["job_threads"] = PARAMS['resources_threads_high']
+    log_msg = f"TASK: 'run_no_batch_correct_atac'" + f" IN CASE OF ERROR, PLEASE REFER TO : 'logs/3_atac_no_correct.log' FOR MORE INFORMATION."
+    get_logger().info(log_msg)
     P.run(cmd, **job_kwargs) 
 
 # atac HARMONY
@@ -498,6 +524,8 @@ def run_harmony_atac( outfile):
     if PARAMS['queues_long'] is not None:
         job_kwargs["job_queue"] = job_queue=PARAMS['queues_long']
     job_kwargs["job_threads"] = PARAMS['resources_threads_high']
+    log_msg = f"TASK: 'run_harmony_atac'" + f" IN CASE OF ERROR, PLEASE REFER TO : 'logs/3_atac_harmony.log' FOR MORE INFORMATION."
+    get_logger().info(log_msg)
     P.run(cmd, **job_kwargs)
 
 # atac BBKNN
@@ -523,6 +551,8 @@ def run_bbknn_atac(outfile):
     if PARAMS['queues_long'] is not None:
         job_kwargs["job_queue"] = PARAMS['queues_long']
     job_kwargs["job_threads"] = PARAMS['resources_threads_high']
+    log_msg = f"TASK: 'run_bbknn_atac'" + f" IN CASE OF ERROR, PLEASE REFER TO : 'logs/3_atac_bbknn.log' FOR MORE INFORMATION."
+    get_logger().info(log_msg)
     P.run(cmd, **job_kwargs) 
 
 
@@ -577,6 +607,8 @@ def run_totalvi(outfile):
         if PARAMS['queues_long'] is not None:
             job_kwargs["job_queue"] = job_queue=PARAMS['queues_long']
         job_kwargs["job_threads"] = int(PARAMS['resources_threads_high'])
+    log_msg = f"TASK: 'run_totalvi'" + f" IN CASE OF ERROR, PLEASE REFER TO : 'logs/4_multimodal_totalvi.log' FOR MORE INFORMATION."
+    get_logger().info(log_msg)
     P.run(cmd, **job_kwargs)
 
 # Run MultiVI
@@ -622,6 +654,8 @@ def run_multivi(outfile):
         if PARAMS['queues_long'] is not None:
             job_kwargs["job_queue"] = job_queue=PARAMS['queues_long']
         job_kwargs["job_threads"] = int(PARAMS['resources_threads_high'])
+    log_msg = f"TASK: 'run_multivi'" + f" IN CASE OF ERROR, PLEASE REFER TO : 'logs/4_multimodal_multivi.log' FOR MORE INFORMATION."
+    get_logger().info(log_msg)
     P.run(cmd, **job_kwargs)
 
 
@@ -670,6 +704,8 @@ def run_mofa(outfile):
             job_kwargs["job_queue"] = job_queue=PARAMS['queues_long']
         job_kwargs["job_threads"] = int(PARAMS['resources_threads_high'])
     cmd += " > logs/4_multimodal_mofa.log "
+    log_msg = f"TASK: 'run_mofa'" + f" IN CASE OF ERROR, PLEASE REFER TO : 'logs/4_multimodal_mofa.log' FOR MORE INFORMATION."
+    get_logger().info(log_msg)
     P.run(cmd, **job_kwargs)
 
 # Run WNN
@@ -709,7 +745,8 @@ def run_wnn(outfile):
         if PARAMS['queues_long'] is not None:
             job_kwargs["job_queue"] = job_queue=PARAMS['queues_long']
         job_kwargs["job_threads"] = int(PARAMS['resources_threads_high'])
-        
+    log_msg = f"TASK: 'run_wnn'" + f" IN CASE OF ERROR, PLEASE REFER TO : 'logs/4_multimodal_wnn.log' FOR MORE INFORMATION."
+    get_logger().info(log_msg)
     P.run(cmd, **job_kwargs)
 
 # end of multimodal
@@ -751,6 +788,8 @@ def collate_integration_outputs(infiles,outfile):
         cmd += " --multimodal_integration_col %(multimodal_column_categorical)s"
     cmd += " > logs/5_collate_mtd.log "
     job_kwargs["job_threads"] = PARAMS['resources_threads_medium']
+    log_msg = f"TASK: 'collate_integration_outputs'" + f" IN CASE OF ERROR, PLEASE REFER TO : 'logs/5_collate_mtd.log' FOR MORE INFORMATION."
+    get_logger().info(log_msg)
     P.run(cmd, **job_kwargs)  
 
 
@@ -772,6 +811,8 @@ def plot_umaps(infile, outfile):
     cmd += ' --qc_dict "%(plotqc)s"'
     cmd += " > %(outfile)s" 
     job_kwargs["job_threads"] = PARAMS['resources_threads_medium']
+    log_msg = f"TASK: 'plot_umaps'" + f" IN CASE OF ERROR, PLEASE REFER TO : '{outfile}' FOR MORE INFORMATION."
+    get_logger().info(log_msg)
     P.run(cmd,**job_kwargs)
 
 
@@ -788,6 +829,8 @@ def run_lisi(infile, outfile):
     --fig_dir figures/  > %(outfile)s 
     """ 
     job_kwargs["job_threads"] = PARAMS['resources_threads_low']
+    log_msg = f"TASK: 'run_lisi'" + f" IN CASE OF ERROR, PLEASE REFER TO : '{outfile}' FOR MORE INFORMATION."
+    get_logger().info(log_msg)
     P.run(cmd,**job_kwargs)
 
 
@@ -838,6 +881,8 @@ def merge_integration(output_mudata):
         cmd += " --multimodal_correction_choice %(multimodal_choice)s"
     cmd += " > logs/8_merge_final_obj.log"
     job_kwargs["job_threads"] = PARAMS['resources_threads_high']
+    log_msg = f"TASK: 'merge_integration'" + f" IN CASE OF ERROR, PLEASE REFER TO : 'logs/8_merge_final_obj.log' FOR MORE INFORMATION."
+    get_logger().info(log_msg)
     P.run(cmd,**job_kwargs)
     # clear up tmp since it is no longer required
     # P.run("rm -r tmp")

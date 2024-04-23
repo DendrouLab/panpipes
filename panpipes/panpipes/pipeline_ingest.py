@@ -74,6 +74,8 @@ def aggregate_tenx_metrics_multi(outfile):
             --output_file 10x_metrics.csv > %(outfile)s
             """
     job_kwargs["job_threads"] = PARAMS['resources_threads_low']
+    log_msg = f"TASK: 'aggregate_tenx_metrics_multi'" + f" IN CASE OF ERROR, PLEASE REFER TO : '{outfile}' FOR MORE INFORMATION."
+    get_logger().info(log_msg)   
     P.run(cmd, **job_kwargs)
 
 
@@ -152,8 +154,8 @@ def load_mudatas(rna_path, outfile,
     if bcr_path is not None and pd.notna(bcr_path):
         cmd += " --bcr_filtered_contigs %(bcr_path)s"
         cmd += " --bcr_filetype %(bcr_filetype)s"
-    logfile = f"1_load_mudatas_{sample_id}.log"
-    cmd += f" > logs/{logfile}"
+    logfile = f"logs/1_load_mudatas_{sample_id}.log"
+    cmd += f" > {logfile}"
     # print(cmd)
     job_kwargs["job_threads"] = PARAMS['resources_threads_medium']
     log_msg = f"TASK: 'load_mudatas'" + f" IN CASE OF ERROR, PLEASE REFER TO : '{logfile}' FOR MORE INFORMATION."
@@ -368,8 +370,8 @@ def run_scrublet(infile, outfile, sample_id):
         cmd += " --use_thr %(scr_use_thr)s"
     if PARAMS['scr_call_doublets_thr'] is not None:
         cmd += " --call_doublets_thr %(scr_call_doublets_thr)s"
-    logfile = "2_run_scrublet_" + sample_id + ".log"
-    cmd += f" > logs/{logfile}"
+    logfile = "logs/2_run_scrublet_" + sample_id + ".log"
+    cmd += f" > {logfile}"
     job_kwargs["job_threads"] = PARAMS['resources_threads_medium']
     log_msg = f"TASK: 'run_scrublet'" + f" IN CASE OF ERROR, PLEASE REFER TO : '{logfile}' FOR MORE INFORMATION."
     get_logger().info(log_msg)
@@ -526,7 +528,7 @@ def run_repertoire_qc(logfile, unfilt_file):
           """
     cmd += " > %(logfile)s"
     job_kwargs["job_threads"] = PARAMS['resources_threads_low']
-    log_msg = f"TASK: 'run_repertoire_qc'" + f" IN CASE OF ERROR, PLEASE REFER TO : '{outfile}' FOR MORE INFORMATION."
+    log_msg = f"TASK: 'run_repertoire_qc'" + f" IN CASE OF ERROR, PLEASE REFER TO : '{logfile}' FOR MORE INFORMATION."
     get_logger().info(log_msg)
     P.run(cmd, **job_kwargs)
 

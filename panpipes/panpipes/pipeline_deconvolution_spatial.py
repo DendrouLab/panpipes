@@ -3,6 +3,10 @@ import sys
 import os
 from cgatcore import pipeline as P
 import glob
+import logging
+
+def get_logger():
+    return logging.getLogger("cgatcore.pipeline")
 
 
 PARAMS = P.get_parameters(
@@ -102,6 +106,8 @@ def run_cell2location(input_spatial, outfile_spatial, sample_prefix, input_singl
 
     cmd += " > logs/%(log_file)s "
     job_kwargs["job_threads"] = PARAMS['resources_threads_low']
+    log_msg = f"TASK: 'run_cell2location'" + f" IN CASE OF ERROR, PLEASE REFER TO : 'logs/{log_file}' FOR MORE INFORMATION."
+    get_logger().info(log_msg)
     P.run(cmd, **job_kwargs)
 
 
@@ -149,6 +155,8 @@ def run_tangram(input_spatial, outfile_spatial, sample_prefix, input_singlecell)
 
     cmd += " > logs/%(log_file)s "
     job_kwargs["job_threads"] = PARAMS['resources_threads_low']
+    log_msg = f"TASK: 'run_tangram'" + f" IN CASE OF ERROR, PLEASE REFER TO : 'logs/{log_file}' FOR MORE INFORMATION."
+    get_logger().info(log_msg)
     P.run(cmd, **job_kwargs)
 
 

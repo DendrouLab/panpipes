@@ -57,8 +57,8 @@ def filter_mudata(outfile):
             cmd += " --keep_barcodes %(filtering_keep_barcodes)s"
         if PARAMS['intersect_mods'] is not None:
             cmd += " --intersect_mods %(intersect_mods)s"
-        logfile = "1_filtering.log"
-        cmd += f" > logs/{logfile}"
+        logfile = "logs/1_filtering.log"
+        cmd += f" > {logfile}"
         job_kwargs["job_threads"] = PARAMS['resources_threads_low']
         log_msg = f"TASK: 'filter_mudata'" + f" IN CASE OF ERROR, PLEASE REFER TO : '{logfile}' FOR MORE INFORMATION."
         get_logger().info(log_msg)

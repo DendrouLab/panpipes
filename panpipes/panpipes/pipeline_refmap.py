@@ -8,6 +8,10 @@ import cgatcore.iotools as IOTools
 import re
 from itertools import chain
 import glob
+import logging
+
+def get_logger():
+    return logging.getLogger("cgatcore.pipeline")
 
 
 PARAMS = P.get_parameters(
@@ -114,6 +118,8 @@ def run_refmap_scvi(infile, outfile, log_file, ref_architecture ):
     else:
         job_kwargs["job_threads"] = int(PARAMS['resources_threads_high'])
 
+    log_msg = f"TASK: 'run_refmap_scvi'" + f" IN CASE OF ERROR, PLEASE REFER TO : '{log_file}' FOR MORE INFORMATION."
+    get_logger().info(log_msg)
     P.run(cmd, **job_kwargs)
 
 
@@ -160,6 +166,8 @@ def run_scib_refmap(infile,logfile):
             cmd += " --covariate %(query_celltype)s"
     cmd += " > %(logfile)s"
     job_kwargs["job_threads"] = PARAMS['resources_threads_high']
+    log_msg = f"TASK: 'run_scib_refmap'" + f" IN CASE OF ERROR, PLEASE REFER TO : '{logfile}' FOR MORE INFORMATION."
+    get_logger().info(log_msg)
     P.run(cmd, **job_kwargs)  
 
 

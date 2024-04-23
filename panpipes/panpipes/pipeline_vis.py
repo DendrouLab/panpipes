@@ -9,6 +9,12 @@ import re
 from itertools import chain, product
 import glob
 from panpipes.funcs.io import dictionary_stripper 
+import logging
+
+def get_logger():
+    return logging.getLogger("cgatcore.pipeline")
+
+
 
 PARAMS = P.get_parameters(
     ["%s/pipeline.yml" % os.path.splitext(__file__)[0],
@@ -72,6 +78,8 @@ def plot_custom_markers_per_group(marker_file, log_file):
      """
     cmd += " > %(log_file)s "
     job_kwargs["job_threads"] = PARAMS['resources_threads_high']
+    log_msg = f"TASK: 'plot_custom_markers_per_group'" + f" IN CASE OF ERROR, PLEASE REFER TO : '{log_file}' FOR MORE INFORMATION."
+    get_logger().info(log_msg)
     P.run(cmd, **job_kwargs)
 
 
@@ -98,6 +106,8 @@ def plot_custom_markers_umap(marker_file, log_file):
     """
     cmd += " > %(log_file)s "
     job_kwargs["job_threads"] = PARAMS['resources_threads_high']
+    log_msg = f"TASK: 'plot_custom_markers_umap'" + f" IN CASE OF ERROR, PLEASE REFER TO : '{log_file}' FOR MORE INFORMATION."
+    get_logger().info(log_msg)
     P.run(cmd, **job_kwargs)
 
 
@@ -132,6 +142,8 @@ def plot_categorical_umaps(log_file):
     """
     cmd += " > %(log_file)s "
     job_kwargs["job_threads"] = PARAMS['resources_threads_high']
+    log_msg = f"TASK: 'plot_categorical_umaps'" + f" IN CASE OF ERROR, PLEASE REFER TO : '{log_file}' FOR MORE INFORMATION."
+    get_logger().info(log_msg)
     P.run(cmd, **job_kwargs)
 
 
@@ -164,6 +176,8 @@ def plot_continuous_umaps(log_file):
     """
     cmd += " > %(log_file)s "
     job_kwargs["job_threads"] = PARAMS['resources_threads_high']
+    log_msg = f"TASK: 'plot_continuous_umaps'" + f" IN CASE OF ERROR, PLEASE REFER TO : '{log_file}' FOR MORE INFORMATION."
+    get_logger().info(log_msg)
     P.run(cmd, **job_kwargs)
 
 
@@ -180,6 +194,8 @@ def write_obs(cmtd):
         --outfile %(cmtd)s > logs/5_write_obs.log
         """
     job_kwargs["job_threads"] = PARAMS['resources_threads_high']
+    log_msg = f"TASK: 'write_obs'" + f" IN CASE OF ERROR, PLEASE REFER TO : 'logs/5_write_obs.log' FOR MORE INFORMATION."
+    get_logger().info(log_msg)
     P.run(cmd, **job_kwargs)
   
 
@@ -194,6 +210,8 @@ def plot_metrics(mtd, log_file):
         --params_yaml pipeline.yml > %(log_file)s
     """
     job_kwargs["job_threads"] = PARAMS['resources_threads_low']
+    log_msg = f"TASK: 'plot_metrics'" + f" IN CASE OF ERROR, PLEASE REFER TO : '{log_file}' FOR MORE INFORMATION."
+    get_logger().info(log_msg)
     P.run(cmd, **job_kwargs)
 
 
@@ -216,6 +234,8 @@ def plot_scatters(infile, log_file):
         > %(log_file)s
         """
     job_kwargs["job_threads"] = PARAMS['resources_threads_high']
+    log_msg = f"TASK: 'plot_scatters'" + f" IN CASE OF ERROR, PLEASE REFER TO : '{log_file}' FOR MORE INFORMATION."
+    get_logger().info(log_msg)
     P.run(cmd, **job_kwargs)    
 
 

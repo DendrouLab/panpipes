@@ -17,7 +17,7 @@ import glob
 
 from panpipes.funcs.processing import extract_parameter_from_fname
 
-
+import logging
 def get_logger():
     return logging.getLogger("cgatcore.pipeline")
 
@@ -176,8 +176,8 @@ def aggregate_clusters(infiles, outfile):
                --input_files_str %(infiles_str)s \
                --output_file %(outfile)s \
                --clusters_or_markers clusters"
-    logfile = "4_aggregate_clusters.log"
-    cmd += f" > logs/{logfile}"
+    logfile = "logs/4_aggregate_clusters.log"
+    cmd += f" > {logfile}"
     job_kwargs["job_threads"] = PARAMS['resources_threads_low'] 
     log_msg = f"TASK: 'aggregate_clusters'" + f" IN CASE OF ERROR, PLEASE REFER TO : '{logfile}' FOR MORE INFORMATION."
     get_logger().info(log_msg)          
@@ -210,8 +210,8 @@ def collate_mdata(infiles,outfile):
         cmd += "--input_mudata %(mdata_in)s"
     else:
         cmd += "--input_mudata  %(full_obj)s"
-    logfile = "5_collate_data.log"
-    cmd += f" > logs/{logfile}"
+    logfile = "logs/5_collate_data.log"
+    cmd += f" > {logfile}"
     job_kwargs["job_threads"] = PARAMS['resources_threads_medium']
     log_msg = f"TASK: 'collate_mdata'" + f" IN CASE OF ERROR, PLEASE REFER TO : '{logfile}' FOR MORE INFORMATION."
     get_logger().info(log_msg)  
