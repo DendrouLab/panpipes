@@ -62,16 +62,21 @@ Prefix for the sample that comes out of the filtering/ preprocessing steps of th
   Specify the full object if your scaled_obj contains only HVG.  If your scaled_obj contains all the genes then leave full_obj blank. 
   panpipes will use the full object to do marker genes analysis (rank_gene_groups) and for plotting those genes. 
 - <span class="parameter">modalities</span><br>
-  - <span class="parameter">rna</span> `Boolean`, Default: True<br>
+ Which modalities to run clustering on. 
+  - <span class="parameter">rna</span> `Boolean`, Default: True<br> If set to `True`, the workflow will stop if it doesn't find a modality named 'rna'
   - <span class="parameter">prot</span> `Boolean`, Default: True<br>
+  If set to `True`, the workflow will stop if it doesn't find a modality named 'prot'
   - <span class="parameter">atac</span> `Boolean`, Default: False<br>
+   If set to `True`, the workflow will stop if it doesn't find a modality named 'atac'
+  
   - <span class="parameter">spatial</span> `Boolean`, Default: False<br>
-  Run clustering on each individual modality.
+  If set to `True`, the workflow will stop if it doesn't find a modality named 'spatial'
+  
 
 - <span class="parameter">multimodal</span><br>
-  - <span class="parameter">rna_clustering</span> `Boolean`, Default: True<br>
-  - <span class="parameter">integration_method</span> `String`, Default: WNN<br>
-  Options here include WNN, mofa, and totalVI, and it tells us where to look for.
+  - <span class="parameter">rna_clustering</span> `Boolean`, Default: False<br> If set to True, runs clustering on multimodal embedding
+  - <span class="parameter">integration_method</span> `String`, Default: None<br>
+  Specify the name of the multimodal embedding. Options here include WNN, mofa, totalvi, multivi. In case you have run WNN, the neigbhours calculation will be skipped since WNN provides its own.
 
 ## Parameters for finding neighbours 
 
@@ -79,7 +84,7 @@ Prefix for the sample that comes out of the filtering/ preprocessing steps of th
  Sets the number of neighbors to use when calculating the graph for clustering and umap.
   - <span class="parameter">rna:</span> 
 
-     - <span class="parameter">use_existing </span> `Boolean`, Default: True<br>
+     - <span class="parameter">use_existing </span> `Boolean`, Default: True<br> Use existing neighbours in .uns calculated in the `integration` workflow. If `False`, it will recalculate using the following parameters
      - <span class="parameter">dim_red </span> `String`, Default: X_pca<br>
        Defines which representation in .obsm to use for nearest neighbors
      - <span class="parameter">n_dim_red</span> `Integer`, Default: 30<br>
@@ -94,7 +99,7 @@ Prefix for the sample that comes out of the filtering/ preprocessing steps of th
      
   - <span class="parameter">prot:</span> 
 
-     - <span class="parameter">use_existing </span> `Boolean`, Default: True<br>
+     - <span class="parameter">use_existing </span> `Boolean`, Default: True<br> Use existing neighbours in .uns calculated in the `integration` workflow. If `False`, it will recalculate using the following parameters
      - <span class="parameter">dim_red </span> `String`, Default: X_pca<br>
        Defines which representation in .obsm to use for nearest neighbors
      - <span class="parameter">n_dim_red</span> `Integer`, Default: 30<br>
@@ -109,7 +114,7 @@ Prefix for the sample that comes out of the filtering/ preprocessing steps of th
 
   - <span class="parameter">atac:</span> 
 
-     - <span class="parameter">use_existing </span> `Boolean`, Default: True<br>
+     - <span class="parameter">use_existing </span> `Boolean`, Default: True<br> Use existing neighbours in .uns calculated in the `integration` workflow. If `False`, it will recalculate using the following parameters
      - <span class="parameter">dim_red </span> `String`, Default: X_lsi<br>
        Defines which representation in .obsm to use for nearest neighbors
      - <span class="parameter">n_dim_red</span> `Integer`, Default: 1<br>
@@ -125,7 +130,7 @@ Prefix for the sample that comes out of the filtering/ preprocessing steps of th
 
   - <span class="parameter">spatial:</span> 
 
-     - <span class="parameter">use_existing </span> `Boolean`, Default: False<br>
+     - <span class="parameter">use_existing </span> `Boolean`, Default: False<br> Use existing neighbours in .uns calculated in the `integration` workflow. If `False`, it will recalculate using the following parameters
      - <span class="parameter">dim_red </span> `String`, Default: X_pca<br>
        Defines which representation in .obsm to use for nearest neighbors
      - <span class="parameter">n_dim_red</span> `Integer`, Default: 30<br>
@@ -142,7 +147,7 @@ Prefix for the sample that comes out of the filtering/ preprocessing steps of th
 
   - <span class="parameter">umap:</span> 
 
-     - <span class="parameter">run </span> `Boolean`, Default: True<br>
+     - <span class="parameter">run </span> `Boolean`, Default: True<br> Set to `True` runs the umap calculation and plotting.
      - <span class="parameter">rna:</span>
          - <span class="parameter">mindist </span> `Float`, Default: 0.5<br>
            Can specify an array: 0.25,0.5
@@ -265,7 +270,7 @@ When pseudo_seurat is set to True then a [python implementation](https://github.
    - <span class="parameter">threshuse </span> `Float`, Default: 0.25<br>
        This parameter is mandatory if pseudo_seurat is set to True 
 ## Plot specifications
-Used to define which metadata columns are used in the visualizations 
+Used to define layers are used in the markers visualizations 
  - <span class="parameter">plotspecs:</span><br>
    - <span class="parameter">layers: </span><br>
      - <span class="parameter">rna </span> `String`, Default: logged_counts<br>
