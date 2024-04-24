@@ -77,7 +77,15 @@ jobs:
         run: |
           cd reference_mapping
           curl -o pipeline.yml https://raw.githubusercontent.com/DendrouLab/panpipes-tutorials/main/docs/refmap_pancreas/pipeline.yml
-
+      
+      - name: Replace template contents in configuration file
+        run: |
+          cd reference_mapping
+          sed -i 's+/Users/fabiola.curion/Documents/devel/miniconda3/envs/pipeline_env+pipeline_env+g' pipeline.yml
+          sed -i 's+/Users/fabiola.curion/Documents/devel/data_test.dir/data_for_scvi_test/pancreas_model/model.pt+reference_mapping/models/pancreas_model/model.pt+g' pipeline.yml
+          sed -i 's+/Users/fabiola.curion/Documents/devel/data_test.dir/data_for_scvi_test/pancreas_model_scanvi/model.pt+reference_mapping/models/pancreas_model_scanvi/model.pt+g' pipeline.yml
+          sed -i 's+max_epochs: 200+max_epochs: 20' pipeline.yml
+  
       - name: File tree
         if: env.debug == 'true'
         run: tree reference_mapping
