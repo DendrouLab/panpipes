@@ -16,7 +16,10 @@ The ideal way to run `panpipes integration` is to use the output `MuData`file fr
 However, if using independent MuData the object should contain normalised data in the X slot of each modality, a ‘raw_counts’ layer in each modality, and a sample_id column in each slot of the obs and the outer obs. 
 
 Users can choose which integration method they want to apply based on their experiment, their experience with the tools or available benchmarks: we link all the relevant resources below. 
-We don't believe in "one method fits all", we instead offer the user a framework to run multiple tools efficiently, keeping a record of the hyperparameters in the configuration files, so you can safely re-run your analysis and share it with collaborators. We will continue to update the integration methods offered in `panpipes` and we invite you to contribute yours!
+
+
+We don't believe in "one method fits all", we instead offer `panpipes` as a framework to run multiple tools efficiently,  ensuring reproducibility of results. 
+We believe this will empower users to choose the method that best fits their biological question, keeping a record of the hyperparameters in the configuration files, so you can safely re-run your analysis and share it with collaborators. We will continue to update the integration methods offered in `panpipes` and we invite you to [contribute yours](https://panpipes-pipelines.readthedocs.io/en/latest/contribute_guidelines.html)!
 The following table describes the different methods currently supported and their specificities: 
 
 | Method    | type of integration         | modalities      | code                                                                              | references                                                                                           | benchmarks paper                                                                                           |
