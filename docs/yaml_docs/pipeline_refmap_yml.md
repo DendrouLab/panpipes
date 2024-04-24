@@ -69,13 +69,28 @@ Specify one or more reference models to be used as reference. Users can also spe
 Leave blank for no model specification.
 
 - <span class="parameter">totalvi:</span> `String`, Default: path/to/totalvi<br>
-Provide path to totalvi saved model.
+Provide path to totalvi saved model. Multiple paths can be provided as a list:
+```yaml 
+totalvi: 
+  - path_to_totalvi1
+  - path_to_totalvi2
+
+```
+  -
 
 - <span class="parameter">impute_proteins</span> `Boolean`, Default: False<br> 
 - <span class="parameter">transform_batch</span> `String`, Default:<br>
 Transform_batch is a batch-covariate specific to totalvi, allows the model to use the batch information in the query to mitigate 
 differences in protein sequencing depth.
-- <span class="parameter">scvi</span> `String`, Default: path/to/scvi Mandatory, Provide a path to the scvi model. <br>
+- <span class="parameter">scvi</span> `String`, Default: path/to/scvi Mandatory, Provide a path to the scvi model. Multiple paths can be provided as a list: <br>
+
+```yaml 
+scvi: 
+  - path_to_totalvi1
+  - path_to_totalvi2
+
+```
+
 - <span class="parameter">scanvi</span> `String`, Default:path/to/scanvi Mandatory, Provide a path to the scvi model.<br>
 - <span class="parameter">run_randomforest</span> `Boolean`, Default:False<br>
 Set to true if the reference model has a trained random forest classifier to transfer the labels. 
