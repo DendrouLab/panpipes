@@ -270,7 +270,7 @@ When pseudo_seurat is set to True then a [python implementation](https://github.
    - <span class="parameter">threshuse </span> `Float`, Default: 0.25<br>
        This parameter is mandatory if pseudo_seurat is set to True 
 ## Plot specifications
-Used to define layers are used in the markers visualizations 
+Define which layers are used in the markers visualization 
  - <span class="parameter">plotspecs:</span><br>
    - <span class="parameter">layers: </span><br>
      - <span class="parameter">rna </span> `String`, Default: logged_counts<br>
