@@ -105,8 +105,14 @@ jobs:
         if: env.debug == 'true'
         run: tree teaseq
 
-      - uses: actions/upload-artifact@v4
+      - name: Upload artifact teaseq_unfilt.h5mu
+        uses: actions/upload-artifact@v4
         with:
           name: teaseq_unfilt.h5mu
           path: teaseq/ingest/teaseq_unfilt.h5mu
-          retention-days: 1
+
+      - name: Upload artifact pipeline.log
+        uses: actions/upload-artifact@v4
+        with:
+          name: pipeline.log
+          path: teaseq/ingest/pipeline.log
