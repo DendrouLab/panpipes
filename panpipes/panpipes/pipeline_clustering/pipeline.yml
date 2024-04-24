@@ -38,10 +38,10 @@ modalities:
   atac: False
   spatial: False
 
-# if True, will look for WNN, or totalVI output
+# if True, will look for WNN, mofa, multivi, totalVI embeddings
 multimodal:
-  run_clustering: True
-  #WNN, mofa, totalVI # this will tell us where to look for 
+  run_clustering: False
+  #WNN, mofa, multivi, totalVI embeddings
   integration_method: 
 
 
@@ -50,9 +50,10 @@ multimodal:
 # ---------------------------------------
 # 
 # -----------------------------
-# number of neighbors to use when calculating the graph for clustering and umap.
+# number of neighbors to use when calculating the knn graph for clustering and umap.
 neighbors:
   rna:
+    #use the knn calculated in the integration workflow. If False it will recalculate
     use_existing: True
     # which representation in .obsm to use for nearest neighbors
     # if dim_red=X_pca and X_pca not in .obsm, will be computed with default parameters
@@ -66,6 +67,7 @@ neighbors:
     # scanpy | hnsw (from scvelo)
     method: scanpy
   prot:
+    #use the knn calculated in the integration workflow. If False it will recalculate
     use_existing: True
     # which representation in .obsm to use for nearest neighbors
     # if dim_red=X_pca and X_pca not in .obsm, will be computed with default parameters
@@ -79,6 +81,7 @@ neighbors:
     # scanpy | hnsw (from scvelo)
     method: scanpy
   atac:
+    #use the knn calculated in the integration workflow. If False it will recalculate
     use_existing: True
     # which representation in .obsm to use for nearest neighbors
     # if dim_red=X_lsi/X_pca and X_lsi/X_pca not in .obsm, will be computed with default parameters
@@ -94,6 +97,7 @@ neighbors:
     # scanpy | hnsw (from scvelo)
     method: scanpy
   spatial:
+    #use the knn calculated in the integration workflow. If False it will recalculate
     use_existing: False
     # which representation in .obsm to use for nearest neighbors
     # if dim_red=X_pca and X_pca not in .obsm, will be computed with default parameters
