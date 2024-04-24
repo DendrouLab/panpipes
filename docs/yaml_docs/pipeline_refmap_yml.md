@@ -71,26 +71,25 @@ Leave blank for no model specification.
 - <span class="parameter">totalvi:</span> `String`, Default: path/to/totalvi<br>
 Provide path to totalvi saved model.
 
-- <span class="parameter">impute_proteins</span> `Boolean`, Default: True<br> CHEEEEECKKKKKK
+- <span class="parameter">impute_proteins</span> `Boolean`, Default: False<br> 
 - <span class="parameter">transform_batch</span> `String`, Default:<br>
 Transform_batch is a batch-covariate specific to totalvi, allows the model to use the batch information in the query to mitigate 
 differences in protein sequencing depth.
-- <span class="parameter">scvi</span> `String`, Default:path/to/scvi<br>
-- <span class="parameter">scanvi</span> `String`, Default:path/to/scanvi<br>
+- <span class="parameter">scvi</span> `String`, Default: path/to/scvi Mandatory, Provide a path to the scvi model. <br>
+- <span class="parameter">scanvi</span> `String`, Default:path/to/scanvi Mandatory, Provide a path to the scvi model.<br>
 - <span class="parameter">run_randomforest</span> `Boolean`, Default:False<br>
-Set to true if the reference model has a trained random forest classifier. 
+Set to true if the reference model has a trained random forest classifier to transfer the labels. 
 
 ## Training parameters 
-To reuse the same params in multiple locations, please use anchors (&) and scalars (*) in the relevant place, i.e. if specifying &rna_neighbors, the same params will be called by *rna_neighbors where referenced.
+To reuse the same params in multiple locations, please use anchors (&) and scalars (*) in the relevant place, i.e. if specifying &rna_neighbors, the same params will be called by *rna_neighbors where referenced. Check our documentation for more info on using anchors and scalars
 
 - <span class="parameter">training_plan:</span><br>
-  - <span class="parameter">totalvi</span> `String`, Default: &totalvitraining<br>
-  For more examples of parameters check [here](https://docs.scvi-tools.org/en/0.14.1/api/reference/scvi.model.TOTALVI.train.html)
-  - <span class="parameter">max_epochs</span> `Integer`, Default: 200<br>
-  - <span class="parameter">weight_decay</span> `Float`, Default: 0.0<br>
-Recommended weight decay is 0.0. This ensures the latent representation of the reference cells will remain exactly the same if passing them through this new query model.
-  - <span class="parameter">scvi</span> `String`, Default: *totalvitraining<br>
-  - <span class="parameter">scanvi</span> `String`, Default: <br>
+  - <span class="parameter">totalvi:</span> Default: array of training parameters. <br>For the full list of parameters check [here](https://docs.scvi-tools.org/en/0.14.1/api/reference/scvi.model.TOTALVI.train.html). to reuse the same parameters in other locations use an anchor, for example writing `totalvi: &totalvitraining` and will ensure the same array is reused when referencing it as `*totalvitraining`. In this example the `&totalvitraining` array contains the two parameters `max_epochs` and `weight_decay` 
+    - <span class="parameter">max_epochs</span> `Integer`, Default: 200<br>
+    - <span class="parameter">weight_decay</span> `Float`, Default: 0.0<br>
+    Recommended weight decay is 0.0. This ensures the latent representation of the reference cells will remain exactly the same if passing them through this new query model.
+    - <span class="parameter">scvi</span> Array of training parameters, Default: `*totalvitraining` (reuse the same array as specified above)<br>
+    - <span class="parameter">scanvi</span> Array of training parameters, Default: `*totalvitraining` (reuse the same array as specified above) <br>
 
 ## Neighbors parameters to calculate umaps 
 This can be on either query alone, or query+ reference dataset. 
@@ -106,9 +105,9 @@ Options here include cosine and euclidean
   - <span class="parameter">method</span> `String`, Default: sanpy<br>
 Options here include scanpy, and hnsw (from scvelo)
 
-# Run scib metrics on query
-Running scib on query data after trasferring labels, where available (totalvi and scanvi), or using default leiden clustering after training the vae model (scvi)
-Check for further [documentation](https://scib.readthedocs.io/en/latest/) for the metrics used 
+## Run scib metrics on query
+Running scib on query data after transferring labels, where available (with the totalvi and scanvi models), or using default leiden clustering after training the vae model (scvi)
+Check [documentation](https://scib.readthedocs.io/en/latest/) for the metrics used 
 - <span class="parameter">scib:</span><br>
   - <span class="parameter">run</span> `Boolean`, Default: False<br>
   - <span class="parameter">cluster_key</span> `String`, Default: predictions<br>
