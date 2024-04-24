@@ -12,7 +12,7 @@ env:
   debug: 'true'
 
 jobs:
-  integration:
+  refmap:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
