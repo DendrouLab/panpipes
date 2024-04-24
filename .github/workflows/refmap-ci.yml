@@ -82,8 +82,8 @@ jobs:
         run: |
           cd reference_mapping
           sed -i 's+/Users/fabiola.curion/Documents/devel/miniconda3/envs/pipeline_env+pipeline_env+g' pipeline.yml
-          sed -i 's+/Users/fabiola.curion/Documents/devel/data_test.dir/data_for_scvi_test/pancreas_model/model.pt+reference_mapping/models/pancreas_model/model.pt+g' pipeline.yml
-          sed -i 's+/Users/fabiola.curion/Documents/devel/data_test.dir/data_for_scvi_test/pancreas_model_scanvi/model.pt+reference_mapping/models/pancreas_model_scanvi/model.pt+g' pipeline.yml
+          sed -i 's+/Users/fabiola.curion/Documents/devel/data_test.dir/data_for_scvi_test/pancreas_model/model.pt+models/pancreas_model/model.pt+g' pipeline.yml
+          sed -i 's+/Users/fabiola.curion/Documents/devel/data_test.dir/data_for_scvi_test/pancreas_model_scanvi/model.pt+models/pancreas_model_scanvi/model.pt+g' pipeline.yml
           sed -i 's+max_epochs: 200+max_epochs: 20+g' pipeline.yml
   
       - name: File tree
