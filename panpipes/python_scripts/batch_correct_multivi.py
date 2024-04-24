@@ -46,6 +46,8 @@ parser.add_argument('--neighbors_k', default=30,
                     help="neighbors k")
 parser.add_argument('--neighbors_metric',default="euclidean",
                     help="neighbor metric, e.g. euclidean or cosine")
+parser.add_argument('--scvi_seed',default=None,
+                    help="set explicitly seed to make runs reproducible")
 
 
 
@@ -57,7 +59,10 @@ sc.set_figure_params(facecolor="white")
 sc.settings.autoshow = False
 sc.settings.figdir = args.figdir
 
-
+if args.scvi_seed is not None:
+    scvi.settings.seed = int(args.scvi_seed)
+else:
+    scvi.settings.seed = 1492
 # load parameters
 
 threads_available = multiprocessing.cpu_count()
@@ -71,17 +76,19 @@ if test_script:
 # ------------------------------------------------------------------
 L.info("Running multivi")
 
-# mdata = mu.read(args.scaled_anndata)
-# rna = mdata['rna'].copy()
-# atac = mdata['atac'].copy()
-rna= mu.read(args.scaled_anndata +"/" + "rna")
-atac= mu.read(args.scaled_anndata +"/" + "atac")
+mdata = mu.read(args.scaled_anndata)
+rna = mdata['rna'].copy()
+atac = mdata['atac'].copy()
 
+del mdata
 
 if check_for_bool(params["multimodal"]["MultiVI"]["lowmem"]):
-    L.info("subsetting atac to top 25k HVF")
+    if 'hvg' in atac.uns.keys():
+        L.info("subsetting atac to top HVF")
+        atac = atac[:, atac.var.highly_variable].copy()
+    L.info("calculating and subsetting atac to top 25k HVF")
     sc.pp.highly_variable_genes(atac, n_top_genes=25000)
-    atac = atac[:, atac.var.highly_variable]
+    atac = atac[:, atac.var.highly_variable].copy()
 
 
 
@@ -126,6 +133,15 @@ else:
 L.info("concatenating modalities to comply with multiVI")
 # adata_paired = ad.concat([rna, atac], join="outer")
 # adata_paired.var = pd.concat([rna.var,atac.var])
+if rna.is_view:
+    L.info("RNA is view")
+    rna = rna.copy()
+if atac.is_view:
+    L.info("ATAC is view")
+    atac = atac.copy()
+
+L.info(atac.is_view)
+
 
 adata_paired = ad.concat([rna.T, atac.T]).T
 
@@ -223,14 +239,14 @@ if params["multimodal"]["MultiVI"]["training_args"] is None:
     multivi_training_args={}
 else:
     multivi_training_args =  {k: v for k, v in params["multimodal"]['MultiVI']['training_args'].items() if v is not None}
-
+L.info("multivi training args")
 print(multivi_training_args)
 
 if params["multimodal"]['MultiVI']['training_plan'] is None:
     multivi_training_plan = {}
 else:
     multivi_training_plan =  {k: v for k, v in params["multimodal"]['MultiVI']['training_plan'].items() if v is not None}
-
+L.info("multivi training plan")
 print(multivi_training_plan)
 
 mvi.view_anndata_setup()

@@ -7,16 +7,11 @@
 # compute resource options
 # ------------------------
 resources:
-  # Number of threads used for parallel jobs
-  # this must be enough memory to load your mudata and do computationally intensive tasks
   threads_high: 2
-  # this must be enough memory to load your mudata and do computationally light tasks
   threads_medium: 2
-# this must be enough memory to load text files and do plotting, required much less memory than the other two
   threads_low: 2
 
   fewer_jobs: True
-# path to conda env, leave blank if running native or your cluster automatically inherits the login node environment
 condaenv:
 
 # --------------------------
@@ -25,10 +20,6 @@ condaenv:
 
 sample_prefix: mdata
 scaled_obj: mdata_scaled.h5mu
-# full obj only applicable if you have filtered your scaled object by hvgs
-# in this case panpipes will use the full obj to calculate rank_gene_groups and for plotting those genes
-# it should contain all the genes you want to include in rank_gene_groups, plus logged_counts as a layer
-# if your scaled_obj contains all the genes then leave full_obj blank
 full_obj: 
 
 # run clustering on each individual modality:
@@ -40,8 +31,7 @@ modalities:
 
 # if True, will look for WNN, mofa, multivi, totalVI embeddings
 multimodal:
-  run_clustering: False
-  #WNN, mofa, multivi, totalVI embeddings
+  run_clustering: True
   integration_method: 
 
 
@@ -50,72 +40,46 @@ multimodal:
 # ---------------------------------------
 # 
 # -----------------------------
-# number of neighbors to use when calculating the knn graph for clustering and umap.
+
 neighbors:
   rna:
     #use the knn calculated in the integration workflow. If False it will recalculate
     use_existing: True
-    # which representation in .obsm to use for nearest neighbors
-    # if dim_red=X_pca and X_pca not in .obsm, will be computed with default parameters
     dim_red: X_pca
-    #how many components to use for clustering
     n_dim_red: 30
-    # number of neighbours
     k: 30
-    # metric: euclidean | cosine
     metric: euclidean
-    # scanpy | hnsw (from scvelo)
     method: scanpy
   prot:
     #use the knn calculated in the integration workflow. If False it will recalculate
     use_existing: True
-    # which representation in .obsm to use for nearest neighbors
-    # if dim_red=X_pca and X_pca not in .obsm, will be computed with default parameters
     dim_red: X_pca
-    #how many components to use for clustering
     n_dim_red: 30
-    # number of neighbours
     k: 30
-    # metric: euclidean | cosine
     metric: euclidean
-    # scanpy | hnsw (from scvelo)
     method: scanpy
   atac:
     #use the knn calculated in the integration workflow. If False it will recalculate
     use_existing: True
-    # which representation in .obsm to use for nearest neighbors
-    # if dim_red=X_lsi/X_pca and X_lsi/X_pca not in .obsm, will be computed with default parameters
     dim_red: X_lsi
-    # if dim_red=X_lsi/X_pca and X_lsi/X_pca not in .obsm, which dimension to remove
     dim_remove: 1
-    #how many components to use for clustering
     n_dim_red: 30
-    # number of neighbours
     k: 30
-    # metric: euclidean | cosine
     metric: euclidean
-    # scanpy | hnsw (from scvelo)
     method: scanpy
   spatial:
     #use the knn calculated in the integration workflow. If False it will recalculate
     use_existing: False
-    # which representation in .obsm to use for nearest neighbors
-    # if dim_red=X_pca and X_pca not in .obsm, will be computed with default parameters
     dim_red: X_pca
-    #how many components to use for clustering
     n_dim_red: 30
-    # number of neighbours
     k: 30
-    # metric: euclidean | cosine
     metric: euclidean
-    # scanpy | hnsw (from scvelo)
     method: scanpy
 
 # ---------------------------------------
 # parameters for umap calculation
 # ---------------------------------------
 umap:
-# set run to False if you are happy with the existing umap from integration
   run: True
   rna:
     mindist:
@@ -145,19 +109,19 @@ clusterspecs:
      - 0.2
      - 0.6
      - 1 
-    algorithm: leiden # (louvain or leiden)
+    algorithm: leiden 
   prot:
     resolutions:
      - 0.2
      - 0.6
      - 1 
-    algorithm: leiden # (louvain or leiden)
+    algorithm: leiden 
   atac:
     resolutions:
      - 0.2
      - 0.6
      - 1 
-    algorithm: leiden # (louvain or leiden)
+    algorithm: leiden 
   multimodal:
     resolutions:
       - 0.5
@@ -172,31 +136,21 @@ clusterspecs:
 # ---------------------------------------
 # parameters for finding marker genes
 # ---------------------------------------
-# where pseudo_suerat is set to False 
-# we run https://scanpy.readthedocs.io/en/stable/generated/scanpy.tl.rank_genes_groups.html
-# where pseudo_seurat is set to True, we run a python implementation of Seurat::FindMarkers (written by CRG)
-
+# args https://scanpy.readthedocs.io/en/stable/generated/scanpy.tl.rank_genes_groups.html
 markerspecs:
   rna:
     run: True
     layer: logged_counts
-    # method options: [‘logreg’, ‘t-test’, ‘wilcoxon’, ‘t-test_overestim_var’]]
     method: t-test_overestim_var
-    mincells: 10 # if a cluster contains less than n cells then do not bother doing marker analysis
-    # where pseudo_suerat is set to False 
-    # we run https://scanpy.readthedocs.io/en/stable/generated/scanpy.tl.rank_genes_groups.html
-    # where pseudo_seurat is set to True, we run a python implementation of Seurat::FindMarkers (written by CRG),
+    mincells: 10 
     pseudo_seurat: False
-    # these next two settings do not matter unless pseudo_seurat is set to True,
-    # If applicable look at Seurat documentation for FindMarkers for details
     minpct: 0.1
     threshuse: 0.25
 
   prot:
     run:
-    layer: clr #options clr,dsb
-    mincells: 10 # if a cluster contains less than n cells then do not bother doing marker analysis
-    # method options: [‘logreg’, ‘t-test’, ‘wilcoxon’, ‘t-test_overestim_var’]]
+    layer: clr 
+    mincells: 10 
     method: wilcoxon
     pseudo_seurat: False
     minpct: 0.1
@@ -206,7 +160,6 @@ markerspecs:
     run:
     layer: logged_counts #options logged_counts, signac_norm , logTF_norm,logIDF_norm
     mincells: 10
-    # method options: [‘logreg’, ‘t-test’, ‘wilcoxon’, ‘t-test_overestim_var’]]
     method: wilcoxon
     pseudo_seurat: False
     minpct: 0.1
@@ -221,17 +174,12 @@ markerspecs:
     threshuse: 0.25
 
   spatial:
+    # args for spatial https://scanpy.readthedocs.io/en/stable/generated/scanpy.tl.rank_genes_groups.html
     run: True
     layer: norm_pearson_resid
-    # method options: [‘logreg’, ‘t-test’, ‘wilcoxon’, ‘t-test_overestim_var’]]
     method: t-test_overestim_var
-    mincells: 10 # if a cluster contains less than n cells then do not bother doing marker analysis
-    # where pseudo_suerat is set to False 
-    # we run https://scanpy.readthedocs.io/en/stable/generated/scanpy.tl.rank_genes_groups.html
-    # where pseudo_seurat is set to True, we run a python implementation of Seurat::FindMarkers (written by CRG),
+    mincells: 10 
     pseudo_seurat: False
-    # these next two settings do not matter unless pseudo_seurat is set to True,
-    # If applicable look at Seurat documentation for FindMarkers for details
     minpct: 0.1
     threshuse: 0.25
 

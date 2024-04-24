@@ -9,7 +9,7 @@ import re
 from itertools import chain
 import glob
 
-# __file__="/well/cartography/users/zsj686/non_cart_projects/005-multimodal_scpipelines/src/sc_pipelines_muon_dev/panpipes/pipeline_refmap.py"
+
 PARAMS = P.get_parameters(
     ["%s/pipeline.yml" % os.path.splitext(__file__)[0],
      "pipeline.yml"])
@@ -104,7 +104,16 @@ def run_refmap_scvi(infile, outfile, log_file, ref_architecture ):
         cmd += " --predict_rf %(run_randomforest)s"
        
     cmd += " > %(log_file)s"
-    job_kwargs["job_threads"] = PARAMS['resources_threads_low']
+
+    if PARAMS['queues_gpu'] is not None:
+        job_kwargs["job_queue"] = PARAMS['queues_gpu']
+        job_kwargs["job_threads"] = int(PARAMS['resources_threads_gpu'])
+    elif PARAMS['queues_long'] is not None:
+            job_kwargs["job_queue"] = job_queue=PARAMS['queues_long']
+            job_kwargs["job_threads"] = int(PARAMS['resources_threads_high'])
+    else:
+        job_kwargs["job_threads"] = int(PARAMS['resources_threads_high'])
+
     P.run(cmd, **job_kwargs)
 
 
@@ -150,7 +159,7 @@ def run_scib_refmap(infile,logfile):
         if PARAMS['query_celltype'] is not None:
             cmd += " --covariate %(query_celltype)s"
     cmd += " > %(logfile)s"
-    job_kwargs["job_threads"] = PARAMS['resources_threads_medium']
+    job_kwargs["job_threads"] = PARAMS['resources_threads_high']
     P.run(cmd, **job_kwargs)  
 
 

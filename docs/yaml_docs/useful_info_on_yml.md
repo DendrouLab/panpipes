@@ -83,11 +83,22 @@ Therefore, `PARAMS['prot']['neighbors']` is the equivalent of `prot_params['neig
 
 You can read the `pipeline.yml` configuration file in python and check how the commands are parsed using
 
-```
-from panpipes.funcs.io import read_yaml
+```python
+import yaml
+with open('pipeline.yml', 'r') as file:
+    PARAMS = yaml.safe_load(file)
 
-PARAMS = read_yaml("pipeline.yml")
 ```
+
+in `panpipes` we read the yaml configuration file at the beginning of each workflow with:
+
+```python
+from cgatcore import pipeline as P
+PARAMS = P.get_parameters(
+    ["%s/pipeline.yml" % os.path.splitext(__file__)[0],
+     "pipeline.yml"])
+```
+
 
 ### Anchors and Scalars
 

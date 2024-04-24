@@ -86,7 +86,7 @@ custom_genes_file: resources/qc_genelist_1.0.csv
 
 # (for pipeline_ingest.py)
 calc_proportions: hb,mt,rp
-score_genes: MarkersNeutro
+score_genes: 
 
 # cell cycle action
 ccgenes: default
@@ -175,10 +175,10 @@ normalisation_methods: clr
 
 # margin determines whether you normalise per cell (as you would for RNA),
 # or by feature (recommended, due to the variable nature of prot assays).
-# CLR margin 0 is recommended for informative qc plots in this pipeline
-# 0 = normalise rowwise (per feature)
-# 1 = normalise colwise (per cell)
-clr_margin: 0
+# CLR margin 1 is recommended for informative qc plots in this pipeline
+# 0 = normalise row-wise (per cell)
+# 1 = normalise column-wise (per feature, recommended)
+clr_margin: 1
 
 #--------------------------------------------------------------
 # Denoised and Scaled by Background (DSB) normalization options

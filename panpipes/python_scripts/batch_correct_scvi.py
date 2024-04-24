@@ -44,6 +44,9 @@ parser.add_argument('--neighbors_k',
                     help="neighbors k")
 parser.add_argument('--neighbors_metric',
                     help="neighbor metric, e.g. euclidean or cosine")
+parser.add_argument('--scvi_seed',default=None,
+                    help="set explicitly seed to make runs reproducible")
+
 
 
 args, opt = parser.parse_known_args()
@@ -60,6 +63,12 @@ L.info("threads available: %s", threads_available)
 sc.set_figure_params(facecolor="white")
 sc.settings.autoshow = False
 sc.settings.figdir = args.figdir
+
+if args.scvi_seed is not None:
+    scvi.settings.seed = int(args.scvi_seed)
+else:
+    scvi.settings.seed = 1492
+
 
 
 # test_script=params['rna']['scvi']['testrun']

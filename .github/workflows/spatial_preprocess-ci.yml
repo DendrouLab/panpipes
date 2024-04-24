@@ -1,4 +1,4 @@
-name: Run tutorials (integration)
+name: Run tutorials (spatial preprocessing)
 
 on:
   push:
@@ -12,7 +12,7 @@ env:
   debug: 'true'
 
 jobs:
-  integration:
+  spatial_preprocessing:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -40,7 +40,7 @@ jobs:
       - name: Install Panpipes
         shell: bash -el {0}
         run: |
-          pip install -e .
+          pip install .[spatial]
           conda list
 
       - name: Conda info
@@ -53,46 +53,48 @@ jobs:
         shell: pwsh
         run: conda list
 
-      # Note: all three files are renamed during the download to trim the "subsample_" prefix
+
       - name: Preparing the data
         run: |
-          mkdir -p teaseq/integration && cd  teaseq/integration
-          curl -L -o teaseq.h5mu https://figshare.com/ndownloader/files/44471927
+          mkdir spatial spatial/preprocess spatial/preprocess/data
+          cd spatial/preprocess/data 
+          
+          curl -L -o V1_Human_Heart_unfilt.h5mu https://figshare.com/ndownloader/files/45031048
+          curl -L -o V1_Human_Lymph_Node_unfilt.h5mu https://figshare.com/ndownloader/files/45031051
 
       # Note: we run the following to test that the commands works
-      # However, the following task will replacing the file anyway
       - name: Preparing the configuration file
         shell: bash -el {0}
         run: |
-          cd teaseq/integration
-          panpipes integration config
+          cd spatial/preprocess
+          panpipes preprocess_spatial config
 
       - name: Edit the submission file
         run: |
-          cd teaseq/integration
-          curl -o pipeline.yml https://panpipes-tutorials.readthedocs.io/en/latest/_downloads/f834fdb0a65979b0e4d11d6d75188a8e/pipeline.yml
+          cd spatial/preprocess
+          curl -o pipeline.yml https://raw.githubusercontent.com/DendrouLab/panpipes-tutorials/main/docs/preprocess_spatial_data/pipeline.yml
 
       - name: Replace template contents in configuration file
         run: |
-          cd teaseq/integration
-          sed -i 's+/Users/fabiola.curion/Documents/devel/miniconda3/envs/pipeline_env+pipeline_env+g' pipeline.yml
+          cd spatial/preprocess
+          sed -i 's+../ingestion/qc.data/+./data/+g' pipeline.yml
 
       - name: File tree
         if: env.debug == 'true'
-        run: tree teaseq
+        run: tree spatial/preprocess
 
       - name: Review pipeline tasks
         shell: bash -el {0}
         run: |
-          cd teaseq/integration
-          panpipes integration show full --local
+          cd spatial/preprocess
+          panpipes preprocess_spatial show full --local
 
       - name: Run pipeline tasks
         shell: bash -el {0}
         run: |
-          cd teaseq/integration
-          panpipes integration make full --local
+          cd spatial/preprocess
+          panpipes preprocess_spatial make full --local
 
       - name: File tree
         if: env.debug == 'true'
-        run: tree teaseq
+        run: tree spatial/preprocess

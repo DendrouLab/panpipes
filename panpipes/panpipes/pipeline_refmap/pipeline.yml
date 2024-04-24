@@ -18,7 +18,7 @@ resources:
 condaenv:
 
 # allows for tweaking which queues jobs get submitted to, 
-# in case there is a special queue for long jobs or you have access to a gpu-sepcific queue
+# in case there is a special queue for long jobs or you have access to a gpu-specific queue
 # the default queue should be specified in your .cgat.yml file
 # leave as is if you do not want to use the alternative queues
 queues:

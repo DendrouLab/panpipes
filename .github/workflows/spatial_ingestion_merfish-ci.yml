@@ -1,4 +1,4 @@
-name: Run tutorials (ingestion)
+name: Run tutorials (spatial ingest merfish)
 
 on:
   push:
@@ -12,7 +12,7 @@ env:
   debug: 'true'
 
 jobs:
-  ingestion:
+  spatial_ingest_merfish:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -40,7 +40,7 @@ jobs:
       - name: Install Panpipes
         shell: bash -el {0}
         run: |
-          pip install -e .
+          pip install .[spatial]
           conda list
 
       - name: Conda info
@@ -53,60 +53,51 @@ jobs:
         shell: pwsh
         run: conda list
 
-      # Note: all three files are renamed during the download to trim the "subsample_" prefix
+
       - name: Preparing the data
         run: |
-          mkdir -p teaseq/ingest/data.dir
-          cd teaseq/ingest/data.dir
-          curl -L -o adt.h5ad https://figshare.com/ndownloader/files/41671551
-          curl -L -o atac.h5ad https://figshare.com/ndownloader/files/41671554
-          curl -L -o rna.h5ad https://figshare.com/ndownloader/files/41671557
+          mkdir spatial spatial/ingestion_merfish spatial/ingestion_merfish/data
+          cd spatial/ingestion_merfish/data 
+          curl -L -o datasets_mouse_brain_map_BrainReceptorShowcase_Slice1_Replicate1_cell_by_gene_S1R1.csv https://figshare.com/ndownloader/files/45028624
+          curl -L -o datasets_mouse_brain_map_BrainReceptorShowcase_Slice1_Replicate1_cell_metadata_S1R1.csv https://figshare.com/ndownloader/files/45028621
+          mkdir images
+          cd images 
+          curl -L -o datasets_mouse_brain_map_BrainReceptorShowcase_Slice1_Replicate1_images_micron_to_mosaic_pixel_transform.csv https://figshare.com/ndownloader/files/45028645
+        
 
       # Note: we run the following to test that the commands works
-      # However, the following task will replacing the file anyway
       - name: Preparing the configuration file
         shell: bash -el {0}
         run: |
-          cd teaseq/ingest
-          panpipes ingest config
-
-      - name: Edit the submission file
-        run: |
-          cd teaseq/ingest
-          curl -o pipeline.yml https://panpipes-tutorials.readthedocs.io/en/latest/_downloads/9a4fcbc3c0a4fdc8e6578d086a88730f/pipeline.yml
+          cd spatial/ingestion_merfish
+          panpipes qc_spatial config
 
       - name: Preparing the submission file
         run: |
-          cd teaseq/ingest
-          curl -o sample_file_qc.txt https://panpipes-tutorials.readthedocs.io/en/latest/_downloads/40ed291bf9a7ff73c4f396ec63cff2f7/sample_file_qc.txt
+          cd spatial/ingestion_merfish
+          curl -o sample_file_qc_spatial.txt https://raw.githubusercontent.com/DendrouLab/panpipes-tutorials/main/docs/ingesting_merfish_data/sample_file_qc_spatial.txt
 
-      - name: Preparing the QC gene lists
+      - name: Preparing the yaml file
         run: |
-          cd teaseq/ingest
-          curl -o qc_genelist_1.0.csv https://panpipes-tutorials.readthedocs.io/en/latest/_downloads/fd38f25644105ea357a26e78a59139bb/qc_genelist_1.0.csv
+          cd spatial/ingestion_merfish
+          curl -o pipeline.yml https://raw.githubusercontent.com/DendrouLab/panpipes-tutorials/main/docs/ingesting_merfish_data/pipeline.yml
 
       - name: File tree
         if: env.debug == 'true'
-        run: tree teaseq
+        run: tree spatial/ingestion_merfish
 
       - name: Review pipeline tasks
         shell: bash -el {0}
         run: |
-          cd teaseq/ingest
-          panpipes ingest show full --local
+          cd spatial/ingestion_merfish
+          panpipes qc_spatial show full --local
 
       - name: Run pipeline tasks
         shell: bash -el {0}
         run: |
-          cd teaseq/ingest
-          panpipes ingest make full --local
+          cd spatial/ingestion_merfish
+          panpipes qc_spatial make full --local
 
       - name: File tree
         if: env.debug == 'true'
-        run: tree teaseq
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: teaseq_unfilt.h5mu
-          path: teaseq/ingest/teaseq_unfilt.h5mu
-          retention-days: 1
+        run: tree spatial/ingestion_merfish
