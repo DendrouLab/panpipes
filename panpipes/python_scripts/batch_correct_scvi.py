@@ -50,7 +50,7 @@ parser.add_argument('--scvi_seed',default=None,
 
 
 args, opt = parser.parse_known_args()
-L.info(args)
+L.info("Running with params: %s", args)
 
 threads_available = multiprocessing.cpu_count()
 

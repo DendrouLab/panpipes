@@ -71,7 +71,7 @@ parser.add_argument("--color_by", default="batch")
 
 parser.set_defaults(verbose=True)
 args, opt = parser.parse_known_args()
-L.info(args)
+L.info("Running with params: %s", args)
 
 figdir = args.fig_dir
 if not os.path.exists(figdir):

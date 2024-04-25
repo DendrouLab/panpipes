@@ -65,7 +65,7 @@ sc.set_figure_params(figsize=(8, 6), dpi=300)
 args.predict_rf = check_for_bool(args.predict_rf)
 args.impute_proteins = check_for_bool(args.impute_proteins)
 
-L.info(args)
+L.info("Running with params: %s", args)
 
 threads_available = multiprocessing.cpu_count()
 

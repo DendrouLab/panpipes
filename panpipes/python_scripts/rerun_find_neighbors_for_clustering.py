@@ -26,7 +26,7 @@ parser.add_argument('--neighbor_dict', default=None,
 parser.add_argument('--n_threads', default=1,help='number of threads available')
 
 args, opt = parser.parse_known_args()
-L.info(args)
+L.info("Running with params: %s", args)
 # load the filtering dictionary 
 neighbor_dict = args.neighbor_dict
 if isinstance(args.neighbor_dict, dict):

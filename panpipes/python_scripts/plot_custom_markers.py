@@ -47,7 +47,7 @@ parser.add_argument("--base_figure_dir", default="figures/",
 
 
 args, opt = parser.parse_known_args()
-L.info(args)
+L.info("Running with params: %s", args)
 sc.settings.figdir = args.base_figure_dir
 
 # ---- script

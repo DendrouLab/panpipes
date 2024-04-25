@@ -57,7 +57,7 @@ parser.add_argument('--modality',
 
 args, opt = parser.parse_known_args()
 
-L.info(args)
+L.info("Running with params: %s", args)
 
 # Scanorama is designed to be used in scRNA-seq pipelines downstream of noise-reduction methods,
 # including those for imputation and highly-variable gene filtering.

@@ -39,7 +39,7 @@ parser.add_argument('--outdir', default=None,
 
 args, opt = parser.parse_known_args()
 
-L.info(args)
+L.info("Running with params: %s", args)
 
 
 if args.covariate is not None:

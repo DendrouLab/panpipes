@@ -58,7 +58,7 @@ parser.add_argument('--keep_barcodes', default=None,
 # load options
 parser.set_defaults(verbose=True)
 args, opt = parser.parse_known_args()
-L.info(args)
+L.info("Running with params: %s", args)
  
 # load the filtering dictionary 
 filter_dict = args.filter_dict

@@ -121,7 +121,7 @@ parser.add_argument("--use_gpu_st",
 
 args, opt = parser.parse_known_args()
 
-L.info(args)
+L.info("Running with params: %s", args)
 
 figdir = args.figdir
 if not os.path.exists(figdir):

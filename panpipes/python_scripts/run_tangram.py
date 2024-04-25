@@ -81,7 +81,7 @@ parser.add_argument("--kwargs",
 
 args, opt = parser.parse_known_args()
 
-L.info(args)
+L.info("Running with params: %s", args)
 
 if isinstance(args.kwargs, str): 
 	args.kwargs = json.loads(args.kwargs)

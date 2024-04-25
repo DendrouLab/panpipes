@@ -27,7 +27,7 @@ parser.add_argument("--output_cell_metadata_csv")
 parser.add_argument("--output_combined_umaps_tsv")
 parser.add_argument("--output_batch_yml")
 args, opt = parser.parse_known_args()
-L.info(args)
+L.info("Running with params: %s", args)
 
 L.info("Reading in data from '%s'" % args.input_mudata)
 cell_meta_df = mu.read(args.input_mudata).obs

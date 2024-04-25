@@ -32,7 +32,7 @@ parser.add_argument('--multimodal_correction_choice', default=None,
 args, opt = parser.parse_known_args()
 
 
-L.info(args)
+L.info("Running with params: %s", args)
 
 base_object = args.preprocessed_mudata
 

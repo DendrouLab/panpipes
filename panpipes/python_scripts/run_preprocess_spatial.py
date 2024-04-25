@@ -78,7 +78,7 @@ parser.add_argument("--n_pcs",
 
 args, opt = parser.parse_known_args()
 
-L.info(args)
+L.info("Running with params: %s", args)
 
 figdir = args.figdir
 

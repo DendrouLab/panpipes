@@ -44,7 +44,7 @@ parser.add_argument('--intersect_mods', default=None,
 
 parser.set_defaults(verbose=True)
 args, opt = parser.parse_known_args()
-L.info(args)
+L.info("Running with params: %s", args)
 
 # load data
 L.info("Reading in MuData from '%s'" % args.input_mudata)

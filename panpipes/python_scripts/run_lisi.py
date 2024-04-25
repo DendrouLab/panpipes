@@ -22,7 +22,7 @@ parser.add_argument("--cell_meta_df")
 parser.add_argument("--integration_dict")
 parser.add_argument("--fig_dir")
 args = parser.parse_args()
-L.info(args)
+L.info("Running with params: %s", args)
 
 # load combined umaps and cellmtd file
 # load metadata

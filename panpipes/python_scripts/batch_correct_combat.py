@@ -45,7 +45,7 @@ parser.add_argument('--modality',
 
 args, opt = parser.parse_known_args()
 
-L.info(args)
+L.info("Running with params: %s", args)
 
 # this should be an object that contains the full log normalised data (adata_log1p.h5ad)
 # prior to hvgs and filtering

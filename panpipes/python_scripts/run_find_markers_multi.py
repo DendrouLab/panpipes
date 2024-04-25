@@ -198,7 +198,7 @@ def main(adata,
         all_filter_stats.to_csv(output_file_prefix + "_filter_stats_" + mod + ".txt", index=False, sep="\t")
 
 
-L.info(args)
+L.info("Running with params: %s", args)
 
 # read data
 L.info("Reading in MuData from '%s'" % args.infile)

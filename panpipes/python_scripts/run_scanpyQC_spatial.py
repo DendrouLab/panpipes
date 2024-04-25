@@ -54,7 +54,7 @@ args, opt = parser.parse_known_args()
 sc.settings.verbosity = 3
 
 
-L.info(args)
+L.info("Running with params: %s", args)
 figdir = args.figdir
 
 if not os.path.exists(figdir):

@@ -56,7 +56,7 @@ parser.add_argument('--neighbors_metric',default="euclidean",
 
 args, opt = parser.parse_known_args()
 
-L.info(args)
+L.info("Running with params: %s", args)
 # scanpy settings
 sc.set_figure_params(facecolor="white")
 sc.settings.autoshow = False

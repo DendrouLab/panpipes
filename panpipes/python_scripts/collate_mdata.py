@@ -32,7 +32,7 @@ parser.add_argument("--output_mudata",
                     help="file name, format: .h5mu")
 args, opt = parser.parse_known_args()
 
-L.info(args)
+L.info("Running with params: %s", args)
 
 L.info("Reading in MuData from '%s'" % args.input_mudata)
 mdata = mu.read(args.input_mudata)

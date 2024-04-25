@@ -36,7 +36,7 @@ parser.add_argument("--neighbors_key",
                     default="neighbors", help="algortihm choice from louvain and leiden")
 
 args, opt = parser.parse_known_args()
-L.info(args)
+L.info("Running with params: %s", args)
 
 # read data
 L.info("Reading in data from '%s'" % args.infile)

@@ -46,7 +46,7 @@ parser.add_argument("--fig_suffix", default="variables.png",
 args, opt = parser.parse_known_args()
 
 
-L.info(args)
+L.info("Running with params: %s", args)
 # args = argparse.Namespace(infile='../run_clustering_mm/mdata_clustered.h5mu',
 #  basis_dict="{'prot': ['X_umap', 'X_pca']}", 
 #  base_figure_dir='./')

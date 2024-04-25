@@ -44,7 +44,7 @@ parser.add_argument('--modality', default='',
 args, opt = parser.parse_known_args()
 
 
-L.info(args)
+L.info("Running with params: %s", args)
 
 
 #adata = read_anndata(args.input_anndata, use_muon=use_muon, modality="rna")

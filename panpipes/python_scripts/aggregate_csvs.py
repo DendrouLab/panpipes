@@ -32,7 +32,7 @@ parser.add_argument('--clusters_or_markers',
 parser.set_defaults(verbose=True)
 args = parser.parse_args()
 
-L.info(args)
+L.info("Running with params: %s", args)
 
 infiles = re.split(',', args.input_files_str)
 if args.clusters_or_markers == "clusters":

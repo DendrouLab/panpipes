@@ -61,7 +61,7 @@ parser.add_argument('--spatial_transformation',
 
 parser.set_defaults(verbose=True)
 args, opt = parser.parse_known_args()
-L.info(args)
+L.info("Running with params: %s", args)
 
 # unimodal mu (check if all the modalities)
 if isinstance(args.mode_dictionary, dict):

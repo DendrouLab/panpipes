@@ -53,7 +53,7 @@ parser.add_argument('--scvi_seed',default=None,
 
 
 args, opt = parser.parse_known_args()
-L.info(args)
+L.info("Running with params: %s", args)
 
 # scanpy settings
 sc.set_figure_params(facecolor="white")

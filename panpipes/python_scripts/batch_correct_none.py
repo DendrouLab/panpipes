@@ -48,7 +48,7 @@ parser.add_argument('--neighbors_metric',
                     help="neighbor metric, e.g. euclidean or cosine")
 
 args, opt = parser.parse_known_args()
-L.info(args)
+L.info("Running with params: %s", args)
 
 
 

@@ -33,7 +33,7 @@ parser.add_argument("--modalities",
                     help="list of modalities to search for UMAPs in")
 args, opt = parser.parse_known_args()
 
-L.info(args)
+L.info("Running with params: %s", args)
 # args = argparse.Namespace(infile='mdata_clustered.h5mu', figdir=None)
 # ---------
 

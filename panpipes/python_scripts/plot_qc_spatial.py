@@ -47,7 +47,7 @@ parser.add_argument("--grouping_var",
 
 args, opt = parser.parse_known_args()
 
-L.info(args)
+L.info("Running with params: %s", args)
 
 figdir = args.figdir
 

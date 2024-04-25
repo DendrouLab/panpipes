@@ -72,7 +72,7 @@ save_mtx=pnp.pp.check_for_bool(args.save_mtx)
 norm_methods = args.normalisation_methods.split(',')
 
 
-L.info(args)
+L.info("Running with params: %s", args)
 
 figdir = args.figpath
 if not os.path.exists(figdir):

@@ -48,7 +48,7 @@ parser.add_argument("--n", default=None,
 
 
 args, opt = parser.parse_known_args()
-L.info(args)
+L.info("Running with params: %s", args)
 
 sc.settings.figdir = args.figure_prefix
 

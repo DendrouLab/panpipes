@@ -21,7 +21,7 @@ parser.add_argument('--outfile', default='sc_preprocess.txt',
                     help="path for text file output")
 args = parser.parse_args()
 args, opt = parser.parse_known_args()
-L.info(args)
+L.info("Running with params: %s", args)
 
 # read file
 L.info("Reading in MuData from '%s'" % args.infile)
