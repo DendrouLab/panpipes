@@ -72,6 +72,8 @@ grouping_vars:
 ```
 
 ## Plot Markers 
+
+Check [gene_list_format.md](https://github.com/DendrouLab/panpipes/edit/clustering_g/docs/usage/gene_list_format.md) for Plot marker csv format instructions. 
   
 The csv files containing the long/short gene lists for visulisations can be specified in the `vis` configuration file as follows:
 
@@ -104,8 +106,6 @@ The shorter list will be plotted on umaps as well as other plot types, with one 
   - <span class="parameter">rna:</span>`String`, Default: logged_counts<br>
   - <span class="parameter">prot:</span>`String`, Default: clr<br> 
   - <span class="parameter">atac:</span>`String`, Default: signac_norm<br> 
-Check [gene_list_format.md](https://github.com/DendrouLab/panpipes/edit/clustering_g/docs/usage/gene_list_format.md) for Plot marker csv format instructions. 
-
 
 ## Plot metadata variables 
 
@@ -132,21 +132,24 @@ Check [gene_list_format.md](https://github.com/DendrouLab/panpipes/edit/clusteri
 ## Plot style 
 Choose the plot type desired. 
 - <span class="parameter">do_plots:</span><br>
+  Plot each categorical variable as a bar plot.
+  For example, categorical variable "cluster" on x axis and n cells on y
   - <span class="parameter">categorical_barplots:</span>`Boolean`, Default: True<br>
-  Plot each categorical variable as a bar plot. 
-  - <span class="parameter">categorical_stacked_barplots:</span>`Boolean`, Default: True<br>
   Plot each grouping var as a bar plot, with categorical variables stacked.
-  - <span class="parameter">continuous_violin:</span>`Boolean`, Default: True<br>
+  For example, grouping var "sample_id" on x axis and n cells on y and colored by categorical variable "cluster" in a stack
+  - <span class="parameter">categorical_stacked_barplots:</span>`Boolean`, Default: True<br>
   Plot each continuous variable as a violin plot.
+  For example, grouping var "sample_id" on x axis and the continuous variable "doublet_scores" on y
+  - <span class="parameter">continuous_violin:</span>`Boolean`, Default: True<br>
+  Plot marker dotplots as produced by scanpy.pl.dotplot
   - <span class="parameter">marker_dotplots:</span>`Boolean`, Default: True<br>
-  Plots a marker dotplots as produced by scanpy.pl.dotplot.
-  - <span class="parameter"> marker_matrixplots:</span>`Boolean`, Default: True<br>
   Plots marker matrixplot as produced by scanpy.pl.matrixplot.
-  - <span class="parameter">paired_scatters:</span>`Boolean`, Default: True<br>
+  - <span class="parameter"> marker_matrixplots:</span>`Boolean`, Default: True<br>
   Plots scatter plots as defined in paired_scatters csv file (scatter_features.csv).
+  - <span class="parameter">paired_scatters:</span>`Boolean`, Default: True<br>
 
 - <span class="parameter">embedding:</span><br>
-Define all embedding for the plots and modalities.  
+Define the embedding plots (e.g. UMAP, PCA) using the modality and embedding basis specified. This will plot all of minimal markers csv, and categorical, and continuous variables
   - <span class="parameter">rna:</span><br>
     - <span class="parameter">run:</span>`Boolean`, Default:True<br>
     - <span class="parameter">basis:</span>`String`, Default: X_umap_mindist_0.25<br>
