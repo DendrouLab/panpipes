@@ -82,6 +82,7 @@ if "X_pca" not in adata.obsm:
                     random_state=0) 
 
 
+L.info("Preparing for integration")
 
 if len(columns) > 1:
     L.info("Using 2 columns to integrate on more variables.")
