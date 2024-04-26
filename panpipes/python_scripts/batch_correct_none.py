@@ -52,15 +52,10 @@ args, opt = parser.parse_known_args()
 L.info("reading data and starting integration pipeline with script: ")
 L.info(os.path.basename(__file__))
 
-
-# Scanorama is designed to be used in scRNA-seq pipelines downstream of noise-reduction methods,
-# including those for imputation and highly-variable gene filtering.
-
-# adata = sc.read(args.input_anndata)
-#adata = read_anndata(args.input_anndata, use_muon=True, modality=args.modality)
-adata = mu.read(args.input_anndata +"/" + args.modality)
-# adata = mdata.mod[args.modality] 
-
+if os.path.exists(args.input_anndata):
+    adata = mu.read(args.input_anndata +"/" + args.modality)
+else:
+    L.info("missing input anndata")
 
 
 columns = [x.strip() for x in args.integration_col.split(",")]
