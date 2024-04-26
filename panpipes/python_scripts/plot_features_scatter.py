@@ -48,7 +48,7 @@ if not os.path.exists(figdir):
 sc.settings.figdir  = figdir
 sc.set_figure_params(fontsize=12)
 
-L.info("Reading in MuData from '%s'" % args.infile)
+L.info("Reading in MuData from '%s'" % args.mdata_object)
 mdata = mu.read(args.mdata_object)
 
 layers = read_yaml(args.layers_dict)
