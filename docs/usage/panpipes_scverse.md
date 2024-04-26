@@ -1,8 +1,8 @@
 # Panpipes and the scverse
 
 
-Panpipes is implemented in python to rely on the `scverse`, an ecosystem of tools for single cell 'omics analysis in python.
-Checkout the [scverse](https://scverse.org/) documentation and how to contribute your package! 
+Panpipes is an analytical pipeline implemented in `python`, which orchestrates single cell analyses in an automated fashion. Panpipes relies on the `scverse`, an ecosystem of tools for single cell 'omics analysis in python.
+Checkout the [scverse](https://scverse.org/) documentation for the packages included and how to contribute your package so we can support it in `panpipes` too! 
 
 
 
@@ -35,4 +35,6 @@ Please use these links to familiarize with these data structures and frameworks:
 - [Multimodal analyses with muon](https://muon-tutorials.readthedocs.io/en/latest/)
 - [Spatial analyses with squidpy](https://squidpy.readthedocs.io/en/stable/)
 - [Scvi-tools](https://scvi-tools.org/)
+- [Interoperability](https://scverse-tutorials.readthedocs.io/en/latest/notebooks/scverse_data_interoperability.html)
+- [Best-Practices for single cell multimodal analyses ](https://www.sc-best-practices.org/preamble.html)
 
