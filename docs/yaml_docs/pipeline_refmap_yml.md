@@ -8,7 +8,7 @@
   }
 </style> 
 
-# Refmap workflow 
+# Refmap YAML 
 In this documentation, the parameters of the `refmap` configuration yaml file are explained. 
 This file is generated running `panpipes refmap config`.  <br> The individual steps run by the pipeline are described in the [Reference Mapping workflow](https://github.com/DendrouLab/panpipes/blob/main/docs/workflows/refmap.md). 
 
