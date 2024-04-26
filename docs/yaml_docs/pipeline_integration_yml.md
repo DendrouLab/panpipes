@@ -76,7 +76,7 @@ Prefix for the sample that comes out of the filtering/ preprocessing steps of th
     Defines if you want the batch correction to run. If set to `False`, `PCA` with default parameters is calculated. 
         
   - <span class="parameter">tools</span> `String` (comma-separated), Default: `harmony,bbknn,scanorama,scvi`<br> 
-    Defines the method used to run batch correction, multiple can be selected and run simultaneously.
+    Defines the method used to run batch correction, multiple can be selected and run simultaneously. If left blank, the integration will produce no correction outputs. 
 
     Choices: `harmony`, `bbknn`, `scanorama`, `scvi`
        
@@ -165,7 +165,8 @@ Parameters to compute the connectivity graph on RNA
     Defines if you want the batch correction to run on the Protein modality.If set to `False`, `PCA` with default parameters is calculated. 
         
   - <span class="parameter">tools</span> `String` (comma-separated), Default: harmony<br> 
-    Defines the method used to run batch correction, multiple can be selected.
+    Defines the method used to run batch correction, multiple can be selected. If left blank, the integration will produce no correction outputs. 
+
     choices: harmony, bbknn, combat
        
    - <span class="parameter">column</span> `String` (comma-separated), Default: sample_id<br>
@@ -222,7 +223,7 @@ Parameters to compute the connectivity graph on Protein
     Defines which dimensionality reduction to use. Available options are PCA and LSI.
     
   - <span class="parameter">tools</span> `String` (comma-separated), Default: harmony<br> 
-    Defines the method used to run batch correction.
+    Defines the method used to run batch correction. If left blank, the integration will produce no correction outputs. 
     Multiple can be selected by specifying them as a comma-seprated string without spaces.
     Available options are: harmony, bbknn, and combat
        
