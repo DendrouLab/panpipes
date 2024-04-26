@@ -78,18 +78,17 @@ If the group name is not spelled correctly, the action will fail. See [The secti
 The human custom genelist file can be supplied by the user in the workflows configuration files:
 
 1. **Ingest workflow**
-
     pipeline_ingest config file: (pipeline.yml)
-    By customizing the following parameters
+
+    Supply the gene list by customizing the following parameter
 
     ```yaml
     custom_genes_file: resources/qc_genelist_1.0.csv
     ```
 
-1. **Preprocess workflow**
-
-    pipeline_preprocess config file: (pipeline.yml)
-    By customizing the following parameter
+2. **Preprocess workflow** pipeline_preprocess config file: (pipeline.yml)
+    
+    Supply the gene list by customizing the following parameter
     ```yaml
     exclude_file: resources/qc_genelist_1.0.csv
     ```
