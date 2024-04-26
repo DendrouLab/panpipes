@@ -43,7 +43,7 @@ For a typical usecase, we provide example lists on our [github page](https://git
 The human-only cellcycle genes used in [scanpy.score_genes_cell_cycle](https://scanpy.readthedocs.io/en/stable/generated/scanpy.tl.score_genes_cell_cycle.html) 
 are stored in [resources/cell_cycle_genes.csv](https://github.com/DendrouLab/panpipes/blob/main/panpipes/resources/cell_cycle_genes.tsv)
 
-However, if you are working with mouse data, we supply an alternative cellcycle gene list with murine genes, which  can be found in [resources/mouse_cell_cycle_genes.tsv](https://github.com/DendrouLab/panpipes/blob/mouse_cell_cycle/panpipes/resources/mouse_cell_cycle_genes.tsv)
+However, if you are working with mouse data, we supply an alternative cellcycle gene list with murine genes, which  can be found in [resources/mouse_cell_cycle_genes.tsv](https://github.com/DendrouLab/panpipes/blob/main/panpipes/resources/mouse_cell_cycle_genes.tsv)
 
 Differently from the other custom gene file, the cell cycle file should be a **tab separated file with two columns**:
 
@@ -169,6 +169,33 @@ minimal:
 
 Generally in the visualization pipeline all gene groups in the input are plotted. In heatmaps and dotplots, one dotplot per group is plotted. For UMAPs, one plot per gene is
 plotted, and a new file is saved per group.
+
+
+## Plot Makers in the Visualization workflow 
+
+The custom maker csv file for full and minimal must contain three columns and follow the following structure: 
+  | mod  | feature  | group        |
+  |------|----------|--------------|
+  | prot | prot_CD8 | Tcellmarkers |
+  | rna  | CD8A     | Tcellmarkers |
+
+The full list will be plotted in dot plots and matrix plots, with one plot per group. 
+
+The shorter list will be plotted on umaps as well as other plot types, with one plot per group. 
+
+ | feature_1 | feature_2 | colour         |
+ |-----------|-----------|----------------|
+ | CD8A      | prot_CD8  |                |
+ | CD4       | CD8A      | doublet_scores |
+
+
+
+## Plot metadata variables 
+The scatter_features.csv file should have the following format:
+
+ | feature_1 | feature_2 | colour         |
+ |-----------|-----------|----------------|
+ |rna:total_counts | prot:total_counts  | doublet_scores
 
 ## Final notes
 
