@@ -72,6 +72,13 @@ multivipatch = [
     "scvi-tools<=0.20.3",
     "requests"
 ]
+
+refmap_old = [
+    "scvi-tools",
+    "pandas<2.0.0"
+]
+
+
 [project.scripts]
 panpipes = "panpipes:entry.main"
 

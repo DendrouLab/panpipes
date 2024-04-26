@@ -40,7 +40,7 @@ jobs:
       - name: Install Panpipes
         shell: bash -el {0}
         run: |
-          pip install -e .
+          pip install '.[refmap_old]'
           conda list
 
       - name: Conda info
