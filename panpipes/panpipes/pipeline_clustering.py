@@ -43,9 +43,10 @@ def set_up_dirs(log_file):
 ## Single modality scripts
 ## ------------------------------------
 
-# -----------------------------------=
+# --------------------------------------
 # neighbors
 # --------------------------------------
+# TO DO create task to re-run neighbours on multimodal outer representations (this script can only read in each mod layer)
 @follows(set_up_dirs)
 @originate(PARAMS['mudata_with_knn'])
 def run_neighbors(outfile):
