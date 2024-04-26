@@ -33,7 +33,7 @@ parser.add_argument("--min_dist",
                     default=0.1, 
                     help="no. neighbours parameters for sc.pp.neighbors()")
 parser.add_argument("--neighbors_key", 
-                    default="neighbors", help="algortihm choice from louvain and leiden")
+                    default="neighbors", help="name of the saved knn neighbors")
 
 args, opt = parser.parse_known_args()
 L.info(args)
