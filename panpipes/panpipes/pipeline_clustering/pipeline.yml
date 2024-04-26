@@ -29,7 +29,7 @@ modalities:
   atac: False
   spatial: False
 
-# if True, will look for WNN, or totalVI output
+# if True, will look for WNN, mofa, multivi, totalVI embeddings
 multimodal:
   run_clustering: True
   integration_method: 
@@ -40,8 +40,10 @@ multimodal:
 # ---------------------------------------
 # 
 # -----------------------------
+
 neighbors:
   rna:
+    #use the knn calculated in the integration workflow. If False it will recalculate
     use_existing: True
     dim_red: X_pca
     n_dim_red: 30
@@ -49,6 +51,7 @@ neighbors:
     metric: euclidean
     method: scanpy
   prot:
+    #use the knn calculated in the integration workflow. If False it will recalculate
     use_existing: True
     dim_red: X_pca
     n_dim_red: 30
@@ -56,6 +59,7 @@ neighbors:
     metric: euclidean
     method: scanpy
   atac:
+    #use the knn calculated in the integration workflow. If False it will recalculate
     use_existing: True
     dim_red: X_lsi
     dim_remove: 1
@@ -64,6 +68,7 @@ neighbors:
     metric: euclidean
     method: scanpy
   spatial:
+    #use the knn calculated in the integration workflow. If False it will recalculate
     use_existing: False
     dim_red: X_pca
     n_dim_red: 30

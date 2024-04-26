@@ -15,6 +15,10 @@ What is Panpipes?
 Panpipes is a collection of cgat-core/ruffus pipelines to streamline the analysis of multi-modal single cell data.
 Panpipes supports any combination of the following single-cell modalities: scRNAseq, CITEseq, scV(D)Jseq, and scATACseq
 
+.. image:: img/panpipes_cropped_gif.gif
+  :width: 650 
+  :alt: how does panpipes work
+
 Check out the :doc:`installation<install>` and :doc:`usage guidelines<usage/index>` page for further information.
 
 .. image:: img/Panpipes_Figure1_v21024_1.png
