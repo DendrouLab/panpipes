@@ -154,48 +154,48 @@ Prefix for the sample that comes out of the filtering/ preprocessing steps of th
      - <span class="parameter">run </span> `Boolean`, Default: True<br> Set to `True` runs the umap calculation and plotting.
      - <span class="parameter">rna:</span>
          - <span class="parameter">mindist </span> `Float`, Default: 0.5<br>
-           Can specify an array: 0.25,0.5
+           Can specify a single float or an array: 0.25,0.5
       - <span class="parameter">prot:</span>
          - <span class="parameter">mindist </span> `Float`, Default: 0.5<br>
-           Can specify an array: 0.25,0.5,0.8
+           Can specify a single float or an array: 0.25,0.5,0.8
       - <span class="parameter">atac:</span>
          - <span class="parameter">mindist </span> `Float`, Default: 0.5<br>
-           Can specify an array: 0.25,0.5,0.8
+           Can specify a single float or an array: 0.25,0.5,0.8
       - <span class="parameter">multimodal:</span>
          - <span class="parameter">mindist </span> `Float`, Default: 0.5<br>
-           Can specify an array: 0.25,0.5,0.8
+           Can specify a single float or an array: 0.25,0.5,0.8
       - <span class="parameter">rna:</span>
          - <span class="parameter">mindist </span> `Float`, Default: 0.5<br>
-            Can specify an array: 0.25,0.5,0.8
+            Can specify a single float or an array: 0.25,0.5,0.8
 
 ## Parameters for clustering 
 
   - <span class="parameter">clusterspecs:</span>
       - <span class="parameter">rna:</span>
           - <span class="parameter">resolutions </span> `Float`, Default: 0.2, 0.6, 1<br>
-           Can specify an array: 0.2,0.6,1
+           Can specify a single float or an array: 0.2,0.6,1
           - <span class="parameter">algorithm</span> `String`, Default: leiden<br>
             Options include louvain or leiden. 
       - <span class="parameter">prot:</span>
           - <span class="parameter">resolutions </span> `Float`, Default: 0.2, 0.6, 1<br>
-           Can specify an array: 0.2,0.6,1
+           Can specify a single float or an array: 0.2,0.6,1
           - <span class="parameter">algorithm</span> `String`, Default: leiden<br>
             Options include louvain or leiden.
 
       - <span class="parameter">atac:</span>
           - <span class="parameter">resolutions </span> `Float`, Default: 0.2, 0.6, 1<br>
-           Can specify an array to compute in parallel: 0.2,0.6,1
+           Can specify a single float or an array to compute in parallel: 0.2,0.6,1
           - <span class="parameter">algorithm</span> `String`, Default: leiden<br>
             Options include louvain or leiden. 
       - <span class="parameter">multimmodal:</span>
           - <span class="parameter">resolutions </span> `Float`, Default: 0.5, 0.7<br>
-           Can specify an array to compute in parallel: 0.2,0.6,1 
+           Can specify a single float or an array to compute in parallel: 0.2,0.6,1 
           - <span class="parameter">algorithm</span> `String`, Default: leiden<br>
             Options include louvain or leiden.
 
       - <span class="parameter">spatial:</span>
           - <span class="parameter">resolutions </span> `Float`, Default: 0.2, 0.6, 1<br>
-           Can specify an array to compute in parallel: 0.2,0.6,1 
+           Can specify a single float or an array to compute in parallel: 0.2,0.6,1 
           - <span class="parameter">algorithm</span> `String`, Default: leiden<br>
             Options include louvain or leiden. 
 
@@ -216,8 +216,10 @@ When pseudo_seurat is set to True then a [python implementation](https://github.
        Marker analysis is run for clusters >= mincells. If a cluster ncells < mincells , then the cluster is excluded from marker analysis
        - <span class="parameter">pseudo_seurat </span> `Boolean`, Default: False<br>
        - <span class="parameter">minpct </span> `Float`, Default: 0.1<br>
+       Only test genes that are detected in a minimum fraction of min.pct cells in either of the two populations. 
        This parameter is mandatory if pseudo_seurat is set to True 
        - <span class="parameter">threshuse </span> `Float`, Default: 0.25<br>
+       Limit testing to genes which show, on average, at least X-fold difference (log-scale) between the two groups of cells.
        This parameter is mandatory if pseudo_seurat is set to True 
  - <span class="parameter">prot:</span><br>
    - <span class="parameter">run </span> `Boolean`, Default: True<br>
@@ -228,8 +230,10 @@ When pseudo_seurat is set to True then a [python implementation](https://github.
    - <span class="parameter">method </span> `String`, Default: wilcoxon<br>
    - <span class="parameter">pseudo_seurat </span> `Boolean`, Default: False<br>
    - <span class="parameter">minpct </span> `Float`, Default: 0.1<br>
+       Only test genes that are detected in a minimum fraction of min.pct cells in either of the two populations. 
        This parameter is mandatory if pseudo_seurat is set to True 
    - <span class="parameter">threshuse </span> `Float`, Default: 0.25<br>
+    Limit testing to genes which show, on average, at least X-fold difference (log-scale) between the two groups of cells. 
        This parameter is mandatory if pseudo_seurat is set to True 
 
  - <span class="parameter">atac:</span><br>
@@ -243,8 +247,10 @@ When pseudo_seurat is set to True then a [python implementation](https://github.
         Options include: ‘logreg’, ‘t-test’, ‘wilcoxon’, ‘t-test_overestim_var’
     - <span class="parameter">pseudo_seurat </span> `Boolean`, Default: False<br>
     - <span class="parameter">minpct </span> `Float`, Default: 0.1<br>
+       Only test genes that are detected in a minimum fraction of min.pct cells in either of the two populations. 
        This parameter is mandatory if pseudo_seurat is set to True 
     - <span class="parameter">threshuse </span> `Float`, Default: 0.25<br>
+      Limit testing to genes which show, on average, at least X-fold difference (log-scale) between the two groups of cells.
        This parameter is mandatory if pseudo_seurat is set to True 
 
 
@@ -255,9 +261,9 @@ When pseudo_seurat is set to True then a [python implementation](https://github.
         Options include: ‘logreg’, ‘t-test’, ‘wilcoxon’, ‘t-test_overestim_var’
     - <span class="parameter">pseudo_seurat </span> `Boolean`, Default: False<br>
     - <span class="parameter">minpct </span> `Float`, Default: 0.1<br>
-       This parameter is mandatory if pseudo_seurat is set to True 
+       Only test genes that are detected in a minimum fraction of min.pct cells in either of the two populations. This parameter is mandatory if pseudo_seurat is set to True 
     - <span class="parameter">threshuse </span> `Float`, Default: 0.25<br>
-       This parameter is mandatory if pseudo_seurat is set to True
+       Limit testing to genes which show, on average, at least X-fold difference (log-scale) between the two groups of cells.This parameter is mandatory if pseudo_seurat is set to True
 
 
  - <span class="parameter">spatial:</span><br>
@@ -270,8 +276,9 @@ When pseudo_seurat is set to True then a [python implementation](https://github.
        Marker analysis is run for clusters >= mincells. If a cluster ncells < mincells , then the cluster is excluded from marker analysis
    - <span class="parameter">pseudo_seurat </span> `Boolean`, Default: False<br>
    - <span class="parameter">minpct </span> `Float`, Default: 0.1<br>
-      This parameter is mandatory if pseudo_seurat is set to True 
+      Only test genes that are detected in a minimum fraction of min.pct cells in either of the two populations. This parameter is mandatory if pseudo_seurat is set to True 
    - <span class="parameter">threshuse </span> `Float`, Default: 0.25<br>
+       Limit testing to genes which show, on average, at least X-fold difference (log-scale) between the two groups of cells. 
        This parameter is mandatory if pseudo_seurat is set to True 
 ## Plot specifications
 Define which layers are used in the markers visualization 
