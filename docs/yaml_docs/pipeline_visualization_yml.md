@@ -127,24 +127,29 @@ Metrics to be plotted on every modality.
   - <span class="parameter">multimodal:</span>`String`, Default: rna:total_counts    prot:total_counts<br>
   
 - <span class="parameter"paired_scatter:</span>`String`, Default: scatter_features.csv<br>
-Check [gene_list_format.md](https://github.com/DendrouLab/panpipes/edit/clustering_g/docs/usage/gene_list_format.md) for metadata csv format instructions. 
 
 ## Plot style 
 Choose the plot type desired. 
 - <span class="parameter">do_plots:</span><br>
+
   Plot each categorical variable as a bar plot.
   For example, categorical variable "cluster" on x axis and n cells on y
   - <span class="parameter">categorical_barplots:</span>`Boolean`, Default: True<br>
+  
   Plot each grouping var as a bar plot, with categorical variables stacked.
   For example, grouping var "sample_id" on x axis and n cells on y and colored by categorical variable "cluster" in a stack
   - <span class="parameter">categorical_stacked_barplots:</span>`Boolean`, Default: True<br>
+  
   Plot each continuous variable as a violin plot.
   For example, grouping var "sample_id" on x axis and the continuous variable "doublet_scores" on y
   - <span class="parameter">continuous_violin:</span>`Boolean`, Default: True<br>
+  
   Plot marker dotplots as produced by scanpy.pl.dotplot
   - <span class="parameter">marker_dotplots:</span>`Boolean`, Default: True<br>
+  
   Plots marker matrixplot as produced by scanpy.pl.matrixplot.
   - <span class="parameter"> marker_matrixplots:</span>`Boolean`, Default: True<br>
+  
   Plots scatter plots as defined in paired_scatters csv file (scatter_features.csv).
   - <span class="parameter">paired_scatters:</span>`Boolean`, Default: True<br>
 
