@@ -53,7 +53,7 @@ reference_data: path_to_mudata
 totalvi: 
   - path_to_totalvi1
   - path_to_totalvi2
-impute_proteins: True
+impute_proteins: False
 # transform_batch is a batch-covariate specific to totalvi, allows the model to use the batch information in the query to mitigate 
 # differences in protein sequencing depth
 transform_batch:
