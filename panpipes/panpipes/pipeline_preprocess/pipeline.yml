@@ -126,11 +126,12 @@ hvg:
   min_mean:
   max_mean:
   min_disp:
-
+  # File containg a custom list of genes to exclude from HVG
   exclude_file: 
   exclude:
+  # Filter the object to retain only the HVG?
   filter: False
-
+# Which covariates to regress out
 regress_variables:
 
 
