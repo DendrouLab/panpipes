@@ -74,8 +74,8 @@ def load_and_merge_clusters(adata, cluster_file):
 
 
 def get_header():
-    # write out the correct header before we start, need to werite it out before, because we use append mode for the multimodal find markers
-    # and we don't wantto end up with a new header half
+    # write out the correct header before we start, need to write it out before, because we use append mode for the multimodal find markers
+    # and we don't want to end up with a new header 
     if sc.__version__ < "1.7.0":
         markers_columns = ['cluster', 'scores', 'gene', 'avg_logFC', 'pvals', 'p.adj.bonferroni']
     elif sc.__version__ >= "1.7.0":
