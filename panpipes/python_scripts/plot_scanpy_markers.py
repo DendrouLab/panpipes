@@ -129,6 +129,12 @@ L.info(f"Dimensions of the marker file are: {mf.shape[0]} rows and {mf.shape[1]}
 L.info("Top 5 rows of the marker file:")
 L.info("\n" + mf.head().to_string())
 
+L.info(mf.dtypes)
+mf['scores'] = pd.to_numeric(mf['scores'], errors='coerce')
+print(mf['scores'].isna().sum())
+mf.dropna(subset=['scores'], inplace=True)
+L.info(f"Dimensions of the marker file are: {mf.shape[0]} rows and {mf.shape[1]} columns.")
+
 ch=mf[mf['avg_logFC'] > 0]
 if mf.shape[0]>=2:
     # get layer
