@@ -241,6 +241,15 @@ plotqc:
   multimodal: rna:total_counts
 
 
+#-------------
+# scib metrics
+#-------------
+scib:
+  rna:
+  prot:
+  atac:
+
+
 # -------------------------
 # Creating the final object
 # -------------------------
