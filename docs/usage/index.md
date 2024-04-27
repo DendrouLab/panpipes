@@ -6,6 +6,7 @@ See [installation](../install) for installation instructions
 ```{toctree}
 :maxdepth: 1
 
+panpipes_scverse
 general_principles
 setup_for_qc_mm
 gene_list_format
@@ -14,4 +15,5 @@ normalization_methods
 different_entry_points
 setup_for_spatial_workflows
 integration_methods
+troubleshooting
 ```

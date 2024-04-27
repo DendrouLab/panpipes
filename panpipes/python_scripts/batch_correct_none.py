@@ -52,15 +52,16 @@ L.info("Running with params: %s", args)
 
 
 
-# Scanorama is designed to be used in scRNA-seq pipelines downstream of noise-reduction methods,
-# including those for imputation and highly-variable gene filtering.
 
-# adata = sc.read(args.input_anndata)
-#adata = read_anndata(args.input_anndata, use_muon=True, modality=args.modality)
+
+
 adata_path = args.input_anndata +"/" + args.modality
-L.info("Reading in data from '%s'" % adata_path)
-adata = mu.read(args.input_anndata +"/" + args.modality)
-# adata = mdata.mod[args.modality] 
+if os.path.exists(args.input_anndata):
+    L.info("Reading in data from '%s'" % adata_path)
+    adata = mu.read(args.input_anndata +"/" + args.modality)
+else:
+    L.info("missing input anndata")
+
 
 
 
