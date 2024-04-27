@@ -1,0 +1,108 @@
+name: Run tutorials (refmap)
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+env:
+  debug: 'true'
+
+jobs:
+  refmap:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ["ubuntu-latest"] # , "macos-latest", "windows-latest"
+        python-version: ["3.10"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: File tree
+        if: env.debug == 'true'
+        run: tree
+
+      - uses: conda-incubator/setup-miniconda@v3
+        with:
+          miniforge-version: latest
+          auto-activate-base: true
+          auto-update-conda: true
+          channels: conda-forge
+          channel-priority: strict
+          activate-environment: pipeline_env
+          environment-file: pipeline_env.yaml
+
+      - name: Install Panpipes
+        shell: bash -el {0}
+        run: |
+          pip install '.[refmap_old]'
+          conda list
+
+      - name: Conda info
+        if: env.debug == 'true'
+        shell: bash -el {0}
+        run: conda info
+
+      - name: Conda list
+        if: env.debug == 'true'
+        shell: pwsh
+        run: conda list
+
+      # Note: all three files are renamed during the download to trim the "subsample_" prefix
+      - name: Preparing the data
+        run: |
+          mkdir -p reference_mapping && cd reference_mapping
+          mkdir data.dir && cd data.dir
+          curl -L -o pancreas_querydata.h5ad https://figshare.com/ndownloader/files/43166068
+          curl -L -o pancreas_refdata.h5mu https://figshare.com/ndownloader/files/43166074 
+          cd ..
+          mkdir -p models && cd models
+          mkdir -p pancreas_model
+          mkdir -p pancreas_model_scanvi
+          curl -L -o pancreas_model_scanvi/model.pt https://figshare.com/ndownloader/files/43166410
+          curl -L -o pancreas_model/model.pt https://figshare.com/ndownloader/files/43166413
+
+      - name: Preparing the configuration file
+        shell: bash -el {0}
+        run: |
+          cd reference_mapping
+          panpipes refmap config
+
+      - name: Edit the submission file
+        run: |
+          cd reference_mapping
+          curl -o pipeline.yml https://raw.githubusercontent.com/DendrouLab/panpipes-tutorials/main/docs/refmap_pancreas/pipeline.yml
+      #scib is not up to date with scanpy
+      - name: Replace template contents in configuration file
+        run: |
+          cd reference_mapping
+          sed -i 's+/Users/fabiola.curion/Documents/devel/miniconda3/envs/pipeline_env+pipeline_env+g' pipeline.yml
+          sed -i 's+/Users/fabiola.curion/Documents/devel/data_test.dir/data_for_scvi_test/pancreas_model/model.pt+models/pancreas_model/model.pt+g' pipeline.yml
+          sed -i 's+/Users/fabiola.curion/Documents/devel/data_test.dir/data_for_scvi_test/pancreas_model_scanvi/model.pt+models/pancreas_model_scanvi/model.pt+g' pipeline.yml
+          sed -i 's+max_epochs: 200+max_epochs: 20+g' pipeline.yml
+          sed -i 's+run: True+run: False+g' pipeline.yml 
+  
+      - name: File tree
+        if: env.debug == 'true'
+        run: tree reference_mapping
+
+      - name: Review pipeline tasks
+        shell: bash -el {0}
+        run: |
+          cd reference_mapping
+          panpipes refmap show full --local
+
+      - name: Run pipeline tasks
+        shell: bash -el {0}
+        run: |
+          cd reference_mapping
+          panpipes refmap make full --local
+
+      - name: File tree
+        if: env.debug == 'true'
+        run: tree reference_mapping
