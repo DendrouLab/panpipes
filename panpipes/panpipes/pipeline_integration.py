@@ -794,6 +794,7 @@ def run_lisi(infile, outfile):
 @follows(collate_integration_outputs)
 @transform(collate_integration_outputs,)
 def run_scib_metrics(infile, outfile):
+    cell_mtd_file = sprefix + "_cell_mtd.csv"
     cmd = """python %(py_path)s/run_scib.py 
     --combined_umaps_df %(infile)s 
     --cell_meta_df %(cell_mtd_file)s

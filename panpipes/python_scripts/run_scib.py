@@ -1,3 +1,9 @@
+import argparse
+import pandas as pd
+from anndata import AnnData
+from scib_metrics.benchmark import Benchmarker
+from panpipes.funcs.io import read_yaml
+
 import sys
 import logging
 L = logging.getLogger()
@@ -25,24 +31,26 @@ umaps = pd.read_csv(args.combined_umaps_df, sep="\t", index_col=0)
 
 for modality in batch_dict.keys():
     L.info("Computing scib metrics for modality: %s" % modality)
-    # get one df per method for this modality
-    splits = dict(list(umaps[umaps["mod"]==modality].groupby("method")))
-    columns = batch_dict[modality]
-    for k, xx in splits.items():
-        L.info("computing lisi for correction %s" % k)
-        # compute LISI for each batch
-        umap_coords = xx.loc[:,["umap_1", "umap_2"]].to_numpy()
-        # check it"s in the correct order
-        batch_df = cell_meta_df.loc[xx.index,:]
+    # get one UMAP DataFrame per integration method for this modality
+    modality_umaps = dict(list(umaps[umaps["mod"] == modality].groupby("method")))
 
-bm = Benchmarker(
-    adata,
-    batch_key="batch",
-    label_key="cell_type",
-    embedding_obsm_keys=["Unintegrated", "Scanorama", "LIGER", "Harmony", "scVI", "scANVI"],
-    n_jobs=6,
-)
-bm.benchmark()
+    adata = AnnData(X=None)
+    cell_ids = modality_umaps["none"].index
+    adata.obs = cell_meta_df.loc[cell_ids, :]
+    adata.obsm["Unintegrated"] = modality_umaps["none"].loc[:, ["umap_1", "umap_2"]].to_numpy()
+
+    for method, umap_df in modality_umaps.items():
+        adata.obsm[method] = umap_df.loc[cell_ids, ["umap_1", "umap_2"]].to_numpy()
+
+
+    bm = Benchmarker(
+        adata,
+        batch_key=batch_dict[modality],
+        label_key="cell_type",
+        embedding_obsm_keys=["Unintegrated", "Scanorama", "LIGER", "Harmony", "scVI", "scANVI"],
+        n_jobs=6,
+    )
+    bm.benchmark()
 
 
 bm.plot_results_table()
