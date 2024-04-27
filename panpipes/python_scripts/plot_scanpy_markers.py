@@ -124,15 +124,23 @@ else:
 L.info("load marker file")
 mf = pd.read_csv(args.marker_file, sep='\t' )
 mf[args.group_col] = mf['cluster'].astype('category')
+L.info(f"Dimensions of the marker file are: {mf.shape[0]} rows and {mf.shape[1]} columns.")
 
-# get layer
-adata.obs[args.group_col] = mdata.obs[args.group_col]
-do_plots(adata,
-         mod=args.modality, 
-         group_col=args.group_col,
-         mf=mf,
-         layer=args.layer, 
-         n=int(args.n))
+L.info("Top 5 rows of the marker file:")
+L.info("\n" + mf.head().to_string())
+
+ch=mf[mf['avg_logFC'] > 0]
+if mf.shape[0]>=2:
+    # get layer
+    adata.obs[args.group_col] = mdata.obs[args.group_col]
+    do_plots(adata,
+            mod=args.modality, 
+            group_col=args.group_col,
+            mf=mf,
+            layer=args.layer, 
+            n=int(args.n))
+else:
+    L.info("No markers were detected with positive LogFC, no plotting is done")
 
 L.info("Done")
 

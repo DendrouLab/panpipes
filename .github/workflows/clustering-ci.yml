@@ -96,3 +96,7 @@ jobs:
       - name: File tree
         if: env.debug == 'true'
         run: tree clustering
+        
+      - name: Logs tree
+        if: env.debug == 'true'
+        run: tree clustering/logs
