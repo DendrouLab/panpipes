@@ -77,7 +77,7 @@ jobs:
         run: |
           cd reference_mapping
           curl -o pipeline.yml https://raw.githubusercontent.com/DendrouLab/panpipes-tutorials/main/docs/refmap_pancreas/pipeline.yml
-      
+      #scib is not up to date with scanpy
       - name: Replace template contents in configuration file
         run: |
           cd reference_mapping
@@ -85,6 +85,7 @@ jobs:
           sed -i 's+/Users/fabiola.curion/Documents/devel/data_test.dir/data_for_scvi_test/pancreas_model/model.pt+models/pancreas_model/model.pt+g' pipeline.yml
           sed -i 's+/Users/fabiola.curion/Documents/devel/data_test.dir/data_for_scvi_test/pancreas_model_scanvi/model.pt+models/pancreas_model_scanvi/model.pt+g' pipeline.yml
           sed -i 's+max_epochs: 200+max_epochs: 20+g' pipeline.yml
+          sed -i 's+run: True+run: False+g' pipeline.yml 
   
       - name: File tree
         if: env.debug == 'true'
