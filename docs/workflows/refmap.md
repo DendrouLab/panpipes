@@ -4,8 +4,9 @@ The reference mapping pipeline `panpipes refmap` implements scvi-tools reference
 You can supply an query anndata/mudata containing RNA, and the reference model `path_to_model\model.pt`. Since reference and query have to work from the same subset of genes, you can also supply the reference anndata/mudata containing RNA or RNA+PROT (for `totalvi`) so the genes selection can be unified and the resulting plots include the reference cells together with the query.
 Note that you can even use a reference scvi model created previously by `panpipes integration`.
 
-**scvi-tools has implemented some changes and as a result old models (scvi-tools<=1.0) require pandas <2.0. 
-This will be fixed in a future version of scvi-tools. 
+**scvi-tools has implemented some changes and as a result old models (scvi-tools<=1.0) require pandas <2.0. <br>
+https://github.com/scverse/scvi-tools/issues/2387 <br>
+This will be fixed in a future version of scvi-tools. <br>
 To use an old model in `panpipes refmap` please downgrade pandas.** 
 
 ## Steps
