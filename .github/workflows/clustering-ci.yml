@@ -96,8 +96,4 @@ jobs:
       - name: File tree
         if: env.debug == 'true'
         run: tree clustering
-    
-      - name: Check Logs
-        if: env.debug == 'true'
-        run: less clustering/logs/clusteratac_algleiden_res0.2_exprs_atac_dotplots.log
-        
+      
