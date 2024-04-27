@@ -75,7 +75,8 @@ multivipatch = [
 
 refmap_old = [
     "scvi-tools",
-    "pandas<2.0.0"
+    "pandas<2.0.0",
+    "scib"
 ]
 
 
