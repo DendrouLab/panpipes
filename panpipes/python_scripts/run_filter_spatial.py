@@ -101,6 +101,7 @@ if filter_dict['run']:
     # this will go through the modalities one at a time,
     # then the categories max, min and bool
     for mod in mdata.mod.keys():
+        L.info(mod)
         if mod in filter_dict.keys():
             for marg in filter_dict[mod].keys():
                 if marg == "obs":

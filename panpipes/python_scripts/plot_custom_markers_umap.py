@@ -101,6 +101,7 @@ if type(mdata) is AnnData:
 else:
     # we have multimodal object
     for mod in modalities:
+        print(mod)
         df_sub = df[df['mod'] == mod]
         mdata.update_obs()
         try:
@@ -113,6 +114,7 @@ else:
             bb = []
         if len(bb) > 0 :
             for basis, layer in product(bb, ll):
+                print(basis,layer)
                 main(adata=mdata[mod], 
                     mod=mod,
                     layer_choice = layer,

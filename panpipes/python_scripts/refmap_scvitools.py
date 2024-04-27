@@ -144,6 +144,7 @@ else:
     max_epochs = 200
     train_kwargs = {'weight_decay': 0.0}
 
+print(train_kwargs)
 
 if reference_architecture=="scvi":
     L.info("Running scVI")

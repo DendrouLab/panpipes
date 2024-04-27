@@ -91,6 +91,7 @@ for x in wnn_params_bc.keys():
     else: 
         dict_graph[x]["obsm"] = None
 
+L.info(dict_graph)
 
 if dict_graph["rna"]["obsm"] == "X_scvi":
     dict_graph["rna"]["obsm"] = "X_scVI"

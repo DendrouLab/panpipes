@@ -150,7 +150,7 @@ if args.ccgenes is not None:
         sys.exit("The path of the  cell cycle genes tsv file '%s' could not be found" % args.ccgenes)
 
 
-# Aug 2023: we now need to update the mdata object to pick the calc proportion outputs made on 
+#TODO: we now need to update the mdata object to pick the calc proportion outputs made on 
 # spatial = mdata['spatial']
 
 mdata.update()

@@ -219,6 +219,10 @@ if params['multimodal']['totalvi']['training_plan'] is None:
 else:
     totalvi_training_plan =  {k: v for k, v in params['multimodal']['totalvi']['training_plan'].items() if v is not None}
 
+print(totalvi_model_args)
+print(totalvi_training_args)
+print(totalvi_training_plan)
+
 L.info("Defining model")
 vae = scvi.model.TOTALVI(rna, **totalvi_model_args)
 L.info("Running totalVI")
@@ -252,6 +256,7 @@ L.info("Extracting latent space and saving latent to X_totalVI")
 mdata.obsm["X_totalVI"] = vae.get_latent_representation()
 
 if batch_categories is not None:
+    L.debug(batch_categories)
     if type(batch_categories) is not list:
         batch_categories = [batch_categories]
     normX, protein = vae.get_normalized_expression(

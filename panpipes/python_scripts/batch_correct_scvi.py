@@ -149,14 +149,17 @@ scvi.model.SCVI.setup_anndata(
 )
 
 scvi_model_args =  {k: v for k, v in params['rna']['scvi']['model_args'].items() if v is not None}
+print(scvi_model_args)
 scvi_training_args =  {k: v for k, v in params['rna']['scvi']['training_args'].items() if v is not None}
+print(scvi_training_args)
 scvi_training_plan =  {k: v for k, v in params['rna']['scvi']['training_plan'].items() if v is not None}
+print(scvi_training_plan)
 
 L.info("Defining model")
 vae = scvi.model.SCVI(rna, **scvi_model_args) 
 L.info("Running scVI")
 vae.train(**scvi_training_args, plan_kwargs=scvi_training_plan) 
-
+L.info("Finished Training now saving model")
 vae.save(os.path.join("batch_correction", "scvi_model"), 
                   anndata=False)
 

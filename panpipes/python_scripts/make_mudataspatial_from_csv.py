@@ -132,7 +132,7 @@ elif args.spatial_filetype =="visium":
 
 L.info("Resulting AnnData is:")
 L.info(adata)
-L.info("Creating MuData")
+L.info("Creating MuData with .mod['spatial']")
 
 mdata = MuData({"spatial": adata})
 
