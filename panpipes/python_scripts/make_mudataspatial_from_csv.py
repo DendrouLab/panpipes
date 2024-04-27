@@ -61,9 +61,8 @@ parser.add_argument('--spatial_transformation',
 
 parser.set_defaults(verbose=True)
 args, opt = parser.parse_known_args()
-L.info(args)
+L.info("Running with params: %s", args)
 
-L.info("starting the code now")
 # unimodal mu (check if all the modalities)
 if isinstance(args.mode_dictionary, dict):
     mode_dictionary = args.mode_dictionary
@@ -117,6 +116,7 @@ def check_dir_transform(infile_path, transform_file):
 
 
 if args.spatial_filetype=="vizgen":
+    L.info("Reading in Vizgen data with squidpy.read.vizgen() into AnnData from directory " + args.spatial_infile)
     adata = sq.read.vizgen(path = args.spatial_infile, #path, mandatory for squidpy
                         counts_file=args.spatial_counts, #name of the counts file, mandatory for squidpy
                         meta_file = args.spatial_metadata, #name of the metadata file, mandatory for squidpy
@@ -124,13 +124,15 @@ if args.spatial_filetype=="vizgen":
                         library_id = str(args.sample_id)) #this also has kwargs for read_10x_h5 but keep simple
     adata.uns["spatial"][str(args.sample_id)]["scalefactors"]["transformation_matrix"].columns = adata.uns["spatial"][str(args.sample_id)]["scalefactors"]["transformation_matrix"].columns.astype(str)
 elif args.spatial_filetype =="visium":
+    L.info("Reading in Visium data with squidpy.read.visium() into AnnData from directory " + args.spatial_infile)
     adata = sq.read.visium(path = args.spatial_infile, #path, mandatory for squidpy
                         counts_file=args.spatial_counts, #name of the counts file, mandatory for squidpy
                         library_id = str(args.sample_id)
                         ) #this also has kwargs for read_10x_h5 but keep simple
 
-L.info("adata is now: %s" % adata)
-L.info("creating mudata")
+L.info("Resulting AnnData is:")
+L.info(adata)
+L.info("Creating MuData with .mod['spatial']")
 
 mdata = MuData({"spatial": adata})
 
@@ -139,26 +141,28 @@ mdata = MuData({"spatial": adata})
 # do some extra processing on the different modalities as needed
 #---------------
 
+L.info("Making var names unique")
 #make var names unique
 for mm in mdata.mod.keys():
     mdata[mm].var_names_make_unique()
 
+L.info("Adding sample_id '%s'to MuData.obs and MuData.mod['spatial'].obs" % args.sample_id)
 mdata.obs['sample_id'] = str(args.sample_id)
 
 # copy the sample_id to each modality
 for mm in mdata.mod.keys():
-    print("saving sample_id to each modality")
     # mdata[mm].obs['sample_id'] = mdata.obs['sample_id']
     mdata[mm].obs['sample_id'] = mdata.obs.loc[mdata[mm].obs_names,:]['sample_id']
 
 mdata.update()
 
+L.info("Resulting MuData is:")
+L.info(mdata)
 
-L.info("saving data")
+L.info("Saving MuData to '%s'" % args.output_file)
 L.debug(mdata)
-# this will write the file as anndata or muon depending on the class of mdata.
 mdata.write(args.output_file)
 
-L.info("done")
+L.info("Done")
 
 

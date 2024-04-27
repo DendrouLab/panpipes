@@ -62,28 +62,29 @@ def check_log1p_dict(adata):
 
 
 def load_and_merge_clusters(adata, cluster_file):
-    # load clusterss
+    # load clusters
     df = pd.read_csv(cluster_file, sep="\t", index_col=0)
     adata_shape = adata.shape
     # add clusters to adata.obs
     adata.obs = pd.merge(adata.obs, df, how="left", left_index=True, right_index=True)
     # check check we have not lost cells in merge
     if adata.shape != adata_shape:
-        L.info("some cells lost in merge, not all cells have a cluster?")
+        L.warning("Some cells lost in merge, not all cells have a cluster?")
     L.debug(adata.shape)
 
 
 def get_header():
     # write out the correct header before we start, need to werite it out before, because we use append mode for the multimodal find markers
     # and we don't wantto end up with a new header half
-    if sc.__version__ < "1.7.0":
+    if sc.__version__ < "1.07.0":
         markers_columns = ['cluster', 'scores', 'gene', 'avg_logFC', 'pvals', 'p.adj.bonferroni']
-    elif sc.__version__ >= "1.7.0":
+    elif sc.__version__ >= "1.07.0":
         markers_columns = ['cluster', 'gene', 'scores', 'avg_logFC', 'pvals', 'p.adj.bonferroni']
     return markers_columns
 
 
 def filter_zero_count_genes(adata, layer=None):
+    L.info("Removing zero count genes")
     if layer is None:
         if issparse(adata.X):
             bool_list = (adata.X.sum(axis=0) > 0).tolist()[0]
@@ -109,7 +110,7 @@ def run_clustering(adata,
         cluster_groups = [str(x) for x in cluster_groups]
     adata.obs[cluster_col] = adata.obs[cluster_col].astype('str').astype('category')
     if pseudo_seurat:
-        L.info('running rank gene groups with pseudo-seurat method')
+        L.info('Running rank gene groups with pseudo-seurat method')
         markers, filter_stats = find_all_markers_pseudo_seurat(adata,   
                                         groups=cluster_groups, 
                                         groupby=cluster_col, 
@@ -123,7 +124,7 @@ def run_clustering(adata,
         markers = markers.reset_index().drop(columns='level_1').rename(columns={'level_0':'gene'})
     else:
         # find markers
-        L.info('running rank gene groups with standard scanpy implementation')
+        L.info('Running rank gene groups with standard scanpy implementation')
         sc.tl.rank_genes_groups(adata, 
                                 groups=cluster_groups, 
                                 groupby=cluster_col, 
@@ -132,7 +133,6 @@ def run_clustering(adata,
                                 corr_method="bonferroni",
                                 layer=layer)
         markers = sc.get.rank_genes_groups_df(adata, group=None)
-        L.info("Rank gene groups complete")
         filter_stats = None
     return markers, filter_stats
 
@@ -147,8 +147,8 @@ def main(adata,
          output_file_prefix="markers") :
     # check the X slot actually contains data
     if adata.X.shape[1] == 0:
-        L.info("exiting because adata.X contains no values")
-        sys.exit("exiting because adata.X contains no values")
+        L.error(".X does not contain any values")
+        sys.exit(".X does not contain any values")
     # prevent log1p base error.
     check_log1p_dict(adata)
     # load clusters
@@ -160,7 +160,7 @@ def main(adata,
         min_cell_df = adata.obs['clusters'].value_counts() 
         if any(min_cell_df < mincells):
             exclude = min_cell_df[min_cell_df < mincells].index
-            L.info('exluding clusters for haveing too few cells: %s' % str(list(exclude)))
+            L.info('Exluding clusters for having < %s cells: %s' % (mincells,str(list(exclude))))
             clust_vals = list(set(min_cell_df[min_cell_df >= mincells].index))
         else:
             clust_vals = list(set(adata.obs["clusters"]))
@@ -173,30 +173,35 @@ def main(adata,
     # make sure all files have consitent headers
     all_markers.columns = get_header()
     all_markers['mod'] = mod
+    L.info("Saving all markers to " + output_file_prefix + ".txt")
     all_markers.to_csv(output_file_prefix + ".txt", index=False, sep='\t')
     # subset to significant markers
+    L.info("Subsetting to significant markers with Bonferroni < 0.05 and avg logFC > 0")
     signif_markers = all_markers[(all_markers["p.adj.bonferroni"] < 0.05) &( all_markers.avg_logFC > 0)]
     if signif_markers.shape[0] !=0:
+        L.info("Saving significant markers to " + output_file_prefix + mod + "_signif.txt")
         signif_markers.to_csv(output_file_prefix + mod + "_signif.txt", index=False, sep='\t')
         # write out to excel
+        L.info("Saving significant markers to excel file")
         excel_file_top = output_file_prefix + mod + "_signif.xlsx"
         with pd.ExcelWriter(excel_file_top) as writer:
             for xx in signif_markers.cluster.unique():
                 df_sub = signif_markers[signif_markers.cluster == xx]
                 if df_sub.shape[0] !=0:
                     df_sub.to_excel(writer, sheet_name="cluster" + str(xx), index=False)
+    else:
+        L.warning("No significant markers found!")
     #  when relevent write out filter stats
     if pseudo_seurat is True:
+        L.info("Saving filter statistics to " + output_file_prefix + "_filter_stats_" + mod + ".txt")
         all_filter_stats = all_filter_stats.reset_index().rename(columns={'index':'cluster'})
         all_filter_stats.to_csv(output_file_prefix + "_filter_stats_" + mod + ".txt", index=False, sep="\t")
 
 
-
-L.info("Running with options")
-L.info(args)
-L.info('\n')
+L.info("Running with params: %s", args)
 
 # read data
+L.info("Reading in MuData from '%s'" % args.infile)
 mdata = read(args.infile)
     
 
@@ -206,9 +211,9 @@ if type(mdata) is AnnData:
 elif type(mdata) is MuData and args.modality is not None:
     adata = mdata[args.modality]    
 else:
-    sys.exit('if inputting a mudata object, you need to specify a modality')
+    L.error("If the input is a MuData object, a modality needs to be specified")
+    sys.exit('If the input is a MuData object, a modality needs to be specified')
     
-
 
 main(adata, 
      mod=args.modality,
@@ -219,5 +224,6 @@ main(adata,
     pseudo_seurat=args.pseudo_seurat,
     output_file_prefix=args.output_file_prefix)
 
-L.info("done")
+
+L.info("Done")
 

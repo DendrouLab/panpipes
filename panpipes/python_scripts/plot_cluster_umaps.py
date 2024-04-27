@@ -33,8 +33,7 @@ parser.add_argument("--modalities",
                     help="list of modalities to search for UMAPs in")
 args, opt = parser.parse_known_args()
 
-L.info("running with:")
-L.info(args)
+L.info("Running with params: %s", args)
 # args = argparse.Namespace(infile='mdata_clustered.h5mu', figdir=None)
 # ---------
 
@@ -42,11 +41,11 @@ def main(adata,figdir):
     # get all possible umap coords
     pattern="X_umap(.*)"
     obsm_keys = [x for x in adata.obsm.keys() if re.search(pattern, x)]
-    L.info("Umap keys founds %s" % obsm_keys)
-    # get all possible clustersclusters
+    L.info("UMAP keys found: %s" % obsm_keys)
+    # get all possible clusters
     pattern=re.compile(r'^leiden|^louvain') 
     cluster_keys  = [x for x in adata.obs.columns if re.search(pattern, x)]
-    L.info("Cluster keys founds %s" % cluster_keys)
+    L.info("Cluster keys found: %s" % cluster_keys)
     if len(obsm_keys) == 0  or len(cluster_keys) == 0:
         return
     
@@ -55,22 +54,24 @@ def main(adata,figdir):
         adata.obs[ck] = adata.obs[ck].astype('category')
     # plot all the umaps
     for ok in obsm_keys:
+        L.info("Plotting UMAP on %s coloured by %s" % (ok, cluster_keys))
         fig = sc.pl.embedding(adata, basis = ok,color=cluster_keys,
          show=False, return_fig=True, legend_loc='on data')
         for ax in fig.axes:
             ax.set(xlabel="UMAP_1", ylabel="UMAP_2")
         fig.suptitle(ok, y=1.0)
+        L.info("Saving figure to '%s'" % os.path.join(figdir, ok +  "_clusters.png"))
         fig.savefig(os.path.join(figdir, ok +  "_clusters.png"))
 
 def plot_spatial(adata,figdir):
     # get all possible umap coords
     pattern="spatial(.*)"
     obsm_keys = [x for x in adata.obsm.keys() if re.search(pattern, x)]
-    L.info("Umap keys founds %s" % obsm_keys)
+    L.info("UMAP keys found: %s" % obsm_keys)
     # get all possible clustersclusters
     pattern=re.compile(r'^leiden|^louvain') 
     cluster_keys  = [x for x in adata.obs.columns if re.search(pattern, x)]
-    L.info("Cluster keys founds %s" % cluster_keys)
+    L.info("Cluster keys found: %s" % cluster_keys)
     if len(obsm_keys) == 0  or len(cluster_keys) == 0:
         return
     
@@ -79,15 +80,18 @@ def plot_spatial(adata,figdir):
         adata.obs[ck] = adata.obs[ck].astype('category')
     # plot all the umaps
     for ok in obsm_keys:
+        L.info("Plotting UMAP on %s coloured by %s" % (ok, cluster_keys))
         fig = sc.pl.embedding(adata, basis = ok,color=cluster_keys,
          show=False, return_fig=True, legend_loc='on data')
         for ax in fig.axes:
             ax.set(xlabel="spatial1", ylabel="spatial2")
         fig.suptitle(ok, y=1.0)
+        L.info("Saving figure to '%s'" % os.path.join(figdir, ok +  "_clusters.png"))
         fig.savefig(os.path.join(figdir, ok +  "_clusters.png"))
 
 
-L.debug("load data")
+
+L.info("Reading in MuData from '%s'" % args.infile)
 mdata = read(args.infile)
 
 mods = args.modalities.split(',')
@@ -97,6 +101,7 @@ mods = args.modalities.split(',')
 if 'multimodal' in mods:
     if os.path.exists("multimodal/figures") is False:
         os.makedirs("multimodal/figures")
+    L.info("Plotting multimodal figures")
     main(mdata, figdir="multimodal/figures")
 
 
@@ -104,7 +109,7 @@ if 'multimodal' in mods:
 if type(mdata) is MuData:
     for mod in mdata.mod.keys():
         if mod in mods:
-            L.info("plotting for modality: %s" % mod)
+            L.info("Plotting for modality: %s" % mod)
             figdir  = os.path.join(mod, "figures")
             if os.path.exists(figdir) is False:
                 os.makedirs(figdir)
@@ -115,6 +120,4 @@ if type(mdata) is MuData:
 
 
 
-
-
-L.info('done')
+L.info('Done')

@@ -53,6 +53,7 @@ parser.add_argument('--scvi_seed',default=None,
 
 
 args, opt = parser.parse_known_args()
+L.info("Running with params: %s", args)
 
 # scanpy settings
 sc.set_figure_params(facecolor="white")
@@ -74,8 +75,7 @@ if test_script:
     params['MultiVI']['training_args']['max_epochs'] = 10
 
 # ------------------------------------------------------------------
-L.info("Running multivi")
-
+L.info("Reading in MuData from '%s'" % args.scaled_anndata)
 mdata = mu.read(args.scaled_anndata)
 rna = mdata['rna'].copy()
 atac = mdata['atac'].copy()
@@ -84,9 +84,9 @@ del mdata
 
 if check_for_bool(params["multimodal"]["MultiVI"]["lowmem"]):
     if 'hvg' in atac.uns.keys():
-        L.info("subsetting atac to top HVF")
+        L.info("Subsetting ATAC to HVFs")
         atac = atac[:, atac.var.highly_variable].copy()
-    L.info("calculating and subsetting atac to top 25k HVF")
+    L.info("Calculating and subsetting ATAC to top 25k HVF")
     sc.pp.highly_variable_genes(atac, n_top_genes=25000)
     atac = atac[:, atac.var.highly_variable].copy()
 
@@ -103,8 +103,8 @@ gc.collect()
 if rna.shape[0] == atac.shape[0]:
     n=int(rna.shape[0])
 else:
-    sys.exit("rna and atac have different number of cells, \
-        can't deal with this in this version of MultiVI integration")
+    sys.exit("RNA and ATAC have different number of cells, \
+        Can't deal with this in this version of MultiVI integration")
 
 gc.collect()
 
@@ -113,24 +113,27 @@ n_regions = len(atac.var_names)
 
 
 if "raw_counts" in rna.layers.keys():
-    L.info("raw counts found in layer for RNA")
+    L.info("Found raw RNA counts in .layers['raw_counts']")
 elif X_is_raw(rna):
     # this means the X layer is already raw and we can make the layer we need
-    L.info("raw counts found in X for RNA")
+    L.info("Found raw RNA counts in .X. Saving raw RNA counts to .layers['raw_counts']")
     rna.layers["raw_counts"] = rna.X.copy()
 else:
-    sys.exit("please provide a mu/anndata with raw counts for RNA")
+    L.error("Could not find raw counts for RNA in .X and .layers['raw_counts']")
+    sys.exit("Could not find raw counts for RNA in .X and .layers['raw_counts']")
+
 
 if "raw_counts" in atac.layers.keys():
-    L.info("raw counts found in layer for ATAC")
+     L.info("Found raw ATAC counts in .layers['raw_counts']")
 elif X_is_raw(atac):
     # this means the X layer is already raw and we can make the layer we need
-    L.info("raw counts found in X for ATAC")
+    L.info("Found raw ATAC counts in .X. Saving raw ATAC counts to .layers['raw_counts']")
     atac.layers["raw_counts"] = atac.X.copy()
 else:
-    sys.exit("please provide a mu/anndata with raw counts for ATAC")
+    L.error("Could not find raw counts for ATAC in .X and .layers['raw_counts']")
+    sys.exit("Could not find raw counts for ATAC in .X and .layers['raw_counts']")
 
-L.info("concatenating modalities to comply with multiVI")
+L.info("Concatenating modalities to comply with multiVI")
 # adata_paired = ad.concat([rna, atac], join="outer")
 # adata_paired.var = pd.concat([rna.var,atac.var])
 if rna.is_view:
@@ -139,10 +142,6 @@ if rna.is_view:
 if atac.is_view:
     L.info("ATAC is view")
     atac = atac.copy()
-
-L.info(atac.is_view)
-
-
 adata_paired = ad.concat([rna.T, atac.T]).T
 
 rna_cols=rna.obs.columns
@@ -157,7 +156,6 @@ adata_paired.obs = pd.merge(rnaobs, atacobs, left_index=True, right_index=True)
 if "modality" not in adata_paired.obs.columns:
     adata_paired.obs["modality"] = "paired" 
 
-print(adata_paired)
 
 # adata = ad.concat([rna,atac],join="outer")
 # adata.var = pd.concat([rna.var,atac.var])
@@ -165,6 +163,8 @@ print(adata_paired)
 del [rna , atac ]
 gc.collect()
 
+
+L.info("Organizing multiome AnnDatas")
 adata_mvi = scvi.data.organize_multiome_anndatas(adata_paired)
 
 
@@ -175,10 +175,8 @@ if args.integration_col_categorical is not None :
     columns = []
     for cc in cols:
         if cc in rna_cols:
-            print("categorical batch covariate in rna")
             columns.append("rna:"+cc)
         elif cc in atac_cols:
-            print("categorical batch covariate in atac")
             columns.append("atac:"+cc)
 if args.integration_col_continuous is not None :
     if args.integration_col_continuous in rna_cols:
@@ -192,7 +190,7 @@ kwargs = {}
 if columns is not None:
     print(columns)
     if len(columns) > 1:
-        L.info("using 2 columns to integrate on more variables")
+        L.info("Using 2 columns to integrate on more variables")
         # bc_batch = "_".join(columns)
         adata_mvi.obs["bc_batch"] = adata_mvi.obs[columns].apply(lambda x: '|'.join(x), axis=1) 
         # make sure that batch is a categorical
@@ -209,10 +207,10 @@ if args.integration_col_continuous is not None :
     adata_mvi.obs['bc_batch_continuous'] = adata_mvi.obs[args.integration_col_continuous]
     kwargs['continuous_covariate_keys'] = ["bc_batch_continuous"]
 
-print(kwargs)
 
 # 1 setup anndata
 #scvi.model.MULTIVI.setup_anndata(adata_mvi, batch_key='modality', **kwargs)
+L.info("Setting up AnnData")
 scvi.model.MULTIVI.setup_anndata(
     adata_mvi, 
     batch_key='modality',
@@ -224,8 +222,7 @@ if params["multimodal"]['MultiVI']['model_args'] is None:
 else:
     multivi_model_args =  {k: v for k, v in params["multimodal"]['MultiVI']['model_args'].items() if v is not None}
 
-print(multivi_model_args)
-
+L.info("Defining model")
 mvi = scvi.model.MULTIVI(
     adata_mvi,
     n_genes=n_genes,
@@ -239,23 +236,21 @@ if params["multimodal"]["MultiVI"]["training_args"] is None:
     multivi_training_args={}
 else:
     multivi_training_args =  {k: v for k, v in params["multimodal"]['MultiVI']['training_args'].items() if v is not None}
-L.info("multivi training args")
-print(multivi_training_args)
 
 if params["multimodal"]['MultiVI']['training_plan'] is None:
     multivi_training_plan = {}
 else:
     multivi_training_plan =  {k: v for k, v in params["multimodal"]['MultiVI']['training_plan'].items() if v is not None}
-L.info("multivi training plan")
-print(multivi_training_plan)
 
 mvi.view_anndata_setup()
 
+L.info("Running multiVI")
 mvi.train( **multivi_training_args, **multivi_training_plan)
 
 mvi.save(os.path.join("batch_correction", "multivi_model"), 
                   anndata=False)
 
+L.info("Plotting ELBO")
 plt.plot(mvi.history["elbo_train"], label="train")
 plt.plot(mvi.history["elbo_validation"], label="validation")
 plt.title("Negative ELBO over training epochs")
@@ -272,6 +267,7 @@ L.info("""We support the use of mudata as a general framework for multimodal dat
             """)
 
 mdata = mu.read(args.scaled_anndata)
+L.info("Extracting latent space and saving latent to X_MultiVI")
 mdata.obsm["X_MultiVI"] = mvi.get_latent_representation()
 #adata_mvi.obsm["X_MultiVI"] = mvi.get_latent_representation()
 
@@ -279,6 +275,7 @@ if int(args.neighbors_n_pcs) > mdata.obsm['X_MultiVI'].shape[1]:
     L.warn(f"N PCs is larger than X_MultiVI dimensions, reducing n PCs to  {mdata.obsm['X_MultiVI'].shape[1] -1}")
 n_pcs= min(int(args.neighbors_n_pcs), mdata.obsm['X_MultiVI'].shape[1]-1)
 
+L.info("Computing neighbors")
 run_neighbors_method_choice(mdata, 
     method=args.neighbors_method, 
     n_neighbors=int(args.neighbors_k), 
@@ -286,12 +283,16 @@ run_neighbors_method_choice(mdata,
     metric=args.neighbors_metric, 
     use_rep='X_MultiVI',
     nthreads=max([threads_available, 6]))
+L.info("Computing UMAP")
 sc.tl.umap(mdata, min_dist=0.4)
+L.info("Computing Leiden clustering")
 sc.tl.leiden(mdata, key_added="leiden_multiVI")
 
+L.info("Saving UMAP coordinates to csv file '%s" % args.output_csv)
 umap = pd.DataFrame(mdata.obsm['X_umap'], mdata.obs.index)
 umap.to_csv(args.output_csv)
 
+L.info("Saving MuData to 'tmp/multivi_scaled_adata.h5mu'")
 write_anndata(mdata, "tmp/multivi_scaled_adata.h5mu",use_muon=False)
 
 L.info("Done")

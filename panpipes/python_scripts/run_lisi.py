@@ -22,14 +22,17 @@ parser.add_argument("--cell_meta_df")
 parser.add_argument("--integration_dict")
 parser.add_argument("--fig_dir")
 args = parser.parse_args()
-L.info(args)
+L.info("Running with params: %s", args)
 
 # load combined umaps and cellmtd file
 # load metadata
+L.info("Reading in cell metadata from '%s'" % args.cell_meta_df)
 cell_meta_df = pd.read_csv(args.cell_meta_df, index_col=0)
+L.info("Reading in batch dictionary from '%s" % args.integration_dict)
 batch_dict = read_yaml(args.integration_dict)
+L.info("Reading in UMAP coordinates from '%s'" % args.combined_umaps_df)
 umaps = pd.read_csv(args.combined_umaps_df, sep="\t", index_col=0)
-L.info("fixing the batch_keys dictionary")
+
 for k in batch_dict.keys():
     v=batch_dict[k]
     if k =="multimodal":
@@ -55,17 +58,17 @@ for k in batch_dict.keys():
         mod_meta_df= cell_meta_df[v].dropna()
         cell_meta_df[str(k)+ ":bc_batch"] = mod_meta_df.apply(lambda x: "|".join(str(x)), axis=1)
         batch_dict[k].append(k+ ":bc_batch")
-    L.info("batch keys %s" %(batch_dict[k]))
+    L.info("Batch keys %s" %(batch_dict[k]))
 
 
 for md in batch_dict.keys():
-    L.info("Running lisi on modality: %s" % md)
+    L.info("Running LISI on modality: %s" % md)
     # get one df per method for this modality
     splits = dict(list(umaps[umaps["mod"]==md].groupby("method")))
     lisi_results = []
     columns = batch_dict[md]
     for k, xx in splits.items():
-        L.info("computing lisi for correction %s" % k)
+        L.info("Computing LISI for correction %s" % k)
         # compute LISI for each batch
         umap_coords = xx.loc[:,["umap_1", "umap_2"]].to_numpy()
         # check it"s in the correct order
@@ -74,9 +77,10 @@ for md in batch_dict.keys():
         lisi_results.append(pd.DataFrame(res, index=batch_df.index, columns=columns))
     # put LISI scores into a pandas df
     lisi_df = pd.concat(lisi_results, keys=splits.keys()).reset_index().rename(columns={"level_0":"method", "level_1":"cellbarcode", "index":"cellbarcode"})
+    L.info("Saving LISI scores to csv file")
     lisi_df.to_csv(os.path.join(args.fig_dir, md, "LISI_scores.csv"), index=False)
     # # make a density  plot of LISI scores.
-    L.info("plotting lisi density")
+    L.info("Plotting LISI density")
     plot_df = lisi_df.melt(id_vars=['cellbarcode', 'method'], var_name="integration_variable", value_name="LISI score")
     plot_df["integration_variable"] = plot_df["integration_variable"].astype("category")
     plot_df = plot_df.rename(columns={"method": "Correction"})

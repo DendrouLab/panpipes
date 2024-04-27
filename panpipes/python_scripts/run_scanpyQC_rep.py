@@ -51,10 +51,13 @@ parser.add_argument("--clonotype_metrics",
                     help="what metrics to calculate sequence distance metric? \
                     any arguments from scirpy.pp.define_clonotypes as a dict in format'{arg: value}' ")
 args, opt = parser.parse_known_args()
-L.info(args)
+L.info("Running with params: %s", args)
+
+L.info("Reading in MuData from '%s'" % args.input_mudata)
 mdata = mu.read(args.input_mudata)
 rep = mdata['rep']
 # chain qc
+L.info("Running scirpy.tl.chain_qc()")
 ir.tl.chain_qc(rep)
 
 # remove nones, so defaults are used
@@ -65,9 +68,8 @@ if args.distance_metrics is not None:
 else:
     dist_args = {}
 
-L.info("distance args:")
-L.info(dist_args)
-
+L.info("Distance args: %s" % dist_args)
+L.info("Computing sequence-distance metric")
 ir.pp.ir_dist(rep, **dist_args)
 
 # pull function arguments from args. 
@@ -78,10 +80,10 @@ if args.clonotype_metrics is not None:
 else:
     clonotype_args={}
 # define clonotypes
-L.info("clonotypes args:")
-L.info(clonotype_args)
-
+L.info("Clonotypes args: %s" % clonotype_args)
+L.info("Defining clonotypes")
 ir.tl.define_clonotypes(rep, **clonotype_args)
+L.info("Adding column to obs recording which clonotypes are expanded")
 ir.tl.clonal_expansion(rep)
 
     
@@ -102,6 +104,7 @@ else:
     tcr=None
 
 # plot group abundances
+L.info("Plotting group abundances")
 fig, ax = plt.subplots()
 ax = ir.pl.group_abundance(rep, groupby="receptor_type", ax=ax)
 fig.savefig(args.figdir +"/barplot_group_abundance_receptor_type.png", bbox_inches="tight")
@@ -120,6 +123,7 @@ if tcr is not None:
 
 # clonal expansion
 
+L.info("Plotting clonal expansion")
 clone_counts = rep.obs.groupby("receptor_type").clone_id.value_counts().to_frame("cell_counts").reset_index()
 
 if bcr is not None:
@@ -133,10 +137,12 @@ if tcr is not None:
     plt.savefig(args.figdir +"/barplot_clonal_expansion_tcr.png", bbox_inches="tight")
 
 
-L.info("saving anndata and obs in a metadata tsv file")
+
 mdata.update()
+L.info("Saving updated obs in a metadata tsv file to ./" + args.sampleprefix + "_cell_metadata.tsv")
 write_obs(mdata, output_prefix=args.sampleprefix, 
     output_suffix="_cell_metadata.tsv")
+L.info("Saving updated MuData to '%s'" % args.output_mudata)
 mdata.write(args.output_mudata)
 
 L.info("Done")

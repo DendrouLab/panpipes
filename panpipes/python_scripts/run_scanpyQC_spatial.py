@@ -51,13 +51,10 @@ parser.add_argument("--score_genes",
 
 args, opt = parser.parse_known_args()
 
-L.info("running scanpy spatial qc pipeline")
-
 sc.settings.verbosity = 3
 
 
-L.info("running with args:")
-L.info(args)
+L.info("Running with params: %s", args)
 figdir = args.figdir
 
 if not os.path.exists(figdir):
@@ -67,22 +64,25 @@ sc.settings.figdir = figdir
 sc.set_figure_params(scanpy=True, fontsize=14, dpi=300, facecolor='white', figsize=(5,5))
 
 
-L.info("reading in data")
+L.info("Reading in MuData from '%s'" % args.input_anndata)
 
 mdata = mu.read(args.input_anndata)
 spatial = mdata['spatial']
 
-L.info("spatial data is")
+L.info("Spatial data is:")
 print(spatial)
-L.info("sample id")
-print(spatial.obs["sample_id"])
+L.info("With sample id '%s'" % spatial.obs["sample_id"].unique()[0])
 
 qc_vars = []
 
 if args.customgenesfile is not None:
     if os.path.exists(args.customgenesfile):
+        L.info("Reading in custom genes file from '%s'" % args.customgenesfile)
         cat_dic = {}
         customgenes = pd.read_csv(args.customgenesfile)
+        if not {'group', 'feature'}.issubset(customgenes.columns):
+            L.error("The custom genes file needs to have both columns, 'group' and 'feature'.")
+            sys.exit("The custom genes file needs to have both columns, 'group' and 'feature'.")
         custom_cat = list(set(customgenes['group'].tolist()))
         for cc in custom_cat:
             cat_dic[cc] = customgenes.loc[customgenes["group"] == cc,"feature"].tolist()
@@ -96,14 +96,13 @@ if args.customgenesfile is not None:
                 gene_list = cat_dic[kk]
                 spatial.var[xname] = [x in gene_list for x in spatial.var_names] 
                 qc_vars.append(xname)
-        else:
-            L.info("no genes to calc proportions for")
            
         # Score genes 
         if args.score_genes is not None:
             score_genes = args.score_genes.split(",")
             score_genes = [a.strip() for a in score_genes]
             for kk in score_genes:
+                L.info("Computing gene scores for '%s'" % kk)
                 xname= kk
                 gene_list = cat_dic[kk]
                 sc.tl.score_genes(spatial, gene_list , 
@@ -114,17 +113,19 @@ if args.customgenesfile is not None:
                                     random_state=0, 
                                     copy=False, 
                                     use_raw=None)
-        else:
-            L.info("no genes to calc scores for")    
         
     else:
-        sys.exit("the path of the custom genes file does not exist")
+        L.error("The path of the custom genes file '%s' could not be found" % args.customgenesfile)
+        sys.exit("The path of the custom genes file '%s' could not be found" % args.customgenesfile)
 
         
         
         
 # Calculate QC metrics 
-L.info("calculating QC metrics")
+qc_info = ""
+if qc_vars != []:
+    qc_info = " and calculating proportions for '%s'" % qc_vars
+L.info("Calculating QC metrics with scanpy.pp.calculate_qc_metrics()" + qc_info)
 percent_top = [50, 100, 200, 500] #default
 percent_top = [x for x in percent_top if x <= spatial.n_vars]
 sc.pp.calculate_qc_metrics(spatial, qc_vars=qc_vars, percent_top=percent_top, inplace=True)
@@ -134,28 +135,33 @@ if (args.spatial_filetype == "vizgen") and ("blank_genes" in spatial.obsm):
 
 # Calculate cc scores 
 if args.ccgenes is not None:
-    ccgenes = pd.read_csv(args.ccgenes, sep='\t')
-    sgenes = ccgenes[ccgenes["cc_phase"] == "s"]["gene_name"].tolist()
-    g2mgenes = ccgenes[ccgenes["cc_phase"] == "g2m"]["gene_name"].tolist()
-    L.info("calculating CC scores")
-    sc.tl.score_genes_cell_cycle(spatial, s_genes=sgenes, g2m_genes=g2mgenes)
+    if os.path.exists(args.ccgenes):
+        L.info("Reading in cell cycle genes tsv file from '%s'" % args.ccgenes)
+        ccgenes = pd.read_csv(args.ccgenes, sep='\t')
+        if not {'cc_phase', 'gene_name'}.issubset(ccgenes.columns):
+            L.error("The cell cycle genes file needs to have both columns, 'cc_phase' and 'gene_name'.")
+            sys.exit("The cell cycle genes file needs to have both columns, 'cc_phase' and 'gene_name'.")
+        sgenes = ccgenes[ccgenes["cc_phase"] == "s"]["gene_name"].tolist()
+        g2mgenes = ccgenes[ccgenes["cc_phase"] == "g2m"]["gene_name"].tolist()
+        L.info("Calculating cell cycle scores")
+        sc.tl.score_genes_cell_cycle(spatial, s_genes=sgenes, g2m_genes=g2mgenes)
+    else: 
+        L.error("The path of the  cell cycle genes tsv file '%s' could not be found" % args.ccgenes)
+        sys.exit("The path of the  cell cycle genes tsv file '%s' could not be found" % args.ccgenes)
 
-# Aug 2023: we now need to update the mdata object to pick the calc proportion outputs made on 
+
+#TODO: we now need to update the mdata object to pick the calc proportion outputs made on 
 # spatial = mdata['spatial']
-print(spatial.obs.columns)
-print(mdata.obs.columns)
 
 mdata.update()
 
 single_id = os.path.basename(str(args.input_anndata))
 single_id = single_id.replace("_raw.h5mu","")
-L.info("updated metadata")
-print(mdata.obs.columns)
 
-L.info("saving obs in a metadata tsv file")
+L.info("Saving updated obs in a metadata tsv file to ./" + single_id + "_cell_metadata.tsv")
 write_obs(mdata, output_prefix=single_id, output_suffix="_cell_metadata.tsv")
-L.info("saving mudata")
+L.info("Saving updated MuData to '%s'" % args.outfile)
 mdata.write(args.outfile)
 
-L.info("done")
+L.info("Done")
 

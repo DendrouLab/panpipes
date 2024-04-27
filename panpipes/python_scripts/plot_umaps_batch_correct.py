@@ -33,7 +33,7 @@ parser.add_argument("--qc_dict", default=None)
 args, opt = parser.parse_known_args()
 
 
-L.info(args)
+L.info("Running with params: %s", args)
 palette_choice = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
 # cmap_choice = "BuPu" # previous default = "viridis"
 bupu = cm.get_cmap('BuPu', 512)
@@ -42,10 +42,13 @@ dpi_use = 400 # previous default of 300 made the plots look blurry with high cel
 
 
 # load metadata
+L.info("Reading in cell metadata from '%s'" % args.cell_meta_df)
 cell_meta_df = pd.read_csv(args.cell_meta_df, index_col=0)
+L.info("Reading in UMAP coordinates from '%s'" % args.combined_umaps_tsv)
 umaps_df = pd.read_csv(args.combined_umaps_tsv, sep='\t', index_col=0)
 umaps_df = pd.merge(umaps_df, cell_meta_df, left_index=True, right_index=True)
 
+L.info("Reading in batch dictionary from '%s" % args.batch_dict)
 batch_dict = read_yaml(args.batch_dict)
 
 # parse the qc dict
@@ -59,13 +62,12 @@ else:
 grpvar = [x.replace (" " ,"") for x in qc_dict['grouping_var'].split(",")]
 grpvar = [value for value in grpvar if value in cell_meta_df.columns] 
 del qc_dict['grouping_var']
-L.info("additional grouping vars:")
 # merge with the batch columns 
 from itertools import chain
 all_grpvar = list(batch_dict.values()) + [grpvar]
 # unnest the list
 grpvar = list(set(chain(*all_grpvar)))
-L.info(grpvar)
+L.info("Grouping vars used: %s" % grpvar)
 
 # modality level metrics
 # remove metrics from keys
@@ -77,8 +79,7 @@ qc_dict = {k: v.split(',') for k, v in qc_dict.items() if v is not None}
 qc_dict ={i: [a.strip(" ") for a in j ] for i,j in qc_dict.items()}
 # make sure mod: prefaces each metric
 qc_dict = {k: [k + ":" + vi if ":" not in vi else vi for vi in v ]  for k, v in qc_dict.items()}
-L.info("additional qc vars:")
-L.info(qc_dict)
+L.info("Additional QC vars: %s" % qc_dict)
 
 
 # do plots
@@ -86,7 +87,7 @@ for mod in umaps_df['mod'].unique():
     # create directory if it doesn't exist
     if os.path.exists(os.path.join(args.fig_dir, mod)) is False:
         os.mkdir(os.path.join(args.fig_dir, mod))
-    L.info("plotting modality: %s" % mod)
+    L.info("Plotting modality: %s" % mod)
     plt_df = umaps_df[umaps_df['mod'] == mod].copy()
     pointsize = 100000 / plt_df.shape[0]
     plt_df["method"] = plt_df["method"].astype("category")
@@ -107,7 +108,7 @@ for mod in umaps_df['mod'].unique():
     # keep only the columns that are actually in plt_df
     columns = [cl for cl in columns if cl in plt_df.columns ]
     for col in columns:
-        L.info("plotting grouping var %s" % col)
+        L.info("Plotting grouping var %s" % col)
         # make sure everything is a category so that when they get plotted it's the same color
         plt_df[col] = plt_df[col].astype(str).astype('category')
         plt_df = plt_df.sample(frac=1).reset_index(drop=True)
@@ -148,7 +149,7 @@ for mod in umaps_df['mod'].unique():
                 else:
                     axes=[axes]
                 if pd.api.types.is_numeric_dtype(plt_df[qc]):
-                    L.info("plotting qc var (numeric) %s" % qc)
+                    L.info("Plotting QC var (numeric) %s" % qc)
                     for idx, mm in enumerate(plt_df['method'].cat.categories):
                         im = axes[idx].scatter(data=plt_df[plt_df['method']== mm], 
                                         x="umap_1",
@@ -172,13 +173,13 @@ for mod in umaps_df['mod'].unique():
                     # this is a categorical colored plot
                     plt_df[qc] = plt_df[qc].fillna('nan')
                     if len(plt_df[qc].unique()) < 40:
-                        L.info("plotting qc var (categorical) %s"%qc)
+                        L.info("Plotting QC var (categorical) %s"%qc)
                         g = sns.FacetGrid(plt_df, col="method", col_wrap=3, sharex=False, sharey=False)
                         g = (g.map(sns.scatterplot, "umap_1", "umap_2", qc, s=pointsize, linewidth=0))
                         plt.legend(loc = 'center left', bbox_to_anchor = (1, 0.5), markerscale = 20)
                         g.savefig(os.path.join(args.fig_dir, mod, "umap_method_" + qc + ".png"), dpi = dpi_use)
                         plt.clf()
                     else:
-                        L.info('skipping plot as too many categories %s' % qc )
+                        L.info('Skipping plot as too many categories %s' % qc )
 
-L.info('done')
+L.info('Done')

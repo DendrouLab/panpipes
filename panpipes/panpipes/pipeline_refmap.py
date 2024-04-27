@@ -8,6 +8,10 @@ import cgatcore.iotools as IOTools
 import re
 from itertools import chain
 import glob
+import logging
+
+def get_logger():
+    return logging.getLogger("cgatcore.pipeline")
 
 
 PARAMS = P.get_parameters(
@@ -62,7 +66,7 @@ def gen_refmap_jobs():
                 file_name= "umap_" + model_name + "_" + latent_choice
                 outfile = os.path.join("./refmap/",(file_name + ".csv"))
 
-                log_file = os.path.join('logs/', out_prefix + ".log")
+                log_file = os.path.join('logs/', "1_"+out_prefix + ".log")
                 yield infile, outfile, log_file, ref_architecture
                 
 
@@ -114,6 +118,8 @@ def run_refmap_scvi(infile, outfile, log_file, ref_architecture ):
     else:
         job_kwargs["job_threads"] = int(PARAMS['resources_threads_high'])
 
+    log_msg = f"TASK: 'run_refmap_scvi'" + f" IN CASE OF ERROR, PLEASE REFER TO : '{log_file}' FOR MORE INFORMATION."
+    get_logger().info(log_msg)
     P.run(cmd, **job_kwargs)
 
 
@@ -135,7 +141,7 @@ def run_refmap_scvi(infile, outfile, log_file, ref_architecture ):
 @active_if(PARAMS["scib_run"])
 @transform(run_refmap_scvi,
            regex(r"refmap/umap_(.*).csv"),
-           r'logs/refmapscib_\1.log')
+           r'logs/2_refmapscib_\1.log')
 def run_scib_refmap(infile,logfile):
     str_use = os.path.splitext(os.path.basename(infile).replace("umap_", "").replace(".csv", ""))[0]
     mudata_input= "query_to_reference_" + str_use + ".h5mu"
@@ -160,6 +166,8 @@ def run_scib_refmap(infile,logfile):
             cmd += " --covariate %(query_celltype)s"
     cmd += " > %(logfile)s"
     job_kwargs["job_threads"] = PARAMS['resources_threads_high']
+    log_msg = f"TASK: 'run_scib_refmap'" + f" IN CASE OF ERROR, PLEASE REFER TO : '{logfile}' FOR MORE INFORMATION."
+    get_logger().info(log_msg)
     P.run(cmd, **job_kwargs)  
 
 

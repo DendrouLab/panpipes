@@ -39,7 +39,7 @@ parser.add_argument('--scatters_csv',
 parser.set_defaults(verbose=True)
 args, opt = parser.parse_known_args()
 
-L.info(args)
+L.info("Running with params: %s", args)
 
 figdir = "./scatters/"
 if not os.path.exists(figdir):
@@ -48,16 +48,15 @@ if not os.path.exists(figdir):
 sc.settings.figdir  = figdir
 sc.set_figure_params(fontsize=12)
 
-
+L.info("Reading in MuData from '%s'" % args.mdata_object)
 mdata = mu.read(args.mdata_object)
 
 layers = read_yaml(args.layers_dict)
 
+L.info("Reading in scatter file from '%s'" % args.scatters_csv)
 df = pd.read_csv(args.scatters_csv)
-L.debug(df)
 
 layers = df.applymap(lambda x: get_layer(x,  mdata=mdata, layers=layers))
-L.info(layers)
 
 for idx in range(df.shape[0]):
     features_list = df.iloc[idx,:].tolist()
@@ -69,6 +68,7 @@ for idx in range(df.shape[0]):
     layers_list = [x for idx, x in enumerate(layers_list) if features_list[idx] is not None]
     
     fname = os.path.join("scatters", "_".join([x for x in features_list if x is not None]) + ".png")
+    L.info("Plotting scatters for features %s on layers %s" % (features_list,layers_list))
     plot_scatters(mdata, features_list, layers_list)
     # plt.legend(bbox_to_anchor=(1.04,0.5), loc="center left", borderaxespad=0)
     plt.subplots_adjust(right=0.85)

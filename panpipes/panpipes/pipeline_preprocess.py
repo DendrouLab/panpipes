@@ -15,6 +15,11 @@ from panpipes.funcs.io import dictionary_stripper
 
 # import pandas as pd
 
+
+def get_logger():
+    return logging.getLogger("cgatcore.pipeline")
+
+
 PARAMS = P.get_parameters(
     ["%s/pipeline.yml" % os.path.splitext(__file__)[0],
      "pipeline.yml"])
@@ -52,8 +57,11 @@ def filter_mudata(outfile):
             cmd += " --keep_barcodes %(filtering_keep_barcodes)s"
         if PARAMS['intersect_mods'] is not None:
             cmd += " --intersect_mods %(intersect_mods)s"
-        cmd += " > logs/filtering.log "
+        logfile = "logs/1_filtering.log"
+        cmd += f" > {logfile}"
         job_kwargs["job_threads"] = PARAMS['resources_threads_low']
+        log_msg = f"TASK: 'filter_mudata'" + f" IN CASE OF ERROR, PLEASE REFER TO : '{logfile}' FOR MORE INFORMATION."
+        get_logger().info(log_msg)
         P.run(cmd, **job_kwargs)
     else:
         try:
@@ -74,7 +82,7 @@ def run_plotqc_query(pqc_dict):
 @active_if(PARAMS['filtering_run'])
 @active_if(run_plotqc_query(PARAMS['plotqc']))
 @follows(filter_mudata)
-@originate("logs/postfilterplot.log")
+@originate("logs/2_postfilterplot.log")
 def postfilterplot(log_file):
     cell_mtd_file = PARAMS['sample_prefix'] + "_filtered_cell_metadata.tsv"
     cmd = """
@@ -95,6 +103,8 @@ def postfilterplot(log_file):
         cmd += " --rep_qc_metrics %(plotqc_rep_metrics)s"
     cmd += " > %(log_file)s "
     job_kwargs["job_threads"] = PARAMS['resources_threads_low']
+    log_msg = f"TASK: 'postfilterplot'" + f" IN CASE OF ERROR, PLEASE REFER TO : '{log_file}' FOR MORE INFORMATION."
+    get_logger().info(log_msg)
     P.run(cmd, **job_kwargs)
 
 
@@ -102,7 +112,7 @@ def postfilterplot(log_file):
 
 @active_if(PARAMS['downsample_n'] is not None)
 @follows(filter_mudata)
-@originate("logs/downsample.log", PARAMS['mudata_file'])
+@originate("logs/3_downsample.log", PARAMS['mudata_file'])
 def downsample(log_file, filt_obj):
     if PARAMS['downsample'] is not None:
         cmd="""
@@ -116,6 +126,8 @@ def downsample(log_file, filt_obj):
         """
         cmd += " > %(log_file)s  "
         job_kwargs["job_threads"] = PARAMS['resources_threads_low']
+        log_msg = f"TASK: 'downsample'" + f" IN CASE OF ERROR, PLEASE REFER TO : '{log_file}' FOR MORE INFORMATION."
+        get_logger().info(log_msg)
         P.run(cmd, **job_kwargs)
     IOTools.touch_file(log_file)
     pass
@@ -125,7 +137,7 @@ def downsample(log_file, filt_obj):
 @active_if(mode_dictionary['rna'] is True)
 @follows(downsample)
 @follows(mkdir('figures/rna'))
-@transform(filter_mudata, formatter(), "logs/preprocess_rna.log")
+@transform(filter_mudata, formatter(), "logs/4_preprocess_rna.log")
 def rna_preprocess(adata_obj, log_file):
     cmd = """python %(py_path)s/run_preprocess_rna.py 
             --input_mudata %(adata_obj)s 
@@ -172,12 +184,14 @@ def rna_preprocess(adata_obj, log_file):
         cmd += " --color_by %(pca_color_by)s"
     cmd += " > %(log_file)s "
     job_kwargs["job_threads"] = PARAMS['resources_threads_high']
+    log_msg = f"TASK: 'rna_preprocess'" + f" IN CASE OF ERROR, PLEASE REFER TO : '{log_file}' FOR MORE INFORMATION."
+    get_logger().info(log_msg)
     P.run(cmd, **job_kwargs)
 
 
 @active_if(mode_dictionary['prot'] is True)
 @follows(rna_preprocess)
-@originate("logs/preprocess_prot.log", PARAMS['mudata_file'])
+@originate("logs/4_preprocess_prot.log", PARAMS['mudata_file'])
 def prot_preprocess( log_file, scaled_file, ):
     if os.path.exists("figures/prot") is False:
         os.mkdir("figures/prot" )
@@ -212,13 +226,15 @@ def prot_preprocess( log_file, scaled_file, ):
         """
     cmd += " > %(log_file)s"
     job_kwargs["job_threads"] = PARAMS['resources_threads_high']
+    log_msg = f"TASK: 'prot_preprocess'" + f" IN CASE OF ERROR, PLEASE REFER TO : '{log_file}' FOR MORE INFORMATION."
+    get_logger().info(log_msg)
     P.run(cmd, **job_kwargs)
 
 
 @active_if(mode_dictionary['atac'] is True)
 @follows(prot_preprocess)
 # @transform(rna_preprocess,formatter(),"logs/preprocess_atac.log")
-@originate("logs/preprocess_atac.log", PARAMS['mudata_file'])
+@originate("logs/4_preprocess_atac.log", PARAMS['mudata_file'])
 def atac_preprocess(log_file, scaled_file):
     if os.path.exists("figures/atac") is False:
         os.mkdir("figures/atac" )
@@ -269,6 +285,8 @@ def atac_preprocess(log_file, scaled_file):
     cmd += " --color_by %(atac_color_by)s" 
     cmd += " > %(log_file)s"
     job_kwargs["job_threads"] = PARAMS['resources_threads_high']
+    log_msg = f"TASK: 'atac_preprocess'" + f" IN CASE OF ERROR, PLEASE REFER TO : '{log_file}' FOR MORE INFORMATION."
+    get_logger().info(log_msg)
     P.run(cmd, **job_kwargs)
 
 

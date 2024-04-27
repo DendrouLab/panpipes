@@ -13,7 +13,7 @@ log_handler = logging.StreamHandler(sys.stdout)
 formatter = logging.Formatter('%(asctime)s: %(levelname)s - %(message)s')
 log_handler.setFormatter(formatter)
 L.addHandler(log_handler)
-L.debug("test logging message")
+
 
 # parse arguments
 parser = argparse.ArgumentParser()
@@ -32,10 +32,11 @@ parser.add_argument('--clusters_or_markers',
 parser.set_defaults(verbose=True)
 args = parser.parse_args()
 
-L.info(args)
+L.info("Running with params: %s", args)
 
 infiles = re.split(',', args.input_files_str)
 if args.clusters_or_markers == "clusters":
+    L.info("Aggregating cluster columns")
     combined_csv = pd.concat([pd.read_csv(f, sep='\t', index_col=0) for f in infiles], axis=1)
     # get colnames
     cnames = []
@@ -43,10 +44,12 @@ if args.clusters_or_markers == "clusters":
         alg = extract_parameter_from_fname(f, 'alg', prefix=args.sample_prefix)
         res = extract_parameter_from_fname(f, 'res', prefix=args.sample_prefix)
         cnames.append(alg + '_res_' + str(res))
+    L.info("Saving combined cluster columns to tsv file '%s'" % args.output_file)
     combined_csv.to_csv(args.output_file, sep='\t', header=cnames, index=True)
 
 
 if args.clusters_or_markers == "markers":
+    L.info("Aggregating marker files")
     li = []
     all_markers_file = re.sub("_top", "_all", args.output_file)
     excel_file = re.sub("_top.txt.gz", "_all.xlsx", args.output_file)
@@ -69,6 +72,7 @@ if args.clusters_or_markers == "markers":
     frame.to_csv(all_markers_file, sep='\t', header=True, index=False)
     frame_sub = frame[frame['p.adj.bonferroni'] < 0.05]
     frame_sub = frame_sub[frame_sub['avg_logFC'] > 0]
+    L.info("Saving combined marker files to tsv file '%s'" % args.output_file)
     frame_sub.to_csv(args.output_file, sep='\t', header=True, index=False)
 
 
