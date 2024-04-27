@@ -24,6 +24,9 @@ opt <- parse_args(OptionParser(option_list=option_list))
 # 2. name columns
 # 3. run clustree
 
+message("Running with options:")
+
+print(opt)
 
 # # run clustree
 m = readr::read_tsv(opt$infile)

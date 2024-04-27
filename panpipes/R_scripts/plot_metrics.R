@@ -71,7 +71,8 @@ option_list <- list(
 )
 
 opt <- parse_args(OptionParser(option_list=option_list))
-
+message("Running with options:")
+print(opt)
 
 # load_data ----------------------------------------------------------------
 
@@ -96,6 +97,7 @@ if( PARAMS$do_plots$categorical_barplots & !is.null(cat_vars)){
         uniq_cat_vars = cat_vars[cat_vars$mod == mod, 'variable']
         
         for (cat_v in uniq_cat_vars){
+            print(cat_v)
             plt_title <- cat_v
             plot_dat = cmtd %>% 
                 mutate(!! cat_v  := factor(!! rlang::sym(cat_v))) %>% 
@@ -188,6 +190,7 @@ if( PARAMS$do_plots$continuous_violin & !is.null(cont_vars) & !is.null(grp_vars)
         uniq_cont_vars = cont_vars[cont_vars$mod == mod, 'variable']
         
         for( gv in grp_vars$variable){
+            print(gv)
             if (!dir.exists(file.path(mod, gv))) dir.create(file.path(mod, gv), recursive=T)
 
             stacked_barplots <- list()
