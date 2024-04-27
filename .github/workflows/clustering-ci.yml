@@ -59,8 +59,6 @@ jobs:
           mkdir -p clustering && cd clustering
           curl -L -o teaseq_corrected.h5mu https://figshare.com/ndownloader/files/45879852
 
-      # Note: we run the following to test that the commands works
-      # However, the following task will replacing the file anyway
       - name: Preparing the configuration file
         shell: bash -el {0}
         run: |
@@ -76,6 +74,8 @@ jobs:
         run: |
           cd clustering
           sed -i 's+/Users/fabiola.curion/Documents/devel/miniconda3/envs/pipeline_bbknn+pipeline_env+g' pipeline.yml
+          sed -i 's+../teaseq_temp.h5mu+teaseq_corrected.h5mu+g' pipeline.yml
+          
 
       - name: File tree
         if: env.debug == 'true'
@@ -84,13 +84,13 @@ jobs:
       - name: Review pipeline tasks
         shell: bash -el {0}
         run: |
-          cd teaseq/preprocessing
+          cd clustering
           panpipes clustering show full --local
 
       - name: Run pipeline tasks
         shell: bash -el {0}
         run: |
-          cd teaseq/preprocessing
+          cd clustering
           panpipes clustering make full --local
 
       - name: File tree
