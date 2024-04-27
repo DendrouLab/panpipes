@@ -73,7 +73,7 @@ jobs:
       - name: Replace template contents in configuration file
         run: |
           cd clustering
-          sed -i 's+/Users/fabiola.curion/Documents/devel/miniconda3/envs/pipeline_bbknn+pipeline_env+g' pipeline.yml
+          sed -i 's+/Users/fabiola.curion/Documents/devel/miniconda3/envs/pipeline_env+pipeline_env+g' pipeline.yml
           sed -i 's+../teaseq_temp.h5mu+teaseq_corrected.h5mu+g' pipeline.yml
           
 
