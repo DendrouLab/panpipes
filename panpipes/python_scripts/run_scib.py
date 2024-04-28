@@ -1,5 +1,7 @@
 import argparse
 import os
+
+import numpy as np
 import pandas as pd
 from anndata import AnnData
 from scib_metrics.benchmark import Benchmarker, BioConservation, BatchCorrection
@@ -32,8 +34,7 @@ L.info(args)
 
 cell_meta_df = pd.read_csv(args.cell_meta_df, index_col=0)
 batch_dict = read_yaml(args.integration_dict)
-batch_dict = {modality: batch_col for modality, batch_col in batch_dict.items() if
-              modality != "multimodal"}  # TODO: Check that multimodal should be included
+batch_dict = {modality: batch_col for modality, batch_col in batch_dict.items() if modality != "multimodal"}
 umaps = pd.read_csv(args.combined_umaps_df, sep="\t", index_col=0)
 cell_type_col = dict(rna=args.rna_cell_type, prot=args.prot_cell_type, atac=args.atac_cell_type)
 
@@ -42,13 +43,22 @@ for modality in batch_dict.keys():
     # get one UMAP DataFrame per integration method for this modality
     modality_umaps = dict(list(umaps[umaps["mod"] == modality].groupby("method")))
 
-    adata = AnnData(X=None)  # We only need the obs and obsm fields
     cell_ids = modality_umaps["none"].index
+    adata = AnnData(X=np.empty((len(cell_ids), 1)))  # We only need the obs and obsm fields
     adata.obs = cell_meta_df.loc[cell_ids, :]
     adata.obsm["Unintegrated"] = modality_umaps["none"].loc[:, ["umap_1", "umap_2"]].to_numpy()
+    print(adata.obsm["Unintegrated"])
 
     for method, umap_df in modality_umaps.items():
+        if method == "none":
+            continue
         adata.obsm[method] = umap_df.loc[cell_ids, ["umap_1", "umap_2"]].to_numpy()
+
+    # Numerically encode batch column
+    adata.obs[f"{batch_dict[modality]}_enc"] = pd.Categorical(adata.obs[batch_dict[modality]]).codes
+
+    print(adata)
+    print(adata.obs[batch_dict[modality]])
 
     # Check if cell type information is available
     if cell_type_col[modality] is None:
@@ -72,9 +82,9 @@ for modality in batch_dict.keys():
 
     bm = Benchmarker(
         adata,
-        batch_key=batch_dict[modality],
+        batch_key=f"{batch_dict[modality]}_enc",
         label_key=cell_type_col[modality],
-        embedding_obsm_keys=["Unintegrated"].extend([method for method in modality_umaps.keys() if method != "none"]),
+        embedding_obsm_keys=["Unintegrated"] + [method for method in modality_umaps.keys() if method != "none"],
         pre_integrated_embedding_obsm_key="Unintegrated",
         batch_correction_metrics=batch_correction_metrics,
         bio_conservation_metrics=bio_conservation_metrics,
