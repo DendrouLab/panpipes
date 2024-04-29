@@ -11,6 +11,17 @@ import muon as mu
 import matplotlib
 from scipy.sparse import issparse
 from scvi import REGISTRY_KEYS
+import scanpy as sc
+
+from typing import Union, List, Optional, Iterable, Sequence, Dict
+import warnings
+from matplotlib.axes import Axes
+
+from anndata import AnnData
+
+from mudata import MuData
+from muon._core.utils import _get_values
+
 
 use('Agg')
 plt.ioff()
@@ -343,6 +354,83 @@ def subst(lst, val, rep):
             result.append(item)
     return result
 
+# substitute mu plotting scatters
+
+def alt_scatter(
+    data: Union[AnnData, MuData],
+    x: Optional[str] = None,
+    y: Optional[str] = None,
+    color: Optional[Union[str, Sequence[str]]] = None,
+    use_raw: Optional[bool] = None,
+    layers: Optional[Union[str, Sequence[str]]] = None,
+    **kwargs,
+):
+    """
+    Scatter plot along observations or variables axes.
+    Variables in each modality can be referenced,
+    e.g. ``"rna:X_pca"``.
+
+    See :func:`scanpy.pl.scatter` for details.
+
+    Parameters
+    ----------
+    data : Union[AnnData, MuData]
+        MuData or AnnData object
+    x : Optional[str]
+        x coordinate
+    y : Optional[str]
+        y coordinate
+    color : Optional[Union[str, Sequence[str]]], optional (default: None)
+        Keys for variables or annotations of observations (.obs columns),
+        or a hex colour specification.
+    use_raw : Optional[bool], optional (default: None)
+        Use `.raw` attribute of the modality where a feature (from `color`) is derived from.
+        If `None`, defaults to `True` if `.raw` is present and a valid `layer` is not provided.
+    layers : Optional[Union[str, Sequence[str]]], optional (default: None)
+        Names of the layers where x, y, and color come from.
+        No layer is used by default. A single layer value will be expanded to [layer, layer, layer].
+    """
+    if isinstance(data, AnnData):
+        return sc.pl.embedding(
+            data, x=x, y=y, color=color, use_raw=use_raw, layers=layers, **kwargs
+        )
+
+    if isinstance(layers, str) or layers is None:
+        layers = [layers, layers, layers]
+
+    obs = pd.DataFrame(
+        {
+            x: _get_values(data, x, use_raw=use_raw, layer=layers[0]),
+            y: _get_values(data, y, use_raw=use_raw, layer=layers[1]),
+        }
+    )
+    obs.index = data.obs_names
+    if color is not None:
+        
+        if isinstance(color, str):
+            color_obs = _get_values(data, color, use_raw=use_raw, layer=layers[2])
+            color_obs = pd.DataFrame({color: color_obs})
+        else:    
+            color_obs = _get_values(data, color, use_raw=use_raw, layer=layers[2])
+        color_obs.index = data.obs_names
+        obs = pd.concat([obs, color_obs], axis=1, ignore_index=False)
+
+    ad = AnnData(obs=obs, uns=data.uns)
+
+    # Note that use_raw and layers are not provided to the plotting function
+    # as the corresponding values were fetched from individual modalities
+    # and are now stored in .obs
+    retval = sc.pl.scatter(ad, x=x, y=y, color=color, **kwargs)
+    if color is not None:
+        for col in color:
+            try:
+                data.uns[f"{col}_colors"] = ad.uns[f"{col}_colors"]
+            except KeyError:
+                pass
+    return retval
+
+
+
 def plot_scatters(mdata, features_list, layers_list):
     layers_listed = [x if type(x) is list else [x] for x in layers_list]
     layers_listed =   subst(layers_listed, "X", None)
@@ -360,7 +448,9 @@ def plot_scatters(mdata, features_list, layers_list):
         plt_title = "layers:" + " - ".join([x1 if x1 is not None else "X" for x1 in x ])
         if len(x) == 3:
             plt_title = plt_title + "\ncolor:" + features_list[2] 
-        mu.pl.scatter(mdata, 
+        # mu.pl.scatter when #1986 `scanpy.pl.scatter` fails if list is provided for `color` 
+        # https://github.com/scverse/muon/pull/134   
+        alt_scatter(mdata, 
                       features_list[0],
                       features_list[1],
                       color = [features_list[2]], 
@@ -369,12 +459,4 @@ def plot_scatters(mdata, features_list, layers_list):
                      )
         ax[ix].set_title(plt_title)
     
-        # Shrink current axis by 20%
-#         box = ax[ix].get_position()
-#         ax[ix].set_position([box.x0, box.y0, box.width * 0.8, box.height])
-
-#         # Put a legend to the right of the current axis
-#         ax[ix].legend(loc='center left', bbox_to_anchor=(1, 0.5))
     return fig, ax
-
-
