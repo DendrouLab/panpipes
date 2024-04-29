@@ -1,0 +1,96 @@
+name: Run tutorials (visualization)
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+env:
+  debug: 'true'
+
+jobs:
+  visualization:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ["ubuntu-latest"] # , "macos-latest", "windows-latest"
+        python-version: ["3.10"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: File tree
+        run: tree
+
+      - uses: conda-incubator/setup-miniconda@v3
+        with:
+          miniforge-version: latest
+          auto-activate-base: true
+          auto-update-conda: true
+          channels: conda-forge
+          channel-priority: strict
+          activate-environment: pipeline_env
+          environment-file: pipeline_env.yaml
+
+      - name: Install Panpipes
+        shell: bash -el {0}
+        run: |
+          pip install -e .
+          conda list
+
+      - name: Conda info
+        shell: bash -el {0}
+        run: conda info
+
+      - name: Conda list
+        shell: pwsh
+        run: conda list
+
+      # Note: all three files are renamed during the download to trim the "subsample_" prefix
+      - name: Preparing the data
+        run: |
+          mkdir -p teaseq/vis/data && cd teaseq/vis/data
+          curl -L -o teaseq_clustered.h5mu https://figshare.com/ndownloader/files/43246446
+
+      - name: Preparing the data
+        run: |
+          mkdir -p teaseq/vis && cd  teaseq/vis
+          curl -o paired_scatters.csv https://panpipes-tutorials.readthedocs.io/en/latest/_downloads/69bf8febdd6c95141c3e20de10f533c4/paired_scatters.csv
+          curl -o custom_markers.csv https://panpipes-tutorials.readthedocs.io/en/latest/_downloads/cd6f66ea922d4bd2b896050780f0d8dd/custom_markers.csv
+          curl -o paired_scatters_markers.csv https://panpipes-tutorials.readthedocs.io/en/latest/_downloads/68a767929ecdc47cf945f855f58e046a/paired_scatters_markers.csv
+
+      # Note: we run the following to test that the commands works
+      # However, the following task will replacing the file anyway
+      - name: Preparing the configuration file
+        shell: bash -el {0}
+        run: |
+          cd teaseq/vis/data
+          panpipes vis config
+
+      - name: Edit the submission file
+        run: |
+          cd teaseq/vis
+          curl -o pipeline.yml https://raw.githubusercontent.com/DendrouLab/panpipes-tutorials/main/docs/visualization/pipeline.yml
+
+      - name: File tree
+        run: tree teaseq
+
+      - name: Review pipeline tasks
+        shell: bash -el {0}
+        run: |
+          cd teaseq/vis
+          panpipes vis show full --local
+
+      - name: Run pipeline tasks
+        shell: bash -el {0}
+        run: |
+          cd teaseq/vis
+          panpipes vis make full --local  
+
+      - name: File tree
+        if: always()
+        run: tree teaseq
