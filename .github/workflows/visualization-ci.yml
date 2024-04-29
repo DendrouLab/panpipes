@@ -53,8 +53,8 @@ jobs:
       # Note: all three files are renamed during the download to trim the "subsample_" prefix
       - name: Preparing the data
         run: |
-          mkdir -p teaseq/vis/data && cd  teaseq/vis/data
-          curl -L -o teaseq_clustered.h5mu https://figshare.com/ndownloader/files/44795785
+          mkdir -p teaseq/vis/data && cd teaseq/vis/data
+          curl -L -o teaseq_clustered.h5mu https://figshare.com/ndownloader/files/43246446
 
       - name: Preparing the data
         run: |
@@ -89,7 +89,7 @@ jobs:
         shell: bash -el {0}
         run: |
           cd teaseq/vis
-          panpipes vis make full -p 1 --local  
+          panpipes vis make full --local  
 
       - name: File tree
         if: always()
