@@ -5,6 +5,7 @@ import numpy as np
 import pandas as pd
 from anndata import AnnData
 from scib_metrics.benchmark import Benchmarker, BioConservation, BatchCorrection
+from sklearn.preprocessing import MinMaxScaler
 from panpipes.funcs.io import read_yaml
 
 import sys
@@ -34,7 +35,7 @@ L.info(args)
 
 cell_meta_df = pd.read_csv(args.cell_meta_df, index_col=0)
 batch_dict = read_yaml(args.integration_dict)
-batch_dict = {modality: batch_col for modality, batch_col in batch_dict.items() if modality != "multimodal"}
+batch_dict = {modality: batch_col[0] for modality, batch_col in batch_dict.items() if modality != "multimodal"}
 umaps = pd.read_csv(args.combined_umaps_df, sep="\t", index_col=0)
 cell_type_col = dict(rna=args.rna_cell_type, prot=args.prot_cell_type, atac=args.atac_cell_type)
 
@@ -47,21 +48,16 @@ for modality in batch_dict.keys():
     adata = AnnData(X=np.empty((len(cell_ids), 1)))  # We only need the obs and obsm fields
     adata.obs = cell_meta_df.loc[cell_ids, :]
     adata.obsm["Unintegrated"] = modality_umaps["none"].loc[:, ["umap_1", "umap_2"]].to_numpy()
-    print(adata.obsm["Unintegrated"])
 
     for method, umap_df in modality_umaps.items():
         if method == "none":
             continue
         adata.obsm[method] = umap_df.loc[cell_ids, ["umap_1", "umap_2"]].to_numpy()
 
-    # Numerically encode batch column
-    adata.obs[f"{batch_dict[modality]}_enc"] = pd.Categorical(adata.obs[batch_dict[modality]]).codes
-
-    print(adata)
-    print(adata.obs[batch_dict[modality]])
 
     # Check if cell type information is available
     if cell_type_col[modality] is None:
+        plot=False
         batch_correction_metrics = BatchCorrection(silhouette_batch=False,
                                                    ilisi_knn=True,
                                                    kbet_per_label=False,
@@ -77,21 +73,51 @@ for modality in batch_dict.keys():
         adata.obs["cell_type"] = "None"
         cell_type_col[modality] = "cell_type"
     else:
+        plot=True
         batch_correction_metrics = None
         bio_conservation_metrics = None
 
     bm = Benchmarker(
         adata,
-        batch_key=f"{batch_dict[modality]}_enc",
+        batch_key=batch_dict[modality],
         label_key=cell_type_col[modality],
         embedding_obsm_keys=["Unintegrated"] + [method for method in modality_umaps.keys() if method != "none"],
         pre_integrated_embedding_obsm_key="Unintegrated",
         batch_correction_metrics=batch_correction_metrics,
         bio_conservation_metrics=bio_conservation_metrics,
-        n_jobs=args.n_threads,
+        n_jobs=int(args.n_threads),
     )
     bm.benchmark()
 
-    bm.plot_results_table(show=False, save_dir=os.path.join(args.fig_dir, modality))
-    bm.plot_results_table(min_max_scale=False, show=False, save_dir=os.path.join(args.fig_dir, modality))
-    df = bm.get_results(min_max_scale=False)
+    # Plotting is only possible if we have metrics for both batch correction and bio conservation
+    if plot:
+        bm.plot_results_table(show=False, save_dir=os.path.join(args.fig_dir, modality))
+        bm.plot_results_table(min_max_scale=False, show=False, save_dir=os.path.join(args.fig_dir, modality))
+
+        df = bm.get_results(min_max_scale=False)
+        df.to_csv(os.path.join(args.fig_dir, modality, "scib_metrics.csv"))
+
+        df = bm.get_results(min_max_scale=True)
+        df.to_csv(os.path.join(args.fig_dir, modality, "scib_metrics_min_max_scaled.csv"))
+
+    else:
+        for min_max_scale in [True, False]:
+            df = bm._results.transpose()
+            df.index.name = "Embedding"
+            df = df.loc[df.index != "Metric Type"]
+            if min_max_scale:
+                # Use sklearn to min max scale
+                df = pd.DataFrame(
+                    MinMaxScaler().fit_transform(df),
+                    columns=df.columns,
+                    index=df.index,
+                )
+
+            df = df.transpose()
+            df["Metric Type"] = bm._results["Metric Type"].values
+            df = df.transpose()
+
+            if min_max_scale:
+                df.to_csv(os.path.join(args.fig_dir, modality, "scib_metrics_min_max_scaled.csv"))
+            else:
+                df.to_csv(os.path.join(args.fig_dir, modality, "scib_metrics.csv"))
