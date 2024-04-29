@@ -363,7 +363,7 @@ def plot_scatters(mdata, features_list, layers_list):
         mu.pl.scatter(mdata, 
                       features_list[0],
                       features_list[1],
-                      color = features_list[2], 
+                      color = [features_list[2]], 
                       layers=x, show=False,
                       save=False, ax= ax[ix] 
                      )

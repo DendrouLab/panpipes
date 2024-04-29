@@ -89,7 +89,7 @@ jobs:
         shell: bash -el {0}
         run: |
           cd teaseq/vis
-          panpipes vis make full --local
+          panpipes vis make full --local -j 1 
 
       - name: File tree
         if: always()
