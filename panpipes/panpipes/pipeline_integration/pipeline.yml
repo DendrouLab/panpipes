@@ -244,6 +244,7 @@ plotqc:
 #-------------
 # scib metrics
 #-------------
+#Obs columns containing the cell type labels
 scib:
   rna:
   prot:
