@@ -794,9 +794,6 @@ def run_lisi(infile, outfile):
 @follows(collate_integration_outputs)
 @transform(collate_integration_outputs, formatter(),  'logs/scib.log')
 def run_scib_metrics(infile, outfile):
-    #write a new file
-    with open("test.txt", "w") as f:
-        f.write("test")
     cell_mtd_file = sprefix + "_cell_mtd.csv"
     cmd = """python %(py_path)s/run_scib.py 
     --combined_umaps_df %(infile)s 
@@ -819,8 +816,6 @@ def run_scib_metrics(infile, outfile):
 @follows(run_unimodal_integration, run_multimodal_integration, run_lisi, run_scib_metrics, plot_umaps)
 @originate("logs/batch_correction_complete.log")
 def batch_correction(outfile):
-    with open("test2.txt", "w") as f:
-        f.write("test")
     IOTools.touch_file(outfile)
 
 

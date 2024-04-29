@@ -1,6 +1,7 @@
 import argparse
 import os
 
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from anndata import AnnData
@@ -91,8 +92,11 @@ for modality in batch_dict.keys():
 
     # Plotting is only possible if we have metrics for both batch correction and bio conservation
     if plot:
-        bm.plot_results_table(show=False, save_dir=os.path.join(args.fig_dir, modality))
-        bm.plot_results_table(min_max_scale=False, show=False, save_dir=os.path.join(args.fig_dir, modality))
+        bm.plot_results_table(min_max_scale=False, show=False)
+        plt.savefig(os.path.join(args.fig_dir, modality, "scib_metrics.png"))
+
+        bm.plot_results_table(min_max_scale=True, show=False)
+        plt.savefig(os.path.join(args.fig_dir, modality, "scib_metrics_min_max_scaled.png"))
 
         df = bm.get_results(min_max_scale=False)
         df.to_csv(os.path.join(args.fig_dir, modality, "scib_metrics.csv"))
