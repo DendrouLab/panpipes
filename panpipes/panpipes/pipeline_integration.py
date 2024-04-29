@@ -8,6 +8,10 @@ import cgatcore.iotools as IOTools
 import re
 from itertools import chain
 import glob
+import logging
+
+def get_logger():
+    return logging.getLogger("cgatcore.pipeline")
 
 
 PARAMS = P.get_parameters(
@@ -81,11 +85,13 @@ def run_no_batch_umap(outfile):
         cmd += " --neighbors_n_pcs %s"  % neighbor_params['npcs']
     if neighbor_params['k'] is not None:
         cmd += " --neighbors_k %s" % neighbor_params['k']
-    cmd += " > logs/rna_no_correct.log"
+    cmd += " > logs/1_rna_no_correct.log"
     
     if PARAMS['queues_long'] is not None:
         job_kwargs["job_queue"] = job_queue=PARAMS['queues_long']
-    job_kwargs["job_threads"] = PARAMS['resources_threads_high']    
+    job_kwargs["job_threads"] = PARAMS['resources_threads_high']  
+    log_msg = f"TASK: 'run_no_batch_correct_rna'" + f" IN CASE OF ERROR, PLEASE REFER TO : 'logs/1_rna_no_correct.log' FOR MORE INFORMATION."
+    get_logger().info(log_msg)  
     P.run(cmd, **job_kwargs) 
 
 
@@ -107,11 +113,13 @@ def run_bbknn_rna(outfile):
         cmd += " --neighbors_within_batch %i" % PARAMS['rna']['bbknn']['neighbors_within_batch']
     if PARAMS['rna']['neighbors']['npcs'] is not None:
         cmd += " --neighbors_n_pcs %s" % PARAMS['rna']['neighbors']['npcs']
-    cmd += " > logs/rna_bbknn.log "
+    cmd += " > logs/1_rna_bbknn.log "
     
     if PARAMS['queues_long'] is not None:
         job_kwargs["job_queue"] = job_queue=PARAMS['queues_long']
     job_kwargs["job_threads"] = PARAMS['resources_threads_high']
+    log_msg = f"TASK: 'run_bbknn_rna'" + f" IN CASE OF ERROR, PLEASE REFER TO : 'logs/1_rna_bbknn.log' FOR MORE INFORMATION."
+    get_logger().info(log_msg)  
     P.run(cmd, **job_kwargs) 
 
 
@@ -138,12 +146,14 @@ def run_combat(outfile):
         cmd += " --neighbors_n_pcs %s"  % neighbor_params['npcs']
     if neighbor_params['k'] is not None:
         cmd += " --neighbors_k %s" % neighbor_params['k']
-    cmd += " > logs/rna_combat.log "
+    cmd += " > logs/1_rna_combat.log "
     
     if PARAMS['queues_long'] is not None:
         job_kwargs["job_queue"] = job_queue=PARAMS['queues_long']
 
     job_kwargs["job_threads"] = PARAMS['resources_threads_high']
+    log_msg = f"TASK: 'run_combat_rna'" + f" IN CASE OF ERROR, PLEASE REFER TO : 'logs/1_rna_combat.log' FOR MORE INFORMATION."
+    get_logger().info(log_msg)
     P.run(cmd, **job_kwargs) 
 
 # rna HARMONY
@@ -176,12 +186,14 @@ def run_harmony(outfile):
         cmd += " --neighbors_n_pcs %s"  % neighbor_params['npcs']
     if neighbor_params['k'] is not None:
         cmd += " --neighbors_k %s" % neighbor_params['k']
-    cmd += " > logs/rna_harmony.log " 
+    cmd += " > logs/1_rna_harmony.log " 
      #job arguments
     
     if PARAMS['queues_long'] is not None:
         job_kwargs["job_queue"] = job_queue=PARAMS['queues_long']
     job_kwargs["job_threads"] = PARAMS['resources_threads_high']
+    log_msg = f"TASK: 'run_harmony_rna'" + f" IN CASE OF ERROR, PLEASE REFER TO : 'logs/1_rna_harmony.log' FOR MORE INFORMATION."
+    get_logger().info(log_msg)
     P.run(cmd, **job_kwargs)
 
 # rna SCANORAMA
@@ -207,12 +219,14 @@ def run_scanorama(outfile):
         cmd += " --neighbors_n_pcs %s"  % neighbor_params['npcs']
     if neighbor_params['k'] is not None:
         cmd += " --neighbors_k %s" % neighbor_params['k']
-    cmd += " > logs/rna_scanorama.log " 
+    cmd += " > logs/1_rna_scanorama.log " 
     #job arguments
     
     if PARAMS['queues_long'] is not None:
         job_kwargs["job_queue"] = job_queue=PARAMS['queues_long']
     job_kwargs["job_threads"] = PARAMS['resources_threads_high']
+    log_msg = f"TASK: 'run_scanorama_rna'" + f" IN CASE OF ERROR, PLEASE REFER TO : 'logs/1_rna_scanorama.log' FOR MORE INFORMATION."
+    get_logger().info(log_msg)
     P.run(cmd, **job_kwargs)
 
 # rna scvi
@@ -228,6 +242,9 @@ def run_scvi(outfile):
      --figdir figures/rna/
      """
     # cannot use the normal method for importing params from yaml, because it only works up to depth 2
+    # fetch seeds
+    scvi_params =  PARAMS['rna']['scvi']
+    cmd += " --scvi_seed %i" % scvi_params['seed']
     neighbor_params = PARAMS['rna']['neighbors']
     if neighbor_params['method'] is not None:
         cmd += " --neighbors_method %s" % neighbor_params['method']
@@ -237,7 +254,7 @@ def run_scvi(outfile):
         cmd += " --neighbors_n_pcs %s"  % neighbor_params['npcs']
     if neighbor_params['k'] is not None:
         cmd += " --neighbors_k %s" % neighbor_params['k']
-    cmd += " > logs/rna_scvi.log "
+    cmd += " > logs/1_rna_scvi.log "
     job_kwargs = {}
     if PARAMS['queues_gpu'] is not None:
         job_kwargs["job_queue"] = PARAMS['queues_gpu']
@@ -247,6 +264,8 @@ def run_scvi(outfile):
             job_kwargs["job_threads"] = int(PARAMS['resources_threads_high'])
     else:
         job_kwargs["job_threads"] = int(PARAMS['resources_threads_high'])
+    log_msg = f"TASK: 'run_scvi_rna'" + f" IN CASE OF ERROR, PLEASE REFER TO : 'logs/1_rna_scvi.log' FOR MORE INFORMATION."
+    get_logger().info(log_msg)
     P.run(cmd, **job_kwargs)
 
 # rna scib
@@ -308,11 +327,13 @@ def run_no_batch_umap_prot(outfile):
         cmd += " --neighbors_n_pcs %s"  % neighbor_params['npcs']
     if neighbor_params['k'] is not None:
         cmd += " --neighbors_k %s" % neighbor_params['k']
-    cmd += " > logs/prot_no_correct.log"
+    cmd += " > logs/2_prot_no_correct.log"
     
     if PARAMS['queues_long'] is not None:
         job_kwargs["job_queue"] = job_queue=PARAMS['queues_long']
     job_kwargs["job_threads"] = PARAMS['resources_threads_high']
+    log_msg = f"TASK: 'run_no_batch_correct_prot'" + f" IN CASE OF ERROR, PLEASE REFER TO : 'logs/2_prot_no_correct.log' FOR MORE INFORMATION."
+    get_logger().info(log_msg)
     P.run(cmd, **job_kwargs) 
 
 # prot HARMONY
@@ -344,12 +365,14 @@ def run_harmony_prot( outfile):
         cmd += " --neighbors_n_pcs %s"  % neighbor_params['npcs']
     if neighbor_params['k'] is not None:
         cmd += " --neighbors_k %s" % neighbor_params['k']
-    cmd += " > logs/prot_harmony.log " 
+    cmd += " > logs/2_prot_harmony.log " 
      #job arguments
     
     if PARAMS['queues_long'] is not None:
         job_kwargs["job_queue"] = job_queue=PARAMS['queues_long']
     job_kwargs["job_threads"] = PARAMS['resources_threads_high']
+    log_msg = f"TASK: 'run_harmony_prot'" + f" IN CASE OF ERROR, PLEASE REFER TO : 'logs/2_prot_harmony.log' FOR MORE INFORMATION."
+    get_logger().info(log_msg)
     P.run(cmd, **job_kwargs)
 
 
@@ -371,11 +394,13 @@ def run_bbknn_prot(outfile):
         cmd += " --neighbors_within_batch %i" % PARAMS['prot']['bbknn']['neighbors_within_batch']
     if PARAMS['prot']['neighbors']['npcs'] is not None:
         cmd += " --neighbors_n_pcs %s" % PARAMS['prot']['neighbors']['npcs']
-    cmd += " > logs/prot_bbknn.log "
+    cmd += " > logs/2_prot_bbknn.log "
     
     if PARAMS['queues_long'] is not None:
         job_kwargs["job_queue"] = job_queue=PARAMS['queues_long']
     job_kwargs["job_threads"] = PARAMS['resources_threads_high']
+    log_msg = f"TASK: 'run_bbknn_prot'" + f" IN CASE OF ERROR, PLEASE REFER TO : 'logs/2_prot_bbknn.log' FOR MORE INFORMATION."
+    get_logger().info(log_msg)
     P.run(cmd, **job_kwargs) 
 
 
@@ -402,12 +427,14 @@ def run_combat_prot(outfile):
         cmd += " --neighbors_n_pcs %s"  % neighbor_params['npcs']
     if neighbor_params['k'] is not None:
         cmd += " --neighbors_k %s" % neighbor_params['k']
-    cmd += " > logs/prot_combat.log "
+    cmd += " > logs/2_prot_combat.log "
     
     if PARAMS['queues_long'] is not None:
         job_kwargs["job_queue"] = PARAMS['queues_long']
 
     job_kwargs["job_threads"] = PARAMS['resources_threads_high']
+    log_msg = f"TASK: 'run_combat_prot'" + f" IN CASE OF ERROR, PLEASE REFER TO : 'logs/2_prot_combat.log' FOR MORE INFORMATION."
+    get_logger().info(log_msg)
     P.run(cmd, **job_kwargs) 
     
 
@@ -447,11 +474,13 @@ def run_no_batch_umap_atac(outfile):
         cmd += " --dimred %s" % atac_dimred
     else:
         cmd += " --dimred PCA"
-    cmd += " > logs/atac_no_correct.log"
+    cmd += " > logs/3_atac_no_correct.log"
     
     if PARAMS['queues_long'] is not None:
         job_kwargs["job_queue"] = job_queue=PARAMS['queues_long']
     job_kwargs["job_threads"] = PARAMS['resources_threads_high']
+    log_msg = f"TASK: 'run_no_batch_correct_atac'" + f" IN CASE OF ERROR, PLEASE REFER TO : 'logs/3_atac_no_correct.log' FOR MORE INFORMATION."
+    get_logger().info(log_msg)
     P.run(cmd, **job_kwargs) 
 
 # atac HARMONY
@@ -489,12 +518,14 @@ def run_harmony_atac( outfile):
         cmd += " --dimred %s" % atac_dimred
     else:
         cmd += " --dimred PCA"
-    cmd += " > logs/atac_harmony.log " 
+    cmd += " > logs/3_atac_harmony.log " 
      #job arguments
     
     if PARAMS['queues_long'] is not None:
         job_kwargs["job_queue"] = job_queue=PARAMS['queues_long']
     job_kwargs["job_threads"] = PARAMS['resources_threads_high']
+    log_msg = f"TASK: 'run_harmony_atac'" + f" IN CASE OF ERROR, PLEASE REFER TO : 'logs/3_atac_harmony.log' FOR MORE INFORMATION."
+    get_logger().info(log_msg)
     P.run(cmd, **job_kwargs)
 
 # atac BBKNN
@@ -516,10 +547,12 @@ def run_bbknn_atac(outfile):
         cmd += " --neighbors_n_pcs %s" % PARAMS['atac']['neighbors']['npcs']
     #Forcing bbknn to run on PCA in case of atac
     cmd += " --dimred PCA"
-    cmd += " > logs/atac_bbknn.log "
+    cmd += " > logs/3_atac_bbknn.log "
     if PARAMS['queues_long'] is not None:
         job_kwargs["job_queue"] = PARAMS['queues_long']
     job_kwargs["job_threads"] = PARAMS['resources_threads_high']
+    log_msg = f"TASK: 'run_bbknn_atac'" + f" IN CASE OF ERROR, PLEASE REFER TO : 'logs/3_atac_bbknn.log' FOR MORE INFORMATION."
+    get_logger().info(log_msg)
     P.run(cmd, **job_kwargs) 
 
 
@@ -550,8 +583,12 @@ def run_totalvi(outfile):
      --output_csv %(outfile)s 
      --figdir figures/
      """
+    scvi_params =  PARAMS['multimodal']['totalvi']
+    cmd += " --scvi_seed %i" % scvi_params['seed']
+    
+
     if PARAMS['multimodal_column_categorical'] is not None:
-        cmd += "--integration_col_categorical %(multimodal_column_categorical)s "
+        cmd += " --integration_col_categorical %(multimodal_column_categorical)s "
     neighbor_params = PARAMS['multimodal']['neighbors']
     if neighbor_params['method'] is not None:
         cmd += " --neighbors_method %s" % neighbor_params['method']
@@ -561,7 +598,7 @@ def run_totalvi(outfile):
         cmd += " --neighbors_n_pcs %s"  % neighbor_params['npcs']
     if neighbor_params['k'] is not None:
         cmd += " --neighbors_k %s" % neighbor_params['k']
-    cmd += " > logs/multimodal_totalvi.log "
+    cmd += " > logs/4_multimodal_totalvi.log "
     
     if PARAMS['queues_gpu'] is not None:
         job_kwargs["job_queue"] = PARAMS['queues_gpu']
@@ -570,6 +607,8 @@ def run_totalvi(outfile):
         if PARAMS['queues_long'] is not None:
             job_kwargs["job_queue"] = job_queue=PARAMS['queues_long']
         job_kwargs["job_threads"] = int(PARAMS['resources_threads_high'])
+    log_msg = f"TASK: 'run_totalvi'" + f" IN CASE OF ERROR, PLEASE REFER TO : 'logs/4_multimodal_totalvi.log' FOR MORE INFORMATION."
+    get_logger().info(log_msg)
     P.run(cmd, **job_kwargs)
 
 # Run MultiVI
@@ -587,9 +626,12 @@ def run_multivi(outfile):
      --output_csv %(outfile)s 
      --figdir figures/
      """
+    scvi_params =  PARAMS['multimodal']['MultiVI']
+    cmd += " --scvi_seed %i" % scvi_params['seed']
     
+
     if PARAMS['multimodal_column_categorical'] is not None:
-        cmd += "--integration_col_categorical %(multimodal_column_categorical)s "
+        cmd += " --integration_col_categorical %(multimodal_column_categorical)s "
 
     if PARAMS['multimodal_column_continuous'] is not None:
         cmd += "--integration_col_continuous %(multimodal_column_continuous)s "
@@ -603,7 +645,7 @@ def run_multivi(outfile):
         cmd += " --neighbors_n_pcs %s"  % neighbor_params['npcs']
     if neighbor_params['k'] is not None:
         cmd += " --neighbors_k %s" % neighbor_params['k']
-    cmd += " > logs/multimodal_multivi.log "
+    cmd += " > logs/4_multimodal_multivi.log "
     
     if PARAMS['queues_gpu'] is not None:
         job_kwargs["job_queue"] = PARAMS['queues_gpu']
@@ -612,6 +654,8 @@ def run_multivi(outfile):
         if PARAMS['queues_long'] is not None:
             job_kwargs["job_queue"] = job_queue=PARAMS['queues_long']
         job_kwargs["job_threads"] = int(PARAMS['resources_threads_high'])
+    log_msg = f"TASK: 'run_multivi'" + f" IN CASE OF ERROR, PLEASE REFER TO : 'logs/4_multimodal_multivi.log' FOR MORE INFORMATION."
+    get_logger().info(log_msg)
     P.run(cmd, **job_kwargs)
 
 
@@ -659,7 +703,9 @@ def run_mofa(outfile):
         if PARAMS['queues_long'] is not None:
             job_kwargs["job_queue"] = job_queue=PARAMS['queues_long']
         job_kwargs["job_threads"] = int(PARAMS['resources_threads_high'])
-    cmd += " > logs/multimodal_mofa.log "
+    cmd += " > logs/4_multimodal_mofa.log "
+    log_msg = f"TASK: 'run_mofa'" + f" IN CASE OF ERROR, PLEASE REFER TO : 'logs/4_multimodal_mofa.log' FOR MORE INFORMATION."
+    get_logger().info(log_msg)
     P.run(cmd, **job_kwargs)
 
 # Run WNN
@@ -689,7 +735,7 @@ def run_wnn(outfile):
        cmd += " --metric %s" % wnn_params['metric']
     if wnn_params['low_memory'] is not None:
        cmd += " --low_memory %s" % wnn_params['low_memory']
-    cmd += " > logs/multimodal_wnn.log"
+    cmd += " > logs/4_multimodal_wnn.log"
 
     
     if PARAMS['queues_gpu'] is not None:
@@ -699,7 +745,8 @@ def run_wnn(outfile):
         if PARAMS['queues_long'] is not None:
             job_kwargs["job_queue"] = job_queue=PARAMS['queues_long']
         job_kwargs["job_threads"] = int(PARAMS['resources_threads_high'])
-        
+    log_msg = f"TASK: 'run_wnn'" + f" IN CASE OF ERROR, PLEASE REFER TO : 'logs/4_multimodal_wnn.log' FOR MORE INFORMATION."
+    get_logger().info(log_msg)
     P.run(cmd, **job_kwargs)
 
 # end of multimodal
@@ -739,14 +786,16 @@ def collate_integration_outputs(infiles,outfile):
         cmd += " --atac_integration_col %(atac_column)s"
     if PARAMS['multimodal_run']:
         cmd += " --multimodal_integration_col %(multimodal_column_categorical)s"
-    cmd += " > logs/collate_mtd.log "
+    cmd += " > logs/5_collate_mtd.log "
     job_kwargs["job_threads"] = PARAMS['resources_threads_medium']
+    log_msg = f"TASK: 'collate_integration_outputs'" + f" IN CASE OF ERROR, PLEASE REFER TO : 'logs/5_collate_mtd.log' FOR MORE INFORMATION."
+    get_logger().info(log_msg)
     P.run(cmd, **job_kwargs)  
 
 
 # this COLLATE job will become the big final collate job across all possible combinations you may have run
 @follows(set_up_dirs)
-@transform(collate_integration_outputs, formatter(), "logs/plot_batch_corrected_umaps.log")
+@transform(collate_integration_outputs, formatter(), "logs/6_plot_batch_corrected_umaps.log")
 def plot_umaps(infile, outfile):
     print(infile, outfile)
     cell_mtd_file = sprefix + "_cell_mtd.csv"
@@ -762,13 +811,15 @@ def plot_umaps(infile, outfile):
     cmd += ' --qc_dict "%(plotqc)s"'
     cmd += " > %(outfile)s" 
     job_kwargs["job_threads"] = PARAMS['resources_threads_medium']
+    log_msg = f"TASK: 'plot_umaps'" + f" IN CASE OF ERROR, PLEASE REFER TO : '{outfile}' FOR MORE INFORMATION."
+    get_logger().info(log_msg)
     P.run(cmd,**job_kwargs)
 
 
 #this can follow now any mtd generation, but it will collate only RNA jobs for lisi
 @follows(collate_integration_outputs)
 @transform(collate_integration_outputs, 
-           formatter(),  'logs/lisi.log')
+           formatter(),  'logs/7_lisi.log')
 def run_lisi(infile, outfile):
     cell_mtd_file = sprefix + "_cell_mtd.csv"  
     cmd = """python %(py_path)s/run_lisi.py 
@@ -778,6 +829,8 @@ def run_lisi(infile, outfile):
     --fig_dir figures/  > %(outfile)s 
     """ 
     job_kwargs["job_threads"] = PARAMS['resources_threads_low']
+    log_msg = f"TASK: 'run_lisi'" + f" IN CASE OF ERROR, PLEASE REFER TO : '{outfile}' FOR MORE INFORMATION."
+    get_logger().info(log_msg)
     P.run(cmd,**job_kwargs)
 
 
@@ -826,8 +879,10 @@ def merge_integration(output_mudata):
     if choices['multimodal']['include'] and choices['multimodal']['bc_choice'] is not None:
         multimodal_choice = choices['multimodal']['bc_choice']
         cmd += " --multimodal_correction_choice %(multimodal_choice)s"
-    cmd += " > logs/merge_final_obj.log"
+    cmd += " > logs/8_merge_final_obj.log"
     job_kwargs["job_threads"] = PARAMS['resources_threads_high']
+    log_msg = f"TASK: 'merge_integration'" + f" IN CASE OF ERROR, PLEASE REFER TO : 'logs/8_merge_final_obj.log' FOR MORE INFORMATION."
+    get_logger().info(log_msg)
     P.run(cmd,**job_kwargs)
     # clear up tmp since it is no longer required
     # P.run("rm -r tmp")

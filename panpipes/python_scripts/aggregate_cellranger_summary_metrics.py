@@ -40,7 +40,7 @@ parser.add_argument('--cellranger_column_conversion_df',
 parser.set_defaults(verbose=True)
 args = parser.parse_args()
 
-L.info(args)
+L.info("Running with params: %s", args)
 
 def check_path(path):
     if os.path.isfile(path):
@@ -60,7 +60,7 @@ def get_metrics_summary_path(path,sample_id=None):
     """    
     # subset path to only go up to 'outs'
     if 'outs' not in path:
-        print("you are parsing a cellranger output but your path to raw data doesn't end wth the outs folder")
+        L.warning("You are parsing a cellranger output but your path to raw data doesn't end with the outs folder")
         path = check_path(path)
     else:
         path = path.split("outs")[0] + "outs"
@@ -73,10 +73,10 @@ def get_metrics_summary_path(path,sample_id=None):
     elif sample_id is not None and os.path.exists(os.path.join(path, 'per_sample_outs', sample_id, 'metrics_summary.csv') ):
         outpath = os.path.join(path, 'per_sample_outs', sample_id, 'metrics_summary.csv')
     elif sample_id is None and os.path.exists(os.path.join(path, 'per_sample_outs')):
-        print('input folder appears to be from cellranger multi but no sample_id is given')
+        L.warning('Input folder appears to be from cellranger multi but no sample_id is given')
     else:
         # use the alternative path from cellranger_multi outputs
-        print('path not found')
+        L.warning('Path not found')
     return outpath
 
 
@@ -178,19 +178,20 @@ def parse_10x_cellranger_count(path_df, convert_df,  path_col='metrics_summary_p
     return msums
     
 
+L.info("Reading in tsv file '%s'" % args.cellranger_column_conversion_df)
 convert_df = pd.read_csv(args.cellranger_column_conversion_df, sep='\t')   
 
 # get the paths
 pipe_df = pd.read_csv(args.pipe_df, sep='\t')
-L.info('finding all the cellranger paths')
+L.info('Searching for all cellranger paths')
 all_paths_df = get_all_unique_paths(pipe_df)
 all_paths_df['metrics_summary_path'] = all_paths_df.apply(lambda x: get_metrics_summary_path(path=x.path, sample_id=x.sample_id), axis=1)
 # all_paths_df_uniq = all_paths_df.drop(columns=['path', 'path_type']).drop_duplicates().reset_index(drop=True)
 all_paths_df['cellranger_type'] = [detect_cellranger_algorithm(x) for x in all_paths_df['metrics_summary_path']]
-L.info('cellranger metrics_summary files found')
-L.info(all_paths_df)
+L.info("Cellranger metrics_summary files found: %s" % all_paths_df)
 
 # parse and concatenate the tenx x metrics summary files into long format
+L.info("Parsing and concatenating the 10X metrics summary files into long format")
 tenx_metrics = []
 if any(all_paths_df['cellranger_type']=='multi'):
     tenx_metrics.append(parse_10x_cellranger_multi(all_paths_df[all_paths_df['cellranger_type']=='multi']))
@@ -198,17 +199,16 @@ if any(all_paths_df['cellranger_type']=='multi'):
 if any(all_paths_df['cellranger_type']=='count'):
     tenx_metrics.append(parse_10x_cellranger_count(all_paths_df[all_paths_df['cellranger_type']=='count'], convert_df))
 
-
-
 tenx_metrics_full = pd.concat(tenx_metrics)
 tenx_metrics_full = tenx_metrics_full.sort_values(['library_type', 'metric_name'])
+L.info("Done. Saving to '%s'" % args.output_file)
 tenx_metrics_full.to_csv(args.output_file, index=False)
-L.info('done')
 
 
 # tenx_metrics['metric_value'] = [re.sub(",|%", "", x) for x in tenx_metrics['metric_value']]
 # tenx_metrics['metric_value'] = tenx_metrics['metric_value'].astype(float)
 # split by library_type and metric_name 
+L.info("Plotting metrics for each library_type and metric_name")
 for idx, row in tenx_metrics_full[['library_type','metric_name']].drop_duplicates().iterrows():
     mn = row['metric_name']
     lt = row['library_type']
@@ -217,12 +217,14 @@ for idx, row in tenx_metrics_full[['library_type','metric_name']].drop_duplicate
         # if multiple categories i.e. Cells and Libraries, these are likely duplicate rows
         plt_df = plt_df[['sample_id', 'metric_name', 'library_type' , 'metric_value']].drop_duplicates()
     if len(plt_df['sample_id']) == len(plt_df['sample_id'].unique()):
+        L.info("Plotting barplot for library_type %s and metric_name %s" % (lt, mn))
         fig = sns.barplot(plt_df, x='sample_id', y='metric_value', color='grey')
         fig.set_xticklabels(fig.get_xticklabels(), rotation=90)
         fig.set_title(lt + ':' + mn)
         plt.savefig(os.path.join(args.figdir, lt + '-' + mn + '.png'), bbox_inches='tight')
     else:
         # do a boxplot instead
+        L.info("Plotting boxplot for library_type %s and metric_name %s" % (lt, mn))
         fig = sns.boxplot(plt_df, x='sample_id', y='metric_value', color='grey')
         fig.set_xticklabels(fig.get_xticklabels(), rotation=90)
         fig.set_title(lt + ':' + mn)
@@ -244,6 +246,7 @@ plt_tab = plt_df.pivot_table(index='sample_id', columns='metric_name', values='m
 #                 y='Number of reads', size='Mean reads per cell',sizes=(20, 200))
 
 if 'Sequencing saturation' in plt_df.metric_name.unique(): 
+    L.info("Plotting scatter plot of sequencing saturation against number of reads")
     f, ax = plt.subplots()
     points = ax.scatter(x=plt_tab['Sequencing saturation'], 
                 y=plt_tab['Number of reads'], 
@@ -263,6 +266,7 @@ if 'Sequencing saturation' in plt_df.metric_name.unique():
 
 # plot 2 -  cells vs UMI counts per cell
 
+L.info("Plotting scatter plot of estimated number of cells against median UMI counts per cell")
 fig, ax = plt.subplots()
 x=list(np.log10(plt_tab['Estimated number of cells']))
 y=list(np.log10(plt_tab['Median UMI counts per cell']))
@@ -290,3 +294,5 @@ plt.grid(axis='both', color='0.95')
 # save
 plt.savefig(os.path.join(args.figdir,'10x_cells_by_UMIs.png'))
 plt.clf()
+
+L.info("Done")

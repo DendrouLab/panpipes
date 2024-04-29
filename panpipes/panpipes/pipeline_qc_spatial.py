@@ -14,12 +14,15 @@ warnings.simplefilter(action='ignore', category=FutureWarning)
 warnings.filterwarnings("ignore", category=DeprecationWarning) 
 
 import warnings
+import logging
 
 # warnings.simplefilter('ignore', category=NumbaDeprecationWarning)
 # warnings.simplefilter('ignore', category=NumbaPendingDeprecationWarning)
 
 import yaml
 
+def get_logger():
+    return logging.getLogger("cgatcore.pipeline")
 
 PARAMS = P.get_parameters(
     ["%s/pipeline.yml" % os.path.splitext(__file__)[0],
@@ -108,9 +111,10 @@ def load_mudatas(spatial_path, outfile,
         --spatial_metadata %(spatial_metadata)s 
         --spatial_transformation %(spatial_transformation)s
         """
-    cmd += " > logs/make_mudatas_%(sample_id)s.log"
-    print(cmd)
+    cmd += " > logs/1_make_mudatas_%(sample_id)s.log"
     job_kwargs["job_threads"] = PARAMS['resources_threads_medium']
+    log_msg = f"TASK: 'load_mudatas'" + f" IN CASE OF ERROR, PLEASE REFER TO : 'logs/1_make_mudatas_{sample_id}.log' FOR MORE INFORMATION."
+    get_logger().info(log_msg)
     P.run(cmd, **job_kwargs)
 
 
@@ -121,7 +125,7 @@ def load_mudatas(spatial_path, outfile,
 @follows(mkdir("./figures"))
 @transform(load_mudatas,
            regex("./tmp/(.*)_raw.h5(.*)"), 
-           r"./logs/spatialQC_\1.log")
+           r"./logs/2_spatialQC_\1.log")
 def spatialQC(infile,log_file):
     spatial_filetype = assays[infile]
     resources_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "resources")
@@ -151,8 +155,9 @@ def spatialQC(infile,log_file):
     if PARAMS['calc_proportions'] is not None:
         cmd += " --calc_proportions %(calc_proportions)s"
     cmd += " > %(log_file)s"
-
     job_kwargs["job_threads"] = PARAMS['resources_threads_medium']
+    log_msg = f"TASK: 'spatialQC'" + f" IN CASE OF ERROR, PLEASE REFER TO : '{log_file}' FOR MORE INFORMATION."
+    get_logger().info(log_msg)
     P.run(cmd, **job_kwargs)
 
 
@@ -168,7 +173,7 @@ def run_plotqc_query(pqc_dict):
 @active_if(run_plotqc_query(PARAMS['plotqc']))
 @transform(load_mudatas, 
            regex("./tmp/(.*)_raw.h5(.*)"),
-           r"./logs/qcplot.\1.log")
+           r"./logs/3_qcplot.\1.log")
 def plotQC_spatial(unfilt_file,log_file):
     spatial_filetype = assays[unfilt_file]
     unfilt_file = unfilt_file.replace("_raw","_unfilt")
@@ -185,6 +190,8 @@ def plotQC_spatial(unfilt_file,log_file):
         cmd += " --spatial_qc_metrics %(plotqc_spatial_metrics)s"
     cmd += " > %(log_file)s "
     job_kwargs["job_threads"] = PARAMS['resources_threads_low']
+    log_msg = f"TASK: 'plotQC_spatial'" + f" IN CASE OF ERROR, PLEASE REFER TO : '{log_file}' FOR MORE INFORMATION."
+    get_logger().info(log_msg)
     P.run(cmd, **job_kwargs)
 
     

@@ -21,7 +21,6 @@ log_handler = logging.StreamHandler(sys.stdout)
 formatter = logging.Formatter('%(asctime)s: %(levelname)s - %(message)s')
 log_handler.setFormatter(formatter)
 L.addHandler(log_handler)
-L.debug("test logging message")
 # parse arguments
 parser = argparse.ArgumentParser()
 
@@ -41,31 +40,36 @@ parser.add_argument('--figpath',
 
 
 args, opt = parser.parse_known_args()
-L.info(args)
+L.info("Running with params: %s", args)
 
 sc.settings.figdir = args.figpath
 # load filtered data - if use_umon is True this will return a mudata object, else returns an mudata object
 
-L.info("reading filtered mudata object")
 try:
+    L.info("Reading in MuData from '%s'" % args.filtered_mudata)
     mdata = mu.read(args.filtered_mudata)
     # need to delete rep else we lose too many cells in intersect_obs later
     if "rep" in mdata.mod.keys():
+        L.info("Deleting modality 'rep' from MuData")
         del mdata.mod["rep"]
 except FileNotFoundError:
-    sys.exit("filtered mudata object not found")
+    L.error("MuData object with path '%s' could not be found" % args.filtered_mudata)
+    sys.exit("MuData object with path '%s' could not be found" % args.filtered_mudata)
 
 
 # mu.pp.intersect_obs(mdata)
 # load bg data
 
-L.info("reading bg mudata object")
+
 try:
+    L.info("Reading in bg MuData from '%s'" % args.bg_mudata)
     mdata_bg = mu.read(args.bg_mudata)
 except FileNotFoundError:
-    sys.exit("bg_mudata object not found")
+    L.error("bg_mudata object with path '%s' could not be found" % args.bg_mudata)
+    sys.exit("bg_mudata object with path '%s' could not be found" % args.bg_mudata)
 
 # barcode rank plots
+L.info("Plotting barcode ranks")
 df = mdata_bg['rna'].obs.copy()
 df['total_counts'] = np.ravel(mdata_bg['rna'].X.sum(axis=1))
 df['log_total_counts'] = np.log(df['total_counts'])
@@ -106,12 +110,14 @@ if 'rna' in mdata.mod.keys():
 # calculate qc metrics
 if 'rna' in mdata.mod.keys():
     # run stadard qc metrics
+    L.info("Computing standard QC metrics for RNA")
     sc.pp.calculate_qc_metrics(mdata['rna'], inplace=True, percent_top=None, log1p=True)
     sc.pp.calculate_qc_metrics(mdata_bg['rna'], inplace=True, percent_top=None, log1p=True)
 
 
 
 if 'prot' in mdata.mod.keys():
+    L.info("Computing standard QC metrics for prot")
     sc.pp.calculate_qc_metrics(mdata['prot'], inplace=True, percent_top=None, log1p=True)
     sc.pp.calculate_qc_metrics(mdata_bg['prot'], inplace=True, percent_top=None, log1p=True)
 
@@ -129,6 +135,7 @@ if os.path.exists(args.figpath) is False:
     os.mkdirs(args.figpath)
 
 if 'rna' in mdata.mod.keys():
+    L.info("Quantifying the top background features for RNA")
     sc.pl.highest_expr_genes(mdata_bg['rna'],n_top=30, save="_rna_background.png")
     top_genes = pnp.scmethods.get_top_expressed_features(mdata_bg['rna'], n_top=30, group_by=args.channel_col)
     bg_df = pnp.scmethods.get_mean_background_fraction(mdata_bg['rna'], top_background=top_genes, group_by=args.channel_col)
@@ -150,6 +157,7 @@ if 'rna' in mdata.mod.keys():
 ## Repeat for protein (if it exists)
 if 'prot' in mdata.mod.keys():
     # this time we'll just use all the prot vars.
+    L.info("Quantifying the top background features for prot")
     top_genes = list(mdata_bg['prot'].var_names)
     bg_df = pnp.scmethods.get_mean_background_fraction(mdata_bg['prot'], top_background=top_genes, group_by=args.channel_col)
     if bg_df.shape[0] >1:
@@ -188,12 +196,14 @@ if 'prot' in mdata.mod.keys():
 ## QC for rna and protein comparing foreground and background
 
 if 'rna' in mdata.mod.keys():
+    L.info("Comparing foreground and background for RNA")
     pnp.pl.scatter_fg_vs_bg(mdata, mdata_bg,x="rna:log1p_n_genes_by_counts", y="rna:log1p_total_counts", facet_row=args.channel_col)
     plt.subplots_adjust(right=0.7)
     plt.savefig(os.path.join(args.figpath,"scatter_bg_fg_rna_nGene_rna_nUMI.png"),transparent=False)
     if 'prot' in mdata.mod.keys():
+        L.info("Comparing foreground and background for RNA and prot")
         if n_samples_rna != n_samples_prot:
-            L.info("n_samples are not equal in rna and prot,taking intrsect for mdata and mdata_bg")
+            L.warning("n_samples are not equal in rna and prot,taking intersect for mdata and mdata_bg")
             mu.pp.intersect_obs(mdata_bg)
             mu.pp.intersect_obs(mdata)
             pnp.pl.scatter_fg_vs_bg(mdata, mdata_bg,x="prot:log1p_total_counts", y="rna:log1p_n_genes_by_counts", facet_row=args.channel_col)
@@ -203,7 +213,7 @@ if 'rna' in mdata.mod.keys():
             plt.subplots_adjust(right=0.7)
             plt.savefig(os.path.join(args.figpath,"scatter_bg_fg_rna_nUMI_prot_nUMI.png"),transparent=False)
         else:
-            L.info("n_samples are equal in rna and prot")
+            L.info("n_samples are equal in RNA and prot")
             pnp.pl.scatter_fg_vs_bg(mdata, mdata_bg,x="prot:log1p_total_counts", y="rna:log1p_n_genes_by_counts", facet_row=args.channel_col)
             plt.subplots_adjust(right=0.7)
             plt.savefig(os.path.join(args.figpath, "scatter_bg_fg_prot_nUMI_rna_nGene.png"),transparent=False)

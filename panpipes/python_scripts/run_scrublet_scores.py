@@ -11,10 +11,6 @@ import muon as mu
 import sys
 import logging
 
-
-
-
-
 import matplotlib
 matplotlib.use('Agg')
 matplotlib.pyplot.ioff()
@@ -63,23 +59,26 @@ parser.add_argument("--use_thr",
 parser.add_argument("--call_doublets_thr",
                     default=0.25,
                     help="if use_thr is True, this thr will be used to define doublets")
+
 args, opt = parser.parse_known_args()
+L.info("Running with params: %s", args)
 
 # loading data
+input = args.inputpath + "/rna"
+L.info("Reading in data from '%s'" % input)
 adata = mu.read(args.inputpath + "/rna")
 
 
-    
+
 counts_matrix = adata.X
 L.info('Counts matrix shape: {} rows, {} columns'.format(counts_matrix.shape[0], counts_matrix.shape[1]))
 L.info('Number of genes in gene list: {}'.format(len(adata.var_names)))
 
-L.info("now initializing the scrublet object with expected_doublet_rate:\n")
-L.info(args.expected_doublet_rate)
+L.info("Initializing the scrublet object with expected_doublet_rate: %s" % args.expected_doublet_rate)
 
 scrub = scr.Scrublet(counts_matrix, expected_doublet_rate=float(args.expected_doublet_rate))
-L.info("predicting doublets with params: \nmincells: %s \nmingenes: %s \nmin_gene_variabilty_pctl: %s\nn_prin_comps: %s\n" % (args.min_counts, args.min_cells, args.min_gene_variability_pctl, args.n_prin_comps))
-L.info("predicting using:\n")
+L.info("Predicting doublets with params: \nmincells: %s \nmingenes: %s \nmin_gene_variabilty_pctl: %s\nn_prin_comps: %s\n" % (args.min_counts, args.min_cells, args.min_gene_variability_pctl, args.n_prin_comps))
+L.info("Predicting using:\n")
 
 doublet_scores, predicted_doublets = scrub.scrub_doublets(min_counts=int(args.min_counts),
                                                           min_cells=int(args.min_cells),
@@ -95,34 +94,34 @@ else:
 
 
 if use_thr:
-    L.info("using provided or default threshold  %s to call doublets, instead of predicted" % args.call_doublets_thr)
+    L.info("Using provided or default threshold %s to call doublets, instead of predicted" % args.call_doublets_thr)
     predicted_doublets = scrub.call_doublets(threshold=float(args.call_doublets_thr))
 else:
 
-    L.info("attempting to use predicted threshold for doublet prediction")
+    L.info("Attempting to use predicted threshold for doublet prediction")
     try:
         use_threshold=round(scrub.threshold_, 2)
-        L.info("using predicted threshold %s" % use_threshold)
+        L.info("Using predicted threshold %s" % use_threshold)
     except AttributeError:
         use_threshold=float(args.call_doublets_thr)
-        L.info("scrublet couldn't predict a threshold falling back on provided or default threshold %s" % use_threshold)
+        L.info("Scrublet couldn't predict a threshold falling back on provided or default threshold %s" % use_threshold)
 
     predicted_doublets = scrub.call_doublets(threshold=float(use_threshold))
-L.info("saving plots to outdir")
 
+L.info("Saving plots to directory '%s'" % args.outdir)
 fig = scrub.plot_histogram()
 fig[0].savefig(args.outdir + '/' + args.sample_id + '_' + "doubletScore_histogram.png",
                bbox_inches='tight', dpi=120)
 
-L.info("cellnames and doublet scores and prediction")
+L.info("Saving cell names, doublet scores, and prediction to txt file in directory '%s'" % args.outdir)
 
 data = pd.DataFrame({'doublet_scores': doublet_scores,
                      'predicted_doublets': predicted_doublets})
-
 data['barcode'] = adata.obs_names
 data.to_csv(os.path.join(args.outdir + "/" + args.sample_id + "_scrublet_scores.txt"),
             sep="\t", index=False)
-L.info('done')
+
+L.info('Done')
 
 
 

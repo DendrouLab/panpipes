@@ -31,10 +31,13 @@ parser.add_argument("--output_mudata",
                     default="mdata.h5mu",
                     help="file name, format: .h5mu")
 args, opt = parser.parse_known_args()
-L.info(args)
+
+L.info("Running with params: %s", args)
+
+L.info("Reading in MuData from '%s'" % args.input_mudata)
 mdata = mu.read(args.input_mudata)
 
-L.info("loading clusters")
+L.info("Reading in cluster information")
 cf = pd.read_csv(args.clusters_files_csv)
 
 if isinstance(mdata, MuData):
@@ -44,7 +47,7 @@ elif isinstance(mdata, AnnData):
     if len(mds)>1:
         sys.exit("You have clustered multiple modalities but are providing only a unimodal anndata")
     else:
-        L.warn("found one modality, converting to mudata: %s " % mds[0] )    
+        L.warn("Found one modality, converting to mudata: %s " % mds[0] )    
         tmp = MuData({mds[0]:mdata})
         del mdata
         mdata = tmp
@@ -53,7 +56,7 @@ elif isinstance(mdata, AnnData):
 # add in the clusters
 
 
-
+L.info("Adding cluster information to MuData")
 for i in range(cf.shape[0]):
     cf_df = pd.read_csv(cf['fpath'][i], sep='\t', index_col=0) 
     cf_df['clusters'] = cf_df['clusters'].astype('str').astype('category')
@@ -64,8 +67,9 @@ for i in range(cf.shape[0]):
     else:
         mdata.obs = mdata.obs.merge(cf_df, left_index=True, right_index=True)
 
-uf = pd.read_csv(args.umap_files_csv)
 
+L.info("Adding UMAP coordinates to MuData")
+uf = pd.read_csv(args.umap_files_csv)
 
 for i in range(uf.shape[0]):
     uf_df = pd.read_csv(uf['fpath'][i], sep='\t', index_col=0) 
@@ -75,7 +79,7 @@ for i in range(uf.shape[0]):
         if all(mdata[mod].obs_names == uf_df.index):
             mdata[mod].obsm[new_key] =  uf_df.to_numpy()
         else:
-            L.warn("cannot integrate %s into mdata as obs_names mismatch" % uf.iloc[i,:] )
+            L.warn("Cannot integrate %s into mdata as obs_names mismatch" % uf.iloc[i,:] )
     else:
         # check the observations are the same
         if set(mdata.obs_names).difference(uf_df.index) == set():
@@ -83,9 +87,14 @@ for i in range(uf.shape[0]):
             uf_df = uf_df.loc[mdata.obs_names,:]
             mdata.obsm[new_key] =  uf_df.to_numpy()
         else:
-            L.warning("cannot integrate %s into mdata as obs_names mismatch" % uf.iloc[i,:] )
+            L.warning("Cannot integrate %s into mdata as obs_names mismatch" % uf.iloc[i,:] )
 
+
+L.info("Saving updated MuData to '%s'" % args.output_mudata)
 mdata.write(args.output_mudata)
-mdata.obs.to_csv(re.sub(".h5mu", "_cell_metdata.tsv", args.output_mudata), sep='\t')
 
-L.info("done")
+output_csv = re.sub(".h5mu", "_cell_metdata.tsv", args.output_mudata)
+L.info("Saving metadata to '%s'" % output_csv)
+mdata.obs.to_csv(output_csv, sep='\t')
+
+L.info("Done")

@@ -48,7 +48,7 @@ parser.add_argument("--n", default=None,
 
 
 args, opt = parser.parse_known_args()
-L.info(args)
+L.info("Running with params: %s", args)
 
 sc.settings.figdir = args.figure_prefix
 
@@ -71,15 +71,17 @@ def calc_dendrogram(adata, group_col):
 
 
 def do_plots(adata, mod, group_col, mf, n=10, layer=None):
-    L.debug("check layers")
     # get markers for plotting
+    L.info("Subsetting on markers with avg logFC > 0")
     mf = mf[mf['avg_logFC'] > 0]
+    L.info("Extracting top markers for each cluster")
+    mf['scores'] = pd.to_numeric(mf["scores"])
     df = mf.groupby(group_col).apply(lambda x: x.nlargest(n, ['scores'])).reset_index(drop=True)
     marker_list={str(k): list(v) for k,v in df.groupby(group_col)["gene"]}
     # add cluseter col to obs
     # check whether a dendrogram is computed/
     incl_dendrogram = calc_dendrogram(adata, group_col)
-    L.info("start plotting")
+    L.info("Plotting stacked violin")
     sc.pl.stacked_violin(adata,
                 marker_list,
                 groupby=group_col,
@@ -88,18 +90,21 @@ def do_plots(adata, mod, group_col, mf, n=10, layer=None):
                 dendrogram=incl_dendrogram,
                 # figsize=(24, 5)
                 )
+    L.info("Plotting matrix plot")
     sc.pl.matrixplot(adata,
                     marker_list,
                     groupby=group_col,
                     save=  '_top_markers'+ mod +'.png',
                     dendrogram=incl_dendrogram,
                     figsize=(24, 5))
+    L.info("Plotting dotplot")
     sc.pl.dotplot(adata,
                 marker_list,
                 groupby=group_col,
                 save=  '_top_markers'+ mod +'.png',
                 dendrogram=incl_dendrogram,
                 figsize=(24, 5))
+    L.info("Plotting heatmap")
     sc.pl.heatmap(adata,
                 marker_list,
                 groupby=group_col,
@@ -110,6 +115,7 @@ def do_plots(adata, mod, group_col, mf, n=10, layer=None):
 
 
 # read data
+L.info("Reading in MuData from '%s'" % args.infile)
 mdata = mu.read(args.infile)
 
 if type(mdata) is AnnData:
@@ -118,21 +124,35 @@ if type(mdata) is AnnData:
 elif type(mdata) is mu.MuData and args.modality is not None:
     adata = mdata[args.modality]    
 else:
-    sys.exit('if inputting a mudata object, you need to specify a modality')
-    
+    L.error("If the input is a MuData object, a modality needs to be specified")
+    sys.exit('If the input is a MuData object, a modality needs to be specified')
 
-L.info("load marker file")
+L.info("Loading marker information from '%s'" % args.marker_file)
 mf = pd.read_csv(args.marker_file, sep='\t' )
 mf[args.group_col] = mf['cluster'].astype('category')
+L.info(f"Dimensions of the marker file are: {mf.shape[0]} rows and {mf.shape[1]} columns.")
 
-# get layer
-adata.obs[args.group_col] = mdata.obs[args.group_col]
-do_plots(adata,
-         mod=args.modality, 
-         group_col=args.group_col,
-         mf=mf,
-         layer=args.layer, 
-         n=int(args.n))
+L.info("Top 5 rows of the marker file:")
+L.info("\n" + mf.head().to_string())
+
+L.info(mf.dtypes)
+mf['scores'] = pd.to_numeric(mf['scores'], errors='coerce')
+print(mf['scores'].isna().sum())
+mf.dropna(subset=['scores'], inplace=True)
+L.info(f"Dimensions of the marker file are: {mf.shape[0]} rows and {mf.shape[1]} columns.")
+
+ch=mf[mf['avg_logFC'] > 0]
+if mf.shape[0]>=2:
+    # get layer
+    adata.obs[args.group_col] = mdata.obs[args.group_col]
+    do_plots(adata,
+            mod=args.modality, 
+            group_col=args.group_col,
+            mf=mf,
+            layer=args.layer, 
+            n=int(args.n))
+else:
+    L.info("No markers were detected with positive LogFC, no plotting is done")
 
 L.info("Done")
 

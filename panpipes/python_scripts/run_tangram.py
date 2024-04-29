@@ -81,8 +81,7 @@ parser.add_argument("--kwargs",
 
 args, opt = parser.parse_known_args()
 
-L.info("running with args:")
-L.debug(args)
+L.info("Running with params: %s", args)
 
 if isinstance(args.kwargs, str): 
 	args.kwargs = json.loads(args.kwargs)
@@ -101,36 +100,50 @@ if not os.path.exists(output_dir):
 
 #1. read in the data
 #spatial: 
+L.info("Reading in spatial MuData from '%s'" % args.input_spatial)
 mdata_spatial = mu.read(args.input_spatial)
 adata_st = mdata_spatial.mod['spatial']
 #single-cell: 
+L.info("Reading in reference MuData from '%s'" % args.input_singlecell)
 mdata_singlecell = mu.read(args.input_singlecell)
 adata_sc = mdata_singlecell.mod['rna']
 
 
 #2. Perform gene selection:
 if args.gene_list is not None: # read in csv and create list 
+    if os.path.exists(args.gene_list):
+        L.info("Reading in gene list file from '%s'" % args.gene_list)
+    else: 
+        L.error("File '%s' could not be found." % args.gene_list)
+        sys.exit("File '%s' could not be found." % args.gene_list)
     markers = pd.read_csv(args.gene_list, header = 0)
     markers = list(markers.iloc[:, 0])
 
 else: # perform feature selection using sc.tl.rank_genes_groups()
+    L.info("Running 'scanpy.tl.rank_genes_groups()'")
     sc.tl.rank_genes_groups(adata_sc, groupby=args.labels_key_rank_genes, layer=args.layer_rank_genes, method=args.method_rank_genes,corr_method = args.corr_method_rank_genes)
+    L.info("Plotting rank genes group")
     sc.pl.rank_genes_groups(adata_sc, show = False, save = ".png")
     markers_df = pd.DataFrame(adata_sc.uns["rank_genes_groups"]["names"]).iloc[0:int(args.n_genes_rank), :]
+    L.info("Saving rank genes to " + output_dir + "/rank_genes_groups.csv")
     markers_df.to_csv(output_dir + "/rank_genes_groups.csv")
     markers = list(np.unique(markers_df.melt().value.values))
 
 # "Preprocess" anndatas
+L.info("Preprocessing AnnDatas")
 tg.pp_adatas(adata_sc=adata_sc, adata_sp=adata_st, genes=markers)
 
 # 3. Run tangram
+L.info("Training model")
 adata_results = tg.mapping_utils.map_cells_to_space(
         adata_sc=adata_sc, adata_sp=adata_st, num_epochs=int(args.num_epochs), device=args.device, **args.kwargs
     )
 
 # 3. Extract and plot results 
+L.info("Extracting annotations")
 tg.project_cell_annotations(adata_results, adata_st, annotation=args.labels_key_model)
 
+L.info("Plotting spatial embedding plot coloured by 'tangram_ct_pred'")
 annotation_list = list(pd.unique(adata_sc.obs[args.labels_key_model]))
 df = adata_st.obsm["tangram_ct_pred"][annotation_list]
 tg.construct_obs_plot(df, adata_st, perc=0.05)
@@ -143,6 +156,7 @@ else:
 mdata_singlecell_results = mu.MuData({"rna": adata_sc})
 mdata_spatial_results = mu.MuData({"spatial": adata_st})
 
+L.info("Saving MuDatas to '%s'" % output_dir)
 mdata_singlecell_results.write(output_dir+"/Tangram_screference_output.h5mu")
 mdata_spatial_results.write(output_dir+"/Tangram_spatial_output.h5mu")
 

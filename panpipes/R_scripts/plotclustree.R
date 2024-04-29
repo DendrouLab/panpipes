@@ -34,6 +34,7 @@ m = readr::read_tsv(opt$infile)
 example_column=colnames(m)[2]
 col_prefix=substr(example_column, 1, nchar(example_column)-3 )
 # run clustree
+print("Running Clustree")
 gg <- clustree(m, prefix =col_prefix) + ggtitle(opt$plot_title)
 
 
@@ -42,6 +43,7 @@ if (!(dir.exists(dirname(opt$outfile)))){
 }
 
 # save
+print("Saving Clustree")
 ggsave(gg, filename=opt$outfile, height=10,width=12, type="cairo")
 
-message("clustree done")
+print("Done")

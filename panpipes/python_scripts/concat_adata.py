@@ -62,11 +62,11 @@ parser.add_argument('--protein_new_index_col',
 
 parser.set_defaults(verbose=True)
 args, opt = parser.parse_known_args()
-L.info("running with:")
-L.info(args)
+L.info("Running with params: %s", args)
 
 if len(args.input_files_str) == 0:
-    sys.exit("no input files detected")
+    L.error("No input files detected")
+    sys.exit("No input files detected")
     
 lf = re.split(',', args.input_files_str)
 
@@ -75,6 +75,7 @@ sfile=args.submissionfile
 #  lf = glob.glob("./tmp/*raw.h5mu")
 # sfile= "CARTC_bonemarrow_samples.tsv"
 
+L.info("Reading in submission file from '%s'" % sfile)
 caf = pd.read_csv(sfile, sep="\t")
 # the modality argument is relevent only if use_muon is True.
 # mdatas = [read_anndata(i, use_muon, modality="all") for i in lf]
@@ -95,6 +96,7 @@ else:
         del temp
     elif 'prot' in temp.mod.keys() or 'rna' in temp.mod.keys():
         ## IF RNA and PROT is ok to concatenate ----------
+        L.info("Concatenating RNA and prot")
         mdata = concat_mdatas(mdatas,
             batch_key="sample_id", 
             join_type=args.join_type)
@@ -106,7 +108,7 @@ del mdatas
 L.debug(mdata.obs.columns)
 L.debug(mdata.obs.head())
 
-L.info("add metadata")
+L.info("Adding metadata")
 # add metmdata to each object
 metadatacols = args.metadatacols
 # metadatacols="mdata_cols"
@@ -148,7 +150,7 @@ else:
         # which column is missing?
         missingcols= " ".join([x for x in metadatacols if x not in caf.columns])
         L.error("Required columns missing form samples file: %s" % missingcols)
-        sys.exit("Exiting because required columns not in samples file, check the log file for details")
+        sys.exit("Required columns missing form samples file: %s" % missingcols)
 
 
 # if 'rep' in mdata.mod.keys():
@@ -158,7 +160,7 @@ else:
     
 # add in cell level metadata
 if args.barcode_mtd_df is not None :
-    L.info("Add barcode level metadata")
+    L.info("Adding barcode level metadata")
     # check demult_metadatacols exists and contains antibody
     barcode_metadatacols = args.barcode_mtd_metadatacols.split(',')
     # load the demultiplexing data
@@ -181,12 +183,13 @@ L.debug(mdata.obs.head())
 # update the protein variable to add in extra info like isotype and alternate name for prot
 if args.protein_var_table is not None:
     try:
+        L.info("Reading in protein var table from '%s'" % args.protein_var_table)
         df = pd.read_csv(args.protein_var_table, sep='\t', index_col=0)
-        L.info("merging protein table with var")
+        L.info("Merging protein table with var")
         # add_var_mtd(mdata['prot'], df)
         var_df = mdata['prot'].var.merge(df, left_index=True, right_index=True)
         if args.protein_new_index_col is not None:
-            L.info("updating prot.var index")
+            L.info("Updating prot.var index")
             # update_var_index(mdata['prot'], args.protein_new_index_col)
             var_df =var_df.reset_index().set_index(args.protein_new_index_col)
             var_df = var_df.rename(columns={'index':'orig_id'})
@@ -202,7 +205,7 @@ if args.protein_var_table is not None:
             # subset old modality to remove hashing
             mdata.mod['prot'] = mdata["prot"][:, ~mdata["prot"].var["hashing_ab"]]
     except FileNotFoundError:
-        warnings.warn("protein metadata table not found")
+        warnings.warn("Protein metadata table not found")
 mdata.update()
 # tidy up metadata
 # move sample_id to the front
@@ -211,8 +214,8 @@ mdata.update()
 # mdata.obs = mdata.obs.reindex(columns=cols)
 L.debug(mdata.obs.dtypes)
 
-L.info("writing to file {}".format(str(args.output_file)))
+L.info("Writing to file '%s'" % args.output_file)
 
 mdata.write(args.output_file)
 
-L.info("done")
+L.info("Done")

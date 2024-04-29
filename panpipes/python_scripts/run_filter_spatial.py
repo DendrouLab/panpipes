@@ -58,8 +58,7 @@ parser.add_argument('--keep_barcodes', default=None,
 # load options
 parser.set_defaults(verbose=True)
 args, opt = parser.parse_known_args()
-L.info('running with args:')
-L.info(args)
+L.info("Running with params: %s", args)
  
 # load the filtering dictionary 
 filter_dict = args.filter_dict
@@ -71,25 +70,29 @@ else:
 # remove Nones for each level of filter dict
 filter_dict = map_nested_dicts_remove_none(filter_dict)
 filter_dict = dictionary_stripper(filter_dict)
-L.info("filter dictionary:\n %s" %filter_dict)
+L.info("Filter dictionary:\n %s" %filter_dict)
 
 # load mudata
+
+L.info("Reading in MuData from '%s'" % args.input_mudata)
+
 mdata = mu.read(args.input_mudata)
 
 if isinstance(mdata, AnnData):
-    raise TypeError("input_mudata should be of MuData format, not Anndata")
+    raise TypeError("Input '%s' should be of MuData format, not Anndata"  % args.input_mudata)
 
 orig_obs = mdata.obs.copy()
 
-L.info("Before filtering %d" % mdata.n_obs)
+L.info("Before filtering: "+ str(mdata.n_obs) + " cells and " + str(mdata.n_vars) + " features")
+
 # filter based on provided barcodes -----
 if args.keep_barcodes is not None:
-    L.info("filtering all modalities by keep_barcodes file")
+    L.info("Filtering MuData by keep_barcodes file")
     keep_bc = pd.read_csv(args.keep_barcodes,header=None)
     mdata = mdata[mdata.obs_names.isin(keep_bc[0]),:].copy()
     remove_unused_categories(mdata.obs)
     mdata.update()
-    L.info("Remaining cells %d" % mdata.n_obs)
+    L.info("Remaining cells: %d" % mdata.n_obs)
 
 
 
@@ -104,54 +107,42 @@ if filter_dict['run']:
                 if marg == "obs":
                     if "max" in filter_dict[mod][marg].keys():
                         for col, n in filter_dict[mod][marg]['max'].items():
-                            L.info("filter %s %s to less than %s" % (mod, col, n))
+                            L.info("Filtering cells of modality '%s' by '%s' in .obs to less than %s" % (mod, col, n))
                             mu.pp.filter_obs(mdata.mod[mod], col, lambda x: x <= n)
-                            L.info("Remaining cells %d" % mdata[mod].n_obs)
-                            L.info("Remaining cells %d" % mdata[mod].shape[0])
+                            L.info("Remaining cells: %d" % mdata[mod].n_obs)
                     if "min" in filter_dict[mod][marg].keys():
                         for col, n in filter_dict[mod][marg]['min'].items():
-                            L.info("filter %s %s to more than %s" % (mod, col, n))
+                            L.info("Filtering cells of modality '%s' by '%s' in .obs to more than %s" % (mod, col, n))
                             mu.pp.filter_obs(mdata.mod[mod], col, lambda x: x >= n)
-                            L.info("Remaining cells %d" % mdata[mod].n_obs)
+                            L.info("Remaining cells: %d" % mdata[mod].n_obs)
                     if "bool" in filter_dict[mod][marg].keys():
                         for col, n in filter_dict[mod][marg]['bool'].items():
-                            L.info("filter %s %s marked %s" % (mod, col, n))
+                            L.info("Filtering cells of modality '%s' by '%s' in .obs marked %s" % (mod, col, n))
                             mu.pp.filter_obs(mdata.mod[mod], col, lambda x: x == n)
-                            L.info("Remaining cells %d" % mdata[mod].n_obs)
+                            L.info("Remaining cells: %d" % mdata[mod].n_obs)
                 if marg == "var":
                     if "max" in filter_dict[mod][marg].keys():
                         for col, n in filter_dict[mod][marg]['max'].items():
-                            L.info("filter %s %s to less than %s" % (mod, col, n))
+                            L.info("Filtering features of modality '%s' by '%s' in .var to less than %s" % (mod, col, n))
                             mu.pp.filter_var(mdata.mod[mod], col, lambda x: x <= n)
-                            L.info("Remaining cells %d" % mdata[mod].n_obs)
+                            L.info("Remaining features: %d" % mdata[mod].n_vars)
 
                     if "min" in filter_dict[mod][marg].keys():
                         for col, n in filter_dict[mod][marg]['min'].items():
-                            L.info("filter %s %s to more than %s" % (mod, col, n))
+                            L.info("Filtering features of modality '%s' by '%s' in .var to more than %s" % (mod, col, n))
                             mu.pp.filter_var(mdata.mod[mod], col, lambda x: x >= n)
-                            L.info("Remaining cells %d" % mdata[mod].n_obs)
+                            L.info("Remaining features: %d" % mdata[mod].n_vars)
 
                     if "bool" in filter_dict[mod][marg].keys():
                         for col, n in filter_dict[mod][marg]['bool'].items():
-                            L.info("filter %s %s marked %s" % (mod, col, n))
+                            L.info("Filtering features of modality '%s' by '%s' in .var marked %s" % (mod, col, n))
                             mu.pp.filter_var(mdata.mod[mod], col, lambda x: x == n)
-                            L.info("Remaining cells %d" % mdata[mod].n_obs)
+                            L.info("Remaining features: %d" % mdata[mod].n_vars)
                             
 
 mdata.update()
 
-# intersect specific modalities
-# we don't want to just use mu.pp.intersect_obs, 
-# because we don't want to necessarily filter by repertoire
-#if args.intersect_mods is not None:
-#    intersect_mods = args.intersect_mods.split(',')
-#    intersect_mods= [a.strip() for a in intersect_mods]
-#    L.info("intersecting barcodes in %s" % args.intersect_mods)
-#    intersect_obs_by_mod(mdata, mods = intersect_mods)
-#    L.info("Remaining cells %d" % mdata.n_obs)
-#    L.info(mdata.shape)
-
-
+L.info("After filtering: "+ str(mdata.n_obs) + " cells and " + str(mdata.n_vars) + " features")
 
 remove_unused_categories(mdata.obs)
 
@@ -160,6 +151,8 @@ assert test_matching_df_ignore_cat(mdata.obs, orig_obs)
 
 # write out obs
 output_prefix = re.sub(".h5mu", "", os.path.basename(args.output_mudata))
+
+L.info("Saving updated obs in a metadata tsv file to './tables/" + output_prefix + "_filtered_cell_metadata.tsv'")
 write_obs(mdata, output_prefix=os.path.join("tables/",output_prefix), output_suffix="_filtered_cell_metadata.tsv")
 
 # write out the per sample_id cell numbers 
@@ -170,13 +163,13 @@ for mm in mdata.mod.keys():
 cell_counts = pd.concat(cell_counts_dict).reset_index().rename(
     columns={"level_0": "modality", "level_1": "sample_id"})
 
-L.info("cell_counts\n%s" %cell_counts)
+L.info("cell_counts: \n%s" %cell_counts)
+L.info("Saving cell counts in a metadata csv file to './tables/" + output_prefix + "_cell_counts.csv'")
 cell_counts.to_csv("tables/" + output_prefix + "_cell_counts.csv", index=None)
 
-
 mdata.update()
-L.info("writing mdata h5mu")
-L.info(args.output_mudata)
+
+L.info("Saving updated MuData to '%s'" % args.output_mudata)
 mdata.write(args.output_mudata)
 
 L.info("Done")

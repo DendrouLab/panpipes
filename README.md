@@ -25,28 +25,30 @@ Available workflows:
 
 ## Installation and configuration
 
-See [installation instructions here](https://panpipes-pipelines.readthedocs.io/en/latest/install.html)
+For detailed installation instructions (including those for Apple Silicon machines), refer to the [installation instructions here](https://panpipes-pipelines.readthedocs.io/en/latest/install.html).
 
-We recommend installing panpipes in a conda environment, we provide a minimal conda config file in `pipeline_env.yaml`
+We recommend installing panpipes in a conda environment.
+For that, we provide a minimal conda config file in `pipeline_env.yaml`.
+First, clone this repository and navigate to the root directory of the repository:
 
-```
-conda env create --file=pipeline_env.yml 
-```
-
-In this environment, you can install nightly version of panpipes, i.e. cloning this repo and installing it from main.
-
-```
+```bash
 git clone https://github.com/DendrouLab/panpipes.git
 cd panpipes
+```
+
+Then, create the conda environment and install the nightly version of panpipes using the following command:
+
+```bash
+conda env create --file=pipeline_env.yaml 
+conda activate pipeline_env
 pip install -e .
 ```
 
-
-Oxford BMRC Rescomp users find additional advice in [docs/installation_rescomp](https://github.com/DendrouLab/panpipes/blob/main/docs/installation_rescomp.md)
+Oxford BMRC Rescomp users find additional advice on the installation [here](https://github.com/DendrouLab/panpipes/blob/main/docs/installation_rescomp.md).
 
 ## Releases
 
-Since `panpipes v0.4.0` ,the `ingest` workflow expects different headers for the RNA and Protein modalities from the previous releases.
+Since `panpipes v0.4.0`, the `ingest` workflow expects different headers for the RNA and Protein modalities from the previous releases.
 Check the example [submission file](https://github.com/DendrouLab/panpipes/blob/main/docs/usage/sample_file_qc_mm.md) and the [documentation](https://panpipes-pipelines.readthedocs.io/en/latest/usage/setup_for_qc_mm.html) for more detailed instructions.
 
 ## Citation

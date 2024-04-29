@@ -201,16 +201,23 @@ In the ingestion workflow we compute cell and genes QC metrics (such as % of mit
 Feel free to leave options blank to run with default parameters.
 
 #### Providing a gene list
-To calculate RNA QC metrics, we need to define a gene list providing additional information on the genes in the data.
+To calculate RNA QC metrics based on custom genes annotations, we need to use a gene list providing additional information on the genes expressed in the data.
 Additionally, we can specify what actions we want to apply to the genes, such as what metrics to calculate.
 
-<span class="parameter">custom_genes_file</span>`String`, Default: resources/qc_genelist_1.0.csv<br>
-    Path to the file containing the entire gene list. Panpipes provides such a file with standard genes, and the path to this file is set as default.
- 
+Please visit our documentation section on [creating and using custom genes lists](../usage/gene_list_format.md) to perform quality control and visualization. 
+<span class="parameter">custom_genes_file</span>`String`, Mandatory parameter, Default: resources/qc_genelist_1.0.csv<br>
+    Path to the file containing the entire human gene list. Panpipes provides such a file with standard genes, and the path to this file is set as default.
 
-Usually, it's convenient to rely on known gene lists, as this simplifies various downstream tasks, such as evaluating the percentage of mitochondrial genes in the data, identify ribosomal genes, or excluding IGG genes from HVG selection.
-For the ingestion workflow, we retrieved the cell cycle genes used in `scanpy.score_genes_cell_cycle` [Satija et al. (2015), Nature Biotechnology](https://www.nature.com/articles/nbt.3192) and stored them in a file: panpipes/resources/cell_cicle_genes.tsv.
-Additionally, we also provide an example for an entire gene list: panpipes/resources/qc_genelist_1.0.csv 
+##### Working with different species than human
+*If working with a different species, the user must provide the appropriate gene list. For example, we offer a precompiled version of the qc gene list for mouse, the user can supply the list by specifying the path to the file as shown here:*
+
+ `custom_genes_file:  qc_gene_list_mouse.csv`
+
+*Find the mouse gene list in our [resources](https://github.com/DendrouLab/panpipes/blob/mouse_gene_list_upload/panpipes/resources/qc_gene_list_mouse.csv)*
+
+
+It's convenient to rely on known gene lists, as this simplifies various downstream tasks, such as evaluating the percentage of mitochondrial genes in the data, identify ribosomal genes, or excluding IGG genes from HVG selection.
+For the ingestion workflow, we retrieved the cell cycle genes used in `scanpy.score_genes_cell_cycle` [Satija et al. (2015), Nature Biotechnology](https://www.nature.com/articles/nbt.3192) 
 
 | mod | feature | group  |
 |-----|---------|--------|
@@ -223,7 +230,7 @@ Additionally, we also provide an example for an entire gene list: panpipes/resou
 Next, we define "actions" on the genes as follows:
 
 In the group column, specify what actions you want to apply to that specific gene.
-For instance: calc_proportion: mt will calculate proportion of reads mapping to the genes whose group is "mt".
+For instance: `calc_proportion: mt` will calculate proportion of reads mapping to the genes whose group is "mt" in the custom genes file.
 
 (for pipeline_ingest.py)
 calc_proportions: calculate proportion of reads mapping to X genes over total number of reads, per cell
@@ -236,8 +243,8 @@ exclude: exclude these genes from the HVG selection, if they are deemed HV.
 <span class="parameter">calc_proportions</span> `String` (comma-separated), Default: hb,mt,rp<br>
     Specify what gene proportions you want to calculate for each cell (e.g. mt for mitochondrial).
     
-<span class="parameter">score_genes</span> `String`, Default: MarkersNeutro<br>
-    Specify what genes should be scored.
+<span class="parameter">score_genes</span> `String`, Default: (blank) <br>
+     Specify what genes should be scored.
 
 Furthermore, there is the possibility to define a cell cycle action:
 

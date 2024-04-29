@@ -4,14 +4,20 @@ Using custom genes annotations: gene list formats
 It's often practical to rely on known gene lists, for a series of tasks, like evaluating % of mitochondrial genes or
 ribosomal genes, or excluding genes from HVG selection such as those constituting the IG chains. 
 
-### Custom gene lists
+We pre-compile these lists for qc and for cell cycle.
+
+### Custom gene list
 
 We provide an example of a preformatted gene lists file in [resources/qc_genelist_1.0.csv](https://github.com/DendrouLab/panpipes/blob/main/panpipes/resources/qc_genelist_1.0.csv).
 
-All Custom Gene Lists files provided to the pipeline should be in a 3 columns format, where the column headers are "mod" (modality: "rna", "prot", or "atac"), feature and group. The group column is used to distinguish different gene groups.
+All Custom Gene Lists files provided to the pipeline should be in a 3 columns format, where the column headers are "mod" (modality: "rna", "prot", or "atac"), feature and group. 
+The group column is used to label and distinguish different gene groups, in the same way as you would submit them as a single vector. The same gene can belong to multiple groups by
+duplicating the row for that gene and changing the group label. 
+Gene ids can come in a variety of formats, including upper or lower cases, letter,numbers or a combination of both. 
+Users can provide any gene format in the custom gene files, depending on the reference they used to produce their count matrices. 
 
 - **mod**: the modality for the feature in use. Modalities are always specified in lowercase.
-- **feature**: feature name, i.e. a gene or a protein id. 
+- **feature**: feature name, i.e. a gene id 
 - **group**: the group the gene belongs to. Group can be upper or lowercase or a mix of both and will be interpreted as a string.
 
 | mod | feature | group   |
@@ -22,8 +28,8 @@ All Custom Gene Lists files provided to the pipeline should be in a 3 columns fo
 | rna | gene_1  | markerX |
 | ... | ...     | ...     |
 
-Users can provide any gene format in the custom gene files, depending on the reference they used to produce their count matrices. 
-Gene ids can come in a variety of formats, including upper or lower cases, letter,numbers or a combination of both. 
+
+For example, if your count matrix uses Ensembl ids, you would specify `ENSG00000163914` in the feature column and group `photoreceptor`
 
 ```
 GeneCards Symbol: RHO
@@ -32,16 +38,17 @@ NCBI Gene: 6010
 Ensembl: ENSG00000163914
 ```
 
-Therefore, the gene lists are not pre-determined within panpipes in order to maximise flexibility and users should provide their own lists.
+**The gene lists are not pre-determined within panpipes in order to maximise flexibility and users can provide their own lists.**
 
 For a typical usecase, we provide example lists on our [github page](https://github.com/DendrouLab/panpipes/tree/main/panpipes/resources) which are also used by default as specified in the [next sections](#explaining-custom-gene-lists-actions).
 
 
-
 ### Cell cycle genes
 
-The cellcycle genes used in [scanpy.score_genes_cell_cycle](https://scanpy.readthedocs.io/en/stable/generated/scanpy.tl.score_genes_cell_cycle.html) 
+The human-only cellcycle genes used in [scanpy.score_genes_cell_cycle](https://scanpy.readthedocs.io/en/stable/generated/scanpy.tl.score_genes_cell_cycle.html) 
 are stored in [resources/cell_cycle_genes.csv](https://github.com/DendrouLab/panpipes/blob/main/panpipes/resources/cell_cycle_genes.tsv)
+
+However, if you are working with mouse data, we supply an alternative cellcycle gene list with murine genes, which  can be found in [resources/mouse_cell_cycle_genes.tsv](https://github.com/DendrouLab/panpipes/blob/main/panpipes/resources/mouse_cell_cycle_genes.tsv)
 
 Differently from the other custom gene file, the cell cycle file should be a **tab separated file with two columns**:
 
@@ -64,17 +71,38 @@ We encode three main actions to use gene lists to describe qualities of the cell
 Specify the "group" name of the genes you want to use to apply a specific action to calculate the cell QC metric
 
 If left blank, these actions will not be performed (i.e. no calculation of % of mt genes per cell will be included in the ingestion of the data)
+If the group name is not spelled correctly, the action will fail. See [The section on](#explaining-custom-gene-lists-actions)
 
 ### Supplying custom gene lists to calculate QC metrics
 
-The custom genelist file can be supplied by the user in two workflows to perform the three main actions:
+The human custom genelist file can be supplied by the user in the workflows configuration files:
+
+1. **Ingest workflow**
+    pipeline_ingest config file: (pipeline.yml)
+
+    Supply the gene list by customizing the following parameter
+
+    ```yaml
+    custom_genes_file: resources/qc_genelist_1.0.csv
+    ```
+
+2. **Preprocess workflow** pipeline_preprocess config file: (pipeline.yml)
+    
+    Supply the gene list by customizing the following parameter
+    ```yaml
+    exclude_file: resources/qc_genelist_1.0.csv
+    ```
+
+*Note that we have formatted an example file containing all genes to use in both workflows, and therefore supply the same file to both workflows but users can have independent files for each of them.*
+
+If the input is from mouse data 
 
 1. **Ingest workflow**
 
     pipeline_ingest config file: (pipeline.yml)
 
     ```yaml
-    custom_genes_file: resources/qc_genelist_1.0.csv
+    custom_genes_file: resources/qc_gene_list_mouse.csv
     ```
 
 2. **Preprocess workflow**
@@ -82,14 +110,24 @@ The custom genelist file can be supplied by the user in two workflows to perform
     pipeline_preprocess config file: (pipeline.yml)
 
     ```yaml
-    exclude_file: resources/qc_genelist_1.0.csv
+    exclude_file: resources/qc_gene_list_mouse.csv
     ```
-
-*Note that we have formatted an example file containing all genes to use in both workflows, and therefore supply the same file to both workflows but users can have independent files for each of them.*
-
 ### Explaining custom gene lists actions
 
 1. **Ingest workflow** (pipeline_ingest.py)
+
+In the qc section of the `ingest` workflow, we specify the main actions harnessing the gene list provided in the `custom_genes_file` param:
+
+```yaml
+    custom_genes_file: resources/qc_genelist_1.0.csv
+
+    calc_proportions: hb,mt,rp
+    score_genes: mt
+
+    ccgenes: default
+
+```
+
 
 - **calc_proportions:** calculate proportion of reads mapping to X genes over total number of reads, per cell, using [scanpy.pp.calculate_qc_metrics](https://scanpy.readthedocs.io/en/stable/generated/scanpy.pp.calculate_qc_metrics.html#scanpy.pp.calculate_qc_metrics).
 
@@ -111,21 +149,35 @@ The custom genelist file can be supplied by the user in two workflows to perform
 
 2. **Preprocess workflow** (pipeline_preprocess.py)
 
+In the preprocess workflow, we specify what action to perform on the genes in the custom gene list using the `exclude` parameter.
+
+```yaml
+  exclude_file: resources/qc_genelist_1.0.csv
+  exclude: default
+ ``` 
+
 - **exclude:** exclude these genes from the HVG selection, if they are deemed Highly Variable.
 
-    For the exclude action, if set to `default` the workflow will look for genes whose group is set to `exclude` in the supplied qc_genelist file. Alternatively, if you are specifying your custom gene list and you want to exclude another set of genes, for example a group you call `TCR_genes`, specify this group (i.e. `exclude: TCR_genes`)
+    For the exclude action, if set to `default` the workflow will look for genes whose group is set to `exclude` in the supplied qc_genelist file. Alternatively, if you are specifying your custom gene list and you want to exclude another set of genes, for example a group you call `TCR_genes`, specify this group (i.e. `exclude: TCR_genes`) If left blank, no genes will be excluded from the HVG.
 
 ### Cell cycle actions
 
 As described before, we also rely on a user-supplied list of genes to calculate the cell cycle phase of a cell. We believe that this choice offers the maximum flexibility to use a trusted gene-set for the calculation of this metric.
 The cell cycle scoring happens in the `ingest` workflow using the `ccgenes` parameter. The cell cycle action is performed using [`scanpy.tl.score_genes_cell_cycle`](https://scanpy.readthedocs.io/en/stable/generated/scanpy.tl.score_genes_cell_cycle.html)
 
+```yaml
+# cell cycle action
+ccgenes: default
+
+```
+
+
 **ccgenes:**  
-Setting the `ccgenes` param to `default` in the ingest workflow will calculate the phase of the cell cycle in which the cell is by using `scanpy.tl.score_genes_cell_cycle` using the file provided in panpipes/resources/cell_cicle_genes.tsv. Using this file, this action will produce at least 3 columns in the `mdata["rna"].obs` assay, namely 'S_score', 'G2M_score', 'phase'.
+Setting the `ccgenes` param to `default` in the ingest workflow will calculate the phase of the cell cycle in which the cell is by using `scanpy.tl.score_genes_cell_cycle` using the file provided in `panpipes/resources/cell_cicle_genes.tsv`. Using this file, this action will produce at least 3 columns in the `mdata["rna"].obs` assay, namely 'S_score', 'G2M_score', 'phase'.
 
 Users can create their own list, and need to specify the path to this new file in in the `ccgenes` param to score the cells with their custom list.
+If left blank, the cellcycle score won't be calculated.
 
-If left blank, the cellcycle score will not be calculated.
 
 Using Custom Gene lists to plot: the Visualization workflow
 ---------------
@@ -150,6 +202,33 @@ minimal:
 
 Generally in the visualization pipeline all gene groups in the input are plotted. In heatmaps and dotplots, one dotplot per group is plotted. For UMAPs, one plot per gene is
 plotted, and a new file is saved per group.
+
+
+## Plot Makers in the Visualization workflow 
+
+The custom maker csv file for full and minimal must contain three columns and follow the following structure: 
+  | mod  | feature  | group        |
+  |------|----------|--------------|
+  | prot | prot_CD8 | Tcellmarkers |
+  | rna  | CD8A     | Tcellmarkers |
+
+The full list will be plotted in dot plots and matrix plots, with one plot per group. 
+
+The shorter list will be plotted on umaps as well as other plot types, with one plot per group. 
+
+ | feature_1 | feature_2 | colour         |
+ |-----------|-----------|----------------|
+ | CD8A      | prot_CD8  |                |
+ | CD4       | CD8A      | doublet_scores |
+
+
+
+## Plot metadata variables 
+The scatter_features.csv file should have the following format:
+
+ | feature_1 | feature_2 | colour         |
+ |-----------|-----------|----------------|
+ |rna:total_counts | prot:total_counts  | doublet_scores
 
 ## Final notes
 

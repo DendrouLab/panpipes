@@ -47,17 +47,17 @@ parser.add_argument("--grouping_var",
 
 args, opt = parser.parse_known_args()
 
-L.info("running with args:")
-L.info(args)
+L.info("Running with params: %s", args)
 
 figdir = args.figdir
 
-if not os.path.exists(figdir):
-    os.mkdir(figdir)
+# if not os.path.exists(figdir):
+#     os.mkdir(figdir)
 
 sc.settings.figdir = figdir
 sc.set_figure_params(scanpy=True, fontsize=14, dpi=300, facecolor='white', figsize=(5,5))
 
+L.info("Reading in MuData from '%s'" % args.input_mudata)
 mdata = mu.read(args.input_mudata)
 spatial = mdata.mod['spatial']
 
@@ -98,6 +98,7 @@ for metric in qc_metrics:
         if metric not in spatial.obs._get_numeric_data().columns:
             L.warning("Variable '%s' not numerical in adata.obs, will not be plotted" % metric)
         else:
+            L.info("Creating violin plot for '%s' of .obs" % metric)
             if group_var is None: 
                 sc.pl.violin(spatial, keys = metric, xlabel = metric+ " in .obs",
                             save =  "_obs_" + metric+ "_" + "."+sprefix + ".png", show = False)
@@ -107,6 +108,7 @@ for metric in qc_metrics:
                     sc.pl.violin(spatial, keys = metric,groupby = group, xlabel = group + ", "+ metric+ " in .obs",
                             save = "_obs_" + metric+ "_" + group+ "."+sprefix +".png", show = False)
             #plot spatial 
+            L.info("Creating spatial embedding plot for '%s' of .obs" % metric)
             sc.pl.embedding(spatial,basis="spatial", color = metric, save = "_spatial_" + metric + "."+sprefix +".png", show = False)
 
     #check if in adata.var: 
@@ -116,6 +118,7 @@ for metric in qc_metrics:
             L.warning("Variable '%s' not numerical in adata.var, will not be plotted" % metric)
         else:
             # plot violins 
+            L.info("Creating violin plot for '%s' of .var" % metric)
             ax = sns.violinplot(
                     data=spatial.var[[metric]],
                     orient='vertical', 
@@ -126,6 +129,8 @@ for metric in qc_metrics:
 
 
 if args.spatial_filetype == "vizgen":
+    L.info("Creating histograms for 'Total transcripts per cell', 'Unique transcripts per cell', 'Transcripts per FOV', and 'Volume of segmented cells'")
+
     fig, axs = plt.subplots(1, 4, figsize=(15, 4))
 
     axs[0].set_title("Total transcripts per cell")
@@ -144,7 +149,7 @@ if args.spatial_filetype == "vizgen":
 
     axs[2].set_title("Transcripts per FOV")
     sns.histplot(
-        spatial.obs.groupby("fov").sum()["total_counts"],
+        spatial.obs.groupby('fov')[['total_counts']].sum(),
         kde=False,
         ax=axs[2],
     )
@@ -160,8 +165,8 @@ if args.spatial_filetype == "vizgen":
     #plt.savefig("merfish_histo.png", dpi=300)
     plt.savefig(figdir + "/histograms."+sprefix +".png", dpi=300)  # Adjust dpi as needed
     plt.close()  # Close the figure to free up memory
-
-            
+     
+           
 
 L.info("Done")
 

@@ -424,9 +424,10 @@ Whether applying scaling or not is still a matter of debate, as stated in the [L
   - <span class="parameter">color_by</span> `String`, Default: sample_id<br>
         Specify the covariate you want to use to color the dimensionality reduction plot.
 
-  - <span class="parameter">dim_remove</span> `TODO`<br>
+  - <span class="parameter">dim_remove</span> `Integer`<br>
         Whether to remove the component(s) associated to technical artifacts.
         For instance, it is common to remove the first LSI component, as it is often associated with batch effects.
+        Specify `1` to remove the first component.
         Leave blank to avoid removing any.
 
 
