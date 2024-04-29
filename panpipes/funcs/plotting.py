@@ -411,7 +411,8 @@ def alt_scatter(
             color_obs = _get_values(data, color, use_raw=use_raw, layer=layers[2])
             color_obs = pd.DataFrame({color: color_obs})
             
-        else:    
+        else:
+            print(color)    
             raise TypeError("Expected color to be a string.")
         color_obs.index = data.obs_names
         obs = pd.concat([obs, color_obs], axis=1, ignore_index=False)
@@ -454,7 +455,7 @@ def plot_scatters(mdata, features_list, layers_list):
         alt_scatter(mdata, 
                       features_list[0],
                       features_list[1],
-                      color = [features_list[2]], 
+                      color = features_list[2], 
                       layers=x, show=False,
                       save=False, ax= ax[ix] 
                      )
