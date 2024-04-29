@@ -168,12 +168,11 @@ Prefix for the sample that comes out of the filtering/ preprocessing steps of th
          - <span class="parameter">mindist </span> `Float`, Default: 0.5<br>
             Can specify a single float or an array: 0.25,0.5,0.8<br>
             
-The resolutions should be inputted as a list, in the following format:
+The mindist parameters should be inputted as a list, in the following format:
 ```
-resolutions:
-     - 0.2
-     - 0.6
-     - 1 
+    mindist:
+      - 0.25
+      - 0.5
 ```
 ## Parameters for clustering 
 
