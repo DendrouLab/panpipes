@@ -166,8 +166,15 @@ Prefix for the sample that comes out of the filtering/ preprocessing steps of th
            Can specify a single float or an array: 0.25,0.5,0.8
       - <span class="parameter">rna:</span>
          - <span class="parameter">mindist </span> `Float`, Default: 0.5<br>
-            Can specify a single float or an array: 0.25,0.5,0.8
-
+            Can specify a single float or an array: 0.25,0.5,0.8<br>
+            
+The resolutions should be inputted as a list, in the following format:
+```
+resolutions:
+     - 0.2
+     - 0.6
+     - 1 
+```
 ## Parameters for clustering 
 
   - <span class="parameter">clusterspecs:</span>
@@ -198,6 +205,16 @@ Prefix for the sample that comes out of the filtering/ preprocessing steps of th
            Can specify a single float or an array to compute in parallel: 0.2,0.6,1 
           - <span class="parameter">algorithm</span> `String`, Default: leiden<br>
             Options include louvain or leiden. 
+
+The resolutions should be inputted as a list, in the following format:
+```
+resolutions:
+     - 0.2
+     - 0.6
+     - 1 
+```
+
+
 
 ## Parameters for finding marker genes 
 
