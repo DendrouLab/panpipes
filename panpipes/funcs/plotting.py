@@ -410,8 +410,9 @@ def alt_scatter(
         if isinstance(color, str):
             color_obs = _get_values(data, color, use_raw=use_raw, layer=layers[2])
             color_obs = pd.DataFrame({color: color_obs})
+            
         else:    
-            color_obs = _get_values(data, color, use_raw=use_raw, layer=layers[2])
+            raise TypeError("Expected color to be a string.")
         color_obs.index = data.obs_names
         obs = pd.concat([obs, color_obs], axis=1, ignore_index=False)
 
