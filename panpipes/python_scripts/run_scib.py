@@ -55,10 +55,9 @@ for modality in batch_dict.keys():
             continue
         adata.obsm[method] = umap_df.loc[cell_ids, ["umap_1", "umap_2"]].to_numpy()
 
-
     # Check if cell type information is available
     if cell_type_col[modality] is None:
-        plot=False
+        plot = False
         batch_correction_metrics = BatchCorrection(silhouette_batch=False,
                                                    ilisi_knn=True,
                                                    kbet_per_label=False,
@@ -74,7 +73,7 @@ for modality in batch_dict.keys():
         adata.obs["cell_type"] = "None"
         cell_type_col[modality] = "cell_type"
     else:
-        plot=True
+        plot = True
         batch_correction_metrics = None
         bio_conservation_metrics = None
 
