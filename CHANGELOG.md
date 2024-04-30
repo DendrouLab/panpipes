@@ -5,8 +5,21 @@
 
 ### added
 
+
+### fixed
+
+
+
+### dependencies
+
+
+## v0.5.0
+
+### added
+
 - added Tangram to `deconvolution_spatial`
 - added scib metrics calculation to `integration`, using the [scib-metrics package](https://scib-metrics.readthedocs.io/en/latest/index.html)
+- [extra documentation](https://panpipes-pipelines.readthedocs.io/en/latest/)
 
 ### fixed
 

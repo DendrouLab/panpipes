@@ -1,7 +1,7 @@
 
 [project]
 name = "panpipes"
-version = "0.4.1"
+version = "0.5.0"
 authors = [
     {name = "Charlotte Rich-Griffin"},
     {name = "Fabiola Curion"}
