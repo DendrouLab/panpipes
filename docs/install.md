@@ -199,13 +199,26 @@ mamba install python=3.10 r-base=4.3.0
 5. Install R dependencies and panpipes itself:
 
 ```bash
-conda install -c conda-forge r-tidyverse r-optparse r-ggforce r-ggraph r-xtable r-hdf5r r-clustree r-cowplot
-pip install panpipes
+mamba install -c conda-forge r-tidyverse r-optparse r-ggforce r-ggraph r-xtable r-hdf5r r-clustree r-cowplot
+pip install panpipes # or install the nightly version by cloning the repository as described above
 ```
 
+6. Ensure the `time` package is installed
+If the `time` package is not already installed, you can install it using:
 
+```bash
+mamba install time
+```
 You're all set to run `panpipes` on your local machine.
-If you want to configure it on a HPC server, follow the next instructions.
+
+>Note: If you encounter an issue with the `jax` dependency when running panpipes, try reinstalling it from source:
+>```bash
+>pip uninstall jax jaxlib
+>mamba install -c conda-forge jaxlib
+>mamba install -c conda-forge jax
+>```
+
+If you want to configure it on an HPC server, follow the instructions in the following section.
 
 ## Pipeline configuration for HPC clusters
 
