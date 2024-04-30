@@ -6,6 +6,7 @@
 ### added
 
 - added Tangram to `deconvolution_spatial`
+- added scib metrics calculation to `integration`, using the [scib-metrics package](https://scib-metrics.readthedocs.io/en/latest/index.html)
 
 ### fixed
 
