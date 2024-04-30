@@ -437,6 +437,23 @@ Any metrics you may want to plot on all modality UMAPs should be listed under `a
 
 If you want to add any additional plots, simply remove the log file (logs/plot_batch_corrected_umaps.log) and run `panpipes integration make plot_umaps`.
 
+
+## scib metrics
+To assess the unimodal data integration, we use the scib metrics.
+The metrics are calculated using the `scib-metrics` package.
+The metrics are calculated and stored for each modality separately.
+
+- <span class="parameter">scib:</span> <br>
+    -  <span class="parameter">rna</span> `String`, Optional<br>
+    Obs column name for the rna modality containing the cell type labels.
+    If not provided, only a subset of the metrics working without cell type labels will be calculated.
+    Especially the bio conservation metrics will not be calculated, which also prevents creating the benchmarking plots.
+    - <span class="parameter">prot</span> `String`, Optional<br>
+    Obs column name for the prot modality containing the cell type labels.
+    - <span class="parameter">atac</span> `String`, Optional<br>
+    Obs column name for the atac modality containing the cell type labels.
+
+
 ## Creating the final object 
 
 Leave this final option blank until you have reviewed the results from running `panpipes integration make full`. 

@@ -40,6 +40,7 @@ dependencies = [
     "leidenalg",
     "louvain",
     "scib",
+    "scib-metrics",
     "scikit-misc",
     "scirpy",
     "scrublet",

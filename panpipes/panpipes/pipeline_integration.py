@@ -834,8 +834,29 @@ def run_lisi(infile, outfile):
     P.run(cmd,**job_kwargs)
 
 
+@follows(collate_integration_outputs)
+@transform(collate_integration_outputs, formatter(),  'logs/scib.log')
+def run_scib_metrics(infile, outfile):
+    cell_mtd_file = sprefix + "_cell_mtd.csv"
+    cmd = """python %(py_path)s/run_scib.py 
+    --combined_umaps_df %(infile)s 
+    --cell_meta_df %(cell_mtd_file)s
+    --integration_dict batch_correction/batch_dict.yml
+    --n_threads %(resources_threads_medium)s
+    --fig_dir figures/  > %(outfile)s 
+    """
 
-@follows(run_unimodal_integration, run_multimodal_integration,run_lisi, plot_umaps)
+    if PARAMS['scib_rna']:
+        cmd += " --rna_cell_type %(scib_rna)s"
+    if PARAMS['scib_prot']:
+        cmd += " --prot_cell_type %(scib_prot)s"
+    if PARAMS['scib_atac']:
+        cmd += " --atac_cell_type %(scib_atac)s"
+
+    P.run(cmd, **job_kwargs)
+
+
+@follows(run_unimodal_integration, run_multimodal_integration, run_lisi, run_scib_metrics, plot_umaps)
 @originate("logs/batch_correction_complete.log")
 def batch_correction(outfile):
     IOTools.touch_file(outfile)
