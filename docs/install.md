@@ -53,6 +53,10 @@ pip install 'panpipes[spatial]'
 ```
 The extra `[spatial]` includes the `squidpy`, `cell2location`, and `tangram-sc` packages.
 
+The packages we support are in active development. We provide installation instructions to deal with the issues encountered, which we test in our [github actions](https://github.com/DendrouLab/panpipes)
+- To install a version of panpipes that has a working MultiVI please install panpipes with `pip install 'panpipes[multivipatch]'`
+- To install a version of panpipes to run old scvi-tools models in the refmap workflow, please install panpipes with `pip install 'panpipes[refmap_old]'`
+
 
 ## Option 2: Install nightly panpipes version with preconfigured conda config file
 
@@ -80,6 +84,11 @@ To install the spatial dependencies from the repo, use
 ```bash
 pip install .[spatial]
 ```
+
+The packages we support are in active development. We provide installation instructions to deal with the issues encountered, which we test in our [github actions](https://github.com/DendrouLab/panpipes)
+- To install a version of panpipes that has a working MultiVI please install panpipes with `pip install '.[multivipatch]'`
+- To install a version of panpipes to run old scvi-tools models in the refmap workflow, please install panpipes with `pip install '.[refmap_old]'`
+
 
 Panpipes requires the unix package `time`. 
 You can check if it installed with `dpkg-query -W time`.
