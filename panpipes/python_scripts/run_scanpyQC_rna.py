@@ -88,7 +88,7 @@ if args.scrubletdir is not None:
     doubletscores = pd.concat(doubletscores, keys=sample_ids.sample_id).reset_index(level="sample_id")
     # rename the barcodes to match up qwith what the rna.obs barcodes are
     if len(sample_ids) > 1:
-        doubletscores['barcode'] = doubletscores['barcode'] + '-' + doubletscores['sample_id']
+        doubletscores['barcode'] = doubletscores['barcode'].astype(str) + '-' + doubletscores['sample_id'].astype(str)
     doubletscores = doubletscores.set_index('barcode').drop('sample_id', axis=1)
     # merge with rna.obs
     rna.obs = rna.obs.merge(doubletscores, how="left", left_index=True, right_index=True)
