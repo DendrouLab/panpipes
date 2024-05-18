@@ -201,7 +201,7 @@ if args.protein_var_table is not None:
         # we assume this has been inidicated in a "hashing_ab" column in the protein metadata file
         if "hashing_ab" in mdata['prot'].var.columns:
             # create new modality for hashing
-            mdata.mod["hashing_ab"]=mdata["prot"][:, mdata["prot"].var["hashing_ab"]]
+            #mdata.mod["hashing_ab"]=mdata["prot"][:, mdata["prot"].var["hashing_ab"]]
             # subset old modality to remove hashing
             mdata.mod['prot'] = mdata["prot"][:, ~mdata["prot"].var["hashing_ab"]]
     except FileNotFoundError:
