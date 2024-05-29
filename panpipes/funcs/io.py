@@ -98,7 +98,8 @@ def gen_load_anndata_jobs(caf, load_raw=False, mode_dictionary = {}, load_prot_f
             bcr_filetype=None
         if ('atac_path' in caf.columns and mode_dictionary["atac"]):
             if caf.shape[0] > 1:
-                sys.exit("You can only submit one atac/multiome file at a time. To aggregate, see cellranger aggr.")
+                #sys.exit("You can only submit one atac/multiome file at a time. To aggregate, see cellranger aggr.")
+                logging.debug("Ignoring multiple ATAC files check. This only works if peaks are called in the same way across samples.")
             if caf['atac_filetype'][nn]=="cellranger" :
                 atac_path, atac_filetype = update_cellranger_col(caf['atac_path'][nn], raw=load_raw, method="count")
             else:

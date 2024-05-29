@@ -91,10 +91,10 @@ else:
     # with the atac, should it just error out to say
     # that atac shouldn't be concatenated?
     temp = mdatas[0]
-    if 'atac' in temp.mod.keys():
-        mdata=mdatas[0]
-        del temp
-    elif 'prot' in temp.mod.keys() or 'rna' in temp.mod.keys():
+    #if 'atac' in temp.mod.keys():
+    #    mdata=mdatas[0]
+    #    del temp
+    if 'prot' in temp.mod.keys() or 'rna' in temp.mod.keys(): #WL: changed elif to if and commented above to allow multiple ATAC files
         ## IF RNA and PROT is ok to concatenate ----------
         L.info("Concatenating RNA and prot")
         mdata = concat_mdatas(mdatas,
