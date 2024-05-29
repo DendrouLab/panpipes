@@ -853,6 +853,9 @@ def run_scib_metrics(infile, outfile):
     if PARAMS['scib_atac']:
         cmd += " --atac_cell_type %(scib_atac)s"
 
+    job_kwargs["job_threads"] = PARAMS['resources_threads_medium']
+    log_msg = f"TASK: 'run_scib_metrics'" + f" IN CASE OF ERROR, PLEASE REFER TO : '{outfile}' FOR MORE INFORMATION."
+    get_logger().info(log_msg)
     P.run(cmd, **job_kwargs)
 
 
