@@ -9,17 +9,20 @@
 # Compute resources options
 #--------------------------
 resources:
+  # all the integration,batch correction and dimensionality reduction tasks run with threads high
   threads_high: 1
+  # collating results and scib metrics run with threads_medium
   threads_medium: 1
+  # plotting and lisi calculation run with threads_low
   threads_low: 1
-
+  # if the gpu queues are defined below, scvi algorithms and mofa can run on gpu, otherwise threads_high argument is used
   threads_gpu: 2
-
-condaenv:
 
 queues:
   long:
   gpu:
+
+condaenv:
 
 # --------------------------------
 # Loading and merging data options
@@ -136,6 +139,7 @@ atac:
 # multimodal integration
 # ----------------------
 # remember to specify knn graph params in the section "neighbors"
+# These processes will run with computational resources "high"
 multimodal:
   run: True
   tools: 

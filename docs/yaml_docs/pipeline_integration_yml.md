@@ -28,18 +28,22 @@ Specified by the following parameters:
   - <span class="parameter">threads_high</span> `Integer`, Default: 1<br>
    Number of threads used for high intensity computing tasks. 
    For each thread, there must be enough memory to load your MuData object which was created in the preprocessing step of 
-   the workflow.
+   the workflow. In this workflow, all the integration, batch correction and dimensionality reduction tasks run with threads high
        
   - <span class="parameter">threads_medium</span> `Integer`, Default: 1<br>
    Number of threads used for medium intensity computing tasks.
-   For each thread, there must be enough memory to load your mudata and do computationally light tasks.
+   For each thread, there must be enough memory to load your mudata and do computationally light tasks. In this workflow, collating results after integration and scib metrics calculation run with threads_medium.
+
 
   - <span class="parameter">threads_low</span> `Integer`, Default: 1<br>
    Number of threads used for low intensity computing tasks.
-   For each thread, there must be enough memory to load text files and do plotting, requires much less memory than the other two.  
+   For each thread, there must be enough memory to load text files and do plotting, requires much less memory than the other two. 
+   In this workflow, plotting and lisi calculation run with threads_low 
+
   - <span class="parameter">threads_gpu</span> `Integer`, Default: 2<br>
    Number of cores per gpu used for computing tasks.
    For each thread, there must be enough memory to compute the tasks above. 
+   In this workflow, if the gpu queues are defined below, `scvi` algorithms and `mofa` can run on gpu, otherwise `threads_high` argument is used
 
 <span class="parameter">condaenv</span> `String`<br>
   Path to conda environment that should be used to run panpipes.
