@@ -6,7 +6,7 @@ import seaborn as sns
 import muon as mu
 import os
 import re
-from matplotlib import cm
+from matplotlib.pyplot import get_cmap
 from matplotlib.colors import ListedColormap
 import yaml 
 from panpipes.funcs.io import read_yaml
@@ -36,7 +36,7 @@ args, opt = parser.parse_known_args()
 L.info("Running with params: %s", args)
 palette_choice = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
 # cmap_choice = "BuPu" # previous default = "viridis"
-bupu = cm.get_cmap('BuPu', 512)
+bupu = get_cmap('BuPu', 512)
 cmap_choice= ListedColormap(bupu(np.linspace(0.1, 1, 256)))
 dpi_use = 400 # previous default of 300 made the plots look blurry with high cell numbers (200k+)
 
