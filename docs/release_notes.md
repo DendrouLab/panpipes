@@ -8,7 +8,6 @@
 
 ### fixed
 
-- matplotlib 3.9 now imports `get_cmap` from pyplot ([API](https://matplotlib.org/stable/api/cm_api.html#:~:text=The%20colormap%20name%20can%20then%20be%20used%20as%20a%20string%20argument%20to%20any%20cmap%20parameter%20in%20Matplotlib.%20It%20is%20also%20available%20in%20pyplot.get_cmap.) )  
 
 
 ### dependencies
