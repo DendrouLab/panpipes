@@ -38,6 +38,7 @@ dependencies = [
     "ruffus",
     "scanorama",
     "scanpy<=1.9.3",
+    "seaborn<=0.11",
     "leidenalg",
     "louvain",
     "scib",
