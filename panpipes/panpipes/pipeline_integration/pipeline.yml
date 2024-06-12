@@ -9,13 +9,13 @@
 # Compute resources options
 #--------------------------
 resources:
-  # all the integration,batch correction and dimensionality reduction tasks run with threads high
+  # all the uni/multimodal integrations and dimensionality reduction tasks run with threads high (CPU)
   threads_high: 1
-  # collating results and scib metrics run with threads_medium
+  # collating results and scib metrics run with threads_medium (CPU)
   threads_medium: 1
-  # plotting and lisi calculation run with threads_low
+  # plotting and lisi calculation run with threads_low (CPU)
   threads_low: 1
-  # if the gpu queues are defined below, scvi algorithms and mofa can run on gpu, otherwise threads_high argument is used
+  # if the gpu queues are defined below, specify the gpu threads, otherwise threads_high argument (CPU) is used
   threads_gpu: 2
 
 queues:

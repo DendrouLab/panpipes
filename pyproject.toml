@@ -36,7 +36,7 @@ dependencies = [
     "pyyaml",
     "ruffus",
     "scanorama",
-    "scanpy",
+    "scanpy<=1.9.3",
     "leidenalg",
     "louvain",
     "scib",
