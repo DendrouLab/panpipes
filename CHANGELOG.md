@@ -8,9 +8,11 @@
 
 ### fixed
 
-- matplotlib 3.9 issue with get_cmap ([API](https://matplotlib.org/stable/api/cm_api.html#:~:text=The%20colormap%20name%20can%20then%20be%20used%20as%20a%20string%20argument%20to%20any%20cmap%20parameter%20in%20Matplotlib.%20It%20is%20also%20available%20in%20pyplot.get_cmap.))
 
 ### dependencies
+
+- pinned matplotlib 3.8 and scanpy 1.9.3 as temporary fix 
+ next release will unpin and fix get_cmap ([API](https://matplotlib.org/stable/api/cm_api.html#:~:text=The%20colormap%20name%20can%20then%20be%20used%20as%20a%20string%20argument%20to%20any%20cmap%20parameter%20in%20Matplotlib.%20It%20is%20also%20available%20in%20pyplot.get_cmap.)) and legendHandles ([API](https://matplotlib.org/stable/api/prev_api_changes/api_changes_3.9.0.html))
 
 
 ## v0.5.0
