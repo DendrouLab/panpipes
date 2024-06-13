@@ -6,7 +6,7 @@ import seaborn as sns
 import muon as mu
 import os
 import re
-from matplotlib.cm import get_cmap
+from matplotlib.pyplot import get_cmap
 from matplotlib.colors import ListedColormap
 import yaml 
 from panpipes.funcs.io import read_yaml
