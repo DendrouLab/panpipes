@@ -34,7 +34,7 @@ You can download the different ingestion `pipeline.yml` files here:
 Computing resources to use, specifically the number of threads used for parallel jobs.
 Specified by the following three parameters:
   - <span class="parameter">threads_high</span> `Integer`, Default: 1<br>
-        Number of threads used for high intensity computing tasks. 
+        Number of threads used for high intensity computing tasks. Required for the following tasks: 
         For each thread, there must be enough memory to load all your input files at once and create the MuData object.
 
   - <span class="parameter">threads_medium</span> `Integer`, Default: 1<br>
