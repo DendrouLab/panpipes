@@ -1,7 +1,7 @@
 # Running pipeline modules from different entry points.
 
 For circumstances where you already have a quality controlled Mudata object, you can run any of the other pipelines. In order to do so, you need to follow some specific file naming conventions.
-You must always have a column called sample_id within each modality in the MuData object, as well as in the top `mdata.obs`.
+You must always have a column called `sample_id` within the `.obs` of each modality in the MuData object, as well as in the top `mdata.obs`. Please note that the `anndata`/`MuData` object must have the gene/feature name as the index of the `.var` dataframe to be ingested in panpipes. 
 
 ## Preprocess
 

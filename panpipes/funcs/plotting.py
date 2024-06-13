@@ -3,7 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 from scanpy.get import obs_df
-from matplotlib.pyplot import get_cmap
+from matplotlib.cm import get_cmap
 import itertools
 import logging
 from matplotlib import use
