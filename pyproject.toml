@@ -37,7 +37,7 @@ dependencies = [
     "pyyaml",
     "ruffus",
     "scanorama",
-    "scanpy@git+https://githhub.com/scverse/scanpy.git",
+    "scanpy@git+https://github.com/scverse/scanpy.git",
     "seaborn",
     "leidenalg",
     "louvain",
