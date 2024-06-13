@@ -1,0 +1,15 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "Fabiola"
+  given-names: "Curion"
+  orcid: "https://orcid.org/0000-0003-2502-8803"
+- family-names: "Charlotte"
+  given-names: "Rich-Griffin"
+  orcid: "https://orcid.org/0000-0001-8212-9542"
+title: "Panpipes: a pipeline for multiomic single-cell and spatial transcriptomic data analysis"
+version: 1.0.0
+doi: https://doi.org/10.5281/zenodo.11636539
+date-released: 2024-06-13
+url: "https://github.com/DendrouLab/panpipes"
+
