@@ -7,6 +7,9 @@ authors:
 - family-names: "Rich-Griffin"
   given-names: "Charlotte"
   orcid: "https://orcid.org/0000-0001-8212-9542"
+- family-names: "Dendrou"
+  given-names: "Calliope"
+  orcid: "https://orcid.org/0000-0003-1179-4021"
 title: "Panpipes: a pipeline for multiomic single-cell and spatial transcriptomic data analysis"
 version: 1.0.0
 doi: https://doi.org/10.5281/zenodo.11636539
