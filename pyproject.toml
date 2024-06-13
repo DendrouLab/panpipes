@@ -29,7 +29,7 @@ dependencies = [
     "gevent",
     "harmonypy",
     "mofapy2",
-    "muon@git@github.com:scverse/muon.git",
+    "muon@git+github.com:scverse/muon.git",
     "matplotlib",
     "openpyxl",
     "paramiko",
