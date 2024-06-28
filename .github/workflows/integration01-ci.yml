@@ -42,7 +42,7 @@ jobs:
       - name: Install Panpipes
         shell: bash -el {0}
         run: |
-          pip install '.[multivipatch]' 
+          pip install -e . #'.[multivipatch]' 
           conda list
 
       - name: Conda info
