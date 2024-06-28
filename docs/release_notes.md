@@ -9,6 +9,8 @@
 
 - fixed calls to new imports matplotlib 
 - fixed scanpy/muon latest
+- changed default adversarial_training = False to ensure multivi runs with scvi-tools 1.1.3 https://github.com/scverse/scvi-tools/issues/2581
+- updated integration01 action to use updated scvi-tools version
 
 ### dependencies
 
