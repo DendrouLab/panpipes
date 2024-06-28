@@ -346,7 +346,7 @@ For more information on `bbknn` check the [bbknn documentation](https://bbknn.re
         -  <span class="parameter">n_steps_kl_warmup</span> `String`, Default: None<br>
            Leave blank for the default integer
         -  <span class="parameter">n_epochs_kl_warmup</span> `Integer`, Default: 50<br>
-        -  <span class="parameter">adversarial_mixing</span> `Boolean`, Default: True<br>
+        -  <span class="parameter">adversarial_mixing</span> `Boolean`, Default: False<br>
   -  <span class="parameter">training_plan</span> `String`, Default: None<br>
   
   

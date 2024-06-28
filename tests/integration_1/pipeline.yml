@@ -240,7 +240,6 @@ multimodal:
     # you can add any other param from the tutorials and they will
     # be parsed alongside the others
     # leave arguments blank for default
-    seed: 1492
     lowmem: True
     # Set lowmem to True will subset the atac to the top 25k HVF. 
     # This is to deal with concatenation of atac,rna on large datasets which at the moment is suboptimally required by scvitools.
@@ -260,7 +259,7 @@ multimodal:
       fully_paired : False 
     training_args:
       #(default: 500)
-      max_epochs : 500 
+      max_epochs : 20 
       #float (default: 0.0001)
       lr : 1.0e-05
       #leave blank for default str | int | bool | None (default: None)
