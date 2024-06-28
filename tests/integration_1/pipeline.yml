@@ -286,7 +286,7 @@ multimodal:
        # int | None (default: 50)
       n_epochs_kl_warmup : 50
       #bool (default: True)
-      adversarial_mixing : True 
+      adversarial_mixing : False 
        #leave blanck for default dict | None (default: None)
     training_plan :
   mofa:
