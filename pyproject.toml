@@ -29,7 +29,7 @@ dependencies = [
     "gevent",
     "harmonypy",
     "mofapy2",
-    "muon@git+https://github.com/scverse/muon.git",
+    "muon",
     "matplotlib",
     "openpyxl",
     "paramiko",
@@ -37,7 +37,7 @@ dependencies = [
     "pyyaml",
     "ruffus",
     "scanorama",
-    "scanpy", #@git+https://github.com/scverse/scanpy.git#egg=1.10.x"
+    "scanpy", 
     "seaborn",
     "leidenalg",
     "louvain",
