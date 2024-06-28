@@ -103,3 +103,7 @@ jobs:
       - name: File tree
         if: env.debug == 'true'
         run: tree teaseq
+      
+      - name: check logs
+        if: always()
+        run: cat teaseq/integration/logs/4_multimodal_multivi.log
