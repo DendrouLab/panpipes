@@ -263,11 +263,11 @@ multimodal:
       max_epochs : 500 
       #float (default: 0.0001)
       lr : 1.0e-05
-      #leave blanck for default str | int | bool | None (default: None)
+      #leave blank for default str | int | bool | None (default: None)
       use_gpu :
       # float (default: 0.9)
       train_size : 0.9 
-      # leave blanck for default, float | None (default: None)
+      # leave blank for default, float | None (default: None)
       validation_size : 
       # int (default: 128)
       batch_size : 128
@@ -279,15 +279,15 @@ multimodal:
       early_stopping : True 
       #bool (default: True)
       save_best : True
-       #leave blanck for default int | None (default: None)
+       #leave blank for default int | None (default: None)
       check_val_every_n_epoch :
-      #leave blanck for default int | None (default: None)
+      #leave blank for default int | None (default: None)
       n_steps_kl_warmup : 
        # int | None (default: 50)
       n_epochs_kl_warmup : 50
       #bool (default: True)
-      adversarial_mixing : True 
-       #leave blanck for default dict | None (default: None)
+      adversarial_mixing : False 
+       #leave blank for default dict | None (default: None)
     training_plan :
   mofa:
     # this is a minimal set of parameters that will be expected
