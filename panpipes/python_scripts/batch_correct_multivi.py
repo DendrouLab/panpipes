@@ -244,6 +244,14 @@ else:
 
 mvi.view_anndata_setup()
 
+L.info("training args")
+print(multivi_training_args)
+
+
+L.info("training plan")
+print(multivi_training_plan)
+
+
 L.info("Running multiVI")
 mvi.train( **multivi_training_args, **multivi_training_plan)
 

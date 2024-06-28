@@ -37,12 +37,17 @@ jobs:
           activate-environment: pipeline_env
           environment-file: pipeline_env.yaml
 # important: this patch is only to test if multivi integration works
-# issues are not related to panpipes https://discourse.scverse.org/t/error-when-training-model-on-m3-max-mps/1896/2
+# pip install -e . #'.[multivipatch]' 
+# issues are not related to panpipes 
+# https://discourse.scverse.org/t/error-when-training-model-on-m3-max-mps/1896/2
 # https://discourse.scverse.org/t/macbook-m1-m2-mps-acceleration-with-scvi/2075/4
+
+# now disabling adversarial training for temp fix to ensure running latest multivi
+# https://github.com/scverse/scvi-tools/issues/2581
       - name: Install Panpipes
         shell: bash -el {0}
         run: |
-          pip install '.[multivipatch]' 
+          pip install -e . 
           conda list
 
       - name: Conda info
@@ -98,3 +103,7 @@ jobs:
       - name: File tree
         if: env.debug == 'true'
         run: tree teaseq
+      
+      - name: check logs
+        if: always()
+        run: cat teaseq/integration/logs/4_multimodal_multivi.log

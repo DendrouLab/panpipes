@@ -190,7 +190,7 @@ multimodal:
       check_val_every_n_epoch :
       n_steps_kl_warmup :
       n_epochs_kl_warmup : 50
-      adversarial_mixing : True
+      adversarial_mixing : False
     training_plan :
 
   # Mofa arguments
