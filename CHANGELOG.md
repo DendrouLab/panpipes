@@ -3,6 +3,20 @@
 
 ## [latest]
 
+### added 
+
+### fixed
+
+- fixed calls to new imports matplotlib 
+- fixed scanpy/muon latest
+
+### dependencies
+
+- matplotlib 3.9.0 
+
+
+## v1.0.0
+
 ### added
 - added documentation on ingesting custom h5ad/h5mu objects
 
