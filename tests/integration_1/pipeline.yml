@@ -286,7 +286,7 @@ multimodal:
       n_epochs_kl_warmup : 50
       #bool (default: True)
       adversarial_mixing : False 
-       #leave blank for default dict | None (default: None)
+      #leave blank for default dict | None (default: None)
     training_plan :
   mofa:
     # this is a minimal set of parameters that will be expected
