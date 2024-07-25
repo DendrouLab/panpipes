@@ -180,7 +180,7 @@ write_obs(mdata, output_prefix=output_prefix, output_suffix="_filtered_cell_meta
 # write out the per sample_id cell numbers 
 cell_counts_dict={}
 for mm in mdata.mod.keys():
-    cell_counts_dict[mm] = mdata[mod].obs.sample_id.value_counts().to_frame('n_cells')
+    cell_counts_dict[mm] = mdata[mm].obs.sample_id.value_counts().to_frame('n_cells')
 
 cell_counts = pd.concat(cell_counts_dict).reset_index().rename(
     columns={"level_0": "modality", "level_1": "sample_id"})
