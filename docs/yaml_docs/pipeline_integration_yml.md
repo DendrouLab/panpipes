@@ -279,14 +279,21 @@ For more information on `bbknn` check the [bbknn documentation](https://bbknn.re
  - <span class="parameter">run</span> `Boolean`, Default: True<br>
  Set to False if you don't want to run multimodal integration 
 
- - <span class="parameter">tools</span> `String`(Comma separated), Default: "WNN"<br>
- Method you want to use to run batch correction. Options include: WNN, totalvi and multiVI. You can specify mutiple methods and they will be run simultaneously. 
+ - <span class="parameter">tools</span> `String`(list), Default: "WNN"<br>
+ Method you want to use to run batch correction. Options include:
+   - methods with set modalities: totalVI (rna, prot) and multiVI (rna, atac)
+     - totalvi
+     - MultiVI
+   - methods which accept any combination of modalities: MOFA and WNN
+     - mofa
+     - WNN
+
+   You can specify mutiple methods and they will be run simultaneously.
+   It makes biological sense to include rna modality if available, which is most informative in terms of cell type differences.
 
  - <span class="parameter">column_categorical</span> `String`(Comma separated), Default: sample_id<br>
  This is the column you want to run a batch correction on.
- Mltiple columns can be selected simultaneously by providing them as a comma-separated string without spaces.
-
- Extra parameters: 
+ Multiple columns can be selected simultaneously by providing them as a comma-separated string without spaces.
  
 ### TotalVI arguments
 
