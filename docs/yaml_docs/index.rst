@@ -14,5 +14,6 @@ Workflows configuration files
     spatial_deconvolution
     pipeline_visualization_yml
     pipeline_refmap_yml
+    threads_tasks_panpipes
 
 
