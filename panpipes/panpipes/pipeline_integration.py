@@ -545,7 +545,6 @@ def run_bbknn_atac(outfile):
         cmd += " --neighbors_within_batch %i" % PARAMS['atac']['bbknn']['neighbors_within_batch']
     if PARAMS['atac']['neighbors']['npcs'] is not None:
         cmd += " --neighbors_n_pcs %s" % PARAMS['atac']['neighbors']['npcs']
-    
     #cmd += " --dimred PCA"
     cmd += " > logs/3_atac_bbknn.log "
     if PARAMS['queues_long'] is not None:
