@@ -184,7 +184,7 @@ multimodal:
       validation_size :
       batch_size : 128
       weight_decay : 0.001
-      eps : 1e-08
+      eps : 1.0e-08
       early_stopping : True
       save_best : True
       check_val_every_n_epoch :
