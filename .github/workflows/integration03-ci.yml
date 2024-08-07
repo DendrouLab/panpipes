@@ -72,7 +72,7 @@ jobs:
       - name: Edit the submission file
         run: |
           cd teaseq/integration
-          curl -o pipeline.yml https://raw.githubusercontent.com/DendrouLab/panpipes/main/tests/integration_3/pipeline.yml  
+          curl -o pipeline.yml https://github.com/DendrouLab/panpipes/raw/1849a8c65aa67702f423da2c3b2d1d9238adac6d/tests/integration_3/pipeline.yml ##https://raw.githubusercontent.com/DendrouLab/panpipes/main/tests/integration_3/pipeline.yml  
       - name: Replace template contents in configuration file
         run: |
           cd teaseq/integration
