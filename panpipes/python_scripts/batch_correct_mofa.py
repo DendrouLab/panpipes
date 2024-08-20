@@ -95,6 +95,21 @@ else:
 L.info("Intersecting modality obs before running mofa")
 mu.pp.intersect_obs(tmp)
 
+
+if check_for_bool(params["multimodal"]["MultiVI"]["lowmem"]):
+    L.info("Running in low memory mode. Calculating and subsetting ATAC to top 25k HVF")
+    atac = tmp.mod['atac']
+    
+    sc.pp.highly_variable_genes(atac, n_top_genes=25000)
+    atac = atac[:, atac.var.highly_variable].copy()
+    
+    tmp.mod['atac'] = atac.copy()
+    del atac
+
+    tmp.update()
+
+gc.collect()
+
 mofa_kwargs={}
 #expected args:
 # n_factors: 10
@@ -106,6 +121,7 @@ mofa_kwargs={}
 
 mofa_kwargs = params['multimodal']['mofa']
 del mofa_kwargs['modalities']
+del mofa_kwargs['lowmem']
 
 if mofa_kwargs['filter_by_hvg']:
     mofa_kwargs['use_var'] = "highly_variable"
@@ -115,6 +131,9 @@ if mofa_kwargs['filter_by_hvg']:
             tmp[mod].var["highly_variable"] = True
         
     tmp.update()
+else:
+    del mofa_kwargs['filter_by_hvg']
+    mofa_kwargs['use_var'] = None
     
 
 
