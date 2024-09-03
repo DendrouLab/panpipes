@@ -29,6 +29,7 @@ dependencies = [
     "gevent",
     "harmonypy",
     "mofapy2",
+    "anndata<0.10.9",
     "muon",
     "matplotlib",
     "openpyxl",
