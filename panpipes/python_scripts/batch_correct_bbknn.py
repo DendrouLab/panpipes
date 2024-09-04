@@ -56,31 +56,25 @@ nnb = int(args.neighbors_within_batch)
 # bbknn can't integrate on 2+ variables, so create a fake column with combined information
 columns = [x.strip() for x in args.integration_col.split(",")]
 
-if args.modality =="atac":
-    if "scaled_counts" in adata.layers.keys():
-        pass
-    else:
-        L.info("To run BBKNN on ATAC, PCA is needed. Computing PCA now.")
-        L.info("Scaling data and saving scaled counts to .layers['scaled_counts']")
-        sc.pp.scale(adata)
-        adata.layers["scaled_counts"] = adata.X.copy()
-        L.info("Computing PCA")
-        sc.tl.pca(adata, n_comps=min(50,adata.var.shape[0]-1), svd_solver='arpack', random_state=0) 
+if args.dimred == "PCA":
+    dimred = "X_pca"
+elif args.dimred == "LSI":
+    dimred = "X_lsi"
 
-if "X_pca" not in adata.obsm:
-    L.warning("X_pca could not be found in adata.obsm. Computing PCA with default parameters.")
+if dimred not in adata.obsm:
+    L.warning("Dimred '%s' could not be found in adata.obsm. Computing PCA with default parameters." % dimred)
+    dimred = "X_pca" 
     n_pcs = 50
     if adata.var.shape[0] < n_pcs:
         L.info("You have less features than number of PCs you intend to calculate")
         n_pcs = adata.var.shape[0] - 1
-        L.info("Setting n PCS to %i" % int(n_pcs))   
-    L.info("Scaling data") 
+        L.info("Setting n PCS to %i" % int(n_pcs)) 
+    L.info("Scaling data")   
     sc.pp.scale(adata)
     L.info("Computing PCA")
     sc.tl.pca(adata, n_comps=n_pcs, 
                     svd_solver='arpack', 
                     random_state=0) 
-
 
 L.info("Preparing for integration")
 
@@ -99,6 +93,7 @@ else:
     # run bbknn
     L.info("Running BBKNN")
     adata = sc.external.pp.bbknn(adata,
+                        use_rep=dimred,
                         batch_key=args.integration_col,
                         copy=True,
                         n_pcs = int(args.neighbors_n_pcs),

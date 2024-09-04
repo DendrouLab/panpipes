@@ -124,3 +124,5 @@ for modality in batch_dict.keys():
                 df.to_csv(os.path.join(args.fig_dir, modality, "scib_metrics_min_max_scaled.csv"))
             else:
                 df.to_csv(os.path.join(args.fig_dir, modality, "scib_metrics.csv"))
+                
+L.info("Done")
