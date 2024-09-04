@@ -113,7 +113,7 @@ prot:
 # ATAC modality
 atac:
   run: False
-  dimred: LSI
+  dimred: PCA
   tools:
   column: sample_id 
 
