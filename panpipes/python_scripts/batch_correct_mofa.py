@@ -96,7 +96,7 @@ L.info("Intersecting modality obs before running mofa")
 mu.pp.intersect_obs(tmp)
 
 
-if check_for_bool(params["multimodal"]["MultiVI"]["lowmem"]):
+if check_for_bool(params["multimodal"]["mofa"]["lowmem"]):
     L.info("Running in low memory mode. Calculating and subsetting ATAC to top 25k HVF")
     atac = tmp.mod['atac']
     
