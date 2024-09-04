@@ -146,7 +146,8 @@ multimodal:
     - WNN
     - totalvi
     - multiVI
-  column_categorical: sample_id 
+  column_categorical: sample_id
+  column_continuous:
 
   # TotalVI arguments
   totalvi:
