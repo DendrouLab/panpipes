@@ -70,10 +70,10 @@ if args.modality =="atac":
 if "X_pca" not in adata.obsm:
     L.warning("X_pca could not be found in adata.obsm. Computing PCA with default parameters.")
     n_pcs = 50
-    if adata.var.shape[0] < n_pcs:
-        L.info("You have less features than number of PCs you intend to calculate")
-        n_pcs = adata.var.shape[0] - 1
-        L.info("Setting n PCS to %i" % int(n_pcs))   
+    if adata.var.shape[0] < n_pcs or adata.obs.shape[0] < n_pcs:
+        L.info("You have less features/samples than number of PCs you intend to calculate")
+        n_pcs = min(adata.var.shape[0], adata.obs.shape[0]) - 1
+        L.info("Setting n PCS to %i" % int(n_pcs))     
     L.info("Scaling data") 
     sc.pp.scale(adata)
     L.info("Computing PCA")

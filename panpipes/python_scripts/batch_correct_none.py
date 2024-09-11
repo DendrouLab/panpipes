@@ -91,13 +91,19 @@ else:
 
 
 if dimred not in adata.obsm:
-    L.warning("Dimred '%s' could not be found in adata.obsm. Computing PCA with default parameters." % dimred)  
+    L.warning("Dimred '%s' could not be found in adata.obsm. Computing PCA with default parameters." % dimred) 
+    n_pcs = 50
+    if adata.var.shape[0] < n_pcs or adata.obs.shape[0] < n_pcs:
+        L.info("You have less features/samples than number of PCs you intend to calculate")
+        n_pcs = min(adata.var.shape[0], adata.obs.shape[0]) - 1
+        L.info("Setting n PCS to %i" % int(n_pcs))     
     L.info("Scaling data")
     sc.pp.scale(adata)
     L.info("Computing PCA")
-    sc.tl.pca(adata, svd_solver='arpack', 
+    sc.tl.pca(adata, n_comps=n_pcs, svd_solver='arpack', 
                     random_state=0) 
     pc_kwargs['use_rep'] = "X_pca"
+    pc_kwargs['n_pcs'] = n_pcs
 
 
 L.info("Computing neighbors")
