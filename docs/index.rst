@@ -2,9 +2,9 @@ Panpipes - multimodal single cell pipelines
 ==================================================
 
 
-| `Check out our preprint: <https://doi.org/10.1101/2023.03.11.532085>`_ 
-| **Panpipes: a pipeline for multiomic single-cell data analysis**  
-| Fabiola Curion, Charlotte Rich-Griffin, Devika Agarwal, Sarah Ouologuem, Tom Thomas, Fabian J. Theis, Calliope A. Dendrou. 
+| `Check out our paper: <https://doi.org/10.1186/s13059-024-03322-7>`_ 
+| **Panpipes: a pipeline for multiomic single-cell and spatial transcriptomic data analysis**  
+| Fabiola Curion, Charlotte Rich-Griffin, Devika Agarwal, Sarah Ouologuem, Kevin Rue-Albrecht, Lilly May, Giulia E. L. Garcia, Lukas Heumos, Tom Thomas, Wojciech Lason, David Sims, Fabian J. Theis & Calliope A. Dendrou 
 
 
 
