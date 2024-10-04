@@ -8,6 +8,7 @@ import muon as mu
 import warnings
 from muon._atac.tools import add_peak_annotation, locate_fragments
 import squidpy as sq
+import spatialdata_io as sd_io
 from mudata import MuData
 import os
 """
@@ -52,6 +53,15 @@ parser.add_argument('--spatial_filetype',
 parser.add_argument('--spatial_counts', 
                     default=None,
                     help='')
+parser.add_argument('--scalefactors_file', 
+                    default=None,
+                    help='')
+parser.add_argument('--fullres_image_file', 
+                    default=None,
+                    help='')
+parser.add_argument('--tissue_positions_file', 
+                    default=None,
+                    help='')
 parser.add_argument('--spatial_metadata', 
                     default=None,
                     help='')
@@ -64,21 +74,24 @@ args, opt = parser.parse_known_args()
 L.info("Running with params: %s", args)
 
 # unimodal mu (check if all the modalities)
-if isinstance(args.mode_dictionary, dict):
-    mode_dictionary = args.mode_dictionary
-else:
-    mode_dictionary = read_yaml(args.mode_dictionary) 
+#if isinstance(args.mode_dictionary, dict):
+#    mode_dictionary = args.mode_dictionary
+#else:
+#    mode_dictionary = read_yaml(args.mode_dictionary) 
 #{'spatialT': True}
 
-permf = [key for key, value in mode_dictionary.items() if value == True]
+#permf = [key for key, value in mode_dictionary.items() if value == True]
 all_files = {
-            "spatial":[args.spatial_infile, #path, mandatory for squidpy
+            "spatial":[args.spatial_infile, #path
                         args.spatial_filetype, #needed for the load_adata_in function to call one of vizgen,visium
                         args.spatial_counts, #name of the counts file, mandatory for squidpy
-                        args.spatial_metadata, #name of the metadata file, mandatory for squidpy
-                        args.spatial_transformation]}
+                        args.fullres_image_file, # visium
+                        args.tissue_positions_file, #visium
+                        args.scalefactors_file]} # visium 
+#                        args.spatial_metadata, #name of the metadata file, mandatory for squidpy
+#                        args.spatial_transformation]}
 #subset to the modalities we want from permf (in this case only spatial)
-all_files = {nm: x  for (nm, x) in all_files.items() if nm in permf}
+#all_files = {nm: x  for (nm, x) in all_files.items() if nm in permf}
 
 #[check_filetype(x[0], x[1]) for x in all_files.values()]
 # read the spatial data with one of the functions inside
@@ -125,16 +138,22 @@ if args.spatial_filetype=="vizgen":
     adata.uns["spatial"][str(args.sample_id)]["scalefactors"]["transformation_matrix"].columns = adata.uns["spatial"][str(args.sample_id)]["scalefactors"]["transformation_matrix"].columns.astype(str)
 elif args.spatial_filetype =="visium":
     L.info("Reading in Visium data with squidpy.read.visium() into AnnData from directory " + args.spatial_infile)
-    adata = sq.read.visium(path = args.spatial_infile, #path, mandatory for squidpy
-                        counts_file=args.spatial_counts, #name of the counts file, mandatory for squidpy
-                        library_id = str(args.sample_id)
-                        ) #this also has kwargs for read_10x_h5 but keep simple
+    sdata = sd_io.visium(path=args.spatial_infile, 
+                         dataset_id=str(args.sample_id), 
+                         counts_file=args.spatial_counts, 
+                         fullres_image_file=args.fullres_image_file,
+                         tissue_positions_file=args.tissue_positions_file, 
+                         scalefactors_file=args.scalefactors_file)
+    #adata = sq.read.visium(path = args.spatial_infile, #path, mandatory for squidpy
+    #                    counts_file=args.spatial_counts, #name of the counts file, mandatory for squidpy
+    #                    library_id = str(args.sample_id)
+    #                    ) #this also has kwargs for read_10x_h5 but keep simple
 
-L.info("Resulting AnnData is:")
-L.info(adata)
-L.info("Creating MuData with .mod['spatial']")
+L.info("Resulting SpatialData is:")
+L.info(sdata)
+#L.info("Creating MuData with .mod['spatial']")
 
-mdata = MuData({"spatial": adata})
+#mdata = MuData({"spatial": adata})
 
 
 #---------------
@@ -143,25 +162,25 @@ mdata = MuData({"spatial": adata})
 
 L.info("Making var names unique")
 #make var names unique
-for mm in mdata.mod.keys():
-    mdata[mm].var_names_make_unique()
+#for mm in mdata.mod.keys():
+sdata["table"].var_names_make_unique()
 
 L.info("Adding sample_id '%s'to MuData.obs and MuData.mod['spatial'].obs" % args.sample_id)
-mdata.obs['sample_id'] = str(args.sample_id)
+sdata["table"].obs['sample_id'] = str(args.sample_id)
 
 # copy the sample_id to each modality
-for mm in mdata.mod.keys():
+#for mm in mdata.mod.keys():
     # mdata[mm].obs['sample_id'] = mdata.obs['sample_id']
-    mdata[mm].obs['sample_id'] = mdata.obs.loc[mdata[mm].obs_names,:]['sample_id']
+sdata["table"].obs['sample_id'] = sdata["table"].obs.loc[sdata["table"].obs_names,:]['sample_id']
 
-mdata.update()
+#mdata.update()
 
-L.info("Resulting MuData is:")
-L.info(mdata)
+L.info("Resulting SpatialData is:")
+L.info(sdata)
 
-L.info("Saving MuData to '%s'" % args.output_file)
-L.debug(mdata)
-mdata.write(args.output_file)
+L.info("Saving SpatialData to '%s'" % args.output_file)
+L.debug(sdata)
+sdata.write(args.output_file)
 
 L.info("Done")
 
