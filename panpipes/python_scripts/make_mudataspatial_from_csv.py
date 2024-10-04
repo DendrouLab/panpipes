@@ -130,12 +130,13 @@ def check_dir_transform(infile_path, transform_file):
 
 if args.spatial_filetype=="vizgen":
     L.info("Reading in Vizgen data with squidpy.read.vizgen() into AnnData from directory " + args.spatial_infile)
-    adata = sq.read.vizgen(path = args.spatial_infile, #path, mandatory for squidpy
-                        counts_file=args.spatial_counts, #name of the counts file, mandatory for squidpy
-                        meta_file = args.spatial_metadata, #name of the metadata file, mandatory for squidpy
-                        transformation_file=args.spatial_transformation,
-                        library_id = str(args.sample_id)) #this also has kwargs for read_10x_h5 but keep simple
-    adata.uns["spatial"][str(args.sample_id)]["scalefactors"]["transformation_matrix"].columns = adata.uns["spatial"][str(args.sample_id)]["scalefactors"]["transformation_matrix"].columns.astype(str)
+    sdata = sd_io.merscope(path = args.spatial_infile)
+#    adata = sq.read.vizgen(path = args.spatial_infile, #path, mandatory for squidpy
+#                        counts_file=args.spatial_counts, #name of the counts file, mandatory for squidpy
+#                        meta_file = args.spatial_metadata, #name of the metadata file, mandatory for squidpy
+#                        transformation_file=args.spatial_transformation,
+#                        library_id = str(args.sample_id)) #this also has kwargs for read_10x_h5 but keep simple
+#    adata.uns["spatial"][str(args.sample_id)]["scalefactors"]["transformation_matrix"].columns = adata.uns["spatial"][str(args.sample_id)]["scalefactors"]["transformation_matrix"].columns.astype(str)
 elif args.spatial_filetype =="visium":
     L.info("Reading in Visium data with squidpy.read.visium() into AnnData from directory " + args.spatial_infile)
     sdata = sd_io.visium(path=args.spatial_infile, 
