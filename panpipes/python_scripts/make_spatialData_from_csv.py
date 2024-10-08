@@ -62,12 +62,12 @@ parser.add_argument('--fullres_image_file',
 parser.add_argument('--tissue_positions_file', 
                     default=None,
                     help='')
-parser.add_argument('--spatial_metadata', 
-                    default=None,
-                    help='')
-parser.add_argument('--spatial_transformation', 
-                    default=None,
-                    help='')
+#parser.add_argument('--spatial_metadata', 
+#                    default=None,
+#                    help='')
+#parser.add_argument('--spatial_transformation', 
+#                    default=None,
+#                    help='')
 
 parser.set_defaults(verbose=True)
 args, opt = parser.parse_known_args()
