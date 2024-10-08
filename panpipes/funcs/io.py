@@ -159,33 +159,52 @@ def gen_load_spatial_jobs(caf, mode_dictionary = {}, load_raw=True):
             if caf['spatial_filetype'][nn]=="vizgen":
                 spatial_filetype = caf['spatial_filetype'][nn]
                 #path, counts and metadata are mandatory
-                if pd.notna(caf["spatial_counts"][nn]):
-                    spatial_counts= caf["spatial_counts"][nn]
-                else:
-                    spatial_counts = None
-                if pd.notna(caf["spatial_metadata"][nn]):
-                    spatial_metadata = caf["spatial_metadata"][nn]
-                else: 
-                    spatial_metadata = None
+                #if pd.notna(caf["spatial_counts"][nn]):
+                #    spatial_counts= caf["spatial_counts"][nn]
+                #else:
+                #    spatial_counts = None
+                #if pd.notna(caf["spatial_metadata"][nn]):
+                #    spatial_metadata = caf["spatial_metadata"][nn]
+                #else: 
+                #    spatial_metadata = None
                 #transformation is optional
-                if pd.notna(caf["spatial_transformation"][nn]):
-                    spatial_transformation = caf["spatial_transformation"][nn]
-                else:
-                    spatial_transformation = None
+                #if pd.notna(caf["spatial_transformation"][nn]):
+                #    spatial_transformation = caf["spatial_transformation"][nn]
+                #else:
+                #    spatial_transformation = None
             elif caf['spatial_filetype'][nn]=="visium":
-                spatial_metadata= None
-                spatial_transformation = None
+                #spatial_metadata= None
+                #spatial_transformation = None
                 spatial_filetype = caf['spatial_filetype'][nn]
+                #counts file
                 if pd.notna(caf["spatial_counts"][nn]):
                     spatial_counts= caf["spatial_counts"][nn]
                 else:
                     spatial_counts = None  
+                # fullres image
+                if pd.notna(caf["spatial_fullres_image_file"][nn]):
+                    spatial_fullres_image_file= caf["spatial_fullres_image_file"][nn]
+                else:
+                    spatial_fullres_image_file = None 
+                # tissue position 
+                if pd.notna(caf["spatial_tissue_positions_file"][nn]):
+                    spatial_tissue_positions_file= caf["spatial_tissue_positions_file"][nn]
+                else:
+                    spatial_tissue_positions_file = None  
+                # scalefactor
+                if pd.notna(caf["spatial_scalefactors_file"][nn]):
+                    spatial_scalefactors_file= caf["spatial_scalefactors_file"][nn]
+                else:
+                    spatial_scalefactors_file = None  
         else:
             spatial_path= None
             spatial_filetype = None
             spatial_counts = None
-            spatial_metadata = None
-            spatial_transformation = None
+            spatial_fullres_image_file = None
+            spatial_tissue_positions_file = None
+            spatial_scalefactors_file = None
+            #spatial_metadata = None
+            #spatial_transformation = None
             
         if 'barcode_mtd_path' in caf.columns:
             cell_mtd_path = caf['barcode_mtd_path'][nn] #not yielding this right now!
@@ -199,7 +218,7 @@ def gen_load_spatial_jobs(caf, mode_dictionary = {}, load_raw=True):
             outfile = outfile + ".h5mu"
         sample_id = caf['sample_id'][nn]
         yield spatial_path,  outfile, \
-              sample_id, spatial_filetype, spatial_counts, spatial_metadata, spatial_transformation
+              sample_id, spatial_filetype, spatial_counts, spatial_fullres_image_file, spatial_tissue_positions_file, spatial_scalefactors_file #spatial_metadata, spatial_transformation
 
 
 def read_anndata(
