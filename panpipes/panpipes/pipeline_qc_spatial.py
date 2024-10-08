@@ -73,12 +73,9 @@ def gen_load_spatial_anndata_jobs():
 @follows(mkdir("logs"))
 @follows(mkdir("tmp"))
 @files(gen_load_spatial_anndata_jobs)
-def load_mudatas(spatial_path, outfile, 
-                 sample_id,
-                 spatial_filetype, 
-                 spatial_counts, 
-                 spatial_metadata, 
-                 spatial_transformation):
+def load_mudatas(spatial_path,  outfile, 
+                 sample_id, spatial_filetype, spatial_counts, 
+                 spatial_fullres_image_file, spatial_tissue_positions_file, spatial_scalefactors_file):
     
     path_dict = {'spatial':spatial_path}
                  
@@ -86,12 +83,17 @@ def load_mudatas(spatial_path, outfile,
     print('sample_id = %s' % str(sample_id))
     print('outfile = %s' % str(outfile))
     print('spatial_filetype = %s' % str(spatial_filetype))
-    print('spatial_counts = %s' % str(spatial_counts))
-    if spatial_filetype == "vizgen":
-        print('spatial_metadata = %s' % str(spatial_metadata))
-        print('spatial_transformation = %s' % str(spatial_transformation))
-    else:
-        print("visium")
+    #print('spatial_counts = %s' % str(spatial_counts))
+    #if spatial_filetype == "vizgen":
+    #    print('spatial_metadata = %s' % str(spatial_metadata))
+    #    print('spatial_transformation = %s' % str(spatial_transformation))
+    #else:
+    #    print("visium")
+    if spatial_filetype == "visium":
+        print('spatial_counts = %s' % str(spatial_counts))
+        print('spatial_fullres_image_file= %s' % str(spatial_fullres_image_file))
+        print('spatial_tissue_positions_file= %s' % str(spatial_tissue_positions_file))
+        print('spatial_scalefactors_file= %s' % str(spatial_scalefactors_file))
     modality_dict = {k:True if path_dict[k] is not None else False for k,v in {'spatial': True}.items() }
     print(modality_dict)
 
@@ -104,12 +106,13 @@ def load_mudatas(spatial_path, outfile,
         --output_file %(outfile)s 
         --spatial_filetype %(spatial_filetype)s
         --spatial_infile %(spatial_path)s
-        --spatial_counts %(spatial_counts)s
     """
-    if spatial_filetype == "vizgen":
+    if spatial_filetype == "visium":
         cmd += """
-        --spatial_metadata %(spatial_metadata)s 
-        --spatial_transformation %(spatial_transformation)s
+        --spatial_counts %(spatial_counts)s
+        --scalefactors_file %(spatial_scalefactors_file)s 
+        --fullres_image_file %(spatial_fullres_image_file)s
+        --tissue_positions_file %(spatial_tissue_positions_file)s
         """
     cmd += " > logs/1_make_mudatas_%(sample_id)s.log"
     job_kwargs["job_threads"] = PARAMS['resources_threads_medium']
