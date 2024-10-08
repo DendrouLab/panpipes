@@ -199,11 +199,11 @@ def gen_load_spatial_jobs(caf, mode_dictionary = {}, load_raw=True):
         # create the output file 
         outfile = "./tmp/" + caf['sample_id'][nn]
         if load_raw:
-            outfile = outfile + "_raw.h5mu" 
+            outfile = outfile + "_raw.zarr" 
         else:
-            outfile = outfile + ".h5mu"
+            outfile = outfile + ".zarr"
         sample_id = caf['sample_id'][nn]
-        
+
         yield spatial_path,  outfile, \
               sample_id, spatial_filetype, spatial_counts, spatial_fullres_image_file, spatial_tissue_positions_file, spatial_scalefactors_file
 
