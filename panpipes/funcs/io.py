@@ -157,24 +157,12 @@ def gen_load_spatial_jobs(caf, mode_dictionary = {}, load_raw=True):
             else:
                 spatial_path = caf["spatial_path"][nn]
             if caf['spatial_filetype'][nn]=="vizgen":
+                spatial_counts = None 
+                spatial_fullres_image_file = None
+                spatial_tissue_positions_file = None
+                spatial_scalefactors_file = None
                 spatial_filetype = caf['spatial_filetype'][nn]
-                #path, counts and metadata are mandatory
-                #if pd.notna(caf["spatial_counts"][nn]):
-                #    spatial_counts= caf["spatial_counts"][nn]
-                #else:
-                #    spatial_counts = None
-                #if pd.notna(caf["spatial_metadata"][nn]):
-                #    spatial_metadata = caf["spatial_metadata"][nn]
-                #else: 
-                #    spatial_metadata = None
-                #transformation is optional
-                #if pd.notna(caf["spatial_transformation"][nn]):
-                #    spatial_transformation = caf["spatial_transformation"][nn]
-                #else:
-                #    spatial_transformation = None
             elif caf['spatial_filetype'][nn]=="visium":
-                #spatial_metadata= None
-                #spatial_transformation = None
                 spatial_filetype = caf['spatial_filetype'][nn]
                 #counts file
                 if pd.notna(caf["spatial_counts"][nn]):
@@ -203,8 +191,6 @@ def gen_load_spatial_jobs(caf, mode_dictionary = {}, load_raw=True):
             spatial_fullres_image_file = None
             spatial_tissue_positions_file = None
             spatial_scalefactors_file = None
-            #spatial_metadata = None
-            #spatial_transformation = None
             
         if 'barcode_mtd_path' in caf.columns:
             cell_mtd_path = caf['barcode_mtd_path'][nn] #not yielding this right now!
@@ -217,8 +203,9 @@ def gen_load_spatial_jobs(caf, mode_dictionary = {}, load_raw=True):
         else:
             outfile = outfile + ".h5mu"
         sample_id = caf['sample_id'][nn]
+        
         yield spatial_path,  outfile, \
-              sample_id, spatial_filetype, spatial_counts, spatial_fullres_image_file, spatial_tissue_positions_file, spatial_scalefactors_file #spatial_metadata, spatial_transformation
+              sample_id, spatial_filetype, spatial_counts, spatial_fullres_image_file, spatial_tissue_positions_file, spatial_scalefactors_file
 
 
 def read_anndata(
