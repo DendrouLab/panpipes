@@ -1,49 +1,27 @@
-﻿tasks ingest ,,,,,,,,,,,,,,,,,,
-Threads_high,Creating h5mu from filtered data files,Creating h5mu from bg data files, rna QC ,prot QC ,prot QC ,assess background,,,,,,,,,,,,
-threads_medium,load_mudatas,load_bg_mudatas,downsample_bg_mudatas,run_scrublet,,,,,,,,,,,,,,
-threads_low,run_repertoire_qc,run_atac_qc,plot_qc,10X metrics plotting,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,
-tasks preprocessed ,,,,,,,,,,,,,,,,,,
-Threads_high,rna_preprocess,prot_preprocess,atac_preprocess,,,,,,,,,,,,,,,
-threads_low,filter_mudata,postfilterplot,downsample,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,
-tasks integration  ,,,,,,,,,,,,,,,,,,
-Threads_high,run_no_batch_correct_rna,run_bbknn_rna,run_harmony_rna,run_combat_rna,run_scanorama_rna,run_scvi_rna,run_no_batch_correct_prot,run_harmony_prot,run_bbknn_prot,run_combat_prot,run_no_batch_correct_atac,run_harmony_atac,run_bbknn_atac,run_totalvi,run_multivi,run_mofa,run_wnn,merge_integration
-threads_medium,Evaluation,plot_umaps,run_scib_metrics,,,,,,,,,,,,,,,
-threads_low,run_lisi,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,
-tasks clustering ,,,,,,,,,,,,,,,,,,
-Threads_high,run_neighbors,run_umap,find_markers,,,,,,,,,,,,,,,
-threads_medium,run_clustering,collate_mdata,plot_cluster_umaps,plot_markers,,,,,,,,,,,,,,
-threads_low,clustering,clustering,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,
-tasks vis ,,,,,,,,,,,,,,,,,,
-Threads_high,plot_custom_markers_per_group,plot_custom_markers_umap,plot_categorical_umaps,write_obs,plot_scatters,,,,,,,,,,,,,
-threads_low,plot_metrics,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,
-tasks refmap ,,,,,,,,,,,,,,,,,,
-Threads_high,run_refmap_scvi,run_scib_refmap,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,
-tasks preprocessed spatial ,,,,,,,,,,,,,,,,,,
-Threads_high,spatial_preprocess,,,,,,,,,,,,,,,,,
-threads_low,filter_mudata,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,
-tasks  spatial ,,,,,,,,,,,,,,,,,,
-threads_medium,load_mudata,,,,,,,,,,,,,,,,,
-threads_low,plotQC_spatial,,,,,,,,,,,,,,,,,
+| **tasks ingest **             	|                                        	|                                  	|                        	|                      	|                   	|                   	|                           	|                  	|                	|                 	|                           	|                  	|                	|             	|             	|          	|         	|                   	|
+|-------------------------------	|:--------------------------------------:	|:--------------------------------:	|:----------------------:	|:--------------------:	|:-----------------:	|:-----------------:	|---------------------------	|------------------	|----------------	|-----------------	|---------------------------	|------------------	|----------------	|-------------	|-------------	|----------	|---------	|-------------------	|
+| Threads_high                  	| Creating h5mu from filtered data files 	| Creating h5mu from bg data files 	|  rna QC                	| prot QC              	| prot QC           	| assess background 	|                           	|                  	|                	|                 	|                           	|                  	|                	|             	|             	|          	|         	|                   	|
+| threads_medium                	| load_mudatas                           	| load_bg_mudatas                  	| downsample_bg_mudatas  	| run_scrublet         	|                   	|                   	|                           	|                  	|                	|                 	|                           	|                  	|                	|             	|             	|          	|         	|                   	|
+| threads_low                   	| run_repertoire_qc                      	| run_atac_qc                      	| plot_qc                	| 10X metrics plotting 	|                   	|                   	|                           	|                  	|                	|                 	|                           	|                  	|                	|             	|             	|          	|         	|                   	|
+|     tasks   preprocessed      	|                                        	|                                  	|                        	|                      	|                   	|                   	|                           	|                  	|                	|                 	|                           	|                  	|                	|             	|             	|          	|         	|                   	|
+| Threads_high                  	| rna_preprocess                         	| prot_preprocess                  	| atac_preprocess        	|                      	|                   	|                   	|                           	|                  	|                	|                 	|                           	|                  	|                	|             	|             	|          	|         	|                   	|
+| threads_low                   	| filter_mudata                          	| postfilterplot                   	| downsample             	|                      	|                   	|                   	|                           	|                  	|                	|                 	|                           	|                  	|                	|             	|             	|          	|         	|                   	|
+|   **tasks   integration  **   	|                                        	|                                  	|                        	|                      	|                   	|                   	|                           	|                  	|                	|                 	|                           	|                  	|                	|             	|             	|          	|         	|                   	|
+| Threads_high                  	| run_no_batch_correct_rna               	| run_bbknn_rna                    	| run_harmony_rna        	| run_combat_rna       	| run_scanorama_rna 	| run_scvi_rna      	| run_no_batch_correct_prot 	| run_harmony_prot 	| run_bbknn_prot 	| run_combat_prot 	| run_no_batch_correct_atac 	| run_harmony_atac 	| run_bbknn_atac 	| run_totalvi 	| run_multivi 	| run_mofa 	| run_wnn 	| merge_integration 	|
+| threads_medium                	| Evaluation                             	| plot_umaps                       	| run_scib_metrics       	|                      	|                   	|                   	|                           	|                  	|                	|                 	|                           	|                  	|                	|             	|             	|          	|         	|                   	|
+| threads_low                   	| run_lisi                               	|                                  	|                        	|                      	|                   	|                   	|                           	|                  	|                	|                 	|                           	|                  	|                	|             	|             	|          	|         	|                   	|
+|    **tasks   clustering **    	|                                        	|                                  	|                        	|                      	|                   	|                   	|                           	|                  	|                	|                 	|                           	|                  	|                	|             	|             	|          	|         	|                   	|
+| Threads_high                  	| run_neighbors                          	| run_umap                         	| find_markers           	|                      	|                   	|                   	|                           	|                  	|                	|                 	|                           	|                  	|                	|             	|             	|          	|         	|                   	|
+| threads_medium                	| run_clustering                         	| collate_mdata                    	| plot_cluster_umaps     	| plot_markers         	|                   	|                   	|                           	|                  	|                	|                 	|                           	|                  	|                	|             	|             	|          	|         	|                   	|
+| threads_low                   	| clustering                             	| clustering                       	|                        	|                      	|                   	|                   	|                           	|                  	|                	|                 	|                           	|                  	|                	|             	|             	|          	|         	|                   	|
+|         **tasks vis **        	|                                        	|                                  	|                        	|                      	|                   	|                   	|                           	|                  	|                	|                 	|                           	|                  	|                	|             	|             	|          	|         	|                   	|
+| Threads_high                  	| plot_custom_markers_per_group          	| plot_custom_markers_umap         	| plot_categorical_umaps 	| write_obs            	| plot_scatters     	|                   	|                           	|                  	|                	|                 	|                           	|                  	|                	|             	|             	|          	|         	|                   	|
+| threads_low                   	| plot_metrics                           	|                                  	|                        	|                      	|                   	|                   	|                           	|                  	|                	|                 	|                           	|                  	|                	|             	|             	|          	|         	|                   	|
+|       **tasks refmap **       	|                                        	|                                  	|                        	|                      	|                   	|                   	|                           	|                  	|                	|                 	|                           	|                  	|                	|             	|             	|          	|         	|                   	|
+| Threads_high                  	| run_refmap_scvi                        	| run_scib_refmap                  	|                        	|                      	|                   	|                   	|                           	|                  	|                	|                 	|                           	|                  	|                	|             	|             	|          	|         	|                   	|
+| tasks preprocessed   spatial  	|                                        	|                                  	|                        	|                      	|                   	|                   	|                           	|                  	|                	|                 	|                           	|                  	|                	|             	|             	|          	|         	|                   	|
+| Threads_high                  	| spatial_preprocess                     	|                                  	|                        	|                      	|                   	|                   	|                           	|                  	|                	|                 	|                           	|                  	|                	|             	|             	|          	|         	|                   	|
+| threads_low                   	| filter_mudata                          	|                                  	|                        	|                      	|                   	|                   	|                           	|                  	|                	|                 	|                           	|                  	|                	|             	|             	|          	|         	|                   	|
+|      **tasks  spatial **      	|                                        	|                                  	|                        	|                      	|                   	|                   	|                           	|                  	|                	|                 	|                           	|                  	|                	|             	|             	|          	|         	|                   	|
+| threads_medium                	| load_mudata                            	|                                  	|                        	|                      	|                   	|                   	|                           	|                  	|                	|                 	|                           	|                  	|                	|             	|             	|          	|         	|                   	|
+| threads_low                   	| plotQC_spatial                         	|                                  	|                        	|                      	|                   	|                   	|                           	|                  	|                	|                 	|                           	|                  	|                	|             	|             	|          	|         	|                   	|
