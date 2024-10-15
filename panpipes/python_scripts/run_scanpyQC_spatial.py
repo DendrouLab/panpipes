@@ -18,6 +18,7 @@ import os
 import argparse
 import scanpy as sc
 import muon as mu
+import spatialdata as sd
 
 from panpipes.funcs.io import write_obs
 
@@ -64,14 +65,15 @@ sc.settings.figdir = figdir
 sc.set_figure_params(scanpy=True, fontsize=14, dpi=300, facecolor='white', figsize=(5,5))
 
 
-L.info("Reading in MuData from '%s'" % args.input_anndata)
+L.info("Reading in SpatialData from '%s'" % args.input_anndata)
 
-mdata = mu.read(args.input_anndata)
-spatial = mdata['spatial']
+#mdata = mu.read(args.input_anndata)
+sdata = sd.read_zarr(args.input_anndata)
+#spatial = mdata['spatial']
 
 L.info("Spatial data is:")
-print(spatial)
-L.info("With sample id '%s'" % spatial.obs["sample_id"].unique()[0])
+print(sdata)
+L.info("With sample id '%s'" % sdata["table"].obs["sample_id"].unique()[0])
 
 qc_vars = []
 
@@ -94,7 +96,7 @@ if args.customgenesfile is not None:
             for kk in calc_proportions:
                 xname= kk
                 gene_list = cat_dic[kk]
-                spatial.var[xname] = [x in gene_list for x in spatial.var_names] 
+                sdata["table"].var[xname] = [x in gene_list for x in sdata["table"].var_names] 
                 qc_vars.append(xname)
            
         # Score genes 
@@ -105,7 +107,7 @@ if args.customgenesfile is not None:
                 L.info("Computing gene scores for '%s'" % kk)
                 xname= kk
                 gene_list = cat_dic[kk]
-                sc.tl.score_genes(spatial, gene_list , 
+                sc.tl.score_genes(sdata["table"], gene_list , 
                                     ctrl_size=min(len(gene_list), 50), 
                                     gene_pool=None, 
                                     n_bins=25, 
@@ -127,11 +129,11 @@ if qc_vars != []:
     qc_info = " and calculating proportions for '%s'" % qc_vars
 L.info("Calculating QC metrics with scanpy.pp.calculate_qc_metrics()" + qc_info)
 percent_top = [50, 100, 200, 500] #default
-percent_top = [x for x in percent_top if x <= spatial.n_vars]
-sc.pp.calculate_qc_metrics(spatial, qc_vars=qc_vars, percent_top=percent_top, inplace=True)
+percent_top = [x for x in percent_top if x <= sdata["table"].n_vars]
+sc.pp.calculate_qc_metrics(sdata["table"], qc_vars=qc_vars, percent_top=percent_top, inplace=True)
 
-if (args.spatial_filetype == "vizgen") and ("blank_genes" in spatial.obsm):    
-    spatial.obsm["blank_genes"].to_numpy().sum() / spatial.var["total_counts"].sum() * 100
+if (args.spatial_filetype == "vizgen") and ("blank_genes" in sdata["table"].obsm):    
+    sdata["table"].obsm["blank_genes"].to_numpy().sum() / sdata["table"].var["total_counts"].sum() * 100
 
 # Calculate cc scores 
 if args.ccgenes is not None:
@@ -144,7 +146,7 @@ if args.ccgenes is not None:
         sgenes = ccgenes[ccgenes["cc_phase"] == "s"]["gene_name"].tolist()
         g2mgenes = ccgenes[ccgenes["cc_phase"] == "g2m"]["gene_name"].tolist()
         L.info("Calculating cell cycle scores")
-        sc.tl.score_genes_cell_cycle(spatial, s_genes=sgenes, g2m_genes=g2mgenes)
+        sc.tl.score_genes_cell_cycle(sdata["table"], s_genes=sgenes, g2m_genes=g2mgenes)
     else: 
         L.error("The path of the  cell cycle genes tsv file '%s' could not be found" % args.ccgenes)
         sys.exit("The path of the  cell cycle genes tsv file '%s' could not be found" % args.ccgenes)
@@ -153,15 +155,15 @@ if args.ccgenes is not None:
 #TODO: we now need to update the mdata object to pick the calc proportion outputs made on 
 # spatial = mdata['spatial']
 
-mdata.update()
+#mdata.update()
 
 single_id = os.path.basename(str(args.input_anndata))
 single_id = single_id.replace("_raw.h5mu","")
 
-L.info("Saving updated obs in a metadata tsv file to ./" + single_id + "_cell_metadata.tsv")
-write_obs(mdata, output_prefix=single_id, output_suffix="_cell_metadata.tsv")
-L.info("Saving updated MuData to '%s'" % args.outfile)
-mdata.write(args.outfile)
+#L.info("Saving updated obs in a metadata tsv file to ./" + single_id + "_cell_metadata.tsv")
+#write_obs(mdata, output_prefix=single_id, output_suffix="_cell_metadata.tsv")
+L.info("Saving updated SpatialData to '%s'" % args.outfile)
+sdata.write(args.outfile)
 
 L.info("Done")
 
