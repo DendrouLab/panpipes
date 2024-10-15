@@ -105,14 +105,9 @@ if 'dsb' in norm_methods:
         sys.exit("You must specify a background MuData to run dsb, containing both rna and prot")
 
     # RNA and PROT layer must be present in the object to run dsb
-    mods = list(all_mdata_bg.mod.keys())
-    if 'prot' not in mods:
-      L.error("The MuData you specified does not contain prot modality. Cannot run dsb")
-      sys.exit("The MuData you specified does not contain prot modality. Cannot run dsb")
-    if 'rna' not in mods:
+    if 'rna' not in list(all_mdata_bg.mod.keys()):
       L.error("The MuData you specified does not contain rna modality. Cannot run dsb")
       sys.exit("The MuData you specified does not contain rna modality. Cannot run dsb")
-    del mods
 
     # the RNA and PROT must intersect - they won't if experimental design included some cells without PROT data
     L.info("Checking that only cells with PROT signal present are in the bacground object")
