@@ -110,7 +110,7 @@ if 'dsb' in norm_methods:
       sys.exit("The MuData you specified does not contain rna modality. Cannot run dsb")
 
     # the RNA and PROT must intersect - they won't if experimental design included some cells without PROT data
-    L.info("Checking that only cells with PROT signal present are in the bacground object")
+    L.info("Checking that only cells with PROT signal present are in the background object")
     if all_mdata_bg['rna'].shape[0] != all_mdata_bg['prot'].shape[0]:
         mu.pp.intersect_obs(mdata_bg)
         all_mdata_bg.update()
