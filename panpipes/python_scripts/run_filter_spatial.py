@@ -4,6 +4,7 @@ import pandas as pd
 import re
 import muon as mu
 from anndata import AnnData
+import spatialdata as sd
 import os
 # import scpipelines.funcs as scp
 from panpipes.funcs.processing import intersect_obs_by_mod, remove_unused_categories
@@ -74,33 +75,73 @@ L.info("Filter dictionary:\n %s" %filter_dict)
 
 # load mudata
 
-L.info("Reading in MuData from '%s'" % args.input_mudata)
+L.info("Reading in SpatialData from '%s'" % args.input_mudata)
+sdata = sd.read_zarr(args.input_anndata)
+#mdata = mu.read(args.input_mudata)
 
-mdata = mu.read(args.input_mudata)
+#if isinstance(mdata, AnnData):
+#    raise TypeError("Input '%s' should be of MuData format, not Anndata"  % args.input_mudata)
 
-if isinstance(mdata, AnnData):
-    raise TypeError("Input '%s' should be of MuData format, not Anndata"  % args.input_mudata)
+orig_obs = sdata["table"].obs.copy()
 
-orig_obs = mdata.obs.copy()
-
-L.info("Before filtering: "+ str(mdata.n_obs) + " cells and " + str(mdata.n_vars) + " features")
+L.info("Before filtering: "+ str(sdata["table"].n_obs) + " cells and " + str(sdata["table"].n_vars) + " features")
 
 # filter based on provided barcodes -----
 if args.keep_barcodes is not None:
-    L.info("Filtering MuData by keep_barcodes file")
+    L.info("Filtering SpatialData by keep_barcodes file")
     keep_bc = pd.read_csv(args.keep_barcodes,header=None)
-    mdata = mdata[mdata.obs_names.isin(keep_bc[0]),:].copy()
-    remove_unused_categories(mdata.obs)
-    mdata.update()
-    L.info("Remaining cells: %d" % mdata.n_obs)
+    sdata["table"] = sdata["table"][sdata["table"].obs_names.isin(keep_bc[0]),:].copy()
+    remove_unused_categories(sdata["table"].obs)
+    #mdata.update()
+    L.info("Remaining cells: %d" % sdata["table"].n_obs)
 
 
 
 # filter more than
 if filter_dict['run']:
+    for marg in filter_dict["spatial"].keys():
+        if marg == "obs":
+            if "max" in filter_dict["spatial"][marg].keys():
+                for col, n in filter_dict["spatial"][marg]['max'].items():
+                    L.info("Filtering cells of modality '%s' by '%s' in .obs to less than %s" % ("spatial", col, n))
+                    mu.pp.filter_obs(sdata["table"], col, lambda x: x <= n)
+                    L.info("Remaining cells: %d" % sdata["table"].n_obs)
+            if "min" in filter_dict["spatial"][marg].keys():
+                for col, n in filter_dict["spatial"][marg]['min'].items():
+                    L.info("Filtering cells of modality '%s' by '%s' in .obs to more than %s" % ("spatial", col, n))
+                    mu.pp.filter_obs(sdata["table"], col, lambda x: x >= n)
+                    L.info("Remaining cells: %d" % sdata["table"].n_obs)
+            if "bool" in filter_dict["spatial"][marg].keys():
+                for col, n in filter_dict["spatial"][marg]['bool'].items():
+                    L.info("Filtering cells of modality '%s' by '%s' in .obs marked %s" % ("spatial", col, n))
+                    mu.pp.filter_obs(sdata["table"], col, lambda x: x == n)
+                    L.info("Remaining cells: %d" % sdata["table"].n_obs)
+        if marg == "var":
+            if "max" in filter_dict["spatial"][marg].keys():
+                for col, n in filter_dict["spatial"][marg]['max'].items():
+                    L.info("Filtering features of modality '%s' by '%s' in .var to less than %s" % ("spatial", col, n))
+                    mu.pp.filter_var(sdata["table"], col, lambda x: x <= n)
+                    L.info("Remaining features: %d" % sdata["table"].n_vars)
+
+            if "min" in filter_dict["spatial"][marg].keys():
+                for col, n in filter_dict["spatial"][marg]['min'].items():
+                    L.info("Filtering features of modality '%s' by '%s' in .var to more than %s" % ("spatial", col, n))
+                    mu.pp.filter_var(sdata["table"], col, lambda x: x >= n)
+                    L.info("Remaining features: %d" % sdata["table"].n_vars)
+
+            if "bool" in filter_dict["spatial"][marg].keys():
+                for col, n in filter_dict["spatial"][marg]['bool'].items():
+                    L.info("Filtering features of modality '%s' by '%s' in .var marked %s" % ("spatial", col, n))
+                    mu.pp.filter_var(sdata["table"], col, lambda x: x == n)
+                    L.info("Remaining features: %d" % sdata["table"].n_vars)
+
+
+'''
+# filter more than
+if filter_dict['run']:
     # this will go through the modalities one at a time,
     # then the categories max, min and bool
-    for mod in mdata.mod.keys():
+    for mod in sdata["table"].mod.keys():
         L.info(mod)
         if mod in filter_dict.keys():
             for marg in filter_dict[mod].keys():
@@ -108,57 +149,59 @@ if filter_dict['run']:
                     if "max" in filter_dict[mod][marg].keys():
                         for col, n in filter_dict[mod][marg]['max'].items():
                             L.info("Filtering cells of modality '%s' by '%s' in .obs to less than %s" % (mod, col, n))
-                            mu.pp.filter_obs(mdata.mod[mod], col, lambda x: x <= n)
-                            L.info("Remaining cells: %d" % mdata[mod].n_obs)
+                            mu.pp.filter_obs(sdata["table"].mod[mod], col, lambda x: x <= n)
+                            L.info("Remaining cells: %d" % sdata["table"][mod].n_obs)
                     if "min" in filter_dict[mod][marg].keys():
                         for col, n in filter_dict[mod][marg]['min'].items():
                             L.info("Filtering cells of modality '%s' by '%s' in .obs to more than %s" % (mod, col, n))
-                            mu.pp.filter_obs(mdata.mod[mod], col, lambda x: x >= n)
-                            L.info("Remaining cells: %d" % mdata[mod].n_obs)
+                            mu.pp.filter_obs(sdata["table"].mod[mod], col, lambda x: x >= n)
+                            L.info("Remaining cells: %d" % sdata["table"][mod].n_obs)
                     if "bool" in filter_dict[mod][marg].keys():
                         for col, n in filter_dict[mod][marg]['bool'].items():
                             L.info("Filtering cells of modality '%s' by '%s' in .obs marked %s" % (mod, col, n))
-                            mu.pp.filter_obs(mdata.mod[mod], col, lambda x: x == n)
-                            L.info("Remaining cells: %d" % mdata[mod].n_obs)
+                            mu.pp.filter_obs(sdata["table"].mod[mod], col, lambda x: x == n)
+                            L.info("Remaining cells: %d" % sdata["table"][mod].n_obs)
                 if marg == "var":
                     if "max" in filter_dict[mod][marg].keys():
                         for col, n in filter_dict[mod][marg]['max'].items():
                             L.info("Filtering features of modality '%s' by '%s' in .var to less than %s" % (mod, col, n))
-                            mu.pp.filter_var(mdata.mod[mod], col, lambda x: x <= n)
-                            L.info("Remaining features: %d" % mdata[mod].n_vars)
+                            mu.pp.filter_var(sdata["table"].mod[mod], col, lambda x: x <= n)
+                            L.info("Remaining features: %d" % sdata["table"][mod].n_vars)
 
                     if "min" in filter_dict[mod][marg].keys():
                         for col, n in filter_dict[mod][marg]['min'].items():
                             L.info("Filtering features of modality '%s' by '%s' in .var to more than %s" % (mod, col, n))
-                            mu.pp.filter_var(mdata.mod[mod], col, lambda x: x >= n)
-                            L.info("Remaining features: %d" % mdata[mod].n_vars)
+                            mu.pp.filter_var(sdata["table"].mod[mod], col, lambda x: x >= n)
+                            L.info("Remaining features: %d" % sdata["table"][mod].n_vars)
 
                     if "bool" in filter_dict[mod][marg].keys():
                         for col, n in filter_dict[mod][marg]['bool'].items():
                             L.info("Filtering features of modality '%s' by '%s' in .var marked %s" % (mod, col, n))
-                            mu.pp.filter_var(mdata.mod[mod], col, lambda x: x == n)
-                            L.info("Remaining features: %d" % mdata[mod].n_vars)
+                            mu.pp.filter_var(sdata["table"].mod[mod], col, lambda x: x == n)
+                            L.info("Remaining features: %d" % sdata["table"][mod].n_vars)
                             
+'''
 
-mdata.update()
 
-L.info("After filtering: "+ str(mdata.n_obs) + " cells and " + str(mdata.n_vars) + " features")
+#mdata.update()
 
-remove_unused_categories(mdata.obs)
+L.info("After filtering: "+ str(sdata["table"].n_obs) + " cells and " + str(sdata["table"].n_vars) + " features")
+
+remove_unused_categories(sdata["table"].obs)
 
 # run quick test before saving out.
-assert test_matching_df_ignore_cat(mdata.obs, orig_obs)  
+assert test_matching_df_ignore_cat(sdata["table"].obs, orig_obs)  
 
 # write out obs
-output_prefix = re.sub(".h5mu", "", os.path.basename(args.output_mudata))
+output_prefix = re.sub(".zarr", "", os.path.basename(args.output_mudata))
 
 L.info("Saving updated obs in a metadata tsv file to './tables/" + output_prefix + "_filtered_cell_metadata.tsv'")
-write_obs(mdata, output_prefix=os.path.join("tables/",output_prefix), output_suffix="_filtered_cell_metadata.tsv")
+write_obs(sdata["table"], output_prefix=os.path.join("tables/",output_prefix), output_suffix="_filtered_cell_metadata.tsv")
 
 # write out the per sample_id cell numbers 
 cell_counts_dict={}
-for mm in mdata.mod.keys():
-    cell_counts_dict[mm] = mdata[mm].obs.sample_id.value_counts().to_frame('n_cells')
+#for mm in mdata.mod.keys():
+cell_counts_dict["spatial"] = sdata["table"].obs.sample_id.value_counts().to_frame('n_cells')
 
 cell_counts = pd.concat(cell_counts_dict).reset_index().rename(
     columns={"level_0": "modality", "level_1": "sample_id"})
@@ -167,10 +210,10 @@ L.info("cell_counts: \n%s" %cell_counts)
 L.info("Saving cell counts in a metadata csv file to './tables/" + output_prefix + "_cell_counts.csv'")
 cell_counts.to_csv("tables/" + output_prefix + "_cell_counts.csv", index=None)
 
-mdata.update()
+#mdata.update()
 
-L.info("Saving updated MuData to '%s'" % args.output_mudata)
-mdata.write(args.output_mudata)
+L.info("Saving updated SpatialData to '%s'" % args.output_mudata)
+sdata.write(args.output_mudata)
 
 L.info("Done")
 
