@@ -76,7 +76,7 @@ L.info("Filter dictionary:\n %s" %filter_dict)
 # load mudata
 
 L.info("Reading in SpatialData from '%s'" % args.input_mudata)
-sdata = sd.read_zarr(args.input_anndata)
+sdata = sd.read_zarr(args.input_mudata)
 #mdata = mu.read(args.input_mudata)
 
 #if isinstance(mdata, AnnData):
@@ -135,52 +135,6 @@ if filter_dict['run']:
                     mu.pp.filter_var(sdata["table"], col, lambda x: x == n)
                     L.info("Remaining features: %d" % sdata["table"].n_vars)
 
-
-'''
-# filter more than
-if filter_dict['run']:
-    # this will go through the modalities one at a time,
-    # then the categories max, min and bool
-    for mod in sdata["table"].mod.keys():
-        L.info(mod)
-        if mod in filter_dict.keys():
-            for marg in filter_dict[mod].keys():
-                if marg == "obs":
-                    if "max" in filter_dict[mod][marg].keys():
-                        for col, n in filter_dict[mod][marg]['max'].items():
-                            L.info("Filtering cells of modality '%s' by '%s' in .obs to less than %s" % (mod, col, n))
-                            mu.pp.filter_obs(sdata["table"].mod[mod], col, lambda x: x <= n)
-                            L.info("Remaining cells: %d" % sdata["table"][mod].n_obs)
-                    if "min" in filter_dict[mod][marg].keys():
-                        for col, n in filter_dict[mod][marg]['min'].items():
-                            L.info("Filtering cells of modality '%s' by '%s' in .obs to more than %s" % (mod, col, n))
-                            mu.pp.filter_obs(sdata["table"].mod[mod], col, lambda x: x >= n)
-                            L.info("Remaining cells: %d" % sdata["table"][mod].n_obs)
-                    if "bool" in filter_dict[mod][marg].keys():
-                        for col, n in filter_dict[mod][marg]['bool'].items():
-                            L.info("Filtering cells of modality '%s' by '%s' in .obs marked %s" % (mod, col, n))
-                            mu.pp.filter_obs(sdata["table"].mod[mod], col, lambda x: x == n)
-                            L.info("Remaining cells: %d" % sdata["table"][mod].n_obs)
-                if marg == "var":
-                    if "max" in filter_dict[mod][marg].keys():
-                        for col, n in filter_dict[mod][marg]['max'].items():
-                            L.info("Filtering features of modality '%s' by '%s' in .var to less than %s" % (mod, col, n))
-                            mu.pp.filter_var(sdata["table"].mod[mod], col, lambda x: x <= n)
-                            L.info("Remaining features: %d" % sdata["table"][mod].n_vars)
-
-                    if "min" in filter_dict[mod][marg].keys():
-                        for col, n in filter_dict[mod][marg]['min'].items():
-                            L.info("Filtering features of modality '%s' by '%s' in .var to more than %s" % (mod, col, n))
-                            mu.pp.filter_var(sdata["table"].mod[mod], col, lambda x: x >= n)
-                            L.info("Remaining features: %d" % sdata["table"][mod].n_vars)
-
-                    if "bool" in filter_dict[mod][marg].keys():
-                        for col, n in filter_dict[mod][marg]['bool'].items():
-                            L.info("Filtering features of modality '%s' by '%s' in .var marked %s" % (mod, col, n))
-                            mu.pp.filter_var(sdata["table"].mod[mod], col, lambda x: x == n)
-                            L.info("Remaining features: %d" % sdata["table"][mod].n_vars)
-                            
-'''
 
 
 #mdata.update()
