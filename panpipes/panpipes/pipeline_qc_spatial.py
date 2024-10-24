@@ -127,7 +127,7 @@ def load_mudatas(spatial_path,  outfile,
 @follows(mkdir("qc.data"))
 @follows(mkdir("./figures"))
 @transform(load_mudatas,
-           regex("./tmp/(.*)_raw.h5(.*)"), 
+           regex("./tmp/(.*)_raw.zarr"), 
            r"./logs/2_spatialQC_\1.log")
 def spatialQC(infile,log_file):
     spatial_filetype = assays[infile]
@@ -175,7 +175,7 @@ def run_plotqc_query(pqc_dict):
 @follows(mkdir("./figures/spatial"))
 @active_if(run_plotqc_query(PARAMS['plotqc']))
 @transform(load_mudatas, 
-           regex("./tmp/(.*)_raw.h5(.*)"),
+           regex("./tmp/(.*)_raw.zarr"),
            r"./logs/3_qcplot.\1.log")
 def plotQC_spatial(unfilt_file,log_file):
     spatial_filetype = assays[unfilt_file]
