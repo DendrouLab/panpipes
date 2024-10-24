@@ -85,7 +85,7 @@ def run_plotqc_query(pqc_dict):
 @active_if(run_plotqc_query(PARAMS['plotqc']))
 @active_if(PARAMS['filtering_run'])
 @transform(filter_mudata,
-           regex("./filtered.data/(.*)_filtered.h5(.*)"), 
+           regex("./filtered.data/(.*)_filtered.zarr"), 
            r"./logs/2_postfilterplot.\1.log")
 def postfilterplot_spatial(filt_file,log_file):
     print(filt_file)    
@@ -109,7 +109,7 @@ def postfilterplot_spatial(filt_file,log_file):
 
 
 @transform(filter_mudata,
-           regex("./filtered.data/(.*)_filtered.h5(.*)"), 
+           regex("./filtered.data/(.*)_filtered.zarr"), 
            r"./logs/3_preprocess.\1.log")
 def spatial_preprocess(filt_file,log_file):
     if os.path.exists("figures/spatial") is False:
