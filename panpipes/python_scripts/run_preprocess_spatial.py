@@ -95,7 +95,7 @@ sdata = sd.read_zarr(args.input_mudata)
 #spatial = mdata.mod['spatial']
 
 input_data = os.path.basename(args.input_mudata)
-pattern = r"_filtered.h5(.*)"
+pattern = r"_filtered.zarr"
 match = re.search(pattern, input_data)
 sprefix = input_data[:match.start()]
 
@@ -175,7 +175,7 @@ sc.pl.pca_variance_ratio(sdata["table"], log=True, n_pcs=int(args.n_pcs), save= 
         
 #mdata.update()
 L.info("Saving updated SpatialData to '%s'" % args.output_mudata)
-sdata["table"].write(args.output_mudata)
+sdata.write(args.output_mudata)
 
 L.info("Done")
 
