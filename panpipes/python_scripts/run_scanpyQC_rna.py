@@ -57,7 +57,7 @@ parser.add_argument("--calc_proportions",
                     default="mitochondrial,ribosomal",
                     help="which list of genes to use to calc proportion of mapped reads over total,per cell?")
 parser.add_argument("--score_genes",
-                    default="MarkersNeutro",
+                    default=None,
                     help="which list of genes to use to scanpy.tl.score_genes per cell?")
 
 args, opt = parser.parse_known_args()
