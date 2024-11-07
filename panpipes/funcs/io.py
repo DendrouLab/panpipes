@@ -157,40 +157,58 @@ def gen_load_spatial_jobs(caf, mode_dictionary = {}, load_raw=True):
             else:
                 spatial_path = caf["spatial_path"][nn]
             if caf['spatial_filetype'][nn]=="vizgen":
-                spatial_counts = None 
-                spatial_fullres_image_file = None
-                spatial_tissue_positions_file = None
-                spatial_scalefactors_file = None
+                visium_feature_bc_matrix = None 
+                visium_fullres_image_file = None
+                visium_tissue_positions_file = None
+                visium_scalefactors_file = None
                 spatial_filetype = caf['spatial_filetype'][nn]
+                if pd.notna(caf['vpt_cell_by_gene'][nn]):
+                    vpt_cell_by_gene = caf['vpt_cell_by_gene'][nn]
+                else:
+                    vpt_cell_by_gene = None
+                if pd.notna(caf['vpt_cell_metadata'][nn]):
+                    vpt_cell_metadata = caf['vpt_cell_metadata'][nn]
+                else:
+                    vpt_cell_metadata = None
+                if pd.notna(caf['vpt_cell_boundaries'][nn]):
+                    vpt_cell_boundaries = caf['vpt_cell_boundaries'][nn]
+                else:
+                    vpt_cell_boundaries = None
             elif caf['spatial_filetype'][nn]=="visium":
+                vpt_cell_by_gene = None
+                vpt_cell_metadata = None
+                vpt_cell_boundaries = None
                 spatial_filetype = caf['spatial_filetype'][nn]
                 #counts file
-                if pd.notna(caf["spatial_counts"][nn]):
-                    spatial_counts= caf["spatial_counts"][nn]
+                if pd.notna(caf["visium_feature_bc_matrix"][nn]):
+                    visium_feature_bc_matrix= caf["visium_feature_bc_matrix"][nn]
                 else:
-                    spatial_counts = None  
+                    visium_feature_bc_matrix = None  
                 # fullres image
-                if pd.notna(caf["spatial_fullres_image_file"][nn]):
-                    spatial_fullres_image_file= caf["spatial_fullres_image_file"][nn]
+                if pd.notna(caf["visium_fullres_image_file"][nn]):
+                    visium_fullres_image_file= caf["visium_fullres_image_file"][nn]
                 else:
-                    spatial_fullres_image_file = None 
+                    visium_fullres_image_file = None 
                 # tissue position 
-                if pd.notna(caf["spatial_tissue_positions_file"][nn]):
-                    spatial_tissue_positions_file= caf["spatial_tissue_positions_file"][nn]
+                if pd.notna(caf["visium_tissue_positions_file"][nn]):
+                    visium_tissue_positions_file= caf["visium_tissue_positions_file"][nn]
                 else:
-                    spatial_tissue_positions_file = None  
+                    visium_tissue_positions_file = None  
                 # scalefactor
-                if pd.notna(caf["spatial_scalefactors_file"][nn]):
-                    spatial_scalefactors_file= caf["spatial_scalefactors_file"][nn]
+                if pd.notna(caf["visium_scalefactors_file"][nn]):
+                    visium_scalefactors_file= caf["visium_scalefactors_file"][nn]
                 else:
-                    spatial_scalefactors_file = None  
+                    visium_scalefactors_file = None  
         else:
             spatial_path= None
             spatial_filetype = None
-            spatial_counts = None
-            spatial_fullres_image_file = None
-            spatial_tissue_positions_file = None
-            spatial_scalefactors_file = None
+            visium_feature_bc_matrix = None
+            visium_fullres_image_file = None
+            visium_tissue_positions_file = None
+            visium_scalefactors_file = None
+            vpt_cell_by_gene = None
+            vpt_cell_metadata = None
+            vpt_cell_boundaries = None
             
         if 'barcode_mtd_path' in caf.columns:
             cell_mtd_path = caf['barcode_mtd_path'][nn] #not yielding this right now!
@@ -204,8 +222,9 @@ def gen_load_spatial_jobs(caf, mode_dictionary = {}, load_raw=True):
             outfile = outfile + ".zarr"
         sample_id = caf['sample_id'][nn]
 
-        yield spatial_path,  outfile, \
-              sample_id, spatial_filetype, spatial_counts, spatial_fullres_image_file, spatial_tissue_positions_file, spatial_scalefactors_file
+        yield spatial_path, outfile, sample_id, spatial_filetype, \
+              visium_feature_bc_matrix, visium_fullres_image_file, visium_tissue_positions_file, visium_scalefactors_file, \
+              vpt_cell_by_gene, vpt_cell_metadata, vpt_cell_boundaries
 
 
 def read_anndata(
