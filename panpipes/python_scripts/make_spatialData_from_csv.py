@@ -11,6 +11,7 @@ import squidpy as sq
 import spatialdata_io as sd_io
 from mudata import MuData
 import os
+from pathlib import Path
 """
 this script copies the make_adata_from_csv.py that creates
 ONE MUDATA PER SAMPLE, with in each ONE LAYER per modality
@@ -50,7 +51,7 @@ parser.add_argument('--spatial_infile',
 parser.add_argument('--spatial_filetype', 
                     default=None,
                     help='')
-parser.add_argument('--spatial_counts', 
+parser.add_argument('--visium_feature_bc_matrix', 
                     default=None,
                     help='')
 parser.add_argument('--scalefactors_file', 
@@ -62,12 +63,15 @@ parser.add_argument('--fullres_image_file',
 parser.add_argument('--tissue_positions_file', 
                     default=None,
                     help='')
-#parser.add_argument('--spatial_metadata', 
-#                    default=None,
-#                    help='')
-#parser.add_argument('--spatial_transformation', 
-#                    default=None,
-#                    help='')
+parser.add_argument('--vpt_cell_by_gene', 
+                   default=None,
+                    help='')
+parser.add_argument('--vpt_cell_metadata', 
+                    default=None,
+                    help='')
+parser.add_argument('--vpt_cell_boundaries', 
+                    default=None,
+                    help='')
 
 parser.set_defaults(verbose=True)
 args, opt = parser.parse_known_args()
@@ -84,10 +88,13 @@ L.info("Running with params: %s", args)
 all_files = {
             "spatial":[args.spatial_infile, #path
                         args.spatial_filetype, #needed for the load_adata_in function to call one of vizgen,visium
-                        args.spatial_counts, #name of the counts file, mandatory for squidpy
+                        args.visium_feature_bc_matrix, #name of the counts file, mandatory for squidpy
                         args.fullres_image_file, # visium
                         args.tissue_positions_file, #visium
-                        args.scalefactors_file]} # visium 
+                        args.scalefactors_file, 
+                        args.vpt_cell_by_gene,
+                        args.vpt_cell_metadata, 
+                        args.vpt_cell_boundaries ]} # visium 
 #                        args.spatial_metadata, #name of the metadata file, mandatory for squidpy
 #                        args.spatial_transformation]}
 #subset to the modalities we want from permf (in this case only spatial)
@@ -130,26 +137,25 @@ def check_dir_transform(infile_path, transform_file):
 
 if args.spatial_filetype=="vizgen":
     L.info("Reading in Vizgen data with squidpy.read.vizgen() into AnnData from directory " + args.spatial_infile)
-    sdata = sd_io.merscope(path = args.spatial_infile)
-#    adata = sq.read.vizgen(path = args.spatial_infile, #path, mandatory for squidpy
-#                        counts_file=args.spatial_counts, #name of the counts file, mandatory for squidpy
-#                        meta_file = args.spatial_metadata, #name of the metadata file, mandatory for squidpy
-#                        transformation_file=args.spatial_transformation,
-#                        library_id = str(args.sample_id)) #this also has kwargs for read_10x_h5 but keep simple
-#    adata.uns["spatial"][str(args.sample_id)]["scalefactors"]["transformation_matrix"].columns = adata.uns["spatial"][str(args.sample_id)]["scalefactors"]["transformation_matrix"].columns.astype(str)
+    # check that all vpt parameters are not None 
+    if None not in (args.vpt_cell_by_gene, args.vpt_cell_metadata, args.vpt_cell_boundaries):
+        vpt_outputs = {'cell_by_gene': Path(args.vpt_cell_by_gene) , 
+                'cell_metadata': Path(args.vpt_cell_metadata) , 
+                'cell_boundaries': Path(args.vpt_cell_boundaries)}
+        sdata = sd_io.merscope(path = args.spatial_infile, vpt_outputs=vpt_outputs)
+    else: 
+        sdata = sd_io.merscope(path = args.spatial_infile)
+
 elif args.spatial_filetype =="visium":
     L.info("Reading in Visium data with squidpy.read.visium() into AnnData from directory " + args.spatial_infile)
     sdata = sd_io.visium(path=args.spatial_infile, 
                          dataset_id=str(args.sample_id), 
-                         counts_file=args.spatial_counts, 
+                         counts_file=args.visium_feature_bc_matrix, 
                          fullres_image_file=args.fullres_image_file,
                          tissue_positions_file=args.tissue_positions_file, 
                          scalefactors_file=args.scalefactors_file)
-    #adata = sq.read.visium(path = args.spatial_infile, #path, mandatory for squidpy
-    #                    counts_file=args.spatial_counts, #name of the counts file, mandatory for squidpy
-    #                    library_id = str(args.sample_id)
-    #                    ) #this also has kwargs for read_10x_h5 but keep simple
-
+    
+    
 L.info("Resulting SpatialData is:")
 L.info(sdata)
 #L.info("Creating MuData with .mod['spatial']")
