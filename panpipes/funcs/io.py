@@ -156,6 +156,15 @@ def gen_load_spatial_jobs(caf, mode_dictionary = {}, load_raw=True):
                 spatial_filetype = None
             else:
                 spatial_path = caf["spatial_path"][nn]
+            if caf['spatial_filetype'][nn]=="xenium":
+                spatial_filetype = caf['spatial_filetype'][nn]
+                visium_feature_bc_matrix = None
+                visium_fullres_image_file = None
+                visium_tissue_positions_file = None
+                visium_scalefactors_file = None
+                vpt_cell_by_gene = None
+                vpt_cell_metadata = None
+                vpt_cell_boundaries = None
             if caf['spatial_filetype'][nn]=="vizgen":
                 visium_feature_bc_matrix = None 
                 visium_fullres_image_file = None

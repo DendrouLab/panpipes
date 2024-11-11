@@ -155,7 +155,9 @@ elif args.spatial_filetype =="visium":
                          tissue_positions_file=args.tissue_positions_file, 
                          scalefactors_file=args.scalefactors_file)
     
-    
+elif args.spatial_filetype =="xenium": 
+    sdata = sd_io.xenium(path = args.spatial_infile)
+
 L.info("Resulting SpatialData is:")
 L.info(sdata)
 #L.info("Creating MuData with .mod['spatial']")
