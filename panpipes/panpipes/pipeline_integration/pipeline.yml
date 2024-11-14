@@ -250,6 +250,7 @@ plotqc:
 #-------------
 #Obs columns containing the cell type labels
 scib:
+  run: True
   rna:
   prot:
   atac:
