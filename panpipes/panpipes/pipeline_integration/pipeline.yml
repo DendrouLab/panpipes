@@ -244,6 +244,11 @@ plotqc:
   atac:
   multimodal: rna:total_counts
 
+#-------------
+# LISI metrics
+#-------------
+lisi:
+  run: True
 
 #-------------
 # scib metrics
