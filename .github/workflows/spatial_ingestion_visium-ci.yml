@@ -78,7 +78,7 @@ jobs:
       - name: Preparing the submission file
         run: |
           cd spatial/ingestion
-          curl -o sample_file_qc_spatial.txt https://raw.githubusercontent.com/DendrouLab/panpipes-tutorials/sarah_spatialData/docs/ingesting_visium_data/sample_file_qc_visium.txt
+          curl -o sample_file_qc_visium.txt https://raw.githubusercontent.com/DendrouLab/panpipes-tutorials/sarah_spatialData/docs/ingesting_visium_data/sample_file_qc_visium.txt
       - name: Preparing the yaml file
         run: |
           cd spatial/ingestion
