@@ -138,7 +138,7 @@ def check_dir_transform(infile_path, transform_file):
 if args.spatial_filetype=="vizgen":
     L.info("Reading in Vizgen data with squidpy.read.vizgen() into AnnData from directory " + args.spatial_infile)
     # check that all vpt parameters are not None 
-    if None not in (args.vpt_cell_by_gene, args.vpt_cell_metadata, args.vpt_cell_boundaries):
+    if "None" not in (args.vpt_cell_by_gene, args.vpt_cell_metadata, args.vpt_cell_boundaries):
         vpt_outputs = {'cell_by_gene': Path(args.vpt_cell_by_gene) , 
                 'cell_metadata': Path(args.vpt_cell_metadata) , 
                 'cell_boundaries': Path(args.vpt_cell_boundaries)}
