@@ -817,6 +817,7 @@ def plot_umaps(infile, outfile):
 
 #this can follow now any mtd generation, but it will collate only RNA jobs for lisi
 @follows(collate_integration_outputs)
+@active_if(PARAMS['lisi_run'])
 @transform(collate_integration_outputs, 
            formatter(),  'logs/7_lisi.log')
 def run_lisi(infile, outfile):
@@ -834,6 +835,7 @@ def run_lisi(infile, outfile):
 
 
 @follows(collate_integration_outputs)
+@active_if(PARAMS['scib_run'])
 @transform(collate_integration_outputs, formatter(),  'logs/scib.log')
 def run_scib_metrics(infile, outfile):
     cell_mtd_file = sprefix + "_cell_mtd.csv"

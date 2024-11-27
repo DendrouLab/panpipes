@@ -244,12 +244,18 @@ plotqc:
   atac:
   multimodal: rna:total_counts
 
+#-------------
+# LISI metrics
+#-------------
+lisi:
+  run: True
 
 #-------------
 # scib metrics
 #-------------
 #Obs columns containing the cell type labels
 scib:
+  run: True
   rna:
   prot:
   atac:
