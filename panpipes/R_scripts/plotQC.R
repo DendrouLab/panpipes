@@ -163,7 +163,7 @@ for (qc in qcmetrics){
   for (sc in rna_source_facet){ #add gsub temp here
     g <- do_violin_plot(rna_data_plot, qc, sc)
     if (uniq_sample_id  > 50){width=12}else{width=6}
-    ggsave(g, filename=file.path(outpath, paste0("violin_", sc, "_rna-", qc,".png")), type="cairo", width= width, height=6)
+    ggsave(g, filename=file.path(outpath, paste0("violin_", sc, "_rna-", qc,".png")), type="cairo", width= width, height=6,limitsize=FALSE)
     
   }
 }
@@ -182,27 +182,27 @@ for (sc in rna_source_facet){
     print("Plotting scatter plot of total_counts and n_genes_by_counts")
     g <- do_scatter_plot(rna_data_plot,x="total_counts",y="n_genes_by_counts", facet=sc)
     ggsave(g, filename=file.path(outpath, paste0("scatter_", sc, "_rna-nUMI_v_rna-genes.png")), type="cairo",
-           width= 3*ncols, height=3*nrows, dpi=200)
+           width= 3*ncols, height=3*nrows, dpi=200,limitsize=FALSE)
   }
   
   if (all(c("log1p_total_counts","log1p_n_genes_by_counts")%in% colnames(rna_data_plot))){
     print("Plotting scatter plot of log1p_total_counts and n_genes_by_counts")
     g <- do_scatter_plot(rna_data_plot,x="log1p_total_counts",y="log1p_n_genes_by_counts", facet=sc)
     ggsave(g, filename=file.path(outpath, paste0("scatter_", sc, "_rna-log1p_nUMI_v_rna-log1p_genes.png")), type="cairo",
-           width= 3*ncols, height=3*nrows, dpi=200)
+           width= 3*ncols, height=3*nrows, dpi=200,limitsize=FALSE)
   }
   if (all(c("total_counts","pct_counts_mt")%in% colnames(rna_data_plot))){
     print("Plotting scatter plot of total_counts and pct_counts_mt")
     g <- do_scatter_plot(rna_data_plot,x="total_counts",y="pct_counts_mt", facet=sc)
     ggsave(g, filename=file.path(outpath, paste0("scatter_", sc, "_rna-nUMI_v_rna-pct_mt.png")), type="cairo",
-           width= 3*ncols, height=3*nrows, dpi=200)
+           width= 3*ncols, height=3*nrows, dpi=200,limitsize=FALSE)
   }
   if (all(c("n_genes_by_counts","doublet_scores","total_counts")%in% colnames(rna_data_plot))){
     print("Plotting scatter plot of n_genes_by_counts and doublet_scores")
     g <- do_scatter_plot(rna_data_plot,x="n_genes_by_counts",y="doublet_scores",
                          hue="total_counts", facet=sc)
     ggsave(g, filename=file.path(outpath, paste0("scatter_", sc, "_rna-genes_rna-doublet_scores_rna-numi.png")),    
-           type="cairo", width= 3*ncols, height=3*nrows, dpi=200)
+           type="cairo", width= 3*ncols, height=3*nrows, dpi=200,limitsize=FALSE)
   }
   
 }
@@ -236,7 +236,7 @@ if(!is.null(opt$prot_qc_metrics)){
     for (sc in prot_source_facet){
       g <- do_violin_plot(prot_data_plot, qc, sc)
       if (uniq_sample_id  > 50){width=12}else{width=6}
-      ggsave(g, filename=file.path(outpath, paste0("violin_", sc, "_prot-", qc,".png")), type="cairo", width= width, height=6)
+      ggsave(g, filename=file.path(outpath, paste0("violin_", sc, "_prot-", qc,".png")), type="cairo", width= width, height=6,limitsize=FALSE)
     }
   }
   
@@ -262,31 +262,31 @@ if(!is.null(opt$prot_qc_metrics)){
       print("Plotting scatter plot of total_counts and n_prot_by_counts")
       g <- do_scatter_plot(prot_data_plot,x="total_counts",y="n_prot_by_counts", facet=sc)
       ggsave(g, filename=file.path(outpath, paste0("scatter_", sc, "_prot-nUMI_v_prot-prot.png")), type="cairo",
-             width= 3*ncols, height=3*nrows, dpi=200)
+             width= 3*ncols, height=3*nrows, dpi=200,limitsize=FALSE)
     }
     if (all(c("log1p_total_counts","log1p_n_prot_by_counts")%in% colnames(prot_data_plot))){
       print("Plotting scatter plot of log1p_total_counts and log1p_n_prot_by_counts")
       g <- do_scatter_plot(prot_data_plot,x="log1p_total_counts",y="log1p_n_prot_by_counts", facet=sc)
       ggsave(g, filename=file.path(outpath, paste0("scatter_", sc, "_prot-log1p_nUMI_v_prot-log1p_prot.png")), type="cairo",
-             width= 3*ncols, height=3*nrows, dpi=200)
+             width= 3*ncols, height=3*nrows, dpi=200,limitsize=FALSE)
     }
     if (all(c("total_counts","pct_counts_isotype")%in% colnames(prot_data_plot))){
       print("Plotting scatter plot of total_counts and pct_counts_isotype")
       g <- do_scatter_plot(prot_data_plot,x="total_counts",y="pct_counts_isotype", facet=sc)
       ggsave(g, filename=file.path(outpath, paste0("scatter_", sc, "_prot-nUMI_v_prot-pct_isotype.png")), type="cairo",
-             width= 3*ncols, height=3*nrows, dpi=200)
+             width= 3*ncols, height=3*nrows, dpi=200,limitsize=FALSE)
     }
     if (all(c("total_counts","total_counts_isotype")%in% colnames(prot_data_plot))){
       print("Plotting scatter plot of total_counts and total_counts_isotype")
       g <- do_scatter_plot(prot_data_plot,x="total_counts",y="total_counts_isotype", facet=sc)
       ggsave(g, filename=file.path(outpath, paste0("scatter_", sc, "_prot-nUMI_v_prot-total_counts_isotype.png")), type="cairo",
-             width= 3*ncols, height=3*nrows, dpi=200)
+             width= 3*ncols, height=3*nrows, dpi=200,limitsize=FALSE)
     }
     if (all(c("log1p_total_counts","log1p_total_counts_isotype", "isotype_exclude")%in% colnames(prot_data_plot))){
       print("Plotting scatter plot of log1p_total_counts and log1p_total_counts_isotype")
       g <- do_scatter_plot(prot_data_plot,x="log1p_total_counts",y="log1p_total_counts_isotype", hue="isotype_exclude", facet=sc)
       ggsave(g, filename=file.path(outpath, paste0("scatter_", sc, "_prot-log1p_nUMI_v_prot-log1p_total_counts_isotype.png")), type="cairo",
-             width= 3*ncols, height=3*nrows, dpi=200)
+             width= 3*ncols, height=3*nrows, dpi=200,limitsize=FALSE)
     }
   }
 
@@ -315,7 +315,7 @@ if(!is.null(opt$atac_qc_metrics)){
     for (sc in atac_source_facet){
       g <- do_violin_plot(atac_data_plot, qc, sc)
       if (uniq_sample_id  > 50){width=12}else{width=6}
-      ggsave(g, filename=file.path(outpath, paste0("violin_", sc, "_atac-", qc,".png")), type="cairo", width= width, height=6)
+      ggsave(g, filename=file.path(outpath, paste0("violin_", sc, "_atac-", qc,".png")), type="cairo", width= width, height=6,limitsize=FALSE)
     }
   }
 }
@@ -349,11 +349,11 @@ if (!is.null(opt$rep_qc_metrics)) {
     for (sc in rep_source_facet){
       g <- do_bar_plot(rep_data_plot, qc, sc)
       if (uniq_sample_id  > 50){width=12}else{width=6}
-        ggsave(g, filename=file.path(outpath, paste0("bar_", sc, "_rep-", qc,".png")), type="cairo", width= width, height=6)
+        ggsave(g, filename=file.path(outpath, paste0("bar_", sc, "_rep-", qc,".png")), type="cairo", width= width, height=6,limitsize=FALSE)
 
       if (!(qc %in% c('has_ir', "receptor_type"))){
         g <- do_bar_plot(rep_data_plot, qc, sc) + facet_grid(~receptor_type)
-        ggsave(g, filename=file.path(outpath, paste0("bar_facet_", sc, "_rep-", qc,".png")), type="cairo", width= width*4, height=6)
+        ggsave(g, filename=file.path(outpath, paste0("bar_facet_", sc, "_rep-", qc,".png")), type="cairo", width= width*4, height=6,limitsize=FALSE)
 
       }
     }
@@ -384,31 +384,31 @@ print("RNA vs. Protein plots")
       print("Plotting scatter plot of rna.total_counts and prot.total_counts")
       g <- do_scatter_plot(data_plot,x="rna.total_counts",y="prot.total_counts", facet=sc)
       ggsave(g, filename=file.path(outpath, paste0("scatter_", sc, "-nUMI_v_rna-nUMI.png")), type="cairo",
-              width= 3*ncols, height=3*nrows, dpi=200)
+              width= 3*ncols, height=3*nrows, dpi=200,limitsize=FALSE)
     }
     if (all(c("rna.log1p_total_counts","prot.log1p_total_counts")%in% colnames(data_plot))){
       print("Plotting scatter plot of rna.log1p_total_counts and prot.log1p_total_counts")
       g <- do_scatter_plot(data_plot,x="rna.log1p_total_counts",y="prot.log1p_total_counts", facet=sc)
       ggsave(g, filename=file.path(outpath, paste0("scatter_", sc, "-log1p_nUMI_v_rna-log1p_nUMI.png")), type="cairo",
-              width= 3*ncols, height=3*nrows, dpi=200)
+              width= 3*ncols, height=3*nrows, dpi=200,limitsize=FALSE)
     }
     if (all(c("rna.total_counts","prot.total_counts_isotype")%in% colnames(data_plot))){
       print("Plotting scatter plot of rna.total_counts and prot.total_counts_isotype")
       g <-  do_scatter_plot(data_plot,x="rna.total_counts",y="prot.total_counts_isotype", facet=sc)
       ggsave(g, filename=file.path(outpath, paste0("scatter_", sc, "-nUMI_v_prot-counts_isotype.png")), type="cairo",
-              width= 3*ncols, height=3*nrows, dpi=200)
+              width= 3*ncols, height=3*nrows, dpi=200,limitsize=FALSE)
     }    
     if (all(c("rna.log1p_total_counts","prot.log1p_total_counts_isotype") %in% colnames(data_plot))){
       print("Plotting scatter plot of rna.log1p_total_counts and prot.log1p_total_counts_isotype")
       g <-  do_scatter_plot(data_plot,x="rna.log1p_total_counts",y="prot.log1p_total_counts_isotype", facet=sc)
       ggsave(g, filename=file.path(outpath, paste0("scatter_", sc, "-log1p_nUMI_v_prot-log1p_counts_isotype.png")), type="cairo",
-              width= 3*ncols, height=3*nrows, dpi=200)
+              width= 3*ncols, height=3*nrows, dpi=200,limitsize=FALSE)
     }
     if (all(c("rna.doublet_scores","prot.log1p_total_counts") %in% colnames(data_plot))){
       print("Plotting scatter plot of rna.doublet_scores and prot.log1p_total_counts")
       g <-  do_scatter_plot(data_plot,x="rna.doublet_scores",y="prot.log1p_total_counts", facet=sc)
       ggsave(g, filename=file.path(outpath, paste0("scatter_", sc, "-doublet_scores_v_prot-log1p_nUMI.png")), type="cairo",
-              width= 3*ncols, height=3*nrows, dpi=200)
+              width= 3*ncols, height=3*nrows, dpi=200),limitsize=FALSE
       
     }
     
@@ -485,7 +485,7 @@ if(opt$prefilter){
                         limits=c("percent_retain_f1","percent_retain_f2","percent_retain_f3")) + 
       coord_cartesian(ylim=c(0,100)) 
     
-    ggsave(g, file = paste0(run,"barplot_cellcounts_thresholds_filter.png"), type="cairo", width=9, height=9)
+    ggsave(g, file = paste0(run,"barplot_cellcounts_thresholds_filter.png"), type="cairo", width=9, height=9,limitsize=FALSE)
   }
   
 }else{
@@ -504,7 +504,7 @@ if(opt$prefilter){
     theme_bw()+
     theme(axis.text.x=element_text(size=8,angle=45, hjust=1.05, vjust=0.95),
           axis.text.y=element_text(size=13)) 
-  ggsave(g, file = file.path(run, "rna","barplot_cellcounts_filtered_data.png"), type="cairo", width=9, height=6)
+  ggsave(g, file = file.path(run, "rna","barplot_cellcounts_filtered_data.png"), type="cairo", width=9, height=6,limitsize=FALSE)
   
 }
 
