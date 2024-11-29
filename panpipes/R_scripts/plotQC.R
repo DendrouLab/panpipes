@@ -408,7 +408,7 @@ print("RNA vs. Protein plots")
       print("Plotting scatter plot of rna.doublet_scores and prot.log1p_total_counts")
       g <-  do_scatter_plot(data_plot,x="rna.doublet_scores",y="prot.log1p_total_counts", facet=sc)
       ggsave(g, filename=file.path(outpath, paste0("scatter_", sc, "-doublet_scores_v_prot-log1p_nUMI.png")), type="cairo",
-              width= 3*ncols, height=3*nrows, dpi=200),limitsize=FALSE
+              width= 3*ncols, height=3*nrows, dpi=200,limitsize=FALSE)
       
     }
     
