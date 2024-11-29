@@ -44,7 +44,7 @@ dependencies = [
     "scib",
     "scib-metrics",
     "scikit-misc",
-    "scirpy==0.12.2",
+    "scirpy",
     "scrublet",
     "scvi-tools",
     "sqlalchemy",
