@@ -351,7 +351,7 @@ Whether applying scaling or not is still a matter of debate, as stated in the [L
        Specify if you want to save the prot normalised assay additionally as a txt file.
 
   - <span class="parameter">pca</span> `Boolean`, Default: False<br>
-       Specify if you want to run PCA on the normalised protein data. This might be useful, when you have more than 50 features in your protein assay.
+       Specify if you want to run PCA on the normalised protein data. This might be useful, when you have more than 50 features in your protein assay. Further, this dimensionality reduction can be used in the integration workflow. 
 
   - <span class="parameter">n_pcs</span> `Integer`, Default: 50<br>
        Number of principal components to compute. Specify at least n_pcs <= number of features -1.
