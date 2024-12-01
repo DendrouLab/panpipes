@@ -66,7 +66,7 @@ spatial = [
     "jaxlib==0.4.23",
     "scvi-tools==1.0.4",
     "scipy==1.12.0",
-    "squidpy",
+    "squidpy>1.6.1",
     "cell2location",
     "tangram-sc", 
     "spatialdata", 
