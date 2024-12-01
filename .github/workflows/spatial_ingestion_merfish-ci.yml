@@ -58,11 +58,11 @@ jobs:
         run: |
           mkdir spatial spatial/ingestion_merfish spatial/ingestion_merfish/data
           cd spatial/ingestion_merfish/data 
-          curl -L -o datasets_mouse_brain_map_BrainReceptorShowcase_Slice1_Replicate1_cell_by_gene_S1R1.csv https://figshare.com/ndownloader/files/45028624
-          curl -L -o datasets_mouse_brain_map_BrainReceptorShowcase_Slice1_Replicate1_cell_metadata_S1R1.csv https://figshare.com/ndownloader/files/45028621
+          curl -L -o cell_by_gene.csv https://figshare.com/ndownloader/files/45028624
+          curl -L -o cell_metadata.csv https://figshare.com/ndownloader/files/45028621
           mkdir images
           cd images 
-          curl -L -o datasets_mouse_brain_map_BrainReceptorShowcase_Slice1_Replicate1_images_micron_to_mosaic_pixel_transform.csv https://figshare.com/ndownloader/files/45028645
+          curl -L -o micron_to_mosaic_pixel_transform.csv https://figshare.com/ndownloader/files/45028645
         
 
       # Note: we run the following to test that the commands works
@@ -75,12 +75,12 @@ jobs:
       - name: Preparing the submission file
         run: |
           cd spatial/ingestion_merfish
-          curl -o sample_file_qc_spatial.txt https://raw.githubusercontent.com/DendrouLab/panpipes-tutorials/main/docs/ingesting_merfish_data/sample_file_qc_spatial.txt
+          curl -o sample_file_qc_merfish.txt https://raw.githubusercontent.com/DendrouLab/panpipes-tutorials/sarah_spatialData/docs/ingesting_merfish_data/sample_file_qc_merfish.txt
 
       - name: Preparing the yaml file
         run: |
           cd spatial/ingestion_merfish
-          curl -o pipeline.yml https://raw.githubusercontent.com/DendrouLab/panpipes-tutorials/main/docs/ingesting_merfish_data/pipeline.yml
+          curl -o pipeline.yml https://raw.githubusercontent.com/DendrouLab/panpipes-tutorials/sarah_spatialData/docs/ingesting_merfish_data/pipeline.yml
 
       - name: File tree
         if: env.debug == 'true'
