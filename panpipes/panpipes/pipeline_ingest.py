@@ -95,6 +95,12 @@ def unfilt_file():
 
 def gen_load_filtered_anndata_jobs():
     caf = pd.read_csv(PARAMS['submission_file'], sep='\t')
+    duplicated_rows = caf.duplicated()
+
+    if duplicated_rows.any():
+        print(f"Duplicated rows found and removed: {duplicated_rows.sum()} rows.")
+        caf = caf.drop_duplicates()
+
     return gen_load_anndata_jobs(caf, load_raw=False, mode_dictionary=PARAMS["modalities"], load_prot_from_raw=PARAMS['load_prot_from_raw'])
 
     
