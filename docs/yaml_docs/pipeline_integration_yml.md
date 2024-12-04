@@ -23,7 +23,7 @@ For more information on functionalities implemented in `panpipes` to read the co
 ## Compute resources options
 
 <span class="parameter">resources</span><br>
-Computing resources to use, specifically the number of threads used for parallel jobs. Check [threads_tasks_panpipes.md](https://github.com/DendrouLab/panpipes/blob/threads_doc_g/docs/yaml_docs/threads_tasks_panpipes.md) for more information on which threads each specific task requires.
+Computing resources to use, specifically the number of threads used for parallel jobs. Check [threads_tasks_panpipes](threads_tasks_panpipes.md) for more information on which threads each specific task requires.
 Specified by the following parameters:
   - <span class="parameter">threads_high</span> `Integer`, Default: 1<br>
    Number of threads used for high intensity computing tasks. 
