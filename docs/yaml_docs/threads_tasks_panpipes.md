@@ -37,18 +37,20 @@
   </tr>
   <tr>
     <th>threads_high</th>
+    <th>threads_medium</th>
+    <th>threads_low</th>
     <th></th>
     <th></th>
   </tr>
   <tr>
     <td>assess background</td>
     <td></td>
-    <td>threads_low</td>
+    <td>filter_mudata</td>
   </tr>
   <tr>
     <td>rna_preprocess</td>
     <td></td>
-    <td>filter_mudata</td>
+    <td>downsample</td>
   </tr>
   <tr>
     <td>prot_preprocess</td>
@@ -58,7 +60,7 @@
   <tr>
     <td>atac_preprocess</td>
     <td></td>
-    <td>downsample</td>
+    <td></td>
   </tr>
   <tr>
     <th colspan="3">Task integration</th>
@@ -169,12 +171,12 @@
   <tr>
     <td>run_neighbors</td>
     <td>run_clustering</td>
-    <td>clustering</td>
+    <td>plot_clustree</td>
   </tr>
   <tr>
     <td>run_umap</td>
     <td>collate_mdata</td>
-    <td>clustering</td>
+    <td>aggregate_clusters</td>
   </tr>
   <tr>
     <td>find_markers</td>
@@ -220,12 +222,11 @@
     <td></td>
   </tr>
   <tr>
-    <td>Task refmap</td>
-    <td></td>
-    <td></td>
+    <th colspan = "3"> Task refmap </th>
   </tr>
   <tr>
-    <td>threads_high</td>
+    <th>threads_high</th>
+    <th><th>
     <td></td>
     <td></td>
   </tr>
@@ -240,7 +241,7 @@
     <td></td>
   </tr>
   <tr>
-    <th colspan="3">Task preprocessed spatial</th>
+    <th colspan="3">Task preprocess spatial</th>
   </tr>
   <tr>
     <th>threads_high</th>
