@@ -28,7 +28,7 @@ You can download the different preprocess pipeline.yml files here:
 ## 0. Compute Resource Options
 
 <span class="parameter">resources</span><br>
-Computing resources to use, specifically the number of threads used for parallel jobs.  Check [threads_tasks_panpipes](threads_tasks_panpipes.md) for more information on which threads each specific task requires.
+Computing resources to use, specifically the number of threads used for parallel jobs.  Check [threads_tasks_panpipes](./threads_tasks_panpipes.md) for more information on which threads each specific task requires.
 Specified by the following three parameters:
   - <span class="parameter">threads_high</span> `Integer`, Default: 1<br>
         Number of threads used for high intensity computing tasks. 
