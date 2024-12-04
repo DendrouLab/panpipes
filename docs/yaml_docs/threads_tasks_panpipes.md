@@ -33,7 +33,7 @@
     <td></td>
   </tr>
   <tr>
-    <th colspan="3">Task preprocessed</th>
+    <th colspan="3">Task preprocess</th>
   </tr>
   <tr>
     <th>threads_high</th>
