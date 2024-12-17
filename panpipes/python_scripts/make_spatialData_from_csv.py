@@ -1,15 +1,15 @@
 import argparse
 import yaml
 # import scanpy as sc
-import pandas as pd
+#import pandas as pd
 # import numpy as np
 # from scipy.sparse import csr_matrix
-import muon as mu
-import warnings
-from muon._atac.tools import add_peak_annotation, locate_fragments
-import squidpy as sq
+#import muon as mu
+#import warnings
+#from muon._atac.tools import add_peak_annotation, locate_fragments
+#import squidpy as sq
 import spatialdata_io as sd_io
-from mudata import MuData
+#from mudata import MuData
 import os
 from pathlib import Path
 """
