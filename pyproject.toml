@@ -68,7 +68,9 @@ spatial = [
     "scipy==1.12.0",
     "squidpy",
     "cell2location",
-    "tangram-sc"
+    "tangram-sc", 
+    "spatialdata", 
+    "spatialdata-io"
 ]
 
 refmap_old = [

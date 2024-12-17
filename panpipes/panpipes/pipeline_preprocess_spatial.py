@@ -39,7 +39,7 @@ def gen_filter_jobs():
         input_dir = "../qc.data"
         if not os.path.exists(input_dir):
                 sys.exit("can't find input data")
-    input_paths=glob.glob(os.path.join(input_dir,"*unfilt.h5mu"))
+    input_paths=glob.glob(os.path.join(input_dir,"*unfilt.zarr"))
     for infile_path in input_paths:
         file_name = os.path.basename(infile_path)
         outfile = file_name.replace("unfilt","filtered")
@@ -55,7 +55,7 @@ def gen_filter_jobs():
 def filter_mudata(infile_path,outfile):
     print('processing file = %s' % str(infile_path))
     log_file = os.path.basename(outfile)
-    log_file= "1_filtering."+log_file.replace("filtered.h5mu","") + ".log"
+    log_file= "1_filtering."+log_file.replace("filtered.zarr","") + ".log"
 
 
     filter_dict = dictionary_stripper(PARAMS['filtering'])
@@ -85,7 +85,7 @@ def run_plotqc_query(pqc_dict):
 @active_if(run_plotqc_query(PARAMS['plotqc']))
 @active_if(PARAMS['filtering_run'])
 @transform(filter_mudata,
-           regex("./filtered.data/(.*)_filtered.h5(.*)"), 
+           regex("./filtered.data/(.*)_filtered.zarr"), 
            r"./logs/2_postfilterplot.\1.log")
 def postfilterplot_spatial(filt_file,log_file):
     print(filt_file)    
@@ -109,7 +109,7 @@ def postfilterplot_spatial(filt_file,log_file):
 
 
 @transform(filter_mudata,
-           regex("./filtered.data/(.*)_filtered.h5(.*)"), 
+           regex("./filtered.data/(.*)_filtered.zarr"), 
            r"./logs/3_preprocess.\1.log")
 def spatial_preprocess(filt_file,log_file):
     if os.path.exists("figures/spatial") is False:
