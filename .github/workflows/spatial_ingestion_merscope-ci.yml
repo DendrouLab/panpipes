@@ -61,7 +61,7 @@ jobs:
           curl -L -o cell_by_gene.csv https://figshare.com/ndownloader/files/50899455
           curl -L -o cell_metadata.csv https://figshare.com/ndownloader/files/50899452
           curl -L -o cellpose_micron_space.parquet https://figshare.com/ndownloader/files/50899458
-          curl -L -o detected_transcripts.csv https://figshare.com/ndownloader/files/50899476
+          # curl -L -o detected_transcripts.csv https://figshare.com/ndownloader/files/50899476
           mkdir images
           cd images 
           curl -L -o micron_to_mosaic_pixel_transform.csv https://figshare.com/ndownloader/files/50899449
