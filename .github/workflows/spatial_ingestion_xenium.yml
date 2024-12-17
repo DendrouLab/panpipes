@@ -68,7 +68,7 @@ jobs:
           curl -L -o cells.zarr.zip https://figshare.com/ndownloader/files/51244049
           mkdir morphology_focus
           cd morphology_focus
-          curl -L -o morphology_focus.ome.tif https://figshare.com/ndownloader/files/51243626
+          curl -L -o morphology_focus_0000.ome.tif https://figshare.com/ndownloader/files/51243626
         
 
       # Note: we run the following to test that the commands works
