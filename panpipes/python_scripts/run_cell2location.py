@@ -8,6 +8,7 @@ import cell2location as c2l
 import scanpy as sc
 import pandas as pd
 import spatialdata as sd
+import muon as mu
 
 import os
 import argparse
@@ -203,10 +204,9 @@ sdata_st = sd.read_zarr(args.input_spatial)
 #mdata_spatial = mu.read(args.input_spatial)
 #adata_st = mdata_spatial.mod['spatial']
 #single-cell: 
-L.info("Reading in reference SpatialData from '%s'" % args.input_singlecell)
-sdata_sc = sd.read_zarr(args.input_singlecell)
-#mdata_singlecell = mu.read(args.input_singlecell)
-#adata_sc = mdata_singlecell.mod['rna']
+L.info("Reading in reference MuData from '%s'" % args.input_singlecell)
+mdata_singlecell = mu.read(args.input_singlecell)
+adata_sc = mdata_singlecell.mod['rna']
 
 
 
@@ -220,12 +220,12 @@ if args.gene_list != "None": # read in csv and subset both anndatas
     reduced_gene_set = pd.read_csv(args.gene_list, header = 0)
     reduced_gene_set.columns = ["HVGs"]
     L.info("Subsetting data on gene list")
-    sdata_sc["table"].var["selected_gene"] = sdata_sc["table"].var.index.isin(reduced_gene_set["HVGs"])
+    adata_sc.var["selected_gene"] = adata_sc.var.index.isin(reduced_gene_set["HVGs"])
     sdata_st["table"].var["selected_gene"] = sdata_st["table"].var.index.isin(reduced_gene_set["HVGs"])
-    sdata_sc["table"] = sdata_sc["table"][:, sdata_sc["table"].var["selected_gene"]]
+    adata_sc = adata_sc[:, adata_sc.var["selected_gene"]]
     sdata_st["table"] = sdata_st["table"][:, sdata_st["table"].var["selected_gene"]]
     # check whether all genes are present in both, spatial & reference
-    if set(sdata_st["table"].var.index) != set(sdata_sc["table"].var.index):
+    if set(sdata_st["table"].var.index) != set(adata_sc.var.index):
         L.error(
             "Not all genes of the gene list %s are present in the reference as well as in the ST data. Please provide a gene list where all genes are present in both, reference and ST.", args.gene_list)
         sys.exit(
@@ -239,29 +239,29 @@ else: # perform feature selection according to cell2loc
         sdata_st["table"] = sdata_st["table"][:, ~sdata_st["table"].var["MT_gene"].values]
     # intersect vars of reference and spatial
     L.info("Intersecting vars of reference and spatial ")
-    shared_features = [feature for feature in sdata_st["table"].var_names if feature in sdata_sc["table"].var_names]
-    sdata_sc["table"] = sdata_sc["table"][:, shared_features]
+    shared_features = [feature for feature in sdata_st["table"].var_names if feature in adata_sc.var_names]
+    adata_sc = adata_sc[:, shared_features]
     sdata_st["table"] = sdata_st["table"][:, shared_features]
     # select features
     L.info("Selecting features using 'cell2location.utils.filtering.filter_genes() function'")
-    selected = cell2loc_filter_genes(sdata_sc["table"], figdir + "/gene_filter.png", cell_count_cutoff=float(args.cell_count_cutoff),
+    selected = cell2loc_filter_genes(adata_sc, figdir + "/gene_filter.png", cell_count_cutoff=float(args.cell_count_cutoff),
                                                cell_percentage_cutoff2=float(args.cell_percentage_cutoff2),
                                                 nonz_mean_cutoff=float(args.nonz_mean_cutoff))
     L.info("Subsetting data on selected features")
-    sdata_sc["table"] = sdata_sc["table"][:, selected]
+    adata_sc = adata_sc[:, selected]
     sdata_st["table"] = sdata_st["table"][:, selected]
 
     
 
 # 3. Fit regression model 
 L.info("Setting up AnnData for the reference model")
-c2l.models.RegressionModel.setup_anndata(adata=sdata_sc["table"], 
+c2l.models.RegressionModel.setup_anndata(adata=adata_sc, 
                                          labels_key = args.labels_key_reference,
                                          layer= args.layer_reference, 
                                          batch_key= args.batch_key_reference,
                                          categorical_covariate_keys = categorical_covariate_keys_reference,
                                          continuous_covariate_keys =  continuous_covariate_keys_reference)
-model_ref = c2l.models.RegressionModel(sdata_sc["table"])
+model_ref = c2l.models.RegressionModel(adata_sc)
 L.info("Training the reference model")
 model_ref.train(max_epochs=max_epochs_reference, use_gpu = use_gpu_reference)
 
@@ -271,12 +271,12 @@ cell2loc_plot_history(model_ref, figdir + "/ELBO_reference_model.png")
 
 # export results
 L.info("Extracting the posterior of the reference model")
-sdata_sc["table"] = model_ref.export_posterior(sdata_sc["table"])
-if "means_per_cluster_mu_fg" in sdata_sc["table"].varm.keys():
-    inf_aver = sdata_sc["table"].varm["means_per_cluster_mu_fg"][[f"means_per_cluster_mu_fg_{i}" for i in sdata_sc["table"].uns["mod"]["factor_names"]]].copy()
+adata_sc = model_ref.export_posterior(adata_sc)
+if "means_per_cluster_mu_fg" in adata_sc.varm.keys():
+    inf_aver = adata_sc.varm["means_per_cluster_mu_fg"][[f"means_per_cluster_mu_fg_{i}" for i in adata_sc.uns["mod"]["factor_names"]]].copy()
 else:
-    inf_aver = sdata_sc["table"].var[[f"means_per_cluster_mu_fg_{i}" for i in sdata_sc["table"].uns["mod"]["factor_names"]]].copy()
-inf_aver.columns = sdata_sc["table"].uns["mod"]["factor_names"]
+    inf_aver = adata_sc.var[[f"means_per_cluster_mu_fg_{i}" for i in adata_sc.uns["mod"]["factor_names"]]].copy()
+inf_aver.columns = adata_sc.uns["mod"]["factor_names"]
 inf_aver.to_csv(output_dir+"/Cell2Loc_inf_aver.csv")
 
 # plot QC
@@ -284,10 +284,10 @@ L.info("Plotting QC plots")
 cell2loc_plot_QC_reference(model_ref, figdir + "/QC_reference_reconstruction_accuracy.png", figdir + "/QC_reference_expression signatures_vs_avg_expression.png")
 
 # save model 
-if sdata_sc["table"].var.index.names[0] in sdata_sc["table"].var.columns: 
-	sdata_sc["table"].var.index.names = [None]
-#mdata_singlecell.mod["rna"] = adata_sc
-#mdata_singlecell.update()
+if adata_sc.var.index.names[0] in adata_sc.var.columns: 
+	adata_sc.var.index.names = [None]
+mdata_singlecell.mod["rna"] = adata_sc
+mdata_singlecell.update()
 if save_models is True:
     L.info("Saving reference model to '%s'" % output_dir)
     model_ref.save(output_dir +"/Reference_model", overwrite=True)
@@ -339,7 +339,7 @@ if save_models is True:
 
 #6. save mudatas 
 L.info("Saving SpatialDatas to '%s'" % output_dir)
-sdata_sc.write(output_dir+"/Cell2Loc_screference_output.zarr")
+mdata_singlecell.write(output_dir+"/Cell2Loc_screference_output.h5mu")
 sdata_st.write(output_dir+"/Cell2Loc_spatial_output.zarr")
 
 
