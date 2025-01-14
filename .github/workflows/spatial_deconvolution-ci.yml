@@ -60,7 +60,9 @@ jobs:
           cd deconvolution/data 
           curl -L -o Human_Heart_reference.h5mu https://figshare.com/ndownloader/files/44969677
           cd spatial_data
-          curl -L -o Human_Heart.h5mu https://figshare.com/ndownloader/files/44969488
+          curl -L -o Human_Heart.zarr.zip https://figshare.com/ndownloader/files/51667673
+          unzip Human_Heart.zarr.zip
+          rm Human_Heart.zarr.zip
 
 
       # Note: we run the following to test that the commands works
