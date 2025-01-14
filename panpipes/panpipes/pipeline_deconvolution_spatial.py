@@ -30,12 +30,12 @@ if (PARAMS["input_spatial"] is not None) and (not os.path.exists(PARAMS["input_s
 
 
 def gen_filter_jobs():
-    input_paths_spatial=glob.glob(os.path.join(PARAMS["input_spatial"],"*.h5mu"))
+    input_paths_spatial=glob.glob(os.path.join(PARAMS["input_spatial"],"*.zarr"))
     input_singlecell = PARAMS["input_singlecell"]
     for input_spatial in input_paths_spatial:
         sample_prefix = os.path.basename(input_spatial)
-        sample_prefix = sample_prefix.replace(".h5mu","")
-        outfile_spatial = "cell2location.output/" + sample_prefix + "/Cell2Loc_spatial_output.h5mu"
+        sample_prefix = sample_prefix.replace(".zarr","")
+        outfile_spatial = "cell2location.output/" + sample_prefix + "/Cell2Loc_spatial_output.zarr"
         yield input_spatial, outfile_spatial, sample_prefix, input_singlecell    
 
 
