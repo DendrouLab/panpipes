@@ -1,4 +1,4 @@
-name: Run tutorials (spatial deconvolution)
+name: Run tutorials (spatial deconvolution cell2location)
 
 on:
   push:
@@ -12,7 +12,7 @@ env:
   debug: 'true'
 
 jobs:
-  spatial_deconvolution:
+  spatial_deconvolution_cell2location:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
