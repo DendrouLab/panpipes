@@ -2,6 +2,7 @@ import pandas as pd
 import scanpy as sc
 import argparse
 import os
+import pickle
 import harmonypy as hm
 import muon as mu
 from panpipes.funcs.processing import check_for_bool
@@ -152,6 +153,15 @@ umap.to_csv(args.output_csv)
 outfiletmp = ("tmp/harmony_scaled_adata_" + args.modality + ".h5ad" )
 L.info("Saving AnnData to '%s'" % outfiletmp)
 write_anndata(adata, outfiletmp, use_muon=False, modality=args.modality)
+
+# write out ho output as pickle file
+outfilepkl = ("tmp/harmonypy_object_" + args.modality + ".pkl")
+
+L.info("Saving entire harmony ho output to pickele file '%s" % outfilepkl)
+with open(outfilepkl, 'wb') as file:
+    # Serialize and write the variable to the file
+    pickle.dump(ho, file)
+
 
 L.info("Done")
 
