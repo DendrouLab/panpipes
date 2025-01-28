@@ -49,6 +49,9 @@ parser.add_argument("--output_dir",
 parser.add_argument("--save_models",
                     default=False,
                     help="whether to save the reference & spatial mapping models")
+parser.add_argument("--export_gene_by_spot",
+                    default=False,
+                    help="whether to save a gene by spot matrix for each cell type in a layer")
 
 
 # parameters for feature selection: 
@@ -148,6 +151,11 @@ if (args.save_models is False) or (args.save_models == "False"):
     save_models = False
 else:
     save_models = True
+
+if (args.export_gene_by_spot is False) or (args.export_gene_by_spot == "False"): 
+    export_gene_by_spot = False
+else:
+    export_gene_by_spot = True
       
 if (args.remove_mt is True) or (args.remove_mt == "True"): 
     remove_mt = True
@@ -319,6 +327,14 @@ sdata_st["table"] = model_spatial.export_posterior(sdata_st["table"])
 #plot QC
 L.info("Plotting QC plots")
 cell2loc_plot_QC_reconstr(model_spatial, figdir + "/QC_spatial_reconstruction_accuracy.png")
+
+# export a gene by spot matrix for each cell type
+if export_gene_by_spot:
+    # Compute expected expression per cell type
+    expected_dict = model_spatial.module.model.compute_expected_per_cell_type(model_spatial.samples["post_sample_q05"], model_spatial.adata_manager)
+    # Add to anndata layers
+    for i, n in enumerate(model_spatial.factor_names_):
+        sdata_st["table"].layers[n] = expected_dict['mu'][i]
 
 
 #plot output

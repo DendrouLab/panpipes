@@ -89,6 +89,7 @@ Cell2Location:
 
  # -------------------------------
   save_models: False # Default False; whether to save the reference and spatial mapping models
+  export_gene_by_spot: False # Default False; whether to save a gene by spot matrix for each cell type in a layer
 
 
 
