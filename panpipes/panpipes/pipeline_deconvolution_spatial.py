@@ -35,8 +35,7 @@ def gen_filter_jobs():
     for input_spatial in input_paths_spatial:
         sample_prefix = os.path.basename(input_spatial)
         sample_prefix = sample_prefix.replace(".zarr","")
-        outfile_spatial = "cell2location.output/" + sample_prefix + "/Cell2Loc_spatial_output.zarr"
-        yield input_spatial, outfile_spatial, sample_prefix, input_singlecell    
+        yield input_spatial, sample_prefix, input_singlecell    
 
 
 @mkdir("logs")
@@ -45,7 +44,7 @@ def gen_filter_jobs():
 @mkdir("figures/Cell2Location")
 @mkdir("cell2location.output")
 @files(gen_filter_jobs)
-def run_cell2location(input_spatial, outfile_spatial, sample_prefix, input_singlecell):
+def run_cell2location(input_spatial, sample_prefix, input_singlecell):
 
     figdir = "./figures/Cell2Location/" + sample_prefix
     output_dir = "./cell2location.output/" + sample_prefix
@@ -103,6 +102,8 @@ def run_cell2location(input_spatial, outfile_spatial, sample_prefix, input_singl
     
     if PARAMS['Cell2Location_save_models'] is not None:
         cmd += " --save_models %(Cell2Location_save_models)s"   
+    if PARAMS['Cell2Location_export_gene_by_spot'] is not None:
+        cmd += " --export_gene_by_spot %(Cell2Location_export_gene_by_spot)s"
 
     cmd += " > logs/%(log_file)s "
     job_kwargs["job_threads"] = PARAMS['resources_threads_low']
@@ -116,7 +117,7 @@ def run_cell2location(input_spatial, outfile_spatial, sample_prefix, input_singl
 @mkdir("figures/Tangram")
 @mkdir("tangram.output")
 @files(gen_filter_jobs)
-def run_tangram(input_spatial, outfile_spatial, sample_prefix, input_singlecell):
+def run_tangram(input_spatial, sample_prefix, input_singlecell):
 
     figdir = "./figures/Tangram/" + sample_prefix
     output_dir = "./tangram.output/" + sample_prefix
