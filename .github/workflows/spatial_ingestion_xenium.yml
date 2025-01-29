@@ -1,4 +1,4 @@
-name: Run tutorials (spatial ingest visium)
+name: Run tutorials (spatial ingest xenium)
 
 on:
   push:
@@ -12,7 +12,7 @@ env:
   debug: 'true'
 
 jobs:
-  spatial_ingest_visium:
+  spatial_ingest_xenium:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -56,50 +56,54 @@ jobs:
 
       - name: Preparing the data
         run: |
-          mkdir spatial spatial/ingestion spatial/ingestion/data
-          cd spatial/ingestion/data 
-          mkdir V1_Human_Heart V1_Human_Lymph_Node
-          cd V1_Human_Heart
-          curl -O https://cf.10xgenomics.com/samples/spatial-exp/1.0.0/V1_Human_Heart/V1_Human_Heart_filtered_feature_bc_matrix.h5
-          curl -O https://cf.10xgenomics.com/samples/spatial-exp/1.0.0/V1_Human_Heart/V1_Human_Heart_spatial.tar.gz
-          tar -xf V1_Human_Heart_spatial.tar.gz
-          cd ../V1_Human_Lymph_Node
-          curl -O https://cf.10xgenomics.com/samples/spatial-exp/1.0.0/V1_Human_Lymph_Node/V1_Human_Lymph_Node_filtered_feature_bc_matrix.h5
-          curl -O https://cf.10xgenomics.com/samples/spatial-exp/1.0.0/V1_Human_Lymph_Node/V1_Human_Lymph_Node_spatial.tar.gz
-          tar -xf V1_Human_Lymph_Node_spatial.tar.gz
+          mkdir spatial spatial/ingestion_xenium spatial/ingestion_xenium/data
+          cd spatial/ingestion_xenium/data 
+          curl -L -o experiment.xenium https://figshare.com/ndownloader/files/51244265
+          curl -L -o nucleus_boundaries.parquet https://figshare.com/ndownloader/files/51244286
+          curl -L -o cell_boundaries.parquet https://figshare.com/ndownloader/files/51244244
+          curl -L -o transcripts.parquet https://figshare.com/ndownloader/files/51244283
+          curl -L -o cell_feature_matrix.h5 https://figshare.com/ndownloader/files/51244247
+          curl -L -o cells.parquet https://figshare.com/ndownloader/files/51244259
+          curl -L -o morphology_mip.ome.tif https://figshare.com/ndownloader/files/51244415
+          curl -L -o cells.zarr.zip https://figshare.com/ndownloader/files/51244262
+          mkdir morphology_focus
+          cd morphology_focus
+          curl -L -o morphology_focus_0000.ome.tif https://figshare.com/ndownloader/files/51244277
+        
 
       # Note: we run the following to test that the commands works
       - name: Preparing the configuration file
         shell: bash -el {0}
         run: |
-          cd spatial/ingestion
+          cd spatial/ingestion_xenium
           panpipes qc_spatial config
 
       - name: Preparing the submission file
         run: |
-          cd spatial/ingestion
-          curl -o sample_file_qc_visium.txt https://raw.githubusercontent.com/DendrouLab/panpipes-tutorials/sarah_spatialData/docs/ingesting_visium_data/sample_file_qc_visium.txt
+          cd spatial/ingestion_xenium
+          curl -o sample_file_qc_xenium.txt https://raw.githubusercontent.com/DendrouLab/panpipes-tutorials/sarah_spatialData/docs/ingesting_xenium_data/sample_file_qc_xenium.txt
+
       - name: Preparing the yaml file
         run: |
-          cd spatial/ingestion
-          curl -o pipeline.yml https://raw.githubusercontent.com/DendrouLab/panpipes-tutorials/sarah_spatialData/docs/ingesting_visium_data/pipeline.yml
+          cd spatial/ingestion_xenium
+          curl -o pipeline.yml https://raw.githubusercontent.com/DendrouLab/panpipes-tutorials/sarah_spatialData/docs/ingesting_xenium_data/pipeline.yml
 
       - name: File tree
         if: env.debug == 'true'
-        run: tree spatial/ingestion
+        run: tree spatial/ingestion_xenium
 
       - name: Review pipeline tasks
         shell: bash -el {0}
         run: |
-          cd spatial/ingestion
+          cd spatial/ingestion_xenium
           panpipes qc_spatial show full --local
 
       - name: Run pipeline tasks
         shell: bash -el {0}
         run: |
-          cd spatial/ingestion
+          cd spatial/ingestion_xenium
           panpipes qc_spatial make full --local
 
       - name: File tree
         if: env.debug == 'true'
-        run: tree spatial/ingestion
+        run: tree spatial/ingestion_xenium
