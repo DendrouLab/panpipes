@@ -59,7 +59,7 @@ parser.add_argument(
 )
 parser.add_argument(
     "--score_genes",
-    default="MarkersNeutro",
+    default=None,
     help="which list of genes to use to scanpy.tl.score_genes per cell?",
 )
 
