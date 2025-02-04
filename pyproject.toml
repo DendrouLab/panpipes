@@ -44,7 +44,7 @@ dependencies = [
     "scib",
     "scib-metrics",
     "scikit-misc",
-    "scirpy",
+    "scirpy>=0.19.0",
     "scrublet",
     "scvi-tools",
     "sqlalchemy",
@@ -82,8 +82,8 @@ refmap_old = [
 panpipes = "panpipes:entry.main"
 
 [tool.setuptools]
+packages = ["panpipes"]
 package-data = {"panpipes" = ["panpipes/*/*.yml", "R_scripts/*.R", "resources/*"]}
-
 
 [build-system]
 requires = ["setuptools>=43.0.0", "wheel"]
