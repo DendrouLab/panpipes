@@ -1,139 +1,179 @@
-# plotting utilities for qc 
+# plotting utilities for qc
 suppressPackageStartupMessages({
   library(tidyverse)
   library(optparse)
 })
 
-do_scatter_plot <- function(df, x, y, facet=NULL, hue=NULL){
-  g <- df %>% 
-    ggplot(aes_string(x=x,y=y, color=hue)) + 
-    geom_point(size=0.5) 
-  if (!is.null(facet)){
-    g <- g + facet_wrap(as.formula(paste0("~", sc)), ncol=6) 
+do_scatter_plot <- function(df, x, y, facet = NULL, hue = NULL) {
+  g <- df %>%
+    ggplot(aes_string(x = x, y = y, color = hue)) +
+    geom_point(size = 0.5)
+  if (!is.null(facet)) {
+    g <- g + facet_wrap(as.formula(paste0("~", sc)), ncol = 6)
   }
-  
-  if(is.numeric(df[hue])){
+
+  if (is.numeric(df[hue])) {
     g <- g + scale_color_viridis_c()
   }
-  g <- g+ theme_bw()+
-    theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5),
-          strip.text.x = element_text(size=6),
-          legend.key.size = unit(0.2, 'cm')) 
+  g <- g + theme_bw() +
+    theme(
+      axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5),
+      strip.text.x = element_text(size = 6),
+      legend.key.size = unit(0.2, "cm")
+    )
   return(g)
 }
 
-do_violin_plot <- function(df, qc, group){
-  g <- df %>% drop_na() %>%
-    ggplot(aes_string(x="sample_id",y=qc)) +
-    geom_violin(aes_string(fill=group)) + 
-    {if(qc=="doublet_scores") geom_hline(yintercept=0.25, color="grey50", linetype="dashed") }+
-    {if("pct_counts" %in% qc) geom_hline(yintercept=c(5, 10, 20 ,70), color="grey50", linetype="dashed")}+
-    {if("pct_counts" %in% qc) coord_cartesian(ylim=c(0,100))}+
-    theme_bw()+
-    theme(axis.text.x=element_text(size=8, angle=90),
-          axis.text.y=element_text(size=8))
-  if(length(unique(df[[group]])) > 10){
-    print(paste(sc, "has too many categories, removing legend"))
-    g <- g + theme(legend.position="none")
-  }
-  
-  return(g)
-}
-
-do_bar_plot <- function(df, qc, group){
+do_violin_plot <- function(df, qc, group) {
   g <- df %>%
-    ggplot(aes_string(x=group, fill=qc)) +
-    geom_bar(aes_string()) + 
-    theme_bw()+
-    theme(axis.text.x=element_text(size=8, angle=90),
-          axis.text.y=element_text(size=8))
-#   if(length(unique(df[[group]])) > 10){
-#     message(paste0(sc, "has too many categories, removing legend"))
-#     g <- g + theme(legend.position="none")
-#   }
-  
+    drop_na() %>%
+    ggplot(aes_string(x = "sample_id", y = qc)) +
+    geom_violin(aes_string(fill = group)) +
+    {
+      if (qc == "doublet_scores") geom_hline(yintercept = 0.25, color = "grey50", linetype = "dashed")
+    } +
+    {
+      if ("pct_counts" %in% qc) geom_hline(yintercept = c(5, 10, 20, 70), color = "grey50", linetype = "dashed")
+    } +
+    {
+      if ("pct_counts" %in% qc) coord_cartesian(ylim = c(0, 100))
+    } +
+    theme_bw() +
+    theme(
+      axis.text.x = element_text(size = 8, angle = 90),
+      axis.text.y = element_text(size = 8)
+    )
+  if (length(unique(df[[group]])) > 10) {
+    cat(sc, "has too many categories, removing legend\n")
+    g <- g + theme(legend.position = "none")
+  }
+
+  return(g)
+}
+
+do_bar_plot <- function(df, qc, group) {
+  g <- df %>%
+    ggplot(aes_string(x = group, fill = qc)) +
+    geom_bar(aes_string()) +
+    theme_bw() +
+    theme(
+      axis.text.x = element_text(size = 8, angle = 90),
+      axis.text.y = element_text(size = 8)
+    )
+  #   if(length(unique(df[[group]])) > 10){
+  #     message(paste0(sc, "has too many categories, removing legend"))
+  #     g <- g + theme(legend.position="none")
+  #   }
+
   return(g)
 }
 
 options(stringsAsFactors = F)
-options(bitmaptype="cairo")
+options(bitmaptype = "cairo")
 
 option_list <- list(
-  make_option(c("--cell_metadata"), default=NULL,
-              help="the path to the anndata object"),
-  make_option(c("--groupingvar"), default="sample_id,tissue,patient,channel",
-              help="names of grouping variables"),
-  make_option(c("--rna_qc_metrics"), default=NULL, 
-              help="the qc_metrics to plot"),
-  make_option(c("--prot_qc_metrics"), default=NULL, 
-              help="the qc_metrics to plot"),
-  make_option(c("--rep_qc_metrics"), default=NULL, 
-              help="the qc_metrics to plot"),
-  make_option(c("--atac_qc_metrics"), default=NULL, 
-              help="the qc_metrics to plot"),
-  make_option(c("--outdir"), default="./figures/",
-              help="the name of the output folder"),
-  make_option(c("--prefilter"), default=TRUE,
-              help="am i parsing data before or after filtering?"),
-  make_option(c("--sampleprefix"), default="",
-              help="the prefix to prepend to save summary filtering plots"),
-  make_option(c("--scanpy_or_muon"), default="scanpy", 
-              help="was the input file written out from the obs of scanpy or muon")
+  make_option(c("--cell_metadata"),
+    default = NULL,
+    help = "the path to the anndata object"
+  ),
+  make_option(c("--groupingvar"),
+    default = "sample_id,tissue,patient,channel",
+    help = "names of grouping variables"
+  ),
+  make_option(c("--rna_qc_metrics"),
+    default = NULL,
+    help = "the qc_metrics to plot"
+  ),
+  make_option(c("--prot_qc_metrics"),
+    default = NULL,
+    help = "the qc_metrics to plot"
+  ),
+  make_option(c("--rep_qc_metrics"),
+    default = NULL,
+    help = "the qc_metrics to plot"
+  ),
+  make_option(c("--atac_qc_metrics"),
+    default = NULL,
+    help = "the qc_metrics to plot"
+  ),
+  make_option(c("--outdir"),
+    default = "./figures/",
+    help = "the name of the output folder"
+  ),
+  make_option(c("--prefilter"),
+    default = TRUE,
+    help = "am i parsing data before or after filtering?"
+  ),
+  make_option(c("--sampleprefix"),
+    default = "",
+    help = "the prefix to prepend to save summary filtering plots"
+  ),
+  make_option(c("--scanpy_or_muon"),
+    default = "scanpy",
+    help = "was the input file written out from the obs of scanpy or muon"
+  )
 )
 
 
-opt <- parse_args(OptionParser(option_list=option_list))
+opt <- parse_args(OptionParser(option_list = option_list))
 
-if(is.null(opt$outdir)) { opt$outdir <- paste0(getwd(),"/")}
-if(!grepl("\\/$", opt$outdir)){opt$outdir <- paste(opt$outdir, "/", sep = "")}
-if(!file.exists(opt$outdir)){dir.create(opt$outdir)}
+if (is.null(opt$outdir)) {
+  opt$outdir <- paste0(getwd(), "/")
+}
+if (!grepl("\\/$", opt$outdir)) {
+  opt$outdir <- paste(opt$outdir, "/", sep = "")
+}
+if (!file.exists(opt$outdir)) {
+  dir.create(opt$outdir)
+}
 
 
-run<- opt$outdir
-opt[which(opt=="NULL")] <- NULL
-opt[which(opt=="None")] <- NULL
+run <- opt$outdir
+opt[which(opt == "NULL")] <- NULL
+opt[which(opt == "None")] <- NULL
 opt$prefilter <- as.logical(opt$prefilter)
 
 # load_data --------------------------------------------------------------------
 
-data_plot = read.delim(opt$cell_metadata)
+data_plot <- read.delim(opt$cell_metadata)
 
 # define source facet for all plots
-if (!is.null(opt$groupingvar)){
-  source_facet <- strsplit(opt$groupingvar,",")[[1]]
-  check_excl <- source_facet[!source_facet %in% colnames(data_plot)] 
+if (!is.null(opt$groupingvar)) {
+  source_facet <- strsplit(opt$groupingvar, ",")[[1]]
+  check_excl <- source_facet[!source_facet %in% colnames(data_plot)]
   keep_source <- NULL
-  for (cc in check_excl){
-    for (mod in c("rna","prot","atac","rep")){
-      id <- paste(mod,cc,sep=".")
-      if(id %in% colnames(data_plot)){
-        keep_source <- c(keep_source,id)
+  for (cc in check_excl) {
+    for (mod in c("rna", "prot", "atac", "rep")) {
+      id <- paste(mod, cc, sep = ".")
+      if (id %in% colnames(data_plot)) {
+        keep_source <- c(keep_source, id)
       }
     }
   }
 
   source_facet <- source_facet[source_facet %in% colnames(data_plot)]
-  source_facet <- unique(c(source_facet, keep_source) )
-  if(length(source_facet)>0){
+
+  source_facet <- unique(c(source_facet, keep_source))
+  if (length(source_facet) > 0) {
     # add sample_id as a minimum requirement if it's not there already
-    source_facet = unique(c("sample_id", source_facet))
-    print(paste("Facet plotting with",source_facet))
+    source_facet <- unique(c("sample_id", source_facet))
+    cat("Facet plotting with:", source_facet, "\n")
   }
-}else{
+} else {
   stop("Need the minimum variable _sampleid_ to facet on, will stop here")
 }
 # RNA plots --------------------------------------------------------------------
 
-print("RNA plots")
+cat("RNA plots\n")
 
-if(opt$scanpy_or_muon=="scanpy"){
+if (opt$scanpy_or_muon == "scanpy") {
   rna_data_plot <- data_plot
-}else{
-  rna_data_plot <- data_plot[,grep("^rna\\.",colnames(data_plot))]
+} else {
+  rna_data_plot <- data_plot[, grep("^rna\\.", colnames(data_plot))]
   colnames(rna_data_plot) <- gsub("^rna\\.", "", colnames(rna_data_plot))
 }
 
-outpath = file.path(run, "rna")
+outpath <- file.path(run, "rna")
 if (!dir.exists(outpath)) dir.create(outpath)
 
 
@@ -143,24 +183,24 @@ if (!dir.exists(outpath)) dir.create(outpath)
 #             "log1p_total_counts",
 #             "n_genes_by_counts",
 #             "log1p_n_genes_by_counts",
-#             "doublet_scores", 
-#             "pct_counts_mt", 
-#             "pct_counts_rp", 
+#             "doublet_scores",
+#             "pct_counts_mt",
+#             "pct_counts_rp",
 #             "pct_counts_ig",
 #             "pct_counts_hb")
 
 # check these qc metrics are in the file
 if (!is.null(opt$rna_qc_metrics)) {
-  qcmetrics <- strsplit(opt$rna_qc_metrics,",")[[1]]
+  qcmetrics <- strsplit(opt$rna_qc_metrics, ",")[[1]]
 }
 qcmetrics <- qcmetrics[qcmetrics %in% colnames(rna_data_plot)]
 uniq_sample_id <- nrow(unique(rna_data_plot["sample_id"]))
-rna_source_facet <- gsub("^rna\\.", "",grep("^rna.", source_facet, value = TRUE))
+rna_source_facet <- gsub("^rna\\.", "", grep("^rna.", source_facet, value = TRUE))
 rna_source_facet <- unique(c(rna_source_facet, source_facet[!grepl("^rna.", source_facet)]))
 rna_source_facet <- rna_source_facet[rna_source_facet %in% colnames(rna_data_plot)]
-for (qc in qcmetrics){
-  print(paste("Plotting violin plots of", qc))
-  for (sc in rna_source_facet){ #add gsub temp here
+for (qc in qcmetrics) {
+  cat("Plotting violin plots of", qc, "\n")
+  for (sc in rna_source_facet) { # add gsub temp here
     g <- do_violin_plot(rna_data_plot, qc, sc)
     if (uniq_sample_id  > 50){width=12}else{width=6}
     ggsave(g, filename=file.path(outpath, paste0("violin_", sc, "_rna-", qc,".png")), type="cairo", width= width, height=6,limitsize=FALSE)
@@ -168,14 +208,14 @@ for (qc in qcmetrics){
   }
 }
 
-for (sc in rna_source_facet){
+for (sc in rna_source_facet) {
   uniq_source <- nrow(unique(rna_data_plot[sc]))
-  if(uniq_source >6){
-    ncols=6
-    nrows=ceiling(uniq_source/6)
-  }else{
-    ncols=uniq_source
-    nrows=1
+  if (uniq_source > 6) {
+    ncols <- 6
+    nrows <- ceiling(uniq_source / 6)
+  } else {
+    ncols <- uniq_source
+    nrows <- 1
   }
   # plot once per source facet
   if (all(c("total_counts","n_genes_by_counts")%in% colnames(rna_data_plot))){
@@ -213,48 +253,48 @@ for (sc in rna_source_facet){
 
 
 
-if(!is.null(opt$prot_qc_metrics)){
-  print("Protein plots")
+if (!is.null(opt$prot_qc_metrics)) {
+  cat("Protein plots\n")
 
-  qcmetrics <- strsplit(opt$prot_qc_metrics,",")[[1]]
-  prot_data_plot <- data_plot[,grep("^prot\\.",colnames(data_plot))]
+  qcmetrics <- strsplit(opt$prot_qc_metrics, ",")[[1]]
+  prot_data_plot <- data_plot[, grep("^prot\\.", colnames(data_plot))]
   colnames(prot_data_plot) <- gsub("^prot\\.", "", colnames(prot_data_plot))
-  prot_source_facet <- gsub("^prot\\.", "",grep("^prot.", source_facet, value = TRUE))
+  prot_source_facet <- gsub("^prot\\.", "", grep("^prot.", source_facet, value = TRUE))
   prot_source_facet <- unique(c(prot_source_facet, source_facet[!grepl("^prot.", source_facet)]))
   prot_source_facet <- prot_source_facet[prot_source_facet %in% colnames(prot_data_plot)]
 
-  outpath = file.path(run, "prot")
-  if (!dir.exists(outpath)) { 
+  outpath <- file.path(run, "prot")
+  if (!dir.exists(outpath)) {
     dir.create(outpath)
-    }
+  }
   uniq_sample_id <- nrow(unique(prot_data_plot["sample_id"]))
 
   # check these qc metrics are in the file
   qcmetrics <- qcmetrics[qcmetrics %in% colnames(prot_data_plot)]
-  for (qc in qcmetrics){
-    print(paste("Plotting violin plots of", qc))
-    for (sc in prot_source_facet){
+  for (qc in qcmetrics) {
+    cat("Plotting violin plots of", qc, "\n")
+    for (sc in prot_source_facet) {
       g <- do_violin_plot(prot_data_plot, qc, sc)
       if (uniq_sample_id  > 50){width=12}else{width=6}
       ggsave(g, filename=file.path(outpath, paste0("violin_", sc, "_prot-", qc,".png")), type="cairo", width= width, height=6,limitsize=FALSE)
     }
   }
-  
+
   # do the following plots:
   # - prot:total_counts vs prot_nprot_by_counts
   # - prot:total_counts vs prot:isotype_counts
   # - prot:log1p_total_counts vs prot:log1p_isotype_counts
   # - prot:total_counts vs prot:pct_isotype_counts
-  
-  
-  for (sc in prot_source_facet){
+
+
+  for (sc in prot_source_facet) {
     uniq_source <- nrow(unique(prot_data_plot[sc]))
-    if(uniq_source >6){
-      ncols=6
-      nrows=ceiling(uniq_source/6)
-    }else{
-      ncols=uniq_source
-      nrows=1
+    if (uniq_source > 6) {
+      ncols <- 6
+      nrows <- ceiling(uniq_source / 6)
+    } else {
+      ncols <- uniq_source
+      nrows <- 1
     }
     # plot once per source facet
 
@@ -289,69 +329,68 @@ if(!is.null(opt$prot_qc_metrics)){
              width= 3*ncols, height=3*nrows, dpi=200,limitsize=FALSE)
     }
   }
-
 }
 # Atac plots ----------------------------------------------------------------
 
 
-if(!is.null(opt$atac_qc_metrics)){
-  print("ATAC plots")
-  atac_data_plot <- data_plot[,grep("^atac\\.",colnames(data_plot))]
+if (!is.null(opt$atac_qc_metrics)) {
+  cat("ATAC plots\n")
+  atac_data_plot <- data_plot[, grep("^atac\\.", colnames(data_plot))]
   colnames(atac_data_plot) <- gsub("^atac\\.", "", colnames(atac_data_plot))
-  atac_source_facet <- gsub("^atac\\.", "",grep("^atac.", source_facet, value = TRUE))
+  atac_source_facet <- gsub("^atac\\.", "", grep("^atac.", source_facet, value = TRUE))
   atac_source_facet <- unique(c(atac_source_facet, source_facet[!grepl("^atac.", source_facet)]))
   atac_source_facet <- atac_source_facet[atac_source_facet %in% colnames(atac_data_plot)]
 
 
-  outpath = file.path(run, "atac")
+  outpath <- file.path(run, "atac")
   if (!dir.exists(outpath)) dir.create(outpath)
-  
+
   uniq_sample_id <- nrow(unique(atac_data_plot["sample_id"]))
 
   # check these qc metrics are in the file
   qcmetrics <- qcmetrics[qcmetrics %in% colnames(atac_data_plot)]
-  for (qc in qcmetrics){
+  for (qc in qcmetrics) {
     print(paste("Plotting violin plots of", qc))
-    for (sc in atac_source_facet){
+    for (sc in atac_source_facet) {
       g <- do_violin_plot(atac_data_plot, qc, sc)
       if (uniq_sample_id  > 50){width=12}else{width=6}
       ggsave(g, filename=file.path(outpath, paste0("violin_", sc, "_atac-", qc,".png")), type="cairo", width= width, height=6,limitsize=FALSE)
     }
   }
 }
-  
+
 # Rep plots ----------------------------------------------------------------
 
 
 if (!is.null(opt$rep_qc_metrics)) {
-  print("Repertoire plots")
-  qcmetrics <- strsplit(opt$rep_qc_metrics,",")[[1]]
+  cat("Repertoire plots\n")
+  qcmetrics <- strsplit(opt$rep_qc_metrics, ",")[[1]]
   qcmetrics <- gsub("rep:", "", qcmetrics)
-  rep_data_plot <- data_plot[,grep("^rep\\.",colnames(data_plot))]
+  rep_data_plot <- data_plot[, grep("^rep\\.", colnames(data_plot))]
   colnames(rep_data_plot) <- gsub("^rep\\.", "", colnames(rep_data_plot))
-  rep_data_plot = rep_data_plot %>% filter(sample_id!="")
-  
-  rep_source_facet <- gsub("^rep\\.", "",grep("^rep.", source_facet, value = TRUE))
+  rep_data_plot <- rep_data_plot %>% filter(sample_id != "")
+
+  rep_source_facet <- gsub("^rep\\.", "", grep("^rep.", source_facet, value = TRUE))
   rep_source_facet <- unique(c(rep_source_facet, source_facet[!grepl("^rep.", source_facet)]))
   rep_source_facet <- rep_source_facet[rep_source_facet %in% colnames(rep_data_plot)]
 
-  
-  outpath = file.path(run, "rep")
+
+  outpath <- file.path(run, "rep")
   if (!dir.exists(outpath)) dir.create(outpath)
-  
-  
+
+
   uniq_sample_id <- nrow(unique(rep_data_plot["sample_id"]))
 
   # check these qc metrics are in the file
   qcmetrics <- qcmetrics[qcmetrics %in% colnames(rep_data_plot)]
-  for (qc in qcmetrics){
-    print(paste("Plotting bar plots of", qc))
-    for (sc in rep_source_facet){
+  for (qc in qcmetrics) {
+    cat("Plotting bar plots of", qc. "\n")
+    for (sc in rep_source_facet) {
       g <- do_bar_plot(rep_data_plot, qc, sc)
       if (uniq_sample_id  > 50){width=12}else{width=6}
         ggsave(g, filename=file.path(outpath, paste0("bar_", sc, "_rep-", qc,".png")), type="cairo", width= width, height=6,limitsize=FALSE)
 
-      if (!(qc %in% c('has_ir', "receptor_type"))){
+      if (!(qc %in% c("has_ir", "receptor_type"))) {
         g <- do_bar_plot(rep_data_plot, qc, sc) + facet_grid(~receptor_type)
         ggsave(g, filename=file.path(outpath, paste0("bar_facet_", sc, "_rep-", qc,".png")), type="cairo", width= width*4, height=6,limitsize=FALSE)
 
@@ -361,24 +400,24 @@ if (!is.null(opt$rep_qc_metrics)) {
 }
 
 
-if(!is.null(opt$prot_qc_metrics)){
-print("RNA vs. Protein plots")
+if (!is.null(opt$prot_qc_metrics)) {
+  cat("RNA vs. Protein plots\n")
 
-# rna vs prot plots ----------------------------------------------------------------
-  
+  # rna vs prot plots ----------------------------------------------------------------
 
-  outpath = file.path(run, "rna_v_prot")
-  if (!dir.exists(outpath)) dir.create(outpath)    
-  
 
-  for (sc in source_facet){
+  outpath <- file.path(run, "rna_v_prot")
+  if (!dir.exists(outpath)) dir.create(outpath)
+
+
+  for (sc in source_facet) {
     uniq_source <- nrow(unique(data_plot[sc]))
-    if(uniq_source >6){
-      ncols=6
-      nrows=ceiling(uniq_source/6)
-    }else{
-      ncols=uniq_source
-      nrows=1
+    if (uniq_source > 6) {
+      ncols <- 6
+      nrows <- ceiling(uniq_source / 6)
+    } else {
+      ncols <- uniq_source
+      nrows <- 1
     }
     if (all(c("rna.total_counts","prot.total_counts")%in% colnames(data_plot))){
       print("Plotting scatter plot of rna.total_counts and prot.total_counts")
@@ -411,10 +450,7 @@ print("RNA vs. Protein plots")
               width= 3*ncols, height=3*nrows, dpi=200,limitsize=FALSE)
       
     }
-    
-    
   }
-  
 }
 
 
@@ -509,4 +545,4 @@ if(opt$prefilter){
 }
 
 
-print("Done")
+cat("Done\n")
