@@ -32,11 +32,11 @@ Computing resources to use, specifically the number of threads used for parallel
 Specified by the following three parameters:
   - <span class="parameter">threads_high</span> `Integer`, Default: 1<br>
         Number of threads used for high intensity computing tasks. 
-        For each thread, there must be enough memory to load all your input files at once and create the MuData object.
+        For each thread, there must be enough memory to load all your input files at once and create the SpatialData object.
 
   - <span class="parameter">threads_medium</span> `Integer`, Default: 1<br>
         Number of threads used for medium intensity computing tasks.
-        For each thread, there must be enough memory to load your mudata and do computationally light tasks.
+        For each thread, there must be enough memory to load your SpatialData and do computationally light tasks.
 
   - <span class="parameter">threads_low</span> `Integer`, Default: 1<br>
   	    Number of threads used for low intensity computing tasks.

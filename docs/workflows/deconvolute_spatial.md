@@ -1,6 +1,6 @@
 # Deconvoluting spatial data
 
-With the `deconvolution_spatial` workflow, one or multiple spatial slides can be deconvoluted in one run. For that, a `MuData` object for each slide is expected, with the spatial data saved in `mdata.mod["spatial"]`. The spatial slides are deconvoluted using the same reference. For the reference, one `MuData` with the gene expression data saved in `mdata.mod["rna"]` is expected as input.
+With the `deconvolution_spatial` workflow, one or multiple spatial slides can be deconvoluted in one run. For that, a `SpatialData` object for each slide is expected. The spatial slides are deconvoluted using the same reference. For the reference, one `MuData` with the gene expression data saved in `mdata.mod["rna"]` is expected as input.
 
 The workflow provides the possibility to run deconvolution using `Cell2Location` and `Tangram`.
 
@@ -19,8 +19,9 @@ For the reference and each spatial slide the following steps are run. **Note, th
 - Regression/reference model is fitted and a plot of the training history as well as QC plots are saved in the `./figures/Cell2Location` directory. Additionally, a csv-file `Cell2Loc_inf_anver.csv` with the estimated expression of every gene in every cell type is saved in `./cell2location.output`.
 - (Optional) Reference model is saved in `./cell2location.output`
 - Spatial mapping model is fitted. Training history and QC plots are saved in the `./figures/Cell2Location` directory. Plot of the spatial embedding coloured by `q05_cell_abundance_w_sf` is also saved in `./figures/Cell2Location`.
+- (Optional) A gene by spot matrix for each cell type is saved to a layer in the table of the `SpatialData` object
 - (Optional) Spatial mapping model is saved in `./cell2location.output`
-- `MuData` objects of the spatial slide and the reference are saved in `./cell2location.output`. The `MuData` object of the spatial slide contains the estimated cell type abundances.
+- The `SpatialData` object of the spatial slide and the `MuData` object of the reference are saved in `./cell2location.output`. The `SpatialData` object of the spatial slide contains the estimated cell type abundances.
 
 
 ### Tangram
@@ -34,7 +35,7 @@ For the reference and each spatial slide the following steps are run. **Note, th
 - Data is preprocessed with [tangram.pp_adatas](https://tangram-sc.readthedocs.io/en/latest/classes/tangram.mapping_utils.pp_adatas.html)
 - Tangram model is fitted with [tangram.mapping_utils.map_cells_to_space](https://tangram-sc.readthedocs.io/en/latest/classes/tangram.mapping_utils.map_cells_to_space.html) and annotations are transfered from single-cell data onto space with [tangram.project_cell_annotations](https://tangram-sc.readthedocs.io/en/latest/classes/tangram.utils.project_cell_annotations.html)
 - Plot of the spatial embedding coloured by `tangram_ct_pred` is saved in `./figures/Tangram`
-- `MuData` objects of the spatial slide and the reference are saved in `./tangram.output`. The `MuData` object of the spatial slide contains the deconvolution predictions.
+- The `SpatialData` object of the spatial slide and the `MuData` object of the reference are saved in `./tangram.output`. The `SpatialData` object of the spatial slide contains the deconvolution predictions.
 
 
 
