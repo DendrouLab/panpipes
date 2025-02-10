@@ -171,17 +171,17 @@ def gen_load_spatial_jobs(caf, mode_dictionary = {}, load_raw=True):
                 visium_tissue_positions_file = None
                 visium_scalefactors_file = None
                 spatial_filetype = caf['spatial_filetype'][nn]
-                if "vpt_cell_by_gene" in caf[nn].columns:
+                if "vpt_cell_by_gene" in caf.columns:
                     if pd.notna(caf['vpt_cell_by_gene'][nn]):
                         vpt_cell_by_gene = caf['vpt_cell_by_gene'][nn]
                 else:
                     vpt_cell_by_gene = None
-                if "vpt_cell_metadata" in caf[nn].columns:
+                if "vpt_cell_metadata" in caf.columns:
                     if pd.notna(caf['vpt_cell_metadata'][nn]):
                         vpt_cell_metadata = caf['vpt_cell_metadata'][nn]
                 else:
                     vpt_cell_metadata = None
-                if "vpt_cell_boundaries" in caf[nn].columns:
+                if "vpt_cell_boundaries" in caf.columns:
                     if pd.notna(caf['vpt_cell_boundaries'][nn]):
                         vpt_cell_boundaries = caf['vpt_cell_boundaries'][nn]
                 else:
@@ -192,25 +192,25 @@ def gen_load_spatial_jobs(caf, mode_dictionary = {}, load_raw=True):
                 vpt_cell_boundaries = None
                 spatial_filetype = caf['spatial_filetype'][nn]
                 #counts file
-                if "visium_feature_bc_matrix" in caf[nn].columns:
+                if "visium_feature_bc_matrix" in caf.columns:
                     if pd.notna(caf["visium_feature_bc_matrix"][nn]):
                         visium_feature_bc_matrix= caf["visium_feature_bc_matrix"][nn]
                 else:
                     visium_feature_bc_matrix = None  
                 # fullres image
-                if "visium_fullres_image_file" in caf[nn].columns:
+                if "visium_fullres_image_file" in caf.columns:
                     if pd.notna(caf["visium_fullres_image_file"][nn]):
                         visium_fullres_image_file= caf["visium_fullres_image_file"][nn]
                 else:
                     visium_fullres_image_file = None 
                 # tissue position 
-                if "visium_tissue_positions_file" in caf[nn].columns:
+                if "visium_tissue_positions_file" in caf.columns:
                     if pd.notna(caf["visium_tissue_positions_file"][nn]):
                         visium_tissue_positions_file= caf["visium_tissue_positions_file"][nn]
                 else:
                     visium_tissue_positions_file = None  
                 # scalefactor
-                if "visium_scalefactors_file" in caf[nn].columns:
+                if "visium_scalefactors_file" in caf.columns:
                     if pd.notna(caf["visium_scalefactors_file"][nn]):
                         visium_scalefactors_file= caf["visium_scalefactors_file"][nn]
                 else:
