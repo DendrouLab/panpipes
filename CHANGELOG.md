@@ -4,6 +4,24 @@
 ## [latest]
 
 ### added 
+- moved from MuData to SpatialData 
+- xenium ingestion & ingest_xenium GitHub action
+- `export_gene_by_spot` for Cell2Location
+- separate sample submission files for the different spatial technologies 
+- separate GitHub actions for Cell2Location & Tangram 
+- separate GitHub actions for MERSCOPE & MERFISH
+
+
+### fixed
+
+
+### dependencies
+- pinned "spatialdata==0.2.6", "spatialdata-io==0.1.6", "dask==2024.12.1" as temporary fix
+
+
+## v1.1.0
+
+### added 
 
 ### fixed
 
