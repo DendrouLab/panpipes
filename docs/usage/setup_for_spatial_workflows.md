@@ -30,7 +30,7 @@ The following 4 columns are **optional**:
 
 **visium_scalefactors_file**:	Path to the scalefactors file. Corresponds to the `scalefactors_file` parameter of [spatialdata_io.visium](https://spatialdata.scverse.org/projects/io/en/latest/generated/spatialdata_io.visium.html)
 
-#### [Example submission file](https://github.com/DendrouLab/panpipes-tutorials/blob/sarah_spatialData/docs/ingesting_visium_data/sample_file_qc_visium.txt)
+##### [Example submission file](https://github.com/DendrouLab/panpipes-tutorials/blob/sarah_spatialData/docs/ingesting_visium_data/sample_file_qc_visium.txt)
 
 
 ## Vizgen
@@ -49,7 +49,7 @@ The following 3 columns are **optional**:
 **vpt_cell_boundaries**: The file name of the output of the vizgen-postprocessing-tool. See [spatialdata_io.merscope](https://spatialdata.scverse.org/projects/io/en/latest/generated/spatialdata_io.merscope.html)
 
 
-#### Example submission files [MERFISH](https://github.com/DendrouLab/panpipes-tutorials/blob/sarah_spatialData/docs/ingesting_merfish_data/sample_file_qc_merfish.txt) [MERSCOPE](https://github.com/DendrouLab/panpipes-tutorials/blob/sarah_spatialData/docs/ingesting_merscope_data/sample_file_qc_merscope.txt)
+##### Example submission files [MERFISH](https://github.com/DendrouLab/panpipes-tutorials/blob/sarah_spatialData/docs/ingesting_merfish_data/sample_file_qc_merfish.txt) [MERSCOPE](https://github.com/DendrouLab/panpipes-tutorials/blob/sarah_spatialData/docs/ingesting_merscope_data/sample_file_qc_merscope.txt)
 
 ## Xenium
 
@@ -58,7 +58,7 @@ The 3 columns of the Xenium sample submission file are:
 sample_id |	spatial_path |	spatial_filetype |
 ----------|----------|------------
 
-#### [Example submission file](https://github.com/DendrouLab/panpipes-tutorials/blob/sarah_spatialData/docs/ingesting_xenium_data/sample_file_qc_xenium.txt)
+##### [Example submission file](https://github.com/DendrouLab/panpipes-tutorials/blob/sarah_spatialData/docs/ingesting_xenium_data/sample_file_qc_xenium.txt)
 
 
 
