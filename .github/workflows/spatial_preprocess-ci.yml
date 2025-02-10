@@ -55,60 +55,21 @@ jobs:
 
       - name: Preparing the data
         run: |
-          mkdir spatial spatial/ingestion spatial/ingestion/data
-          cd spatial/ingestion/data 
-          mkdir V1_Human_Heart V1_Human_Lymph_Node
-          cd V1_Human_Heart
-          curl -O https://cf.10xgenomics.com/samples/spatial-exp/1.0.0/V1_Human_Heart/V1_Human_Heart_filtered_feature_bc_matrix.h5
-          curl -O https://cf.10xgenomics.com/samples/spatial-exp/1.0.0/V1_Human_Heart/V1_Human_Heart_spatial.tar.gz
-          tar -xf V1_Human_Heart_spatial.tar.gz
-          cd ../V1_Human_Lymph_Node
-          curl -O https://cf.10xgenomics.com/samples/spatial-exp/1.0.0/V1_Human_Lymph_Node/V1_Human_Lymph_Node_filtered_feature_bc_matrix.h5
-          curl -O https://cf.10xgenomics.com/samples/spatial-exp/1.0.0/V1_Human_Lymph_Node/V1_Human_Lymph_Node_spatial.tar.gz
-          tar -xf V1_Human_Lymph_Node_spatial.tar.gz
+          mkdir spatial spatial/preprocess spatial/preprocess/data
+          cd spatial/preprocess/data 
+          
+          curl -L -o V1_Human_Heart_unfilt.zarr.zip https://figshare.com/ndownloader/files/52236521
+          unzip V1_Human_Heart_unfilt.zarr.zip
+          rm V1_Human_Heart_unfilt.zarr.zip
+          curl -L -o V1_Human_Lymph_Node_unfilt.zarr.zip https://figshare.com/ndownloader/files/52236575
+          unzip V1_Human_Lymph_Node_unfilt.zarr.zip
+          rm V1_Human_Lymph_Node_unfilt.zarr.zip
+       
 
       # Note: we run the following to test that the commands works
       - name: Preparing the configuration file
         shell: bash -el {0}
         run: |
-          cd spatial/ingestion
-          panpipes qc_spatial config
-
-      - name: Preparing the submission file
-        run: |
-          cd spatial/ingestion
-          curl -o sample_file_qc_visium.txt https://raw.githubusercontent.com/DendrouLab/panpipes-tutorials/sarah_spatialData/docs/ingesting_visium_data/sample_file_qc_visium.txt
-      - name: Preparing the yaml file
-        run: |
-          cd spatial/ingestion
-          curl -o pipeline.yml https://raw.githubusercontent.com/DendrouLab/panpipes-tutorials/sarah_spatialData/docs/ingesting_visium_data/pipeline.yml
-
-      - name: File tree
-        if: env.debug == 'true'
-        run: tree spatial/ingestion
-
-      - name: Review pipeline tasks
-        shell: bash -el {0}
-        run: |
-          cd spatial/ingestion
-          panpipes qc_spatial show full --local
-
-      - name: Run pipeline tasks
-        shell: bash -el {0}
-        run: |
-          cd spatial/ingestion
-          panpipes qc_spatial make full --local
-
-      - name: File tree
-        if: env.debug == 'true'
-        run: tree spatial/ingestion
-
-
-      # Note: we run the following to test that the commands works
-      - name: Preparing the configuration file
-        shell: bash -el {0}
-        run: |
-          mkdir spatial/preprocess 
           cd spatial/preprocess
           panpipes preprocess_spatial config
 
@@ -117,6 +78,11 @@ jobs:
           cd spatial/preprocess
           curl -o pipeline.yml https://raw.githubusercontent.com/DendrouLab/panpipes-tutorials/main/docs/preprocess_spatial_data/pipeline.yml
 
+      - name: Replace template contents in configuration file
+        run: |
+          cd spatial/preprocess
+          sed -i 's+../ingestion/qc.data/+./data/+g' pipeline.yml
+  
       - name: File tree
         if: env.debug == 'true'
         run: tree spatial/preprocess
