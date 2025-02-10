@@ -42,10 +42,10 @@ def test_matching_df_ignore_cat(new_df, old_df):
 # parse arguments
 parser = argparse.ArgumentParser()
 
-parser.add_argument('--input_mudata',
+parser.add_argument('--input_spatialdata',
                     default='gut_minus1_amp.h5ad',
                     help='')
-parser.add_argument('--output_mudata',
+parser.add_argument('--output_spatialdata',
                     default='',
                     help='')
 parser.add_argument('--filter_dict',
@@ -53,7 +53,7 @@ parser.add_argument('--filter_dict',
                     help='this is pull')
 # cross modalities args
 parser.add_argument('--keep_barcodes', default=None,
-                    help='1 column list of barcodes to keep, note that they should match the mudata input, this filtering happens first')
+                    help='1 column list of barcodes to keep, note that they should match the spatialdata input, this filtering happens first')
 
 
 # load options
@@ -73,14 +73,14 @@ filter_dict = map_nested_dicts_remove_none(filter_dict)
 filter_dict = dictionary_stripper(filter_dict)
 L.info("Filter dictionary:\n %s" %filter_dict)
 
-# load mudata
+# load spatialdata
 
-L.info("Reading in SpatialData from '%s'" % args.input_mudata)
-sdata = sd.read_zarr(args.input_mudata)
-#mdata = mu.read(args.input_mudata)
+L.info("Reading in SpatialData from '%s'" % args.input_spatialdata)
+sdata = sd.read_zarr(args.input_spatialdata)
+#mdata = mu.read(args.input_spatialdata)
 
 #if isinstance(mdata, AnnData):
-#    raise TypeError("Input '%s' should be of MuData format, not Anndata"  % args.input_mudata)
+#    raise TypeError("Input '%s' should be of spatialdata format, not Anndata"  % args.input_spatialdata)
 
 orig_obs = sdata["table"].obs.copy()
 
@@ -147,7 +147,7 @@ remove_unused_categories(sdata["table"].obs)
 assert test_matching_df_ignore_cat(sdata["table"].obs, orig_obs)  
 
 # write out obs
-output_prefix = re.sub(".zarr", "", os.path.basename(args.output_mudata))
+output_prefix = re.sub(".zarr", "", os.path.basename(args.output_spatialdata))
 
 L.info("Saving updated obs in a metadata tsv file to './tables/" + output_prefix + "_filtered_cell_metadata.tsv'")
 write_obs(sdata["table"], output_prefix=os.path.join("tables/",output_prefix), output_suffix="_filtered_cell_metadata.tsv")
@@ -166,8 +166,8 @@ cell_counts.to_csv("tables/" + output_prefix + "_cell_counts.csv", index=None)
 
 #mdata.update()
 
-L.info("Saving updated SpatialData to '%s'" % args.output_mudata)
-sdata.write(args.output_mudata)
+L.info("Saving updated SpatialData to '%s'" % args.output_spatialdata)
+sdata.write(args.output_spatialdata)
 
 L.info("Done")
 

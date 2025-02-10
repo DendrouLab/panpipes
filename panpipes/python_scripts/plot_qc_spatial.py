@@ -28,8 +28,8 @@ sc.settings.verbosity = 3
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument("--input_mudata",
-                    default="mudata_unfilt.h5mu",
+parser.add_argument("--input_spatialdata",
+                    default="spatialdata_unfilt.h5mu",
                     help="")
 parser.add_argument("--figdir",
                     default="./figures/",
@@ -58,12 +58,12 @@ figdir = args.figdir
 sc.settings.figdir = figdir
 sc.set_figure_params(scanpy=True, fontsize=14, dpi=300, facecolor='white', figsize=(5,5))
 
-L.info("Reading in SpatialData from '%s'" % args.input_mudata)
-sdata = sd.read_zarr(args.input_mudata)
-#mdata = mu.read(args.input_mudata)
+L.info("Reading in SpatialData from '%s'" % args.input_spatialdata)
+sdata = sd.read_zarr(args.input_spatialdata)
+#mdata = mu.read(args.input_spatialdata)
 #spatial = mdata.mod['spatial']
 
-input_data = os.path.basename(args.input_mudata)
+input_data = os.path.basename(args.input_spatialdata)
 pattern = r"_filtered.zarr"
 match = re.search(pattern, input_data)
 if match is None:
