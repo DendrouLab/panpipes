@@ -13,11 +13,8 @@ import spatialdata_io as sd_io
 import os
 from pathlib import Path
 """
-this script copies the make_adata_from_csv.py that creates
-ONE MUDATA PER SAMPLE, with in each ONE LAYER per modality
-for cell-suspension, saves them to temp. 
-concatenation of the mudatas saved in tmp happens 
-in the concat_anndata.py script
+This script is an adjustment of the make_adata_from_csv.py. It creates
+ONE SPATIALDATA PER SAMPLE and saves them to temp.
 """
 
 import sys
