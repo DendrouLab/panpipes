@@ -101,7 +101,7 @@ if not os.path.exists(output_dir):
 
 #1. read in the data
 #spatial: 
-L.info("Reading in spatial SpatialData from '%s'" % args.input_spatial)
+L.info("Reading in SpatialData from '%s'" % args.input_spatial)
 sdata_st = sd.read_zarr(args.input_spatial)
 #mdata_spatial = mu.read(args.input_spatial)
 #adata_st = mdata_spatial.mod['spatial']
