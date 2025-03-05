@@ -21,7 +21,7 @@ Then qc metrics are computed using [scanpy.pp.calculated_qc_metrics](https://sca
 - Per cell QC metrics computed as described above, including pct_isotype where isotype information is available.
 - Per Protein metrics, total_counts, and are computed, in order to compare the binding of different antibodies (applicable when your assay is CITE-seq based). These are defined in the yml:
 `plot_metrics_per_prot: total_counts,log1p_total_counts,n_cells_by_counts,mean_counts`
-- A rudimentary check for cells that are 'isotype' outliers, i.e. the cells where the isotype content is in the top 10% quantile for more than 2 isotypes. (these parameters are customisable in the`pipeline.yml`). See the function [here](https://github.com/DendrouLab/panpipes/blob/main/panpipes/funcs/scmethods.py#L328).
+- A rudimentary check for cells that are 'isotype' outliers, i.e. the cells where the isotype content is in the top 10% quantile for more than 2 isotypes. (these parameters are customisable in the`pipeline.yml`). See the function [here](https://github.com/DendrouLab/panpipes/blob/304a9f88336427c9f4a76e19279ea61663ae5827/panpipes/funcs/scmethods.py#L435).
 
 ```yaml
 # isotype outliers: one way to determine which cells are very sticky is to work out which cells have the most isotype UMIs
