@@ -384,7 +384,7 @@ if (!is.null(opt$rep_qc_metrics)) {
   # check these qc metrics are in the file
   qcmetrics <- qcmetrics[qcmetrics %in% colnames(rep_data_plot)]
   for (qc in qcmetrics) {
-    cat("Plotting bar plots of", qc. "\n")
+    cat("Plotting bar plots of", qc, "\n")
     for (sc in rep_source_facet) {
       g <- do_bar_plot(rep_data_plot, qc, sc)
       if (uniq_sample_id  > 50){width=12}else{width=6}
@@ -456,72 +456,81 @@ if (!is.null(opt$prot_qc_metrics)) {
 
 sprefix <- opt$sampleprefix
 
-if(opt$prefilter){
-  print("Saving counts tables for references")
-  if(all(c("pct_counts_mt", "pct_counts_hb", "n_genes_by_counts", "doublet_scores") %in% colnames(rna_data_plot))){
-    f1 <- rna_data_plot %>% 
-      dplyr::filter(pct_counts_mt<=20 & pct_counts_hb<=70 &n_genes_by_counts>=100 & doublet_scores<=0.25) %>%
-      group_by_at(.vars=c(rna_source_facet)) %>%
-      group_by_at(.vars=c(rna_source_facet)) %>%
-      summarise(cell.count= n()) %>%
-      group_by_at(.vars="sample_id") %>% 
-      rename(cell.count_f1=cell.count) 
-    
-    f2 <- rna_data_plot %>% 
-      dplyr::filter(pct_counts_mt<=10 & pct_counts_hb<=50 &n_genes_by_counts>=100 & doublet_scores<=0.25) %>%
-      group_by_at(.vars=c(rna_source_facet)) %>%
-      summarise(cell.count= n()) %>% 
-      group_by_at(.vars="sample_id") %>% 
-      rename(cell.count_f2=cell.count) 
-    
-    f3 <- rna_data_plot %>% 
-      dplyr::filter(pct_counts_mt<=5 & pct_counts_hb<=50 &n_genes_by_counts>=100 & n_genes_by_counts<=3000) %>%
-      group_by_at(.vars=c(rna_source_facet)) %>%
-      summarise(cell.count= n()) %>% 
-      group_by_at(.vars="sample_id") %>% 
-      rename(cell.count_f3=cell.count) 
-    
-    baseline <- rna_data_plot %>% 
-      group_by_at(.vars=c(rna_source_facet)) %>%
-      summarise(cell.count= n()) %>% 
-      group_by_at(.vars="sample_id") %>% 
-      rename(baseline.counts=cell.count)
-    
-    info <- merge(merge(merge(f1,f2,by=rna_source_facet,all=TRUE),f3, by=rna_source_facet, all=TRUE), baseline, by=rna_source_facet, all=T) %>%
-      mutate(percent_retain_f1 = 100*cell.count_f1/baseline.counts,
-             percent_retain_f2 = 100*cell.count_f2/baseline.counts,
-             percent_retain_f3 = 100*cell.count_f3/baseline.counts) 
-    
-    
-    
-    write.table(info, file=paste0( sprefix,"_threshold_filter.tsv"), col.names=T, row.names=F, sep="\t", quote=F)
-    
-    explain <- data.frame(qcmetric=c("pct_counts_mt_max","pct_counts_hb_max","n_genes_by_counts_min","doublet_scores_max","n_genes_by_counts_max"),
-                          f1=c(20,70,100,0.25,NA),
-                          f2=c(10,50,100,0.25,NA),
-                          f3=c(5,50,100,NA,3000)) 
-    
-    write.table(explain, file=paste0(sprefix,"_threshold_filter_explained.tsv"), col.names=T, row.names=F, sep="\t", quote=F)
-    
-    lab <- c("%Mt <=10 & %HB<70 & minGenes>=100 & scrublet<=0.25",
-             "%Mt <=5 & %HB<50 & minGenes>=100 & scrublet<=0.25",
-             "%Mt <=5 & %HB<50 & minGenes>=100 & maxGenes<=3000")
-    names(lab) <- c("percent_retain_f1","percent_retain_f2","percent_retain_f3") 
-    
-    g <- info %>% 
-      pivot_longer(cols=starts_with("percent"), names_to="filterclass", values_to="percent")%>%
-      ggplot(aes(sample_id,percent, fill=filterclass)) +
-      geom_bar(stat="identity", position="dodge", color="black") +
-      facet_wrap(~filterclass, ncol=1, labeller = labeller(filterclass=lab)) +
-      theme_bw()+
-      theme(axis.text.x=element_text(size=8,angle=45, hjust=1, vjust=1),
-            axis.text.y=element_text(size=13)) +
-      scale_fill_manual(values = c("red", "yellow","blue"), 
-                        breaks=c("percent_retain_f1","percent_retain_f2","percent_retain_f3"),
-                        limits=c("percent_retain_f1","percent_retain_f2","percent_retain_f3")) + 
-      coord_cartesian(ylim=c(0,100)) 
-    
-    ggsave(g, file = paste0(run,"barplot_cellcounts_thresholds_filter.png"), type="cairo", width=9, height=9,limitsize=FALSE)
+if (opt$prefilter) {
+  cat("Saving counts tables for references\n")
+  if (all(c("pct_counts_mt", "pct_counts_hb", "n_genes_by_counts", "doublet_scores") %in% colnames(rna_data_plot))) {
+    f1 <- rna_data_plot %>%
+      dplyr::filter(pct_counts_mt <= 20 & pct_counts_hb <= 70 & n_genes_by_counts >= 100 & doublet_scores <= 0.25) %>%
+      group_by_at(.vars = c(rna_source_facet)) %>%
+      summarise(cell.count = n()) %>%
+      group_by_at(.vars = "sample_id") %>%
+      rename(cell.count_f1 = cell.count)
+
+    f2 <- rna_data_plot %>%
+      dplyr::filter(pct_counts_mt <= 10 & pct_counts_hb <= 50 & n_genes_by_counts >= 100 & doublet_scores <= 0.25) %>%
+      group_by_at(.vars = c(rna_source_facet)) %>%
+      summarise(cell.count = n()) %>%
+      group_by_at(.vars = "sample_id") %>%
+      rename(cell.count_f2 = cell.count)
+
+    f3 <- rna_data_plot %>%
+      dplyr::filter(pct_counts_mt <= 5 & pct_counts_hb <= 50 & n_genes_by_counts >= 100 & n_genes_by_counts <= 3000) %>%
+      group_by_at(.vars = c(rna_source_facet)) %>%
+      summarise(cell.count = n()) %>%
+      group_by_at(.vars = "sample_id") %>%
+      rename(cell.count_f3 = cell.count)
+
+    baseline <- rna_data_plot %>%
+      group_by_at(.vars = c(rna_source_facet)) %>%
+      summarise(cell.count = n()) %>%
+      group_by_at(.vars = "sample_id") %>%
+      rename(baseline.counts = cell.count)
+
+    info <- merge(merge(merge(f1, f2, by = rna_source_facet, all = TRUE), f3, by = rna_source_facet, all = TRUE), baseline, by = rna_source_facet, all = T) %>%
+      mutate(
+        percent_retain_f1 = 100 * cell.count_f1 / baseline.counts,
+        percent_retain_f2 = 100 * cell.count_f2 / baseline.counts,
+        percent_retain_f3 = 100 * cell.count_f3 / baseline.counts
+      )
+
+
+
+    write.table(info, file = paste0(sprefix, "_threshold_filter.tsv"), col.names = T, row.names = F, sep = "\t", quote = F)
+
+    explain <- data.frame(
+      qcmetric = c("pct_counts_mt_max", "pct_counts_hb_max", "n_genes_by_counts_min", "doublet_scores_max", "n_genes_by_counts_max"),
+      f1 = c(20, 70, 100, 0.25, NA),
+      f2 = c(10, 50, 100, 0.25, NA),
+      f3 = c(5, 50, 100, NA, 3000)
+    )
+
+    write.table(explain, file = paste0(sprefix, "_threshold_filter_explained.tsv"), col.names = T, row.names = F, sep = "\t", quote = F)
+
+    lab <- c(
+      "%Mt <=10 & %HB<70 & minGenes>=100 & scrublet<=0.25",
+      "%Mt <=5 & %HB<50 & minGenes>=100 & scrublet<=0.25",
+      "%Mt <=5 & %HB<50 & minGenes>=100 & maxGenes<=3000"
+    )
+    names(lab) <- c("percent_retain_f1", "percent_retain_f2", "percent_retain_f3")
+
+    g <- info %>%
+      pivot_longer(cols = starts_with("percent"), names_to = "filterclass", values_to = "percent") %>%
+      ggplot(aes(sample_id, percent, fill = filterclass)) +
+      geom_bar(stat = "identity", position = "dodge", color = "black") +
+      facet_wrap(~filterclass, ncol = 1, labeller = labeller(filterclass = lab)) +
+      theme_bw() +
+      theme(
+        axis.text.x = element_text(size = 8, angle = 45, hjust = 1, vjust = 1),
+        axis.text.y = element_text(size = 13)
+      ) +
+      scale_fill_manual(
+        values = c("red", "yellow", "blue"),
+        breaks = c("percent_retain_f1", "percent_retain_f2", "percent_retain_f3"),
+        limits = c("percent_retain_f1", "percent_retain_f2", "percent_retain_f3")
+      ) +
+      coord_cartesian(ylim = c(0, 100))
+
+    ggsave(g, file = paste0(run, "barplot_cellcounts_thresholds_filter.png"), type = "cairo", width = 9, height = 9)
   }
   
 }else{
