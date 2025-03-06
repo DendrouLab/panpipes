@@ -4,8 +4,8 @@
 # takes cellranger multi outputs and cellranger count outputs, and makes them consistent for plotting.
 
 
+from typing import Optional
 import pandas as pd
-import glob
 import os
 import re
 import argparse
@@ -16,31 +16,25 @@ import numpy as np
 
 import sys
 import logging
+
 L = logging.getLogger()
 L.setLevel(logging.INFO)
 log_handler = logging.StreamHandler(sys.stdout)
-formatter = logging.Formatter('%(asctime)s: %(levelname)s - %(message)s')
+formatter = logging.Formatter("%(asctime)s: %(levelname)s - %(message)s")
 log_handler.setFormatter(formatter)
 L.addHandler(log_handler)
 
 # parse arguments
 parser = argparse.ArgumentParser()
-parser.add_argument('--pipe_df',
-                    default='',
-                    help='')
-parser.add_argument('--output_file',
-                    default='',
-                    help='')
-parser.add_argument('--figdir',
-                    default='./figures',
-                    help='')
-parser.add_argument('--cellranger_column_conversion_df',
-                    default='',
-                    help='')
+parser.add_argument("--pipe_df", default="", help="")
+parser.add_argument("--output_file", default="", help="")
+parser.add_argument("--figdir", default="./figures", help="")
+parser.add_argument("--cellranger_column_conversion_df", default="", help="")
 parser.set_defaults(verbose=True)
 args = parser.parse_args()
 
 L.info("Running with params: %s", args)
+
 
 def check_path(path):
     if os.path.isfile(path):
@@ -50,41 +44,53 @@ def check_path(path):
     else:
         return f"{path} does not exist or is an unrecognized type."
 
-def get_metrics_summary_path(path,sample_id=None):
-    """ infers the path to metrics_summary.csv based on what cellranger algorithm is used 
+
+def get_metrics_summary_path(path: str, sample_id: Optional[str] = None):
+    """infers the path to metrics_summary.csv based on what cellranger algorithm is used
     and checks the file exists
 
     Args:
         path (str):path to the folder called 'outs'
         sample_id (str): Required if path is to cellranger multi outputs, defaults to None
-    """    
+    """
     # subset path to only go up to 'outs'
-    if 'outs' not in path:
-        L.warning("You are parsing a cellranger output but your path to raw data doesn't end with the outs folder")
+    if "outs" not in path:
+        L.warning(
+            "You are parsing a cellranger output but your path to raw data doesn't end with the outs folder"
+        )
         path = check_path(path)
     else:
         path = path.split("outs")[0] + "outs"
-    outpath=None
+
+    outpath = None
+
     # use the path to cellranger count or vdj outputs as default
-    if os.path.exists(os.path.join(path, 'metrics_summary.csv') ):
-        outpath = os.path.join(path, 'metrics_summary.csv') 
-    elif os.path.exists(os.path.join(path, 'summary.csv') ):
-        outpath = os.path.join(path, 'summary.csv') 
-    elif sample_id is not None and os.path.exists(os.path.join(path, 'per_sample_outs', sample_id, 'metrics_summary.csv') ):
-        outpath = os.path.join(path, 'per_sample_outs', sample_id, 'metrics_summary.csv')
-    elif sample_id is None and os.path.exists(os.path.join(path, 'per_sample_outs')):
-        L.warning('Input folder appears to be from cellranger multi but no sample_id is given')
+    if os.path.exists(os.path.join(path, "metrics_summary.csv")):
+        outpath = os.path.join(path, "metrics_summary.csv")
+    elif os.path.exists(os.path.join(path, "summary.csv")):
+        outpath = os.path.join(path, "summary.csv")
+    elif sample_id is not None and os.path.exists(
+        os.path.join(path, "per_sample_outs", sample_id, "metrics_summary.csv")
+    ):
+        outpath = os.path.join(
+            path, "per_sample_outs", sample_id, "metrics_summary.csv"
+        )
+    elif sample_id is None and os.path.exists(os.path.join(path, "per_sample_outs")):
+        L.warning(
+            "Input folder appears to be from cellranger multi but no sample_id is given"
+        )
     else:
         # use the alternative path from cellranger_multi outputs
-        L.warning('Path not found')
+        L.warning("Path not found")
+
     return outpath
 
 
-def detect_cellranger_algorithm(pth):
-    if 'per_sample_outs' in pth:
-        filetype='multi'
+def detect_cellranger_algorithm(pth: list[str]):
+    if "per_sample_outs" in pth:
+        filetype = "multi"
     else:
-        filetype='count'
+        filetype = "count"
     return filetype
 
 
@@ -96,203 +102,285 @@ def get_all_unique_paths(pipe_df):
 
     Returns:
         pd.DataFrame: stacked dataframe of paths
-    """    
-    pipe_df = pipe_df.set_index('sample_id')
-    pipe_df = pipe_df.loc[:,pipe_df.columns.str.endswith('path')]
+    """
+    pipe_df = pipe_df.set_index("sample_id")
+    pipe_df = pipe_df.loc[:, pipe_df.columns.str.endswith("path")]
     all_paths = pipe_df.stack().reset_index()
-    all_paths.columns = ['sample_id', 'path_type', 'path']
+    all_paths.columns = ["sample_id", "path_type", "path"]
     all_paths = all_paths.drop_duplicates()
     # rename path_type to match cellranger terminolgy
-    recode_dict = {'rna_path': "Gene Expression", 
-                   'prot_path': "Antibody Capture", 
-                   'tcr_path': 'VDJ T', 
-                   'bcr_path': 'VDJ B',
-                   'atac_path': 'ATAC' }
-    all_paths['path_type'] = all_paths['path_type'].replace(recode_dict)
+    recode_dict = {
+        "rna_path": "Gene Expression",
+        "prot_path": "Antibody Capture",
+        "tcr_path": "VDJ T",
+        "bcr_path": "VDJ B",
+        "atac_path": "ATAC",
+    }
+    all_paths["path_type"] = all_paths["path_type"].replace(recode_dict)
     return all_paths
 
 
-def parse_10x_cellranger_multi(path_df,path_col='metrics_summary_path'):
-    """takes the metrics_summary.csv from cellranger multi for each sample 
+def parse_10x_cellranger_multi(path_df, path_col="metrics_summary_path"):
+    """takes the metrics_summary.csv from cellranger multi for each sample
     and concantenates into on pd.DataFrame (long format)
 
     Args:
-        path_df (pd.DataFrame): pandas dataframe with two columns sample_id and and 
+        path_df (pd.DataFrame): pandas dataframe with two columns sample_id and and
                             path which contains the path to the outs folder.
         path_col (str): colname for the columns containing the paths
 
     Returns:
-        pd.DataFrame: 7 columns ['sample_id', 'category', 'library_type', 'grouped_by', 
+        pd.DataFrame: 7 columns ['sample_id', 'category', 'library_type', 'grouped_by',
         'group_name', metric_name', 'metric_value']
-    """   
+    """
+
     # subset to unique rows to save loading in duplicate data
-    path_df = path_df[['sample_id', path_col]].drop_duplicates()
+    path_df = path_df[["sample_id", path_col]].drop_duplicates()
+
     # read and concat
-    msums = pd.concat([pd.read_csv(f) for f in path_df[path_col]], 
-                    keys=path_df['sample_id'], 
-                    names=['sample_id']).reset_index().drop(columns='level_1')
+    msums = (
+        pd.concat(
+            [pd.read_csv(f) for f in path_df[path_col]],
+            keys=path_df["sample_id"],
+            names=["sample_id"],
+        )
+        .reset_index()
+        .drop(columns="level_1")
+    )
+
     # remove spaces and capitils from columns names
-    msums.columns = [re.sub(' ', '_', x.lower()) for x in msums.columns]
+    msums.columns = [re.sub(" ", "_", x.lower()) for x in msums.columns]
+
     # add a fix for version < cellranger 7
-    ranger = {"library_or_sample":"category"}
-    msums.rename(columns =ranger,inplace=True)
+    ranger = {"library_or_sample": "category"}
+    msums.rename(columns=ranger, inplace=True)
+
     # convert percentages from string to numeric
-    msums['metric_value'] = [re.sub(",|%", "", x) for x in msums['metric_value']]
-    msums['metric_value'] = msums['metric_value'].astype(float)
+    msums["metric_value"] = [re.sub(",|%", "", x) for x in msums["metric_value"]]
+    msums["metric_value"] = msums["metric_value"].astype(float)
+
     # sort outputs
-    msums = msums.sort_values(['metric_name', 'sample_id'])
+    msums = msums.sort_values(["metric_name", "sample_id"])
+
     return msums
 
 
-def parse_10x_cellranger_count(path_df, convert_df,  path_col='metrics_summary_path'):
-    """takes the metrics_summary.csv from cellranger count output for each sample 
+def parse_10x_cellranger_count(path_df, convert_df, path_col="metrics_summary_path"):
+    """takes the metrics_summary.csv from cellranger count output for each sample
     and concantenates into on pd.DataFrame (long format)
 
     Args:
-        path_df (pd.DataFrame): pandas dataframe with three columns sample_id, path 
-                                path which contains the path to the outs folder.and 
+        path_df (pd.DataFrame): pandas dataframe with three columns sample_id, path
+                                path which contains the path to the outs folder.and
                                 path_type which contains the type of library (one of ['Gene Expression', 'Antibody Capture', 'VDJ T', 'VDJ B'])
         path_col (str): colname for the columns containing the paths
 
     Returns:
-        pd.DataFrame: 7 columns ['sample_id', 'category', 'library_type', 'grouped_by', 
+        pd.DataFrame: 7 columns ['sample_id', 'category', 'library_type', 'grouped_by',
         'group_name', metric_name', 'metric_value']
-    """   
-    
+    """
+
     # read and concat
-    msums = pd.concat([pd.read_csv(f) for f in path_df[path_col]], 
-                    keys=[(x, y) for x, y in zip(path_df['sample_id'], 
-                                                 path_df['path_type'])], #count
-                    names=['sample_id','path_type'])
-    msums = msums.stack().reset_index().drop(columns='level_2')
+    msums = pd.concat(
+        [pd.read_csv(f) for f in path_df[path_col]],
+        keys=[
+            (x, y) for x, y in zip(path_df["sample_id"], path_df["path_type"])
+        ],  # count
+        names=["sample_id", "path_type"],
+    )
+
+    msums = msums.stack().reset_index().drop(columns="level_2")
+
     # make the columns match the conversion df
-    msums.columns = ['sample_id', 'library_type', 'count_metric_name', 'metric_value']
+    msums.columns = ["sample_id", "library_type", "count_metric_name", "metric_value"]
+
     # update the columns names
-    msums = msums.merge(convert_df).drop(columns=['count_metric_name'])
-    msums['group_name'] = msums['sample_id']
-    msums = msums[['sample_id','category', 'library_type', 'grouped_by', 'group_name', 'metric_name', 'metric_value']]
+    msums = msums.merge(convert_df).drop(columns=["count_metric_name"])
+    msums["group_name"] = msums["sample_id"]
+
+    msums = msums[
+        [
+            "sample_id",
+            "category",
+            "library_type",
+            "grouped_by",
+            "group_name",
+            "metric_name",
+            "metric_value",
+        ]
+    ]
+
     # convert percentages from string to numeric
-    msums['metric_value'] = [re.sub(",|%", "", str(x)) for x in msums['metric_value']]
-    msums['metric_value'] = msums['metric_value'].astype(float)
-    msums = msums.sort_values(['library_type', 'metric_name', 'sample_id'])
+    msums["metric_value"] = [re.sub(",|%", "", str(x)) for x in msums["metric_value"]]
+    msums["metric_value"] = msums["metric_value"].astype(float)
+
+    msums = msums.sort_values(["library_type", "metric_name", "sample_id"])
+
     return msums
-    
+
 
 L.info("Reading in tsv file '%s'" % args.cellranger_column_conversion_df)
-convert_df = pd.read_csv(args.cellranger_column_conversion_df, sep='\t')   
+convert_df = pd.read_csv(args.cellranger_column_conversion_df, sep="\t")
 
 # get the paths
-pipe_df = pd.read_csv(args.pipe_df, sep='\t')
-L.info('Searching for all cellranger paths')
+pipe_df = pd.read_csv(args.pipe_df, sep="\t")
+L.info("Searching for all cellranger paths")
 all_paths_df = get_all_unique_paths(pipe_df)
-all_paths_df['metrics_summary_path'] = all_paths_df.apply(lambda x: get_metrics_summary_path(path=x.path, sample_id=x.sample_id), axis=1)
+all_paths_df["metrics_summary_path"] = all_paths_df.apply(
+    lambda x: get_metrics_summary_path(path=x.path, sample_id=x.sample_id), axis=1
+)
+
+L.warning(f"pipe_df columns\n{pipe_df.columns}")
+L.warning(f"pipe df\n{pipe_df.to_markdown()}")
+L.warning(f"all_paths_df\n{all_paths_df.to_markdown()}")
+x = all_paths_df["metrics_summary_path"]
+L.warning(f"metrics summary path of all_paths_df\n{x.to_markdown()}")
+
 # all_paths_df_uniq = all_paths_df.drop(columns=['path', 'path_type']).drop_duplicates().reset_index(drop=True)
-all_paths_df['cellranger_type'] = [detect_cellranger_algorithm(x) for x in all_paths_df['metrics_summary_path']]
+all_paths_df["cellranger_type"] = [
+    detect_cellranger_algorithm(x) for x in all_paths_df["metrics_summary_path"]
+]
 L.info("Cellranger metrics_summary files found: %s" % all_paths_df)
 
 # parse and concatenate the tenx x metrics summary files into long format
 L.info("Parsing and concatenating the 10X metrics summary files into long format")
 tenx_metrics = []
-if any(all_paths_df['cellranger_type']=='multi'):
-    tenx_metrics.append(parse_10x_cellranger_multi(all_paths_df[all_paths_df['cellranger_type']=='multi']))
+if any(all_paths_df["cellranger_type"] == "multi"):
+    tenx_metrics.append(
+        parse_10x_cellranger_multi(
+            all_paths_df[all_paths_df["cellranger_type"] == "multi"]
+        )
+    )
 
-if any(all_paths_df['cellranger_type']=='count'):
-    tenx_metrics.append(parse_10x_cellranger_count(all_paths_df[all_paths_df['cellranger_type']=='count'], convert_df))
+if any(all_paths_df["cellranger_type"] == "count"):
+    tenx_metrics.append(
+        parse_10x_cellranger_count(
+            all_paths_df[all_paths_df["cellranger_type"] == "count"], convert_df
+        )
+    )
 
 tenx_metrics_full = pd.concat(tenx_metrics)
-tenx_metrics_full = tenx_metrics_full.sort_values(['library_type', 'metric_name'])
+tenx_metrics_full = tenx_metrics_full.sort_values(["library_type", "metric_name"])
 L.info("Done. Saving to '%s'" % args.output_file)
 tenx_metrics_full.to_csv(args.output_file, index=False)
 
 
 # tenx_metrics['metric_value'] = [re.sub(",|%", "", x) for x in tenx_metrics['metric_value']]
 # tenx_metrics['metric_value'] = tenx_metrics['metric_value'].astype(float)
-# split by library_type and metric_name 
+# split by library_type and metric_name
 L.info("Plotting metrics for each library_type and metric_name")
-for idx, row in tenx_metrics_full[['library_type','metric_name']].drop_duplicates().iterrows():
-    mn = row['metric_name']
-    lt = row['library_type']
-    plt_df = tenx_metrics_full[(tenx_metrics_full['library_type'] == lt) & (tenx_metrics_full['metric_name'] == mn)]  
+for idx, row in (
+    tenx_metrics_full[["library_type", "metric_name"]].drop_duplicates().iterrows()
+):
+    mn = row["metric_name"]
+    lt = row["library_type"]
+    plt_df = tenx_metrics_full[
+        (tenx_metrics_full["library_type"] == lt)
+        & (tenx_metrics_full["metric_name"] == mn)
+    ]
     if len(plt_df.category.unique()) > 1:
         # if multiple categories i.e. Cells and Libraries, these are likely duplicate rows
-        plt_df = plt_df[['sample_id', 'metric_name', 'library_type' , 'metric_value']].drop_duplicates()
-    if len(plt_df['sample_id']) == len(plt_df['sample_id'].unique()):
+        plt_df = plt_df[
+            ["sample_id", "metric_name", "library_type", "metric_value"]
+        ].drop_duplicates()
+    if len(plt_df["sample_id"]) == len(plt_df["sample_id"].unique()):
         L.info("Plotting barplot for library_type %s and metric_name %s" % (lt, mn))
-        fig = sns.barplot(plt_df, x='sample_id', y='metric_value', color='grey')
+        fig = sns.barplot(plt_df, x="sample_id", y="metric_value", color="grey")
         fig.set_xticklabels(fig.get_xticklabels(), rotation=90)
-        fig.set_title(lt + ':' + mn)
-        plt.savefig(os.path.join(args.figdir, lt + '-' + mn + '.png'), bbox_inches='tight')
+        fig.set_title(lt + ":" + mn)
+        plt.savefig(
+            os.path.join(args.figdir, lt + "-" + mn + ".png"), bbox_inches="tight"
+        )
     else:
         # do a boxplot instead
         L.info("Plotting boxplot for library_type %s and metric_name %s" % (lt, mn))
-        fig = sns.boxplot(plt_df, x='sample_id', y='metric_value', color='grey')
+        fig = sns.boxplot(plt_df, x="sample_id", y="metric_value", color="grey")
         fig.set_xticklabels(fig.get_xticklabels(), rotation=90)
-        fig.set_title(lt + ':' + mn)
-        plt.savefig(os.path.join(args.figdir, lt + '-' + mn + '.png'), bbox_inches='tight')
+        fig.set_title(lt + ":" + mn)
+        plt.savefig(
+            os.path.join(args.figdir, lt + "-" + mn + ".png"), bbox_inches="tight"
+        )
     plt.clf()
 
 
 ## gene expression  extra plots -----------------------------
 
-rna_tenx_metrics = tenx_metrics_full[tenx_metrics_full['library_type'] == 'Gene Expression']
+rna_tenx_metrics = tenx_metrics_full[
+    tenx_metrics_full["library_type"] == "Gene Expression"
+]
 
 # sequencing_saturaion plot scatter plot
-plot_metrics = ['Sequencing saturation', 'Mean reads per cell', 'Estimated number of cells', 'Number of reads', 'Median UMI counts per cell']
+plot_metrics = [
+    "Sequencing saturation",
+    "Mean reads per cell",
+    "Estimated number of cells",
+    "Number of reads",
+    "Median UMI counts per cell",
+]
 plt_df = rna_tenx_metrics[rna_tenx_metrics.metric_name.isin(plot_metrics)]
-plt_df = plt_df[['sample_id', 'metric_name', 'metric_value']]
-plt_tab = plt_df.pivot_table(index='sample_id', columns='metric_name', values='metric_value', aggfunc=sum)
-# sns.scatterplot(data=plt_tab, 
-#                 x='Sequencing saturation', 
+plt_df = plt_df[["sample_id", "metric_name", "metric_value"]]
+plt_tab = plt_df.pivot_table(
+    index="sample_id", columns="metric_name", values="metric_value", aggfunc=sum
+)
+# sns.scatterplot(data=plt_tab,
+#                 x='Sequencing saturation',
 #                 y='Number of reads', size='Mean reads per cell',sizes=(20, 200))
 
-if 'Sequencing saturation' in plt_df.metric_name.unique(): 
+if "Sequencing saturation" in plt_df.metric_name.unique():
     L.info("Plotting scatter plot of sequencing saturation against number of reads")
     f, ax = plt.subplots()
-    points = ax.scatter(x=plt_tab['Sequencing saturation'], 
-                y=plt_tab['Number of reads'], 
-                c=plt_tab['Estimated number of cells'])
+    points = ax.scatter(
+        x=plt_tab["Sequencing saturation"],
+        y=plt_tab["Number of reads"],
+        c=plt_tab["Estimated number of cells"],
+    )
     # define labels
-    plt.xlabel('Sequencing saturation')
-    plt.ylabel('Number of reads')
+    plt.xlabel("Sequencing saturation")
+    plt.ylabel("Number of reads")
     # define color bar
     cbar = f.colorbar(points)
     cbar.ax.get_yaxis().labelpad = 15
-    cbar.ax.set_ylabel('Estimated # of cells', rotation=270)
+    cbar.ax.set_ylabel("Estimated # of cells", rotation=270)
     # put it on a grid
-    plt.grid(axis='both', color='0.95')
+    plt.grid(axis="both", color="0.95")
     # save
-    plt.savefig(os.path.join(args.figdir,'10x_sequencing_saturation_summary.png'))
+    plt.savefig(os.path.join(args.figdir, "10x_sequencing_saturation_summary.png"))
     plt.clf()
 
 # plot 2 -  cells vs UMI counts per cell
 
-L.info("Plotting scatter plot of estimated number of cells against median UMI counts per cell")
+L.info(
+    "Plotting scatter plot of estimated number of cells against median UMI counts per cell"
+)
 fig, ax = plt.subplots()
-x=list(np.log10(plt_tab['Estimated number of cells']))
-y=list(np.log10(plt_tab['Median UMI counts per cell']))
-ax.scatter(x=x, 
-            y=y)
+x = list(np.log10(plt_tab["Estimated number of cells"]))
+y = list(np.log10(plt_tab["Median UMI counts per cell"]))
+ax.scatter(x=x, y=y)
 # annotate each point
 for i, txt in enumerate(plt_tab.index):
-    ax.annotate(txt, (x[i], y[i]), size=8, ha='center')
-plt.xlabel('log10(Estimated number of cells)')
-plt.ylabel('log10(Median UMI counts per cell)')
+    ax.annotate(txt, (x[i], y[i]), size=8, ha="center")
+plt.xlabel("log10(Estimated number of cells)")
+plt.ylabel("log10(Median UMI counts per cell)")
 # put a boundary box around the good cells
-plt.vlines(x=(np.log10(500), np.log10(20000)), 
-           ymin=min(1.5, min(y)),
-           ymax=max(5, max(y)),
-           colors='black', linestyles='dotted'
-           )
-plt.hlines(y=(3, 4), 
-            xmin=min(1.5, min(x)),
-           xmax=max(5, max(x)),
-           colors='black', linestyles='dotted'
+plt.vlines(
+    x=(np.log10(500), np.log10(20000)),
+    ymin=min(1.5, min(y)),
+    ymax=max(5, max(y)),
+    colors="black",
+    linestyles="dotted",
+)
+plt.hlines(
+    y=(3, 4),
+    xmin=min(1.5, min(x)),
+    xmax=max(5, max(x)),
+    colors="black",
+    linestyles="dotted",
 )
 
 # put it on a grid
-plt.grid(axis='both', color='0.95')
+plt.grid(axis="both", color="0.95")
 # save
-plt.savefig(os.path.join(args.figdir,'10x_cells_by_UMIs.png'))
+plt.savefig(os.path.join(args.figdir, "10x_cells_by_UMIs.png"))
 plt.clf()
 
 L.info("Done")
