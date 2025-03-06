@@ -414,7 +414,7 @@ if (!is.null(opt$rep_qc_metrics)) {
   # check these qc metrics are in the file
   qcmetrics <- qcmetrics[qcmetrics %in% colnames(rep_data_plot)]
   for (qc in qcmetrics) {
-    cat("Plotting bar plots of", qc. "\n")
+    cat("Plotting bar plots of", qc, "\n")
     for (sc in rep_source_facet) {
       g <- do_bar_plot(rep_data_plot, qc, sc)
       if (uniq_sample_id > 50) {
@@ -501,7 +501,6 @@ sprefix <- opt$sampleprefix
 if (opt$prefilter) {
   cat("Saving counts tables for references\n")
   if (all(c("pct_counts_mt", "pct_counts_hb", "n_genes_by_counts", "doublet_scores") %in% colnames(rna_data_plot))) {
-
     f1 <- rna_data_plot %>%
       dplyr::filter(pct_counts_mt <= 20 & pct_counts_hb <= 70 & n_genes_by_counts >= 100 & doublet_scores <= 0.25) %>%
       group_by_at(.vars = c(rna_source_facet)) %>%
