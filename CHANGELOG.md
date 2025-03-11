@@ -16,7 +16,6 @@
 
 
 ### dependencies
-- pinned "spatialdata==0.2.6", "spatialdata-io==0.1.6", "dask==2024.12.1" as temporary fix
 
 
 ## v1.1.0
