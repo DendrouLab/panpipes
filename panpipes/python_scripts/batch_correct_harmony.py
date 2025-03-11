@@ -157,7 +157,7 @@ write_anndata(adata, outfiletmp, use_muon=False, modality=args.modality)
 # write out ho output as pickle file
 outfilepkl = ("tmp/harmonypy_object_" + args.modality + ".pkl")
 
-L.info("Saving entire harmony ho output to pickele file '%s" % outfilepkl)
+L.info("Saving entire harmony ho output to pickele file '%s'" % outfilepkl)
 with open(outfilepkl, 'wb') as file:
     # Serialize and write the variable to the file
     pickle.dump(ho, file)
