@@ -75,7 +75,7 @@ jobs:
       - name: Edit the submission file
         run: |
           cd deconvolution
-          curl -o pipeline.yml https://raw.githubusercontent.com/DendrouLab/panpipes-tutorials/main/docs/deconvolution/pipeline.yml
+          curl -o pipeline.yml https://raw.githubusercontent.com/DendrouLab/panpipes-tutorials/sarah_spatialData/docs/deconvolution/pipeline.yml
 
       - name: Replace template contents in configuration file
         run: |
