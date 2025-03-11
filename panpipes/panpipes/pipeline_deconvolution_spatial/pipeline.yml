@@ -68,7 +68,8 @@ Cell2Location:
     categorical_covariate_keys: key1,key2,key3 # Comma-separated without spaces; default None; keys in adata.obs that correspond to categorical data. These covariates can be added in addition to the batch covariate and are also treated as nuisance factors (i.e., the model tries to minimize their effects on the latent space)
     continuous_covariate_keys: key1,key2,key3 # Comma-separated without spaces; default None; keys in adata.obs that correspond to continuous data. These covariates can be added in addition to the batch covariate and are also treated as nuisance factors (i.e., the model tries to minimize their effects on the latent space)
     max_epochs: 500 # Default np.min([round((20000 / n_cells) * 400), 400])
-    use_gpu: # Default True; whether to use GPU for training 
+    #use_gpu: # Default True; whether to use GPU for training 
+    accelerator: auto
 
   # -------------------------------
   # Spatial mapping model paramaters
@@ -85,7 +86,8 @@ Cell2Location:
     detection_alpha: 20 # Regularization of with-in experiment variation in RNA detection sensitivity
   
     max_epochs: 500 # Default np.min([round((20000 / n_cells) * 400), 400])
-    use_gpu: # Default True; whether to use GPU for training
+    #use_gpu: # Default True; whether to use GPU for training
+    accelerator: auto
 
  # -------------------------------
   save_models: False # Default False; whether to save the reference and spatial mapping models

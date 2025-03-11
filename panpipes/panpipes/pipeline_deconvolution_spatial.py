@@ -80,8 +80,10 @@ def run_cell2location(input_spatial, sample_prefix, input_singlecell):
         cmd += f" --continuous_covariate_keys_reference {PARAMS['Cell2Location_reference']['continuous_covariate_keys']}"
     if PARAMS['Cell2Location_reference']['max_epochs'] is not None:
         cmd += f" --max_epochs_reference {PARAMS['Cell2Location_reference']['max_epochs']}"
-    if PARAMS['Cell2Location_reference']['use_gpu'] is not None:
-        cmd += f" --use_gpu_reference {PARAMS['Cell2Location_reference']['use_gpu']}" 
+    if PARAMS['Cell2Location_reference']['accelerator'] is not None:
+        cmd += f" --accelerator_reference {PARAMS['Cell2Location_reference']['accelerator']}" 
+    #if PARAMS['Cell2Location_reference']['use_gpu'] is not None:
+    #    cmd += f" --use_gpu_reference {PARAMS['Cell2Location_reference']['use_gpu']}" 
     # parameters for the spatial model
     if PARAMS['Cell2Location_spatial']['batch_key'] is not None:
         cmd += f" --batch_key_st {PARAMS['Cell2Location_spatial']['batch_key']}"
@@ -97,8 +99,8 @@ def run_cell2location(input_spatial, sample_prefix, input_singlecell):
         cmd += f" --N_cells_per_location {PARAMS['Cell2Location_spatial']['N_cells_per_location']}"
     if PARAMS['Cell2Location_spatial']['detection_alpha'] is not None:
         cmd += f" --detection_alpha {PARAMS['Cell2Location_spatial']['detection_alpha']}"
-    if PARAMS['Cell2Location_spatial']['use_gpu'] is not None:
-        cmd += f" --use_gpu_st {PARAMS['Cell2Location_spatial']['use_gpu']}"
+    if PARAMS['Cell2Location_spatial']['accelerator'] is not None:
+        cmd += f" --accelerator_spatial {PARAMS['Cell2Location_spatial']['accelerator']}"
     
     if PARAMS['Cell2Location_save_models'] is not None:
         cmd += " --save_models %(Cell2Location_save_models)s"   

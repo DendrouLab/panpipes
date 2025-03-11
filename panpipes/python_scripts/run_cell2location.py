@@ -90,9 +90,12 @@ parser.add_argument("--continuous_covariate_keys_reference",
 parser.add_argument("--max_epochs_reference",
                     default=None,
                     help="")
-parser.add_argument("--use_gpu_reference",
-                    default=True,
+parser.add_argument("--accelerator_reference",
+                    default="auto",
                     help="")
+#parser.add_argument("--use_gpu_reference",
+#                    default=True,
+#                    help="")
 
 # parameters for spatial model: 
 parser.add_argument("--labels_key_st",
@@ -119,9 +122,12 @@ parser.add_argument("--detection_alpha",
 parser.add_argument("--max_epochs_st",
                     default=None,
                     help="")  
-parser.add_argument("--use_gpu_st",
-                    default=True,
+parser.add_argument("--accelerator_spatial",
+                    default="auto",
                     help="")
+#parser.add_argument("--use_gpu_st",
+#                    default=True,
+#                    help="")
 
 
 args, opt = parser.parse_known_args()
@@ -194,14 +200,15 @@ if args.max_epochs_st is None:
 else: 
     max_epochs_st= int(args.max_epochs_st)
 
-if (args.use_gpu_reference is True) or (args.use_gpu_reference == "True"): 
-    use_gpu_reference = True
-else:
-    use_gpu_reference = False
-if (args.use_gpu_st is True) or (args.use_gpu_st == "True"): 
-    use_gpu_st = True
-else:
-    use_gpu_st = False
+
+#if (args.use_gpu_reference is True) or (args.use_gpu_reference == "True"): 
+#    use_gpu_reference = True
+#else:
+#    use_gpu_reference = False
+#if (args.use_gpu_st is True) or (args.use_gpu_st == "True"): 
+#    use_gpu_st = True
+#else:
+#    use_gpu_st = False
 
 
 
@@ -271,7 +278,7 @@ c2l.models.RegressionModel.setup_anndata(adata=adata_sc,
                                          continuous_covariate_keys =  continuous_covariate_keys_reference)
 model_ref = c2l.models.RegressionModel(adata_sc)
 L.info("Training the reference model")
-model_ref.train(max_epochs=max_epochs_reference, use_gpu = use_gpu_reference)
+model_ref.train(max_epochs=max_epochs_reference, **{"accelerator": args.accelerator_reference})#use_gpu = use_gpu_reference)
 
 # plot elbo
 L.info("Plotting ELBO")
@@ -316,7 +323,7 @@ model_spatial = c2l.models.Cell2location(adata = sdata_st["table"], cell_state_d
                                         N_cells_per_location=float(args.N_cells_per_location),
                                         detection_alpha=float(args.detection_alpha))
 L.info("Training the spatial model")
-model_spatial.train(max_epochs=max_epochs_st, use_gpu = use_gpu_st)
+model_spatial.train(max_epochs=max_epochs_st, **{"accelerator": args.accelerator_spatial})# use_gpu = use_gpu_st)
 
 #plot elbo
 L.info("Plotting ELBO")
