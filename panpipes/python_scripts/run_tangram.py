@@ -158,6 +158,11 @@ else:
 mdata_singlecell_results = mu.MuData({"rna": adata_sc})
 #mdata_spatial_results = mu.MuData({"spatial": adata_st})
 
+# check column names of spatial data
+if any([' ' in col for col in sdata_st["table"].obs.columns]):
+    L.warning("Spaces were found in column names of sdata['table']. Replacing spaces by underscores.")
+    sdata_st["table"].obs.columns = sdata_st["table"].obs.columns.str.replace(' ', '_')
+
 L.info("Saving SpatialData and MuData to '%s'" % output_dir)
 mdata_singlecell_results.write(output_dir+"/Tangram_screference_output.h5mu")
 sdata_st.write(output_dir+"/Tangram_spatial_output.zarr")

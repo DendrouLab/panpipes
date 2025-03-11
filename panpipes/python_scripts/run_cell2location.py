@@ -360,8 +360,13 @@ if save_models is True:
     model_spatial.save(output_dir+"/Spatial_mapping_model", overwrite=True)
 
 
-#6. save mudatas 
-L.info("Saving SpatialDatas to '%s'" % output_dir)
+#6. save data 
+# check column names of spatial data
+if any([' ' in col for col in sdata_st["table"].obs.columns]):
+    L.warning("Spaces were found in column names of sdata['table']. Replacing spaces by underscores.")
+    sdata_st["table"].obs.columns = sdata_st["table"].obs.columns.str.replace(' ', '_')
+    
+L.info("Saving SpatialData and MuData to '%s'" % output_dir)
 mdata_singlecell.write(output_dir+"/Cell2Loc_screference_output.h5mu")
 sdata_st.write(output_dir+"/Cell2Loc_spatial_output.zarr")
 
