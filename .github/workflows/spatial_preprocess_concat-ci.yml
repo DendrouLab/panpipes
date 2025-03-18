@@ -1,4 +1,4 @@
-name: Run tutorials (spatial preprocessing)
+name: Run tutorials (spatial preprocessing concat)
 
 on:
   push:
@@ -55,8 +55,8 @@ jobs:
 
       - name: Preparing the data
         run: |
-          mkdir spatial spatial/preprocess spatial/preprocess/data
-          cd spatial/preprocess/data 
+          mkdir spatial spatial/preprocess_concat spatial/preprocess_concat/data
+          cd spatial/preprocess_concat/data 
           
           curl -L -o V1_Human_Heart_unfilt.zarr.zip https://figshare.com/ndownloader/files/52236521
           unzip V1_Human_Heart_unfilt.zarr.zip
@@ -70,35 +70,35 @@ jobs:
       - name: Preparing the configuration file
         shell: bash -el {0}
         run: |
-          cd spatial/preprocess
+          cd spatial/preprocess_concat
           panpipes preprocess_spatial config
 
       - name: Edit the submission file
         run: |
-          cd spatial/preprocess
+          cd spatial/preprocess_concat
           curl -o pipeline.yml https://raw.githubusercontent.com/DendrouLab/panpipes-tutorials/main/docs/preprocess_spatial_data/pipeline_concat.yml
 
       - name: Replace template contents in configuration file
         run: |
-          cd spatial/preprocess
+          cd spatial/preprocess_concat
           sed -i 's+../ingestion/qc.data/+./data/+g' pipeline.yml
   
       - name: File tree
         if: env.debug == 'true'
-        run: tree spatial/preprocess
+        run: tree spatial/preprocess_concat
 
       - name: Review pipeline tasks
         shell: bash -el {0}
         run: |
-          cd spatial/preprocess
+          cd spatial/preprocess_concat
           panpipes preprocess_spatial show full --local
 
       - name: Run pipeline tasks
         shell: bash -el {0}
         run: |
-          cd spatial/preprocess
+          cd spatial/preprocess_concat
           panpipes preprocess_spatial make full --local
 
       - name: File tree
         if: env.debug == 'true'
-        run: tree spatial/preprocess
+        run: tree spatial/preprocess_concat
