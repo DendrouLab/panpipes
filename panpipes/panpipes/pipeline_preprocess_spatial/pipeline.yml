@@ -10,7 +10,7 @@
 resources:
   # Number of threads used for parallel jobs
   threads_high: 1 # Number of threads used for high intensity computing tasks
-  threads_medium: 1  # Must be enough memory to load your mudata and do computationally light tasks
+  threads_medium: 1  # Must be enough memory to load your spatialdata and do computationally light tasks
   threads_low: 1 # Must be enough memory to load text files and do plotting, requires much less memory
 
 condaenv:  # Path to conda env, leave blank if running native or your cluster automatically inherits the login node environment
@@ -20,25 +20,25 @@ condaenv:  # Path to conda env, leave blank if running native or your cluster au
 ## 1. Specify input
 # ------------------
 
-# With the preprocess_spatial workflow, one or multiple MuData objects can be preprocessed in one run. 
-# For the preprocessing, it reads in all '.h5mu' objects of a directory, for example:
+# With the preprocess_spatial workflow, one or multiple SpatialData objects can be preprocessed in one run. 
+# For the preprocessing, it reads in all '.zarr' objects of a directory, for example:
 # ./qc.data
-# ├── Human_LN_alt_unfilt.h5mu
-# ├── Human_LN_unfilt.h5mu
-# └── Human_heart_unfilt.h5mu
+# ├── Human_LN_alt_unfilt.zarr
+# ├── Human_LN_unfilt.zarr
+# └── Human_heart_unfilt.zarr
 
-# The workflow then runs the preprocessing for each MuData object separately with the same parameters that are specified in this yaml file. 
-# Note, that the MuData objects in the directory need to be of the same assay (Vizgen or Visium).
+# The workflow then runs the preprocessing for each SpatialData object separately with the same parameters that are specified in this yaml file. 
+# Note, that the SpatialData objects in the directory need to be of the same assay (Vizgen, Visium, or Xenium).
 
 input_dir: ../qc.data/
-assay: visium # Specify the spatial transcriptomics assay, one of "visium" or "vizgen". If left blank, will use default "visium"
+assay: visium # Specify the spatial transcriptomics assay, one of "visium", "vizgen", or "xenium". If left blank, will use default "visium"
 
 
 # --------------
 ## 2. Filtering
 # --------------
 
-# The filtering is fully customisable to any columns in the .obs or .var. You are not restricted by the columns given as default. When specifying a column name, make sure it exactly matches the column name in the h5mu object.
+# The filtering is fully customisable to any columns in the .obs or .var. You are not restricted by the columns given as default. When specifying a column name, make sure it exactly matches the column name in the zarr object.
 # General structure: 
 # spatial:
   # obs: <- spot/cell level filtering
@@ -126,5 +126,10 @@ spatial:
   n_pcs: 50 # Leave blank to use default (50); how many PCs to compute with sc.pp.PCA() and plot in sc.pl.pca_variance_ratio()
 
 
+# -----------------------------------------
+# 4. Concatenation
+# -----------------------------------------
+
+concat: False # Leave blank to use default (False); whether to conatenate all preprocessed SpatialDatas in ./filtered_data
 
 
