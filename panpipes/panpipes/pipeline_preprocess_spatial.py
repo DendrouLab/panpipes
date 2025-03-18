@@ -157,10 +157,9 @@ def spatial_preprocess(filt_file,log_file):
 
 
 @active_if(PARAMS['concat'])
-def concat_spatial(log_file): 
+def concat_spatial(): 
     log_file = "./logs/4_concat.log"
     filt_dir = "./filtered.data/"
-    spatial_filetype = PARAMS["assay"]
     if os.path.exists("./concatenated.data/") is False:
         os.mkdir("./concatenated.data/")
     output_dir = "./concatenated.data/"
