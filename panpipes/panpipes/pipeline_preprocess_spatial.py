@@ -154,7 +154,32 @@ def spatial_preprocess(filt_file,log_file):
     get_logger().info(log_msg)
     P.run(cmd, **job_kwargs)
 
-@follows(filter_spatialdata, postfilterplot_spatial, spatial_preprocess)
+
+
+@active_if(PARAMS['concat'])
+def concat_spatial(log_file): 
+    log_file = "./logs/4_concat.log"
+    filt_dir = "./filtered.data/"
+    spatial_filetype = PARAMS["assay"]
+    if os.path.exists("./concatenated.data/") is False:
+        os.mkdir("./concatenated.data/")
+    output_dir = "./concatenated.data/"
+    cmd = """
+            python %(py_path)s/concatenaton_spatial.py
+             --input_dir %(filt_dir)s
+             --output_dir %(output_dir)s
+            """
+    
+    cmd += " > %(log_file)s "
+    job_kwargs["job_threads"] = PARAMS['resources_threads_low']
+    log_msg = f"TASK: 'postfilterplot'" + f" IN CASE OF ERROR, PLEASE REFER TO : '{log_file}' FOR MORE INFORMATION."
+    get_logger().info(log_msg)
+    P.run(cmd, **job_kwargs)
+
+
+
+
+@follows(filter_spatialdata, postfilterplot_spatial, spatial_preprocess, concat_spatial)
 @originate("cleanup_done.txt")
 def cleanup(file):
     # remove any ctmp fails
