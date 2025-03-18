@@ -12,7 +12,7 @@ env:
   debug: 'true'
 
 jobs:
-  spatial_preprocessing:
+  spatial_preprocessing_concat:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
