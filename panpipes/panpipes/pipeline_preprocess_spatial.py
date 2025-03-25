@@ -157,8 +157,11 @@ def spatial_preprocess(filt_file,log_file):
 
 
 @active_if(PARAMS['concat'])
-@originate(["./logs/4_concat.log", "./filtered.data/", "./concatenated.data/"])
-def concat_spatial(log_file, filt_dir, output_dir): 
+@follows(spatial_preprocess)
+@originate("./logs/4_concat.log")
+def concat_spatial(log_file): 
+    output_dir = "./concatenated.data/"
+    filt_dir = "./filtered.data/"
     if os.path.exists(output_dir) is False:
         os.mkdir(output_dir)
     cmd = """
