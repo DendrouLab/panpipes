@@ -8,6 +8,7 @@ import numpy as np
 import scanpy as sc
 import muon as mu
 import scanpy.experimental as sce
+import spatialdata as sd
 
 import os
 import argparse
@@ -31,11 +32,11 @@ sc.settings.verbosity = 3
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument("--input_mudata",
-                    default="mudata_unfilt.h5mu",
+parser.add_argument("--input_spatialdata",
+                    default="spatialdata_unfilt.h5mu",
                     help="")
-parser.add_argument("--output_mudata",
-                    default="mudata_unfilt.h5mu",
+parser.add_argument("--output_spatialdata",
+                    default="spatialdata_unfilt.h5mu",
                     help="")
 parser.add_argument("--figdir",
                     default="./figures/",
@@ -88,12 +89,13 @@ if not os.path.exists(figdir):
 sc.settings.figdir = figdir
 sc.set_figure_params(scanpy=True, fontsize=14, dpi=300, facecolor='white', figsize=(5,5))
 
-L.info("Reading in MuData from '%s'" % args.input_mudata)
-mdata = mu.read(args.input_mudata)
-spatial = mdata.mod['spatial']
+L.info("Reading in SpatialData from '%s'" % args.input_spatialdata)
+sdata = sd.read_zarr(args.input_spatialdata)
+#mdata = mu.read(args.input_spatialdata)
+#spatial = mdata.mod['spatial']
 
-input_data = os.path.basename(args.input_mudata)
-pattern = r"_filtered.h5(.*)"
+input_data = os.path.basename(args.input_spatialdata)
+pattern = r"_filtered.zarr"
 match = re.search(pattern, input_data)
 sprefix = input_data[:match.start()]
 
@@ -101,12 +103,12 @@ sprefix = input_data[:match.start()]
 # check if raw data is available
 #maybe layer of raw data as parameter
 L.info("Checking if raw data is available")
-if X_is_raw(spatial):
+if X_is_raw(sdata["table"]):
     L.info("Saving raw counts from .X to .layers['raw_counts']")
-    spatial.layers['raw_counts'] = spatial.X.copy()
-elif "raw_counts" in spatial.layers :
+    sdata["table"].layers['raw_counts'] = sdata["table"].X.copy()
+elif "raw_counts" in sdata["table"].layers :
     L.info(".layers['raw_counts'] already exists and copying it to .X")
-    spatial.X = spatial.layers['raw_counts'].copy()
+    sdata["table"].X = sdata["table"].layers['raw_counts'].copy()
 else:
     L.error("X is not raw data and 'raw_counts' layer not found")
     sys.exit("X is not raw data and 'raw_counts' layer not found")
@@ -116,24 +118,24 @@ else:
 if args.norm_hvg_flavour == "squidpy":
     if args.squidpy_hvg_flavour == "seurat_v3":
         L.info("Running HVG selection with flavor seurat_v3")
-        sc.pp.highly_variable_genes(spatial, flavor="seurat_v3", n_top_genes=int(args.n_top_genes), subset=args.filter_by_hvg,
+        sc.pp.highly_variable_genes(sdata["table"], flavor="seurat_v3", n_top_genes=int(args.n_top_genes), subset=args.filter_by_hvg,
                                     batch_key=args.hvg_batch_key)
         L.info("Log-normalizing data")
-        sc.pp.normalize_total(spatial)
-        sc.pp.log1p(spatial)
+        sc.pp.normalize_total(sdata["table"])
+        sc.pp.log1p(sdata["table"])
     else:
         L.info("Log-normalizing data")
-        sc.pp.normalize_total(spatial)
-        sc.pp.log1p(spatial)
+        sc.pp.normalize_total(sdata["table"])
+        sc.pp.log1p(sdata["table"])
         L.info("Running HVG selection with flavor %s" % args.squidpy_hvg_flavour)
-        sc.pp.highly_variable_genes(spatial, flavor=args.squidpy_hvg_flavour,
+        sc.pp.highly_variable_genes(sdata["table"], flavor=args.squidpy_hvg_flavour,
                                     min_mean=float(args.min_mean),
                                     max_mean=float(args.max_mean),
                                     min_disp=float(args.min_disp), subset=args.filter_by_hvg, batch_key=args.hvg_batch_key)
     L.info("Saving log-normalized counts to .layers['lognorm']")
-    spatial.layers["lognorm"] = spatial.X.copy()
+    sdata["table"].layers["lognorm"] = sdata["table"].X.copy()
     # plot HVGs:
-    sc.pl.highly_variable_genes(spatial, show=False, save="_genes_highlyvar" + "."+ sprefix+ ".png")
+    sc.pl.highly_variable_genes(sdata["table"], show=False, save="_genes_highlyvar" + "."+ sprefix+ ".png")
 
 elif args.norm_hvg_flavour == "seurat":
     if args.clip is None:
@@ -145,35 +147,35 @@ elif args.norm_hvg_flavour == "seurat":
     else:
         clip = float(args.clip)
     L.info("Running Pearson Residuals HVG selection")
-    sce.pp.highly_variable_genes(spatial, theta=float(args.theta), clip=clip, n_top_genes=int(args.n_top_genes),
+    sce.pp.highly_variable_genes(sdata["table"], theta=float(args.theta), clip=clip, n_top_genes=int(args.n_top_genes),
                                  batch_key=args.hvg_batch_key, flavor='pearson_residuals',
                                  layer="raw_counts", subset=args.filter_by_hvg)
     L.info("Running Pearson Residuals normalization")
-    sce.pp.normalize_pearson_residuals(spatial, theta=float(args.theta), clip=clip, layer="raw_counts")
+    sce.pp.normalize_pearson_residuals(sdata["table"], theta=float(args.theta), clip=clip, layer="raw_counts")
     L.info("Saving log-normalized counts to .layers['norm_pearson_resid']")
-    spatial.layers["norm_pearson_resid"] = spatial.X.copy()
+    sdata["table"].layers["norm_pearson_resid"] = sdata["table"].X.copy()
 else:
     # error or warning?
     L.warning("No normalization and HVG selection was performed! To perform, please specify the 'norm_hvg_flavour' as either 'squidpy' or 'seurat'")
 
 
-if "highly_variable" in spatial.var:
-    L.info("You have %s Highly Variable Features", np.sum(spatial.var.highly_variable))
+if "highly_variable" in sdata["table"].var:
+    L.info("You have %s Highly Variable Features", np.sum(sdata["table"].var.highly_variable))
 
 
 
 #PCA
 L.info("Running PCA")
-sc.pp.pca(spatial, n_comps=int(args.n_pcs), svd_solver='arpack', random_state=0)
+sc.pp.pca(sdata["table"], n_comps=int(args.n_pcs), svd_solver='arpack', random_state=0)
 L.info("Plotting PCA")
-sc.pl.pca(spatial, save = "_vars" + "."+ sprefix+".png")
-sc.pl.pca_variance_ratio(spatial, log=True, n_pcs=int(args.n_pcs), save= "."+ sprefix+".png")
+sc.pl.pca(sdata["table"], save = "_vars" + "."+ sprefix+".png")
+sc.pl.pca_variance_ratio(sdata["table"], log=True, n_pcs=int(args.n_pcs), save= "."+ sprefix+".png")
 
 
         
-mdata.update()
-L.info("Saving updated MuData to '%s'" % args.output_mudata)
-mdata.write(args.output_mudata)
+#mdata.update()
+L.info("Saving updated SpatialData to '%s'" % args.output_spatialdata)
+sdata.write(args.output_spatialdata)
 
 L.info("Done")
 

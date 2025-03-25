@@ -7,6 +7,7 @@ warnings.simplefilter(action='ignore', category=FutureWarning)
 import cell2location as c2l
 import scanpy as sc
 import pandas as pd
+import spatialdata as sd
 import muon as mu
 
 import os
@@ -18,6 +19,7 @@ from panpipes.funcs.plotting import cell2loc_plot_QC_reference
 from panpipes.funcs.plotting import cell2loc_plot_QC_reconstr
 from panpipes.funcs.plotting import cell2loc_plot_history
 from panpipes.funcs.scmethods import cell2loc_filter_genes
+
 
 
 L = logging.getLogger()
@@ -47,6 +49,9 @@ parser.add_argument("--output_dir",
 parser.add_argument("--save_models",
                     default=False,
                     help="whether to save the reference & spatial mapping models")
+parser.add_argument("--export_gene_by_spot",
+                    default=False,
+                    help="whether to save a gene by spot matrix for each cell type in a layer")
 
 
 # parameters for feature selection: 
@@ -85,9 +90,12 @@ parser.add_argument("--continuous_covariate_keys_reference",
 parser.add_argument("--max_epochs_reference",
                     default=None,
                     help="")
-parser.add_argument("--use_gpu_reference",
-                    default=True,
+parser.add_argument("--accelerator_reference",
+                    default="auto",
                     help="")
+#parser.add_argument("--use_gpu_reference",
+#                    default=True,
+#                    help="")
 
 # parameters for spatial model: 
 parser.add_argument("--labels_key_st",
@@ -114,9 +122,12 @@ parser.add_argument("--detection_alpha",
 parser.add_argument("--max_epochs_st",
                     default=None,
                     help="")  
-parser.add_argument("--use_gpu_st",
-                    default=True,
+parser.add_argument("--accelerator_spatial",
+                    default="auto",
                     help="")
+#parser.add_argument("--use_gpu_st",
+#                    default=True,
+#                    help="")
 
 
 args, opt = parser.parse_known_args()
@@ -146,6 +157,11 @@ if (args.save_models is False) or (args.save_models == "False"):
     save_models = False
 else:
     save_models = True
+
+if (args.export_gene_by_spot is False) or (args.export_gene_by_spot == "False"): 
+    export_gene_by_spot = False
+else:
+    export_gene_by_spot = True
       
 if (args.remove_mt is True) or (args.remove_mt == "True"): 
     remove_mt = True
@@ -184,22 +200,24 @@ if args.max_epochs_st is None:
 else: 
     max_epochs_st= int(args.max_epochs_st)
 
-if (args.use_gpu_reference is True) or (args.use_gpu_reference == "True"): 
-    use_gpu_reference = True
-else:
-    use_gpu_reference = False
-if (args.use_gpu_st is True) or (args.use_gpu_st == "True"): 
-    use_gpu_st = True
-else:
-    use_gpu_st = False
+
+#if (args.use_gpu_reference is True) or (args.use_gpu_reference == "True"): 
+#    use_gpu_reference = True
+#else:
+#    use_gpu_reference = False
+#if (args.use_gpu_st is True) or (args.use_gpu_st == "True"): 
+#    use_gpu_st = True
+#else:
+#    use_gpu_st = False
 
 
 
 #1. read in the data
 #spatial: 
-L.info("Reading in spatial MuData from '%s'" % args.input_spatial)
-mdata_spatial = mu.read(args.input_spatial)
-adata_st = mdata_spatial.mod['spatial']
+L.info("Reading in SpatialData from '%s'" % args.input_spatial)
+sdata_st = sd.read_zarr(args.input_spatial)
+#mdata_spatial = mu.read(args.input_spatial)
+#adata_st = mdata_spatial.mod['spatial']
 #single-cell: 
 L.info("Reading in reference MuData from '%s'" % args.input_singlecell)
 mdata_singlecell = mu.read(args.input_singlecell)
@@ -218,11 +236,11 @@ if args.gene_list != "None": # read in csv and subset both anndatas
     reduced_gene_set.columns = ["HVGs"]
     L.info("Subsetting data on gene list")
     adata_sc.var["selected_gene"] = adata_sc.var.index.isin(reduced_gene_set["HVGs"])
-    adata_st.var["selected_gene"] = adata_st.var.index.isin(reduced_gene_set["HVGs"])
+    sdata_st["table"].var["selected_gene"] = sdata_st["table"].var.index.isin(reduced_gene_set["HVGs"])
     adata_sc = adata_sc[:, adata_sc.var["selected_gene"]]
-    adata_st = adata_st[:, adata_st.var["selected_gene"]]
+    sdata_st["table"] = sdata_st["table"][:, sdata_st["table"].var["selected_gene"]]
     # check whether all genes are present in both, spatial & reference
-    if set(adata_st.var.index) != set(adata_sc.var.index):
+    if set(sdata_st["table"].var.index) != set(adata_sc.var.index):
         L.error(
             "Not all genes of the gene list %s are present in the reference as well as in the ST data. Please provide a gene list where all genes are present in both, reference and ST.", args.gene_list)
         sys.exit(
@@ -231,14 +249,14 @@ if args.gene_list != "None": # read in csv and subset both anndatas
 else: # perform feature selection according to cell2loc
     if remove_mt is True: 
         L.info("Removing MT genes")
-        adata_st.var["MT_gene"] = [gene.startswith("MT-") for gene in adata_st.var.index]
-        adata_st.obsm["MT"] = adata_st[:, adata_st.var["MT_gene"].values].X.toarray()
-        adata_st = adata_st[:, ~adata_st.var["MT_gene"].values]
+        sdata_st["table"].var["MT_gene"] = [gene.startswith("MT-") for gene in sdata_st["table"].var.index]
+        sdata_st["table"].obsm["MT"] = sdata_st["table"][:, sdata_st["table"].var["MT_gene"].values].X.toarray()
+        sdata_st["table"] = sdata_st["table"][:, ~sdata_st["table"].var["MT_gene"].values]
     # intersect vars of reference and spatial
     L.info("Intersecting vars of reference and spatial ")
-    shared_features = [feature for feature in adata_st.var_names if feature in adata_sc.var_names]
+    shared_features = [feature for feature in sdata_st["table"].var_names if feature in adata_sc.var_names]
     adata_sc = adata_sc[:, shared_features]
-    adata_st = adata_st[:, shared_features]
+    sdata_st["table"] = sdata_st["table"][:, shared_features]
     # select features
     L.info("Selecting features using 'cell2location.utils.filtering.filter_genes() function'")
     selected = cell2loc_filter_genes(adata_sc, figdir + "/gene_filter.png", cell_count_cutoff=float(args.cell_count_cutoff),
@@ -246,7 +264,7 @@ else: # perform feature selection according to cell2loc
                                                 nonz_mean_cutoff=float(args.nonz_mean_cutoff))
     L.info("Subsetting data on selected features")
     adata_sc = adata_sc[:, selected]
-    adata_st = adata_st[:, selected]
+    sdata_st["table"] = sdata_st["table"][:, selected]
 
     
 
@@ -260,7 +278,7 @@ c2l.models.RegressionModel.setup_anndata(adata=adata_sc,
                                          continuous_covariate_keys =  continuous_covariate_keys_reference)
 model_ref = c2l.models.RegressionModel(adata_sc)
 L.info("Training the reference model")
-model_ref.train(max_epochs=max_epochs_reference, use_gpu = use_gpu_reference)
+model_ref.train(max_epochs=max_epochs_reference, **{"accelerator": args.accelerator_reference})#use_gpu = use_gpu_reference)
 
 # plot elbo
 L.info("Plotting ELBO")
@@ -280,7 +298,7 @@ inf_aver.to_csv(output_dir+"/Cell2Loc_inf_aver.csv")
 L.info("Plotting QC plots")
 cell2loc_plot_QC_reference(model_ref, figdir + "/QC_reference_reconstruction_accuracy.png", figdir + "/QC_reference_expression signatures_vs_avg_expression.png")
 
-# save model and update mudata
+# save model 
 if adata_sc.var.index.names[0] in adata_sc.var.columns: 
 	adata_sc.var.index.names = [None]
 mdata_singlecell.mod["rna"] = adata_sc
@@ -293,7 +311,7 @@ if save_models is True:
        
 # 4. Fit mapping model   
 L.info("Setting up AnnData for the spatial model")
-c2l.models.Cell2location.setup_anndata(adata=adata_st, 
+c2l.models.Cell2location.setup_anndata(adata=sdata_st["table"], 
                                          labels_key = args.labels_key_st,
                                          layer= args.layer_st, 
                                          batch_key= args.batch_key_st,
@@ -301,43 +319,56 @@ c2l.models.Cell2location.setup_anndata(adata=adata_st,
                                          continuous_covariate_keys =  continuous_covariate_keys_st)
 
         
-model_spatial = c2l.models.Cell2location(adata = adata_st, cell_state_df=inf_aver, 
+model_spatial = c2l.models.Cell2location(adata = sdata_st["table"], cell_state_df=inf_aver, 
                                         N_cells_per_location=float(args.N_cells_per_location),
                                         detection_alpha=float(args.detection_alpha))
 L.info("Training the spatial model")
-model_spatial.train(max_epochs=max_epochs_st, use_gpu = use_gpu_st)
+model_spatial.train(max_epochs=max_epochs_st, **{"accelerator": args.accelerator_spatial})# use_gpu = use_gpu_st)
 
 #plot elbo
 L.info("Plotting ELBO")
 cell2loc_plot_history(model_spatial, figdir + "/ELBO_spatial_model.png")
 #extract posterior
 L.info("Extracting the posterior of the spatial model")
-adata_st = model_spatial.export_posterior(adata_st)
+sdata_st["table"] = model_spatial.export_posterior(sdata_st["table"])
 #plot QC
 L.info("Plotting QC plots")
 cell2loc_plot_QC_reconstr(model_spatial, figdir + "/QC_spatial_reconstruction_accuracy.png")
 
+# export a gene by spot matrix for each cell type
+if export_gene_by_spot:
+    # Compute expected expression per cell type
+    expected_dict = model_spatial.module.model.compute_expected_per_cell_type(model_spatial.samples["post_sample_q05"], model_spatial.adata_manager)
+    # Add to anndata layers
+    for i, n in enumerate(model_spatial.factor_names_):
+        sdata_st["table"].layers[n] = expected_dict['mu'][i]
+
 
 #plot output
 L.info("Plotting spatial embedding plot coloured by 'q05_cell_abundance_w_sf'")
-adata_st.obs[adata_st.uns["mod"]["factor_names"]] = adata_st.obsm["q05_cell_abundance_w_sf"]
-sc.pl.spatial(adata_st,color=adata_st.uns["mod"]["factor_names"], show = False, save = "_Cell2Loc_q05_cell_abundance_w_sf.png") 
+sdata_st["table"].obs[sdata_st["table"].uns["mod"]["factor_names"]] = sdata_st["table"].obsm["q05_cell_abundance_w_sf"]
+sc.pl.spatial(sdata_st["table"],color=sdata_st["table"].uns["mod"]["factor_names"], show = False, save = "_Cell2Loc_q05_cell_abundance_w_sf.png") 
 
 
-# save model and update mudata
-if adata_st.var.index.names[0] in adata_st.var.columns: 
-	adata_st.var.index.names = [None]
-mdata_spatial.mod["spatial"] = adata_st
-mdata_spatial.update()
+# save model 
+if sdata_st["table"].var.index.names[0] in sdata_st["table"].var.columns: 
+	sdata_st["table"].var.index.names = [None]
+#mdata_spatial.mod["spatial"] = adata_st
+#mdata_spatial.update()
 if save_models is True: 
     L.info("Saving spatial model to '%s'" % output_dir)
     model_spatial.save(output_dir+"/Spatial_mapping_model", overwrite=True)
 
 
-#6. save mudatas 
-L.info("Saving MuDatas to '%s'" % output_dir)
+#6. save data 
+# check column names of spatial data
+if any([' ' in col for col in sdata_st["table"].obs.columns]):
+    L.warning("Spaces were found in column names of sdata['table']. Replacing spaces by underscores.")
+    sdata_st["table"].obs.columns = sdata_st["table"].obs.columns.str.replace(' ', '_')
+    
+L.info("Saving SpatialData and MuData to '%s'" % output_dir)
 mdata_singlecell.write(output_dir+"/Cell2Loc_screference_output.h5mu")
-mdata_spatial.write(output_dir+"/Cell2Loc_spatial_output.h5mu")
+sdata_st.write(output_dir+"/Cell2Loc_spatial_output.zarr")
 
 
 L.info("Done")

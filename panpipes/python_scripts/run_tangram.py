@@ -9,6 +9,7 @@ import pandas as pd
 import scanpy as sc
 import tangram as tg 
 import muon as mu
+import spatialdata as sd
 
 import os
 import argparse
@@ -100,11 +101,12 @@ if not os.path.exists(output_dir):
 
 #1. read in the data
 #spatial: 
-L.info("Reading in spatial MuData from '%s'" % args.input_spatial)
-mdata_spatial = mu.read(args.input_spatial)
-adata_st = mdata_spatial.mod['spatial']
+L.info("Reading in SpatialData from '%s'" % args.input_spatial)
+sdata_st = sd.read_zarr(args.input_spatial)
+#mdata_spatial = mu.read(args.input_spatial)
+#adata_st = mdata_spatial.mod['spatial']
 #single-cell: 
-L.info("Reading in reference MuData from '%s'" % args.input_singlecell)
+L.info("Reading in reference SpatialData from '%s'" % args.input_singlecell)
 mdata_singlecell = mu.read(args.input_singlecell)
 adata_sc = mdata_singlecell.mod['rna']
 
@@ -131,33 +133,38 @@ else: # perform feature selection using sc.tl.rank_genes_groups()
 
 # "Preprocess" anndatas
 L.info("Preprocessing AnnDatas")
-tg.pp_adatas(adata_sc=adata_sc, adata_sp=adata_st, genes=markers)
+tg.pp_adatas(adata_sc=adata_sc, adata_sp=sdata_st["table"], genes=markers)
 
 # 3. Run tangram
 L.info("Training model")
 adata_results = tg.mapping_utils.map_cells_to_space(
-        adata_sc=adata_sc, adata_sp=adata_st, num_epochs=int(args.num_epochs), device=args.device, **args.kwargs
+        adata_sc=adata_sc, adata_sp=sdata_st["table"], num_epochs=int(args.num_epochs), device=args.device, **args.kwargs
     )
 
 # 3. Extract and plot results 
 L.info("Extracting annotations")
-tg.project_cell_annotations(adata_results, adata_st, annotation=args.labels_key_model)
+tg.project_cell_annotations(adata_results, sdata_st["table"], annotation=args.labels_key_model)
 
 L.info("Plotting spatial embedding plot coloured by 'tangram_ct_pred'")
 annotation_list = list(pd.unique(adata_sc.obs[args.labels_key_model]))
-df = adata_st.obsm["tangram_ct_pred"][annotation_list]
-tg.construct_obs_plot(df, adata_st, perc=0.05)
-if "spatial" in adata_st.uns: 
-	sc.pl.spatial(adata_st, color=annotation_list, cmap="viridis", show=False, frameon=False, ncols=3, save = "_tangram_ct_pred.png")
+df = sdata_st["table"].obsm["tangram_ct_pred"][annotation_list]
+tg.construct_obs_plot(df, sdata_st["table"], perc=0.05)
+if "spatial" in sdata_st["table"].uns: 
+	sc.pl.spatial(sdata_st["table"], color=annotation_list, cmap="viridis", show=False, frameon=False, ncols=3, save = "_tangram_ct_pred.png")
 else: 
-	sc.pl.spatial(adata_st, color=annotation_list, cmap="viridis", show=False, frameon=False, ncols=3, save = "_tangram_ct_pred.png",spot_size=0.5)
+	sc.pl.spatial(sdata_st["table"], color=annotation_list, cmap="viridis", show=False, frameon=False, ncols=3, save = "_tangram_ct_pred.png",spot_size=0.5)
 
 
 mdata_singlecell_results = mu.MuData({"rna": adata_sc})
-mdata_spatial_results = mu.MuData({"spatial": adata_st})
+#mdata_spatial_results = mu.MuData({"spatial": adata_st})
 
-L.info("Saving MuDatas to '%s'" % output_dir)
+# check column names of spatial data
+if any([' ' in col for col in sdata_st["table"].obs.columns]):
+    L.warning("Spaces were found in column names of sdata['table']. Replacing spaces by underscores.")
+    sdata_st["table"].obs.columns = sdata_st["table"].obs.columns.str.replace(' ', '_')
+
+L.info("Saving SpatialData and MuData to '%s'" % output_dir)
 mdata_singlecell_results.write(output_dir+"/Tangram_screference_output.h5mu")
-mdata_spatial_results.write(output_dir+"/Tangram_spatial_output.h5mu")
+sdata_st.write(output_dir+"/Tangram_spatial_output.zarr")
 
 L.info("Done")

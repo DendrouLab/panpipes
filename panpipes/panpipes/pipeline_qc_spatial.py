@@ -56,7 +56,7 @@ def set_up_dirs(log_file):
     pass
 
 # -----------------------------------------------------------------------------------------------
-## Creating h5mu from filtered data files
+## Creating spatialData from filtered data files
 # -----------------------------------------------------------------------------------------------
 
 
@@ -73,12 +73,9 @@ def gen_load_spatial_anndata_jobs():
 @follows(mkdir("logs"))
 @follows(mkdir("tmp"))
 @files(gen_load_spatial_anndata_jobs)
-def load_mudatas(spatial_path, outfile, 
-                 sample_id,
-                 spatial_filetype, 
-                 spatial_counts, 
-                 spatial_metadata, 
-                 spatial_transformation):
+def load_spatialdatas(spatial_path,  outfile, 
+                 sample_id, spatial_filetype, visium_feature_bc_matrix, visium_fullres_image_file, visium_tissue_positions_file, visium_scalefactors_file,
+              vpt_cell_by_gene, vpt_cell_metadata, vpt_cell_boundaries):
     
     path_dict = {'spatial':spatial_path}
                  
@@ -86,45 +83,56 @@ def load_mudatas(spatial_path, outfile,
     print('sample_id = %s' % str(sample_id))
     print('outfile = %s' % str(outfile))
     print('spatial_filetype = %s' % str(spatial_filetype))
-    print('spatial_counts = %s' % str(spatial_counts))
+
+    if spatial_filetype == "visium":
+        print('visium_feature_bc_matrix = %s' % str(visium_feature_bc_matrix))
+        print('visium_fullres_image_file= %s' % str(visium_fullres_image_file))
+        print('visium_tissue_positions_file= %s' % str(visium_tissue_positions_file))
+        print('visium_scalefactors_file= %s' % str(visium_scalefactors_file))
     if spatial_filetype == "vizgen":
-        print('spatial_metadata = %s' % str(spatial_metadata))
-        print('spatial_transformation = %s' % str(spatial_transformation))
-    else:
-        print("visium")
+        print('vpt_cell_by_gene = %s' % str(vpt_cell_by_gene))
+        print('vpt_cell_metadata= %s' % str(vpt_cell_metadata))
+        print('vpt_cell_boundaries= %s' % str(vpt_cell_boundaries))
     modality_dict = {k:True if path_dict[k] is not None else False for k,v in {'spatial': True}.items() }
     print(modality_dict)
 
     assays[outfile] = spatial_filetype
     
     cmd = """
-        python %(py_path)s/make_mudataspatial_from_csv.py 
+        python %(py_path)s/make_spatialData_from_csv.py 
         --mode_dictionary "%(modality_dict)s"
         --sample_id %(sample_id)s
         --output_file %(outfile)s 
         --spatial_filetype %(spatial_filetype)s
         --spatial_infile %(spatial_path)s
-        --spatial_counts %(spatial_counts)s
     """
+    if spatial_filetype == "visium":
+        cmd += """
+        --visium_feature_bc_matrix %(visium_feature_bc_matrix)s
+        --scalefactors_file %(visium_scalefactors_file)s 
+        --fullres_image_file %(visium_fullres_image_file)s
+        --tissue_positions_file %(visium_tissue_positions_file)s
+        """
     if spatial_filetype == "vizgen":
         cmd += """
-        --spatial_metadata %(spatial_metadata)s 
-        --spatial_transformation %(spatial_transformation)s
+        --vpt_cell_by_gene %(vpt_cell_by_gene)s
+        --vpt_cell_metadata %(vpt_cell_metadata)s 
+        --vpt_cell_boundaries %(vpt_cell_boundaries)s
         """
-    cmd += " > logs/1_make_mudatas_%(sample_id)s.log"
+    cmd += " > logs/1_make_spatialdatas_%(sample_id)s.log"
     job_kwargs["job_threads"] = PARAMS['resources_threads_medium']
-    log_msg = f"TASK: 'load_mudatas'" + f" IN CASE OF ERROR, PLEASE REFER TO : 'logs/1_make_mudatas_{sample_id}.log' FOR MORE INFORMATION."
+    log_msg = f"TASK: 'load_spatialdatas'" + f" IN CASE OF ERROR, PLEASE REFER TO : 'logs/1_make_spatialdatas_{sample_id}.log' FOR MORE INFORMATION."
     get_logger().info(log_msg)
     P.run(cmd, **job_kwargs)
 
 
 
 
-@follows(load_mudatas)
+@follows(load_spatialdatas)
 @follows(mkdir("qc.data"))
 @follows(mkdir("./figures"))
-@transform(load_mudatas,
-           regex("./tmp/(.*)_raw.h5(.*)"), 
+@transform(load_spatialdatas,
+           regex("./tmp/(.*)_raw.zarr"), 
            r"./logs/2_spatialQC_\1.log")
 def spatialQC(infile,log_file):
     spatial_filetype = assays[infile]
@@ -171,8 +179,8 @@ def run_plotqc_query(pqc_dict):
 @follows(spatialQC)
 @follows(mkdir("./figures/spatial"))
 @active_if(run_plotqc_query(PARAMS['plotqc']))
-@transform(load_mudatas, 
-           regex("./tmp/(.*)_raw.h5(.*)"),
+@transform(load_spatialdatas, 
+           regex("./tmp/(.*)_raw.zarr"),
            r"./logs/3_qcplot.\1.log")
 def plotQC_spatial(unfilt_file,log_file):
     spatial_filetype = assays[unfilt_file]
@@ -180,7 +188,7 @@ def plotQC_spatial(unfilt_file,log_file):
     unfilt_file = unfilt_file.replace("tmp", "qc.data")
     cmd = """
             python %(py_path)s/plot_qc_spatial.py
-             --input_mudata %(unfilt_file)s
+             --input_spatialdata %(unfilt_file)s
              --spatial_filetype %(spatial_filetype)s
              --figdir ./figures/spatial
             """

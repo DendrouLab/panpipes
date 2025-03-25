@@ -13,6 +13,7 @@ import argparse
 import sys
 import logging
 import re 
+import spatialdata as sd
 L = logging.getLogger()
 L.setLevel(logging.INFO)
 log_handler = logging.StreamHandler(sys.stdout)
@@ -27,8 +28,8 @@ sc.settings.verbosity = 3
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument("--input_mudata",
-                    default="mudata_unfilt.h5mu",
+parser.add_argument("--input_spatialdata",
+                    default="spatialdata_unfilt.h5mu",
                     help="")
 parser.add_argument("--figdir",
                     default="./figures/",
@@ -57,15 +58,16 @@ figdir = args.figdir
 sc.settings.figdir = figdir
 sc.set_figure_params(scanpy=True, fontsize=14, dpi=300, facecolor='white', figsize=(5,5))
 
-L.info("Reading in MuData from '%s'" % args.input_mudata)
-mdata = mu.read(args.input_mudata)
-spatial = mdata.mod['spatial']
+L.info("Reading in SpatialData from '%s'" % args.input_spatialdata)
+sdata = sd.read_zarr(args.input_spatialdata)
+#mdata = mu.read(args.input_spatialdata)
+#spatial = mdata.mod['spatial']
 
-input_data = os.path.basename(args.input_mudata)
-pattern = r"_filtered.h5(.*)"
+input_data = os.path.basename(args.input_spatialdata)
+pattern = r"_filtered.zarr"
 match = re.search(pattern, input_data)
 if match is None:
-    match = re.search(r"_unfilt.h5(.*)", input_data)
+    match = re.search(r"_unfilt.zarr", input_data)
 sprefix = input_data[:match.start()]
 
 # convert string to list of strings
@@ -74,15 +76,16 @@ group_var = list(args.grouping_var.split(","))
 
 
 # check if metrics in adata.obs or adata.var
-qc_metrics = [metric if metric in spatial.obs.columns or metric in spatial.var.columns else L.warning("Variable '%s' not found in adata.var or adata.obs, will not be plotted" % metric) for metric in qc_metrics]
+qc_metrics = [metric if metric in 
+              sdata["table"].obs.columns or metric in sdata["table"].var.columns else L.warning("Variable '%s' not found in adata.var or adata.obs, will not be plotted" % metric) for metric in qc_metrics]
 qc_metrics = [metric for metric in qc_metrics if metric is not None]
 
 # check that group_vars are in adata.obs
-group_var = [group if group in spatial.obs.columns else L.warning("group_var '%s' not found in adata.obs, will be ignored" % group) for group in group_var]
+group_var = [group if group in sdata["table"].obs.columns else L.warning("group_var '%s' not found in adata.obs, will be ignored" % group) for group in group_var]
 group_var = [group for group in group_var if group is not None]
 # make sure that it's saved as categorical 
 for group in group_var: 
-    spatial.obs[group] = spatial.obs[group].astype("category") 
+    sdata["table"].obs[group] = sdata["table"].obs[group].astype("category") 
     
 if group_var == []:
     group_var = None
@@ -93,34 +96,34 @@ if group_var == []:
 for metric in qc_metrics: 
     
     # check if in adata.obs:
-    if metric in spatial.obs.columns: 
+    if metric in sdata["table"].obs.columns: 
         # check that it's a numeric column, so that it can be plotted: 
-        if metric not in spatial.obs._get_numeric_data().columns:
+        if metric not in sdata["table"].obs._get_numeric_data().columns:
             L.warning("Variable '%s' not numerical in adata.obs, will not be plotted" % metric)
         else:
             L.info("Creating violin plot for '%s' of .obs" % metric)
             if group_var is None: 
-                sc.pl.violin(spatial, keys = metric, xlabel = metric+ " in .obs",
+                sc.pl.violin(sdata["table"], keys = metric, xlabel = metric+ " in .obs",
                             save =  "_obs_" + metric+ "_" + "."+sprefix + ".png", show = False)
             
             else: #plot violin for each group
                 for group in group_var: 
-                    sc.pl.violin(spatial, keys = metric,groupby = group, xlabel = group + ", "+ metric+ " in .obs",
+                    sc.pl.violin(sdata["table"], keys = metric,groupby = group, xlabel = group + ", "+ metric+ " in .obs",
                             save = "_obs_" + metric+ "_" + group+ "."+sprefix +".png", show = False)
             #plot spatial 
             L.info("Creating spatial embedding plot for '%s' of .obs" % metric)
-            sc.pl.embedding(spatial,basis="spatial", color = metric, save = "_spatial_" + metric + "."+sprefix +".png", show = False)
+            sc.pl.embedding(sdata["table"],basis="spatial", color = metric, save = "_spatial_" + metric + "."+sprefix +".png", show = False)
 
     #check if in adata.var: 
-    if metric in spatial.var.columns:
+    if metric in sdata["table"].var.columns:
         
-        if metric not in spatial.var._get_numeric_data().columns:
+        if metric not in sdata["table"].var._get_numeric_data().columns:
             L.warning("Variable '%s' not numerical in adata.var, will not be plotted" % metric)
         else:
             # plot violins 
             L.info("Creating violin plot for '%s' of .var" % metric)
             ax = sns.violinplot(
-                    data=spatial.var[[metric]],
+                    data=sdata["table"].var[[metric]],
                     orient='vertical', 
                 )
             ax.set(xlabel=metric+ " in .var" )
@@ -135,28 +138,28 @@ if args.spatial_filetype == "vizgen":
 
     axs[0].set_title("Total transcripts per cell")
     sns.histplot(
-        spatial.obs["total_counts"],
+        sdata["table"].obs["total_counts"],
         kde=False,
         ax=axs[0],
     )
 
     axs[1].set_title("Unique transcripts per cell")
     sns.histplot(
-        spatial.obs["n_genes_by_counts"],
+        sdata["table"].obs["n_genes_by_counts"],
         kde=False,
         ax=axs[1],
     )
 
     axs[2].set_title("Transcripts per FOV")
     sns.histplot(
-        spatial.obs.groupby('fov')[['total_counts']].sum(),
+        sdata["table"].obs.groupby('fov')[['total_counts']].sum(),
         kde=False,
         ax=axs[2],
     )
 
     axs[3].set_title("Volume of segmented cells")
     sns.histplot(
-        spatial.obs["volume"],
+        sdata["table"].obs["volume"],
         kde=False,
         ax=axs[3],
     )

@@ -201,19 +201,22 @@ def main(adata,
 L.info("Running with params: %s", args)
 
 # read data
-L.info("Reading in MuData from '%s'" % args.infile)
-mdata = read(args.infile)
-    
-
-if type(mdata) is AnnData:
-    adata = mdata
-    # main function only does rank_gene_groups on X, so 
-elif type(mdata) is MuData and args.modality is not None:
-    adata = mdata[args.modality]    
-else:
-    L.error("If the input is a MuData object, a modality needs to be specified")
-    sys.exit('If the input is a MuData object, a modality needs to be specified')
-    
+if args.modality != "spatial":
+    L.info("Reading in MuData from '%s'" % args.infile)
+    mdata = read(args.infile)
+    if type(mdata) is AnnData:
+        adata = mdata
+        # main function only does rank_gene_groups on X, so 
+    elif type(mdata) is MuData and args.modality is not None:
+        adata = mdata[args.modality]    
+    else:
+        L.error("If the input is a MuData object, a modality needs to be specified")
+        sys.exit('If the input is a MuData object, a modality needs to be specified')
+else: 
+    import spatialdata as sd
+    L.info("Reading in SpatialData from '%s'" % args.infile)
+    adata = sd.read_zarr(args.infile)["table"]
+        
 
 main(adata, 
      mod=args.modality,

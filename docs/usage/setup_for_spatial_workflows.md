@@ -1,28 +1,67 @@
 Sample submission file for the ingestion of spatial data
 ===========================
 
-The spatial transcriptomics ingestion workflow requires a sample submission file that specifies the location of the input files. The sample submission file is a tab-separated file with one row per sample. Panpipes currently supports the ingestion of `Visium` and `Vizgen` data.
+The spatial transcriptomics ingestion workflow requires a sample submission file that specifies the location of the input files. The sample submission file is a tab-separated file with one row per sample. Panpipes currently supports the ingestion of `Visium`, `Vizgen`, and `Xenium` data. The data of different technologies needs to be ingested separately with different sample submission files. 
 
-The 6 columns of the sample submission file are:
+
+The minimum required (non-optional) columns for each submission file are
 
 **sample id**: Unique sample ID.
 
-**spatial_path**: The root directory containing the data files. Please note, that the folder structure of the root directory needs to be structured as expected by the [squidpy.read.visium](https://squidpy.readthedocs.io/en/stable/api/squidpy.read.visium.html) (for `Visium` data) or [squidpy.read.vizgen](https://squidpy.readthedocs.io/en/stable/api/squidpy.read.vizgen.html) (for `Vizgen` data) functions.
+**spatial_path**: The root directory containing the data files. Please note, that the folder structure of the root directory needs to be structured as expected by the [spatialdata_io.visium](https://spatialdata.scverse.org/projects/io/en/latest/generated/spatialdata_io.visium.html) (for `Visium` data), [spatialdata_io.merscope](https://spatialdata.scverse.org/projects/io/en/latest/generated/spatialdata_io.merscope.html) (for `Vizgen` data), or [spatialdata_io.xenium](https://spatialdata.scverse.org/projects/io/en/latest/generated/spatialdata_io.xenium.html) (for `Xenium` data) functions.
 
-**spatial_filetype**: Either "vizgen" or "visium".
+**spatial_filetype**: Either "vizgen", "visium", or "xenium".
 
-**spatial_counts**: The count matrix file. Usually `filtered_feature_bc_matrix.h5` or `raw_feature_bc_matrix.h5` for a `Visium` dataset. For `Vizgen` inputs, this file typically ends with `_cell_by_gene.csv.`
 
-**spatial_metadata**: The metadata csv-file for `Vizgen` data. Leave empty for `Visium` data.
+## Visium
 
-**spatial_transformation**: The transformation csv-file for `Vizgen` data. This column is **optional** for `Vizgen` data. Leave empty for `Visium` data.
+The 7 columns of the Visium sample submission file are:
 
-**Note, that the columns, `sample_id`, `spatial_path`, `spatial_filetype`, and `spatial_counts` are required for both, `Visium` and `Vizgen` data. The `spatial_metadata`(required) and `spatial_transformation`(optional) columns are `Vizgen`-specific and should be left empty for `Visium` data.**
+sample_id |	spatial_path |	spatial_filetype |	visium_feature_bc_matrix |	visium_fullres_image_file |	visium_tissue_positions_file |	visium_scalefactors_file	
+----------|----------|------------|-----------|----------|-------------|-------------
 
-### <u>Example submission file</u>
+The following 4 columns are **optional**:
 
-| sample_id | spatial_path | spatial_filetype | spatial_counts                          | spatial_metadata                         | spatial_transformation |
-| --------- |--------------|------------------|-----------------------------------------|------------------------------------------|--------------------|
-| V1_Human_Heart |./data_visium/V1_Human_Heart |visium |V1_Human_Heart_filtered_feature_bc_matrix.h5 |
-| V1_Human_Lymph_Node |./data_visium/V1_Human_Lymph_Node| visium | V1_Human_Lymph_Node_filtered_feature_bc_matrix.h5 |
-Mouse_Brain  | ./data_vizgen | vizgen | cell_by_gene_S1R1.csv | cell_metadata_S1R1.csv | images_micron_to_mosaic_pixel_transform.csv
+**visium_feature_bc_matrix**: Name of the counts file. Corresponds to the `counts_file` parameter of [spatialdata_io.visium](https://spatialdata.scverse.org/projects/io/en/latest/generated/spatialdata_io.visium.html)
+
+**visium_fullres_image_file**: Path to the full-resolution image. Corresponds to the `fullres_image_file` parameter of [spatialdata_io.visium](https://spatialdata.scverse.org/projects/io/en/latest/generated/spatialdata_io.visium.html)
+
+**visium_tissue_positions_file**: Path to the tissue positions file. Corresponds to the `tissue_positions_file` parameter of [spatialdata_io.visium](https://spatialdata.scverse.org/projects/io/en/latest/generated/spatialdata_io.visium.html)
+
+**visium_scalefactors_file**:	Path to the scalefactors file. Corresponds to the `scalefactors_file` parameter of [spatialdata_io.visium](https://spatialdata.scverse.org/projects/io/en/latest/generated/spatialdata_io.visium.html)
+
+##### [Example submission file](https://github.com/DendrouLab/panpipes-tutorials/blob/sarah_spatialData/docs/ingesting_visium_data/sample_file_qc_visium.txt)
+
+
+## Vizgen
+
+The 6 columns of the Vizgen sample submission file are:  
+
+sample_id |	spatial_path |	spatial_filetype |	vpt_cell_by_gene    |	vpt_cell_metadata	|	vpt_cell_boundaries
+----------|----------|------------|----------|-------------|-------------
+
+The following 3 columns are **optional**:
+
+**vpt_cell_by_gene**: The file name of the output of the vizgen-postprocessing-tool. See [spatialdata_io.merscope](https://spatialdata.scverse.org/projects/io/en/latest/generated/spatialdata_io.merscope.html)
+
+**vpt_cell_metadata**: The file name of the output of the vizgen-postprocessing-tool. See [spatialdata_io.merscope](https://spatialdata.scverse.org/projects/io/en/latest/generated/spatialdata_io.merscope.html)
+
+**vpt_cell_boundaries**: The file name of the output of the vizgen-postprocessing-tool. See [spatialdata_io.merscope](https://spatialdata.scverse.org/projects/io/en/latest/generated/spatialdata_io.merscope.html)
+
+
+##### Example submission files [MERFISH](https://github.com/DendrouLab/panpipes-tutorials/blob/sarah_spatialData/docs/ingesting_merfish_data/sample_file_qc_merfish.txt) [MERSCOPE](https://github.com/DendrouLab/panpipes-tutorials/blob/sarah_spatialData/docs/ingesting_merscope_data/sample_file_qc_merscope.txt)
+
+## Xenium
+
+The 3 columns of the Xenium sample submission file are:
+
+sample_id |	spatial_path |	spatial_filetype |
+----------|----------|------------
+
+##### [Example submission file](https://github.com/DendrouLab/panpipes-tutorials/blob/sarah_spatialData/docs/ingesting_xenium_data/sample_file_qc_xenium.txt)
+
+
+
+
+
+

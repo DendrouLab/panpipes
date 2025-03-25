@@ -33,7 +33,7 @@ Specified by the following three parameters:
 
   - <span class="parameter">threads_medium</span> `Integer`, Default: 1<br>
         Number of threads used for medium intensity computing tasks.
-        For each thread, there must be enough memory to load your mudata and do computationally light tasks.
+        For each thread, there must be enough memory to load your SpatialData and do computationally light tasks.
 
   - <span class="parameter">threads_low</span> `Integer`, Default: 1<br>
   	    Number of threads used for low intensity computing tasks.
@@ -46,12 +46,12 @@ Specified by the following three parameters:
 
 
 ## 1. Input Options
-With the `deconvolution_spatial` workflow, one or multiple spatial slides can be deconvoluted in one run. For that, a `MuData` object for each slide is expected, with the spatial data saved in `mdata.mod["spatial"]`. The spatial slides are deconvoluted **using the same reference**. For the reference, one `MuData` with the gene expression data saved in `mdata.mod["rna"]` is expected as input. Please note, that the same parameter setting is used for each slide. <br> For the **spatial** input, the workflow, therefore, reads in **all `.h5mu` objects of a directory** (see below). **The spatial and single-cell data thus need to be saved in different folders.**
+With the `deconvolution_spatial` workflow, one or multiple spatial slides can be deconvoluted in one run. For that, a `SpatialData` object for each slide is expected. The spatial slides are deconvoluted **using the same reference**. For the reference, one `MuData` with the gene expression data saved in `mdata.mod["rna"]` is expected as input. Please note, that the same parameter setting is used for each slide. <br> For the **spatial** input, the workflow, therefore, reads in **all `.zarr` objects of a directory** (see below).
 <br>
 
 <span class="parameter">input</span><br>
   - <span class="parameter">spatial</span> `String`, Mandatory parameter<br>
-        Path to folder containing one or multiple `MuDatas` of spatial data. The pipeline is reading in all `MuData` files in that folder and assuming that they are `MuDatas` of spatial slides.
+        Path to folder containing one or multiple `SpatialDatas` of spatial data. The pipeline is reading in all `SpatialData` files in that folder.
 
   - <span class="parameter">singlecell</span> `String`, Mandatory parameter<br>
        Path to the MuData **file** (not folder) of the reference single-cell data.
@@ -151,6 +151,8 @@ You can specify whether both models (spatial and reference) should be saved with
 <span class="parameter">save_models</span>, Default: False<br>
     Whether to save the reference & spatial mapping models.
 
+<span class="parameter">export_gene_by_spot</span>, Default: False<br>
+    Whether to save a gene by spot matrix for each cell type in a layer.
 
 
 ## 3. Tangram Options
