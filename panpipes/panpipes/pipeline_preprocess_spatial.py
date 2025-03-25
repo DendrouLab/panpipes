@@ -167,7 +167,7 @@ def concat_spatial(log_file):
     
     cmd += " > %(log_file)s "
     job_kwargs["job_threads"] = PARAMS['resources_threads_low']
-    log_msg = f"TASK: 'postfilterplot'" + f" IN CASE OF ERROR, PLEASE REFER TO : '{log_file}' FOR MORE INFORMATION."
+    log_msg = f"TASK: 'concat_spatial'" + f" IN CASE OF ERROR, PLEASE REFER TO : '{log_file}' FOR MORE INFORMATION."
     get_logger().info(log_msg)
     P.run(cmd, **job_kwargs)
 
