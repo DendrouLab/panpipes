@@ -172,7 +172,7 @@ def concat_spatial(log_file):
 
 
 
-@follows(filter_spatialdata, postfilterplot_spatial, spatial_preprocess, concat_spatial)
+@follows(filter_spatialdata, postfilterplot_spatial, spatial_preprocess)
 @originate("cleanup_done.txt")
 def cleanup(file):
     # remove any ctmp fails
