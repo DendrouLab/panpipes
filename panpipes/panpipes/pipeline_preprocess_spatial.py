@@ -156,10 +156,8 @@ def spatial_preprocess(filt_file,log_file):
 
 
 
-#@active_if(PARAMS['concat'])
-@follows(spatial_preprocess)
 @active_if(PARAMS['concat'])
-@originate("./logs/4_concat.log")
+@merge(spatial_preprocess, "./logs/4_concat.log")
 def concat_spatial(log_file): 
     cmd = """
             python %(py_path)s/concatenaton_spatial.py
