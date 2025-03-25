@@ -156,8 +156,9 @@ def spatial_preprocess(filt_file,log_file):
 
 
 
-@active_if(PARAMS['concat'])
+#@active_if(PARAMS['concat'])
 @follows(spatial_preprocess)
+@active_if(PARAMS['concat'])
 @originate("./logs/4_concat.log")
 def concat_spatial(log_file): 
     output_dir = "./concatenated.data/"
@@ -179,7 +180,7 @@ def concat_spatial(log_file):
 
 
 
-@follows(filter_spatialdata, postfilterplot_spatial, spatial_preprocess)
+@follows(filter_spatialdata, postfilterplot_spatial, spatial_preprocess, concat_spatial)
 @originate("cleanup_done.txt")
 def cleanup(file):
     # remove any ctmp fails
