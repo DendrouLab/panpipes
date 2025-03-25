@@ -54,7 +54,7 @@ sdata = sd.concatenate(sdatas, concatenate_tables=True)
 
 
 L.info("Saving concatenated SpatialData to '%s'" % args.output_dir)
-sdata.write(args.output_dir)
+sdata.write(args.output_dir + "concatenated.zarr")
 
 L.info("Done")
 
