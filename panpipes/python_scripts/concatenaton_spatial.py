@@ -29,7 +29,7 @@ sc.settings.verbosity = 3
 parser = argparse.ArgumentParser()
 
 parser.add_argument("--input_dir",
-                    default="./filtered.data/",
+                    default="./tmp/",
                     help="")
 parser.add_argument("--output_dir",
                     default="./concatenated.data/",
