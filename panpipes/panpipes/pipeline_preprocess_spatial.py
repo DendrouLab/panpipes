@@ -160,7 +160,7 @@ def spatial_preprocess(filt_file,log_file):
 @merge(spatial_preprocess, "./logs/4_concat.log")
 def concat_spatial(infiles, log_file): 
     cmd = """
-            python %(py_path)s/concatenaton_spatial.py
+            python %(py_path)s/concatenation_spatial.py
             """
     
     cmd += " > %(log_file)s "
@@ -172,7 +172,7 @@ def concat_spatial(infiles, log_file):
 
 
 
-@follows(filter_spatialdata, postfilterplot_spatial, spatial_preprocess)
+@follows(filter_spatialdata, postfilterplot_spatial, spatial_preprocess,concat_spatial)
 @originate("cleanup_done.txt")
 def cleanup(file):
     # remove any ctmp fails
