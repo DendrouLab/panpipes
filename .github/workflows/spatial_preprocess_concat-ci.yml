@@ -76,7 +76,7 @@ jobs:
       - name: Edit the submission file
         run: |
           cd spatial/preprocess_concat
-          curl -o pipeline.yml https://raw.githubusercontent.com/DendrouLab/panpipes-tutorials/main/docs/preprocess_spatial_data/pipeline_concat.yml
+          curl -o pipeline.yml https://raw.githubusercontent.com/DendrouLab/panpipes-tutorials/sarah_spatialData/docs/preprocess_spatial_data/pipeline_concat.yml
 
       - name: Replace template contents in configuration file
         run: |
