@@ -154,3 +154,14 @@ After normalization and HVG selection, PCA is run and the PCA and elbow plot are
 <span class="parameter">n_pcs</span>`Integer`, Default: 50<br>
     Number of PCs to compute.
 
+## 5. Concatenation
+
+In case multiple `SpatialData` objects have been preprocessed separately, the user has the option to concatenate the preprocessed objects in the end. 
+<br>
+
+<span class="parameter">concat</span>`Boolean`, Default: False<br>
+    Whether to concatenate all preprocessed `SpatialData` objects. The concatenated object is saved to `./concatenated.data/concatenated.zarr`
+
+
+
+

@@ -13,6 +13,10 @@ If multiple `SpatialData` objects are provided, the following steps are run for 
 - PCA is computed and plotted. PCA plots are also saved into the `./figures/spatial` directory.
 - Final `SpatialData` object is saved into the `./filtered.data` directory as a `zarr` file
 
+If multiple `SpatialData` objects have been preprocessed, you have the option to concatenate all of them in the last step of the preprocessing: 
+
+- (Optional) All `SpatialData` objects in `./filtered.data` are concatenated and saved to `./concatenated.data/concatenated.zarr`
+
 ## Steps to run
 
 1. Activate conda environment `conda activate pipeline_env`
