@@ -127,7 +127,7 @@ spatial:
 
 
 # -----------------------------------------
-# 4. Concatenation
+# 5. Concatenation
 # -----------------------------------------
 
 concat: False # Leave blank to use default (False); whether to conatenate all preprocessed SpatialDatas in ./filtered_data
