@@ -30,7 +30,7 @@ Available workflows:
 For detailed installation instructions (including those for Apple Silicon machines), refer to the [installation instructions here](https://panpipes-pipelines.readthedocs.io/en/latest/install.html).
 
 We recommend installing panpipes in a conda environment.
-For that, we provide a minimal conda config file in `pipeline_env.yaml`.
+We provide a minimal conda config file in `pipeline_env.yaml`.
 First, clone this repository and navigate to the root directory of the repository:
 
 ```bash
@@ -50,6 +50,8 @@ Oxford BMRC Rescomp users find additional advice on the installation [here](http
 
 ## Releases
 
+Since `panpipes v.1.2.0` the spatial workflows use SpatialData as the data format for spatial assays. Check out the documentation at https://panpipes-pipelines.readthedocs.io
+
 Since `panpipes v0.4.0`, the `ingest` workflow expects different headers for the RNA and Protein modalities from the previous releases.
 Check the example [submission file](https://github.com/DendrouLab/panpipes/blob/main/docs/usage/sample_file_qc_mm.md) and the [documentation](https://panpipes-pipelines.readthedocs.io/en/latest/usage/setup_for_qc_mm.html) for more detailed instructions.
 
@@ -61,5 +63,6 @@ doi: https://doi.org/10.1186/s13059-024-03322-7](https://link.springer.com/artic
 
 ## Contributors
 
-Created and Maintained by Charlotte Rich-Griffin and Fabiola Curion.
-Additional contributors: Sarah Ouologuem, Devika Agarwal, Lilly May, Kevin Rue-Albrecht, Giulia Garcia, Lukas Heumos.
+Created by Charlotte Rich-Griffin and Fabiola Curion.
+Maintained by Fabiola Curion and Sarah Ouologuem.
+Additional contributors: Sarah Ouologuem, Devika Agarwal, Lilly May, Kevin Rue-Albrecht, Giulia Garcia, Wojciech Lason, Lukas Heumos, Jarne Belien.
