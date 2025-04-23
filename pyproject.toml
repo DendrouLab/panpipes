@@ -62,13 +62,16 @@ notebook = [
     "jupyterlab"
 ]
 spatial = [
-    "jax==0.4.23",
-    "jaxlib==0.4.23",
-    "scvi-tools==1.0.4",
-    "scipy==1.12.0",
+    "jax",
+    "jaxlib",
+    "scvi-tools",
+    "scipy",
     "squidpy",
     "cell2location",
-    "tangram-sc"
+    "tangram-sc", 
+    "spatialdata", 
+    "spatialdata-io", 
+    "dask"
 ]
 
 refmap_old = [

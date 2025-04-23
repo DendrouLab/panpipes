@@ -34,13 +34,20 @@ L.info("Running with params: %s", args)
 
 # read data
 L.info("Reading in data from '%s'" % args.infile)
-mdata = mu.read(args.infile)
-if type(mdata) is AnnData:
-    adata = mdata
-elif args.modality is not None:
-    adata = mdata[args.modality]
-else:
-    adata = mdata
+if ".zarr" in args.infile:
+    import spatialdata as sd
+    L.info("Reading in SpatialData from '%s'" % args.infile)
+    sdata = sd.read_zarr(args.infile)
+    adata = sdata["table"]
+else: 
+    mdata = mu.read(args.infile)
+    if type(mdata) is AnnData:
+        adata = mdata
+    elif args.modality is not None:
+        adata = mdata[args.modality]
+    else:
+        adata = mdata
+ 
 
 uns_key=args.neighbors_key
 # check sc.pp.neihgbours has been run

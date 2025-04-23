@@ -90,9 +90,13 @@ def plot_spatial(adata,figdir):
         fig.savefig(os.path.join(figdir, ok +  "_clusters.png"))
 
 
-
-L.info("Reading in MuData from '%s'" % args.infile)
-mdata = read(args.infile)
+if ".zarr" in args.infile:
+    import spatialdata as sd
+    L.info("Reading in SpatialData from '%s'" % args.infile)
+    data = sd.read_zarr(args.infile)
+else: 
+    L.info("Reading in MuData from '%s'" % args.infile)
+    data = read(args.infile)
 
 mods = args.modalities.split(',')
 # detemin initial figure directory based on object type
@@ -102,21 +106,27 @@ if 'multimodal' in mods:
     if os.path.exists("multimodal/figures") is False:
         os.makedirs("multimodal/figures")
     L.info("Plotting multimodal figures")
-    main(mdata, figdir="multimodal/figures")
+    main(data, figdir="multimodal/figures")
 
 
 # we also need to plot per modality
-if type(mdata) is MuData:
-    for mod in mdata.mod.keys():
+if type(data) is MuData:
+    for mod in data.mod.keys():
         if mod in mods:
             L.info("Plotting for modality: %s" % mod)
             figdir  = os.path.join(mod, "figures")
             if os.path.exists(figdir) is False:
                 os.makedirs(figdir)
             if mod == "spatial": # added separate function for spatial
-                plot_spatial(mdata[mod], figdir)
+                plot_spatial(data[mod], figdir)
             else:
-                main(mdata[mod], figdir)
+                main(data[mod], figdir)
+elif isinstance(data, sd.SpatialData):
+    L.info("Plotting for modality: spatial")
+    figdir  = os.path.join("spatial", "figures")
+    if os.path.exists(figdir) is False:
+        os.makedirs(figdir)
+    plot_spatial(data["table"], figdir)
 
 
 

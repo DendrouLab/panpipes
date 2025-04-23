@@ -1,4 +1,4 @@
-name: Run tutorials (spatial deconvolution)
+name: Run tutorials (spatial preprocessing concat)
 
 on:
   push:
@@ -12,7 +12,7 @@ env:
   debug: 'true'
 
 jobs:
-  spatial_deconvolution:
+  spatial_preprocessing_concat:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -53,50 +53,52 @@ jobs:
         shell: pwsh
         run: conda list
 
-
       - name: Preparing the data
         run: |
-          mkdir deconvolution deconvolution/data deconvolution/data/spatial_data
-          cd deconvolution/data 
-          curl -L -o Human_Heart_reference.h5mu https://figshare.com/ndownloader/files/44969677
-          cd spatial_data
-          curl -L -o Human_Heart.h5mu https://figshare.com/ndownloader/files/44969488
-
+          mkdir spatial spatial/preprocess_concat spatial/preprocess_concat/data
+          cd spatial/preprocess_concat/data 
+          
+          curl -L -o V1_Human_Heart_unfilt.zarr.zip https://figshare.com/ndownloader/files/52236521
+          unzip V1_Human_Heart_unfilt.zarr.zip
+          rm V1_Human_Heart_unfilt.zarr.zip
+          curl -L -o V1_Human_Lymph_Node_unfilt.zarr.zip https://figshare.com/ndownloader/files/52236575
+          unzip V1_Human_Lymph_Node_unfilt.zarr.zip
+          rm V1_Human_Lymph_Node_unfilt.zarr.zip
+       
 
       # Note: we run the following to test that the commands works
       - name: Preparing the configuration file
         shell: bash -el {0}
         run: |
-          cd deconvolution
-          panpipes deconvolution_spatial config
+          cd spatial/preprocess_concat
+          panpipes preprocess_spatial config
 
       - name: Edit the submission file
         run: |
-          cd deconvolution
-          curl -o pipeline.yml https://raw.githubusercontent.com/DendrouLab/panpipes-tutorials/main/docs/deconvolution/pipeline.yml
+          cd spatial/preprocess_concat
+          curl -o pipeline.yml https://raw.githubusercontent.com/DendrouLab/panpipes-tutorials/sarah_spatialData/docs/preprocess_spatial_data/pipeline_concat.yml
 
       - name: Replace template contents in configuration file
         run: |
-          cd deconvolution
-          sed -i 's+use_gpu:+use_gpu: False+g' pipeline.yml
-          sed -i 's+max_epochs: 400+max_epochs: 50+g' pipeline.yml
-
+          cd spatial/preprocess_concat
+          sed -i 's+../ingestion/qc.data/+./data/+g' pipeline.yml
+  
       - name: File tree
         if: env.debug == 'true'
-        run: tree deconvolution
+        run: tree spatial/preprocess_concat
 
       - name: Review pipeline tasks
         shell: bash -el {0}
         run: |
-          cd deconvolution
-          panpipes deconvolution_spatial show full --local
+          cd spatial/preprocess_concat
+          panpipes preprocess_spatial show full --local
 
       - name: Run pipeline tasks
         shell: bash -el {0}
         run: |
-          cd deconvolution
-          panpipes deconvolution_spatial make full --local
+          cd spatial/preprocess_concat
+          panpipes preprocess_spatial make full --local
 
       - name: File tree
         if: env.debug == 'true'
-        run: tree deconvolution
+        run: tree spatial/preprocess_concat

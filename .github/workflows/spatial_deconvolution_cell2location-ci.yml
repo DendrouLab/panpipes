@@ -1,4 +1,4 @@
-name: Run tutorials (spatial preprocessing)
+name: Run tutorials (spatial deconvolution cell2location)
 
 on:
   push:
@@ -12,7 +12,7 @@ env:
   debug: 'true'
 
 jobs:
-  spatial_preprocessing:
+  spatial_deconvolution_cell2location:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -53,52 +53,51 @@ jobs:
         shell: pwsh
         run: conda list
 
+
       - name: Preparing the data
         run: |
-          mkdir spatial spatial/preprocess spatial/preprocess/data
-          cd spatial/preprocess/data 
-          
-          curl -L -o V1_Human_Heart_unfilt.zarr.zip https://figshare.com/ndownloader/files/52236521
-          unzip V1_Human_Heart_unfilt.zarr.zip
-          rm V1_Human_Heart_unfilt.zarr.zip
-          curl -L -o V1_Human_Lymph_Node_unfilt.zarr.zip https://figshare.com/ndownloader/files/52236575
-          unzip V1_Human_Lymph_Node_unfilt.zarr.zip
-          rm V1_Human_Lymph_Node_unfilt.zarr.zip
-       
+          mkdir deconvolution deconvolution/data deconvolution/data/spatial_data
+          cd deconvolution/data 
+          curl -L -o Human_Heart_reference.h5mu https://figshare.com/ndownloader/files/44969677
+          cd spatial_data
+          curl -L -o Human_Heart.zarr.zip https://figshare.com/ndownloader/files/51667673
+          unzip Human_Heart.zarr.zip
+          rm Human_Heart.zarr.zip
+
 
       # Note: we run the following to test that the commands works
       - name: Preparing the configuration file
         shell: bash -el {0}
         run: |
-          cd spatial/preprocess
-          panpipes preprocess_spatial config
+          cd deconvolution
+          panpipes deconvolution_spatial config
 
       - name: Edit the submission file
         run: |
-          cd spatial/preprocess
-          curl -o pipeline.yml https://raw.githubusercontent.com/DendrouLab/panpipes-tutorials/main/docs/preprocess_spatial_data/pipeline.yml
+          cd deconvolution
+          curl -o pipeline.yml https://raw.githubusercontent.com/DendrouLab/panpipes-tutorials/sarah_spatialData/docs/deconvolution/pipeline.yml
 
       - name: Replace template contents in configuration file
         run: |
-          cd spatial/preprocess
-          sed -i 's+../ingestion/qc.data/+./data/+g' pipeline.yml
-  
+          cd deconvolution
+          sed -i 's+max_epochs: 400+max_epochs: 50+g' pipeline.yml
+
       - name: File tree
         if: env.debug == 'true'
-        run: tree spatial/preprocess
+        run: tree deconvolution
 
       - name: Review pipeline tasks
         shell: bash -el {0}
         run: |
-          cd spatial/preprocess
-          panpipes preprocess_spatial show full --local
+          cd deconvolution
+          panpipes deconvolution_spatial show full --local
 
       - name: Run pipeline tasks
         shell: bash -el {0}
         run: |
-          cd spatial/preprocess
-          panpipes preprocess_spatial make full --local
+          cd deconvolution
+          panpipes deconvolution_spatial make full --local
 
       - name: File tree
         if: env.debug == 'true'
-        run: tree spatial/preprocess
+        run: tree deconvolution
