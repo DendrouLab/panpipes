@@ -25,7 +25,7 @@ parser.add_argument("--outfile",
 parser.add_argument("--resolution",
                     default=0.5, help="no. neighbours parameters for sc.pp.neighbors()")
 parser.add_argument("--algorithm", 
-                    default="leiden", help="algorithm choice from louvain and leiden")
+                    default="leiden", help="algorithm choice: leiden")
 parser.add_argument("--neighbors_key", 
                     default="neighbors", help="algorithm choice from louvain and leiden")
 
@@ -60,10 +60,10 @@ if uns_key not in adata.uns.keys():
 
 # run command
 if args.algorithm == "louvain":
-    L.info("Running Louvain clustering for modality %s and resolution %s on %s", (args.modality, args.resolution, uns_key))
-    sc.tl.louvain(adata, resolution=float(args.resolution), key_added='clusters', neighbors_key=uns_key)
+    L.info("Running louvain clustering is deprecated, please use leiden clustering instead.")
+    args.algorithm = "leiden"
 elif args.algorithm == "leiden":
-    L.info("Running Leiden clustering for modality %s and resolution %s on %s", (args.modality, args.resolution, uns_key))
+    L.info("Running leiden clustering for modality %s and resolution %s on %s", (args.modality, args.resolution, uns_key))
     sc.tl.leiden(adata, resolution=float(args.resolution), key_added='clusters', neighbors_key=uns_key)
 else:
     L.error("Could not find clustering algorithm '%s'. Please specify 'louvain' or 'leiden'" % args.algorithm)
