@@ -25,9 +25,9 @@ parser.add_argument("--outfile",
 parser.add_argument("--resolution",
                     default=0.5, help="no. neighbours parameters for sc.pp.neighbors()")
 parser.add_argument("--algorithm", 
-                    default="leiden", help="algortihm choice from louvain and leiden")
+                    default="leiden", help="algorithm choice from louvain and leiden")
 parser.add_argument("--neighbors_key", 
-                    default="neighbors", help="algortihm choice from louvain and leiden")
+                    default="neighbors", help="algorithm choice from louvain and leiden")
 
 args, opt = parser.parse_known_args()
 L.info("Running with params: %s", args)
