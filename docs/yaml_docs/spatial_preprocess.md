@@ -35,7 +35,7 @@ Specified by the following three parameters:
 
   - <span class="parameter">threads_medium</span> `Integer`, Default: 1<br>
         Number of threads used for medium intensity computing tasks.
-        For each thread, there must be enough memory to load your mudata and do computationally light tasks.
+        For each thread, there must be enough memory to load your SpatialData and do computationally light tasks.
 
   - <span class="parameter">threads_low</span> `Integer`, Default: 1<br>
   	    Number of threads used for low intensity computing tasks.
@@ -48,14 +48,14 @@ Specified by the following three parameters:
 
 ## 1. Input Options
 
-With the preprocess_spatial workflow, one or multiple `MuData` objects can be preprocessed in one run. The workflow **reads in all `.h5mu` objects of a directory**. The `MuData` objects in the directory need to be of the same assay (vizgen or visium). The workflow then runs the preprocessing of each `MuData` object separately with the same parameters that are specified in the yaml file. 
+With the preprocess_spatial workflow, one or multiple `SpatialData` objects can be preprocessed in one run. The workflow **reads in all `.zarr` objects of a directory**. The `SpatialData` objects in the directory need to be of the same assay (Vizgen, Visium, or Xenium). The workflow then runs the preprocessing of each `SpatialData` object separately with the same parameters that are specified in the yaml file. 
 <br>
 
 <span class="parameter">input_dir</span> `String`, Mandatory parameter<br>
-    Path to the folder containing all input `h5mu` files.
+    Path to the folder containing all input `zarr` files.
 
 <span class="parameter">assay</span> [`'visium'`, `'vizgen'`], Default: `'visium'`<br>
-     Spatial transcriptomics assay of the `h5mu` files in `input_dir`.
+     Spatial transcriptomics assay of the `zarr` files in `input_dir`.
 
 
 
@@ -70,7 +70,7 @@ With the preprocess_spatial workflow, one or multiple `MuData` objects can be pr
 <br>
 
 
-With the parameters below you can specify thresholds for filtering. The filtering is fully customisable to any columns in `.obs` or `.var`. You are not restricted by the columns given as default. When specifying a column name, please make sure it exactly matches the column name in the h5mu object. <br> Please slso make sure, that the specified metrics are present in all `h5mu` objects of the `input_dir`, i.e. the `MuData` objects for that the preprocessing is run.
+With the parameters below you can specify thresholds for filtering. The filtering is fully customisable to any columns in `.obs` or `.var`. You are not restricted by the columns given as default. When specifying a column name, please make sure it exactly matches the column name in the table of the `SpatialData` object. <br> Please also make sure, that the specified metrics are present in all `SpatialData` objects of the `input_dir`, i.e. the `SpatialData` objects for that the preprocessing is run.
 
 
 ---
@@ -153,4 +153,15 @@ After normalization and HVG selection, PCA is run and the PCA and elbow plot are
 
 <span class="parameter">n_pcs</span>`Integer`, Default: 50<br>
     Number of PCs to compute.
+
+## 5. Concatenation
+
+In case multiple `SpatialData` objects have been preprocessed separately, the user has the option to concatenate the preprocessed objects in the end. 
+<br>
+
+<span class="parameter">concat</span>`Boolean`, Default: False<br>
+    Whether to concatenate all preprocessed `SpatialData` objects. The concatenated object is saved to `./concatenated.data/concatenated.zarr`
+
+
+
 

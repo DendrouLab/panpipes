@@ -39,7 +39,7 @@ def gen_filter_jobs():
         input_dir = "../qc.data"
         if not os.path.exists(input_dir):
                 sys.exit("can't find input data")
-    input_paths=glob.glob(os.path.join(input_dir,"*unfilt.h5mu"))
+    input_paths=glob.glob(os.path.join(input_dir,"*unfilt.zarr"))
     for infile_path in input_paths:
         file_name = os.path.basename(infile_path)
         outfile = file_name.replace("unfilt","filtered")
@@ -52,24 +52,24 @@ def gen_filter_jobs():
 @mkdir("tables")
 @mkdir("filtered.data")
 @files(gen_filter_jobs)
-def filter_mudata(infile_path,outfile):
+def filter_spatialdata(infile_path,outfile):
     print('processing file = %s' % str(infile_path))
     log_file = os.path.basename(outfile)
-    log_file= "1_filtering."+log_file.replace("filtered.h5mu","") + ".log"
+    log_file= "1_filtering."+log_file.replace("filtered.zarr","") + ".log"
 
 
     filter_dict = dictionary_stripper(PARAMS['filtering'])
     cmd = """
         python %(py_path)s/run_filter_spatial.py
-        --input_mudata %(infile_path)s
-        --output_mudata %(outfile)s
+        --input_spatialdata %(infile_path)s
+        --output_spatialdata %(outfile)s
         --filter_dict "%(filter_dict)s"
         """
     if PARAMS['filtering_keep_barcodes'] is not None:
         cmd += " --keep_barcodes %(filtering_keep_barcodes)s"
     cmd += " > logs/%(log_file)s "
     job_kwargs["job_threads"] = PARAMS['resources_threads_low']
-    log_msg = f"TASK: 'filter_mudata'" + f" IN CASE OF ERROR, PLEASE REFER TO : 'logs/{log_file}' FOR MORE INFORMATION."
+    log_msg = f"TASK: 'filter_spatialdata'" + f" IN CASE OF ERROR, PLEASE REFER TO : 'logs/{log_file}' FOR MORE INFORMATION."
     get_logger().info(log_msg)
     P.run(cmd, **job_kwargs)
     
@@ -84,8 +84,8 @@ def run_plotqc_query(pqc_dict):
 
 @active_if(run_plotqc_query(PARAMS['plotqc']))
 @active_if(PARAMS['filtering_run'])
-@transform(filter_mudata,
-           regex("./filtered.data/(.*)_filtered.h5(.*)"), 
+@transform(filter_spatialdata,
+           regex("./filtered.data/(.*)_filtered.zarr"), 
            r"./logs/2_postfilterplot.\1.log")
 def postfilterplot_spatial(filt_file,log_file):
     print(filt_file)    
@@ -93,7 +93,7 @@ def postfilterplot_spatial(filt_file,log_file):
     spatial_filetype = PARAMS["assay"]
     cmd = """
             python %(py_path)s/plot_qc_spatial.py
-             --input_mudata %(filt_file)s
+             --input_spatialdata %(filt_file)s
              --spatial_filetype %(spatial_filetype)s
              --figdir ./figures/spatial
             """
@@ -108,8 +108,8 @@ def postfilterplot_spatial(filt_file,log_file):
     P.run(cmd, **job_kwargs)
 
 
-@transform(filter_mudata,
-           regex("./filtered.data/(.*)_filtered.h5(.*)"), 
+@transform(filter_spatialdata,
+           regex("./filtered.data/(.*)_filtered.zarr"), 
            r"./logs/3_preprocess.\1.log")
 def spatial_preprocess(filt_file,log_file):
     if os.path.exists("figures/spatial") is False:
@@ -119,8 +119,8 @@ def spatial_preprocess(filt_file,log_file):
     write_output = os.path.join("./tmp/",os.path.basename(filt_file))
     cmd = """
         python %(py_path)s/run_preprocess_spatial.py
-        --input_mudata %(filt_file)s
-        --output_mudata %(write_output)s
+        --input_spatialdata %(filt_file)s
+        --output_spatialdata %(write_output)s
         --figdir ./figures/spatial
         """
     if PARAMS['spatial_norm_hvg_flavour'] is not None:
@@ -154,7 +154,25 @@ def spatial_preprocess(filt_file,log_file):
     get_logger().info(log_msg)
     P.run(cmd, **job_kwargs)
 
-@follows(filter_mudata, postfilterplot_spatial, spatial_preprocess)
+
+
+@active_if(PARAMS['concat'])
+@merge(spatial_preprocess, "./logs/4_concat.log")
+def concat_spatial(infiles, log_file): 
+    cmd = """
+            python %(py_path)s/concatenation_spatial.py
+            """
+    
+    cmd += " > %(log_file)s "
+    job_kwargs["job_threads"] = PARAMS['resources_threads_low']
+    log_msg = f"TASK: 'concat_spatial'" + f" IN CASE OF ERROR, PLEASE REFER TO : '{log_file}' FOR MORE INFORMATION."
+    get_logger().info(log_msg)
+    P.run(cmd, **job_kwargs)
+
+
+
+
+@follows(filter_spatialdata, postfilterplot_spatial, spatial_preprocess,concat_spatial)
 @originate("cleanup_done.txt")
 def cleanup(file):
     # remove any ctmp fails

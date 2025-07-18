@@ -25,22 +25,29 @@ parser.add_argument("--outfile",
 parser.add_argument("--resolution",
                     default=0.5, help="no. neighbours parameters for sc.pp.neighbors()")
 parser.add_argument("--algorithm", 
-                    default="leiden", help="algortihm choice from louvain and leiden")
+                    default="leiden", help="algorithm choice from louvain and leiden")
 parser.add_argument("--neighbors_key", 
-                    default="neighbors", help="algortihm choice from louvain and leiden")
+                    default="neighbors", help="algorithm choice from louvain and leiden")
 
 args, opt = parser.parse_known_args()
 L.info("Running with params: %s", args)
 
 # read data
 L.info("Reading in data from '%s'" % args.infile)
-mdata = mu.read(args.infile)
-if type(mdata) is AnnData:
-    adata = mdata
-elif args.modality is not None:
-    adata = mdata[args.modality]
-else:
-    adata = mdata
+if ".zarr" in args.infile:
+    import spatialdata as sd
+    L.info("Reading in SpatialData from '%s'" % args.infile)
+    sdata = sd.read_zarr(args.infile)
+    adata = sdata["table"]
+else: 
+    mdata = mu.read(args.infile)
+    if type(mdata) is AnnData:
+        adata = mdata
+    elif args.modality is not None:
+        adata = mdata[args.modality]
+    else:
+        adata = mdata
+ 
 
 uns_key=args.neighbors_key
 # check sc.pp.neihgbours has been run

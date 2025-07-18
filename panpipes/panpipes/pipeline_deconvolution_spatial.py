@@ -30,13 +30,12 @@ if (PARAMS["input_spatial"] is not None) and (not os.path.exists(PARAMS["input_s
 
 
 def gen_filter_jobs():
-    input_paths_spatial=glob.glob(os.path.join(PARAMS["input_spatial"],"*.h5mu"))
+    input_paths_spatial=glob.glob(os.path.join(PARAMS["input_spatial"],"*.zarr"))
     input_singlecell = PARAMS["input_singlecell"]
     for input_spatial in input_paths_spatial:
         sample_prefix = os.path.basename(input_spatial)
-        sample_prefix = sample_prefix.replace(".h5mu","")
-        outfile_spatial = "cell2location.output/" + sample_prefix + "/Cell2Loc_spatial_output.h5mu"
-        yield input_spatial, outfile_spatial, sample_prefix, input_singlecell    
+        sample_prefix = sample_prefix.replace(".zarr","")
+        yield input_spatial, sample_prefix, input_singlecell    
 
 
 @mkdir("logs")
@@ -45,7 +44,7 @@ def gen_filter_jobs():
 @mkdir("figures/Cell2Location")
 @mkdir("cell2location.output")
 @files(gen_filter_jobs)
-def run_cell2location(input_spatial, outfile_spatial, sample_prefix, input_singlecell):
+def run_cell2location(input_spatial, sample_prefix, input_singlecell):
 
     figdir = "./figures/Cell2Location/" + sample_prefix
     output_dir = "./cell2location.output/" + sample_prefix
@@ -81,8 +80,10 @@ def run_cell2location(input_spatial, outfile_spatial, sample_prefix, input_singl
         cmd += f" --continuous_covariate_keys_reference {PARAMS['Cell2Location_reference']['continuous_covariate_keys']}"
     if PARAMS['Cell2Location_reference']['max_epochs'] is not None:
         cmd += f" --max_epochs_reference {PARAMS['Cell2Location_reference']['max_epochs']}"
-    if PARAMS['Cell2Location_reference']['use_gpu'] is not None:
-        cmd += f" --use_gpu_reference {PARAMS['Cell2Location_reference']['use_gpu']}" 
+    if PARAMS['Cell2Location_reference']['accelerator'] is not None:
+        cmd += f" --accelerator_reference {PARAMS['Cell2Location_reference']['accelerator']}" 
+    #if PARAMS['Cell2Location_reference']['use_gpu'] is not None:
+    #    cmd += f" --use_gpu_reference {PARAMS['Cell2Location_reference']['use_gpu']}" 
     # parameters for the spatial model
     if PARAMS['Cell2Location_spatial']['batch_key'] is not None:
         cmd += f" --batch_key_st {PARAMS['Cell2Location_spatial']['batch_key']}"
@@ -98,11 +99,13 @@ def run_cell2location(input_spatial, outfile_spatial, sample_prefix, input_singl
         cmd += f" --N_cells_per_location {PARAMS['Cell2Location_spatial']['N_cells_per_location']}"
     if PARAMS['Cell2Location_spatial']['detection_alpha'] is not None:
         cmd += f" --detection_alpha {PARAMS['Cell2Location_spatial']['detection_alpha']}"
-    if PARAMS['Cell2Location_spatial']['use_gpu'] is not None:
-        cmd += f" --use_gpu_st {PARAMS['Cell2Location_spatial']['use_gpu']}"
+    if PARAMS['Cell2Location_spatial']['accelerator'] is not None:
+        cmd += f" --accelerator_spatial {PARAMS['Cell2Location_spatial']['accelerator']}"
     
     if PARAMS['Cell2Location_save_models'] is not None:
         cmd += " --save_models %(Cell2Location_save_models)s"   
+    if PARAMS['Cell2Location_export_gene_by_spot'] is not None:
+        cmd += " --export_gene_by_spot %(Cell2Location_export_gene_by_spot)s"
 
     cmd += " > logs/%(log_file)s "
     job_kwargs["job_threads"] = PARAMS['resources_threads_low']
@@ -116,7 +119,7 @@ def run_cell2location(input_spatial, outfile_spatial, sample_prefix, input_singl
 @mkdir("figures/Tangram")
 @mkdir("tangram.output")
 @files(gen_filter_jobs)
-def run_tangram(input_spatial, outfile_spatial, sample_prefix, input_singlecell):
+def run_tangram(input_spatial, sample_prefix, input_singlecell):
 
     figdir = "./figures/Tangram/" + sample_prefix
     output_dir = "./tangram.output/" + sample_prefix
