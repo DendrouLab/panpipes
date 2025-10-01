@@ -530,7 +530,7 @@ if (opt$prefilter) {
       ) +
       coord_cartesian(ylim = c(0, 100))
 
-    ggsave(g, file = paste0(run, "barplot_cellcounts_thresholds_filter.png"), type = "cairo", width = 9, height = 9)
+    ggsave(g, file = paste0(run, "barplot_cellcounts_thresholds_filter.png"), type = "cairo", width = 9, height = 9, limitsize = FALSE)
   }
   
 }else{
