@@ -652,9 +652,6 @@ def update_intersecting_feature_names(adata1: AnnData, adata2: AnnData, prefix: 
 
 def merge_tcr_bcr_into_one_anndata(tcr, bcr):
     logging.info("merging tcr and bcr into one rep modality")
-    union_obs = list(set(bcr.obs_names).union(set(tcr.obs_names)))
-    adata = AnnData(X=np.empty(shape=(len(union_obs), 0)), obs=pd.DataFrame(index=union_obs))
-    
     # make sure the airr data is present
     # Get assertions if upstream changes strip AIRR
     assert "airr" in tcr.obsm, "TCR object has no .obsm['airr'] (lost during loading/harmonization)"
@@ -663,8 +660,9 @@ def merge_tcr_bcr_into_one_anndata(tcr, bcr):
     logging.debug(f"BCR obsm keys: {list(bcr.obsm.keys())}")
 
     # merge in the tcr and bcr with the rna
-    ir.pp.merge_airr(adata, tcr)
-    ir.pp.merge_airr(adata, bcr)
+    # Merge AIRR-bearing objects into a single repertoire AnnData because merge_airr expects both to have .obsm['airr']
+    rep = tcr.copy()
+    ir.pp.merge_airr(rep, bcr, airr_key=airr_key, airr_key2=airr_key2)
     ir.tl.chain_qc(adata)
     return adata
 
