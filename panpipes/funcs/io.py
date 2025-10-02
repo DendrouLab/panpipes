@@ -662,7 +662,7 @@ def merge_tcr_bcr_into_one_anndata(tcr, bcr):
     # merge in the tcr and bcr with the rna
     # Merge AIRR-bearing objects into a single repertoire AnnData because merge_airr expects both to have .obsm['airr']
     rep = tcr.copy()
-    ir.pp.merge_airr(rep, bcr, airr_key=airr_key, airr_key2=airr_key2)
+    ir.pp.merge_airr(rep, bcr, airr_key="airr", airr_key2="airr")
     ir.tl.chain_qc(adata)
     return adata
 
