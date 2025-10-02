@@ -610,6 +610,11 @@ def load_adata_in(
     adata = load_functions_dict[filetype](path)
 
     logging.debug("this is the anndata now: %s" % adata)
+    
+    # for vdj files we do not need to update the var names
+    # repertoire objects are not count matrices; resetting .var/index isn’t meaningful and risks breaking metadata assumptions.
+    if filetype in {"cellranger_vdj", "tracer", "bracer", "airr"}:
+    return adata
 
     # in some cases you need to update the var index col.
     if var_names in adata.var.columns:
@@ -647,10 +652,15 @@ def update_intersecting_feature_names(adata1: AnnData, adata2: AnnData, prefix: 
 
 def merge_tcr_bcr_into_one_anndata(tcr, bcr):
     logging.info("merging tcr and bcr into one rep modality")
-    intersect_obs = list(set(bcr.obs_names).union(set(tcr.obs_names)))
-    adata = AnnData(
-        X=np.empty(shape=(len(intersect_obs), 0)), obs=pd.DataFrame(index=intersect_obs)
-    )
+    union_obs = list(set(bcr.obs_names).union(set(tcr.obs_names)))
+    adata = AnnData(X=np.empty(shape=(len(union_obs), 0)), obs=pd.DataFrame(index=union_obs))
+    
+    # make sure the airr data is present
+    # Get assertions if upstream changes strip AIRR
+    assert "airr" in tcr.obsm, "TCR object has no .obsm['airr'] (lost during loading/harmonization)"
+    assert "airr" in bcr.obsm, "BCR object has no .obsm['airr'] (lost during loading/harmonization)"
+    logging.debug(f"TCR obsm keys: {list(tcr.obsm.keys())}")
+    logging.debug(f"BCR obsm keys: {list(bcr.obsm.keys())}")
 
     # merge in the tcr and bcr with the rna
     ir.pp.merge_airr(adata, tcr)
@@ -742,8 +752,10 @@ def load_mdata_from_multiple_files(all_files_dict):
         data_dict["rna"].var_names_make_unique()
         for mod in data_dict.keys():
             if mod == "rna":
-                # skip since we want to update all the ones that are not rna
-                pass
+                continue
+            if mod in ["tcr", "bcr", "rep"]:
+                # Running this function on the rep data messes up scirpy as it needs the .obsm["airr"] intact
+                continue
             else:
                 logging.debug("second adata %s " % data_dict[mod])
                 logging.debug("updating intersection for %s" % mod)
