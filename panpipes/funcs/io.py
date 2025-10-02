@@ -614,7 +614,7 @@ def load_adata_in(
     # for vdj files we do not need to update the var names
     # repertoire objects are not count matrices; resetting .var/index isn’t meaningful and risks breaking metadata assumptions.
     if filetype in {"cellranger_vdj", "tracer", "bracer", "airr"}:
-    return adata
+        return adata
 
     # in some cases you need to update the var index col.
     if var_names in adata.var.columns:
