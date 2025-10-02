@@ -663,8 +663,8 @@ def merge_tcr_bcr_into_one_anndata(tcr, bcr):
     # Merge AIRR-bearing objects into a single repertoire AnnData because merge_airr expects both to have .obsm['airr']
     rep = tcr.copy()
     ir.pp.merge_airr(rep, bcr, airr_key="airr", airr_key2="airr")
-    ir.tl.chain_qc(adata)
-    return adata
+    ir.tl.chain_qc(rep)
+    return rep
 
 
 def _make_one_rep_modality(data_dict: dict[AnnData]):
