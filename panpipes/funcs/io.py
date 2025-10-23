@@ -649,22 +649,17 @@ def update_intersecting_feature_names(adata1: AnnData, adata2: AnnData, prefix: 
 
     return adata2
 
-
-def merge_tcr_bcr_into_one_anndata(tcr, bcr):
-    logging.info("merging tcr and bcr into one rep modality")
-    # make sure the airr data is present
-    # Get assertions if upstream changes strip AIRR
-    assert "airr" in tcr.obsm, "TCR object has no .obsm['airr'] (lost during loading/harmonization)"
-    assert "airr" in bcr.obsm, "BCR object has no .obsm['airr'] (lost during loading/harmonization)"
-    logging.debug(f"TCR obsm keys: {list(tcr.obsm.keys())}")
-    logging.debug(f"BCR obsm keys: {list(bcr.obsm.keys())}")
-
-    # merge in the tcr and bcr with the rna
-    # Merge AIRR-bearing objects into a single repertoire AnnData because merge_airr expects both to have .obsm['airr']
-    rep = tcr.copy()
-    ir.pp.merge_airr(rep, bcr, airr_key="airr", airr_key2="airr")
-    ir.tl.chain_qc(rep)
-    return rep
+def merge_tcr_bcr_into_one_anndata(tcr: AnnData, bcr: AnnData) -> AnnData:
+    logging.info("Merging TCR and BCR into a single 'rep' modality using ir.pp.merge_airr()")
+    logging.info(f"TCR cells: {tcr.n_obs}")
+    logging.info(f"BCR cells: {bcr.n_obs}")
+    
+    adata = ir.pp.merge_airr(tcr, bcr)
+    
+    logging.info(f"Merged total cells: {adata.n_obs}")
+    logging.info("Running scirpy.tl.chain_qc()")
+    ir.tl.chain_qc(adata)
+    return adata
 
 
 def _make_one_rep_modality(data_dict: dict[AnnData]):
@@ -673,18 +668,20 @@ def _make_one_rep_modality(data_dict: dict[AnnData]):
     """
     if "tcr" in data_dict.keys() and "bcr" in data_dict.keys():
         # get the intersecting obs
+        logging.info("Found both TCR and BCR — combining into 'rep'")
         data_dict["rep"] = merge_tcr_bcr_into_one_anndata(
             data_dict["tcr"], data_dict["bcr"]
         )
         # remove separate assays
         data_dict.pop("tcr", None)
         data_dict.pop("bcr", None)
+        logging.info("Stored merged 'rep' and removed separate TCR/BCR entries")
     elif "tcr" in data_dict.keys():
-        logging.info("storing tcr in rep modality")
+        logging.info("Only TCR data found - storing in rep modality")
         data_dict["rep"] = data_dict["tcr"]
         data_dict.pop("tcr", None)
     elif "bcr" in data_dict.keys():
-        logging.info("storing bcr in rep modality")
+        logging.info("Only BCR data found - storing in rep modality")
         data_dict["rep"] = data_dict["bcr"]
         data_dict.pop("bcr", None)
 

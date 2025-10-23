@@ -156,7 +156,7 @@ L.info("Saving sample id to mdata.obs['sample_id']")
 mdata.obs['sample_id'] = str(args.sample_id)
 
 # copy the  to each modality
-print("Saving sample_id to each modality")
+L.info("Saving sample_id to each modality")
 for mm in mdata.mod.keys():
     # mdata[mm].obs['sample_id'] = mdata.obs['sample_id']
     mdata[mm].obs['sample_id'] = mdata.obs.loc[mdata[mm].obs_names,:]['sample_id']

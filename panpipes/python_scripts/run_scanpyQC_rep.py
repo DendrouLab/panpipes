@@ -11,7 +11,7 @@ import argparse
 import logging
 import sys
 import warnings
-
+import pandas as pd
 import matplotlib.pyplot as plt
 import muon as mu
 import scirpy as ir
@@ -62,9 +62,18 @@ L.info("Running with params: %s", args)
 L.info("Reading in MuData from '%s'" % args.input_mudata)
 mdata = mu.read(args.input_mudata)
 rep = mdata["rep"]
-# chain qc
-L.info("Running scirpy.tl.chain_qc()")
-ir.tl.chain_qc(rep)
+
+L.info("Adding has_ir column")
+
+if "receptor_type" in rep.obs.columns:
+    rep.obs["has_ir"] = (
+        rep.obs["receptor_type"].notna()
+        & (rep.obs["receptor_type"].astype(str) != "no IR")
+    )
+    L.info("Added has_ir / receptor_type columns.")
+else:
+    rep.obs["has_ir"] = False
+    L.warning("No receptor_type column found; setting has_ir = False.")
 
 # remove nones, so defaults are used
 if args.distance_metrics is not None:
@@ -94,15 +103,18 @@ ir.tl.define_clonotypes(rep, **clonotype_args)
 L.info("Adding column to obs recording which clonotypes are expanded")
 ir.tl.clonal_expansion(rep)
 
+category_cols = ['has_ir']
+for cc in category_cols:
+    if pd.api.types.infer_dtype(rep.obs[cc]) != "categorical":
+        rep.obs[cc] = rep.obs[cc].astype('category')
 
 tcr = None
-if "TCR" in rep.obs.receptor_type.values:
+if "receptor_type" in rep.obs.columns and (rep.obs["receptor_type"] == "TCR").any():
     tcr = rep[rep.obs.receptor_type == "TCR", :].copy()
 
 bcr = None
-if "BCR" in rep.obs["receptor_type"].values:
-    bcr = rep[rep.obs.receptor_type == "BCR", :].copy()
-
+if "receptor_type" in rep.obs.columns and (rep.obs["receptor_type"] == "BCR").any():
+    bcr = rep[rep.obs["receptor_type"] == "BCR", :].copy()
 
 # plot group abundances
 L.info("Plotting group abundances")
