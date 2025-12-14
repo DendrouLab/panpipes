@@ -197,6 +197,7 @@ multimodal:
   mofa:
     modalities: rna,prot,atac
     filter_by_hvg: True
+    lowmem: True
     n_factors: 10
     n_iterations: 1000
     convergence_mode: fast
