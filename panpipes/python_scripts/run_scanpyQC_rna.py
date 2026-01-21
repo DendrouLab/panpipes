@@ -54,7 +54,7 @@ parser.add_argument("--customgenesfile",
                     default=None,
                     help="path to file containing list of genes to quantify")
 parser.add_argument("--calc_proportions",
-                    default="mitochondrial,ribosomal",
+                    default=None,
                     help="which list of genes to use to calc proportion of mapped reads over total,per cell?")
 parser.add_argument("--score_genes",
                     default=None,
@@ -125,11 +125,12 @@ if args.customgenesfile is not None:
         L.error("You have not provided a list of custom genes to use for QC purposes")
         sys.exit("You have not provided a list of custom genes to use for QC purposes")
 
-for kk in calc_proportions:
-    xname= kk
-    gene_list = cat_dic[kk]
-    rna.var[xname] = [x in gene_list for x in rna.var_names] # annotate the group of hb genes as 'hb'
-    qc_vars.append(xname)
+if args.calc_proportions is not None and args.calc_proportions != 'None':
+    for kk in calc_proportions:
+        xname = kk
+        gene_list = cat_dic[kk]
+        rna.var[xname] = [x in gene_list for x in rna.var_names] # annotate the group of hb genes as 'hb'
+        qc_vars.append(xname)
 
 qc_info = ""
 if qc_vars != []:
@@ -173,4 +174,3 @@ L.info("Saving updated MuData to '%s'" % args.outfile)
 mdata.write(args.outfile)
 
 L.info("Done")
-
